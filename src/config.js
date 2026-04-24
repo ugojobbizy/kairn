@@ -1,0 +1,3 @@
+// Liens globaux du site. Modifie ici pour mettre à jour partout.
+export const BOOKING_URL = 'https://calendly.com/moshechemouni/kairn';
+export const CONTACT_EMAIL = 'contact@kairn.agency';
