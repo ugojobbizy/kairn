@@ -166,7 +166,7 @@ function ContactProcess({ isMobile }) {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div className="k-section-label">
           <span className="k-section-label-sq"></span>
-          02 — Ce qui se passe après
+          01 — Ce qui se passe après
         </div>
         <h2 style={{ fontSize: isMobile ? 34 : 56, marginTop: 20, letterSpacing: '-0.035em', maxWidth: 820, lineHeight: 1.04 }}>
           Le parcours. <span style={{ color: 'var(--muted)' }}>Prévisible. Sans surprise.</span>
@@ -209,7 +209,7 @@ function ContactAvailability({ isMobile }) {
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <div className="k-section-label">
           <span className="k-section-label-sq"></span>
-          03 — Disponibilité
+          02 — Disponibilité
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 28 : 60, marginTop: 20, alignItems: 'center' }}>
           <div>
@@ -332,7 +332,7 @@ export default function ContactPage({ variant = 'desktop' }) {
       <ContactMethods isMobile={isMobile} />
       <ContactProcess isMobile={isMobile} />
       <ContactAvailability isMobile={isMobile} />
-      <KFAQ isMobile={isMobile} items={CONTACT_FAQ} />
+      <KFAQ isMobile={isMobile} items={CONTACT_FAQ} sectionNumber="03" />
       <ContactDirectCTA isMobile={isMobile} />
       <KFooter isMobile={isMobile} />
       {isMobile && (

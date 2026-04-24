@@ -93,7 +93,7 @@ export default function KairnHome({ variant = 'desktop' }) {
       <KSpline isMobile={isMobile} />
       <KCases isMobile={isMobile} cases={K_CASES} />
       <KLogos isMobile={isMobile} />
-      <KFAQ isMobile={isMobile} items={K_FAQ} />
+      <KFAQ isMobile={isMobile} items={K_FAQ} sectionNumber="07" />
       <KFinalCTA isMobile={isMobile} />
       <KFooter isMobile={isMobile} />
       {isMobile && (

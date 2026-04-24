@@ -473,7 +473,7 @@ export function KLogos({ isMobile }) {
 // ═════════════════════════════════════════════════════════════
 // FAQ
 // ═════════════════════════════════════════════════════════════
-export function KFAQ({ isMobile, items }) {
+export function KFAQ({ isMobile, items, sectionNumber = '08' }) {
   const [open, setOpen] = useState(0);
   const pad = isMobile ? '60px 20px' : '120px 120px';
   return (
@@ -482,7 +482,7 @@ export function KFAQ({ isMobile, items }) {
         <div>
           <div className="k-section-label">
             <span className="k-section-label-sq"></span>
-            08 — FAQ
+            {sectionNumber} — FAQ
           </div>
           <h2 style={{ fontSize: isMobile ? 28 : 44, marginTop: 20, letterSpacing: '-0.03em', lineHeight: 1.08, textWrap: 'balance' }}>
             Les questions qu'on nous pose.

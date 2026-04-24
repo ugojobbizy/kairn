@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IllusLanding, IllusFunnel, IllusFlow, IllusDash, IllusCPL, IllusCurve } from './illustrations.jsx';
 import { KNav } from './sections-1.jsx';
-import { KTestimonials, KLogos, KFAQ, KFinalCTA, KFooter } from './sections-3.jsx';
+import { KLogos, KFAQ, KFinalCTA, KFooter } from './sections-3.jsx';
 import { BOOKING_URL } from './config.js';
 
 // ═════════════════════════════════════════════════════════════
@@ -593,12 +593,6 @@ function BuildPricing({ isMobile }) {
 // ═════════════════════════════════════════════════════════════
 // BUILD PAGE ROOT
 // ═════════════════════════════════════════════════════════════
-const BUILD_TESTIMONIALS = [
-  { q: 'Plateforme SaaS livrée en 6 semaines. Leur niveau technique est rare pour une agence — on dirait un studio produit interne.', n: 'Élise Marchand', p: 'CTO', c: 'Nebula' },
-  { q: 'On avait un legacy Webflow ingérable. Kairn a migré vers Next.js + Supabase sans casser le SEO. Zéro downtime.', n: 'Thomas Garnier', p: 'Founder', c: 'Orbital' },
-  { q: 'Ils nous ont livré le code, la doc, et formé notre dev senior. On est autonomes depuis J+30. Parfait.', n: 'Nadia Rahmouni', p: 'VP Product', c: 'Meridian' },
-];
-
 const BUILD_FAQ = [
   { q: 'Quel est le délai moyen de livraison ?', a: 'Entre 2 et 4 semaines pour une landing ou un funnel, 6 à 8 semaines pour une plateforme. On découpe les projets plus longs en paliers livrables de 4 semaines max.' },
   { q: 'À qui appartient le code après la livraison ?', a: '100% à vous. Le repo GitHub est sous votre compte dès J-1. Aucune clause de propriété intellectuelle, aucun lock-in, aucun abonnement obligatoire.' },
@@ -619,9 +613,8 @@ export default function BuildPage({ variant = 'desktop' }) {
       <BuildStack isMobile={isMobile} />
       <BuildProcess isMobile={isMobile} />
       <BuildDeliverables isMobile={isMobile} />
-      <KTestimonials isMobile={isMobile} items={BUILD_TESTIMONIALS} />
       <KLogos isMobile={isMobile} />
-      <KFAQ isMobile={isMobile} items={BUILD_FAQ} />
+      <KFAQ isMobile={isMobile} items={BUILD_FAQ} sectionNumber="06" />
       <KFinalCTA isMobile={isMobile} />
       <KFooter isMobile={isMobile} />
       {isMobile && (

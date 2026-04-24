@@ -1725,7 +1725,7 @@ function OtherCases({ isMobile }) {
           <div>
             <div className="k-section-label">
               <span className="k-section-label-sq"></span>
-              02 — Autres missions
+              01 — Autres missions
             </div>
             <h2 style={{ fontSize: isMobile ? 34 : 56, marginTop: 20, letterSpacing: '-0.035em', maxWidth: 720, lineHeight: 1.04 }}>
               Missions récentes. <span style={{ color: 'var(--muted)' }}>Un aperçu.</span>
@@ -1807,7 +1807,7 @@ function SelectionCriteria({ isMobile }) {
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <div className="k-section-label">
           <span className="k-section-label-sq"></span>
-          03 — Comment on choisit nos projets
+          02 — Comment on choisit nos projets
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.2fr', gap: isMobile ? 28 : 60, marginTop: 20, alignItems: 'center' }}>
           <h2 style={{ fontSize: isMobile ? 34 : 52, letterSpacing: '-0.035em', lineHeight: 1.04 }}>
@@ -1864,7 +1864,7 @@ export default function RealisationsPage({ variant = 'desktop' }) {
       <FeaturedRenovia isMobile={isMobile} />
       <OtherCases isMobile={isMobile} />
       <SelectionCriteria isMobile={isMobile} />
-      <KTestimonials isMobile={isMobile} items={REALIS_TESTIMONIALS} sectionNumber="04" />
+      <KTestimonials isMobile={isMobile} items={REALIS_TESTIMONIALS} sectionNumber="03" />
       <KLogos isMobile={isMobile} />
       <KFinalCTA isMobile={isMobile} />
       <KFooter isMobile={isMobile} />

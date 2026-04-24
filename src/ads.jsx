@@ -1,7 +1,7 @@
 import React from 'react';
 import { IllusCurve, IllusFunnel, IllusFlow, IllusLanding, IllusDash, IllusCPL } from './illustrations.jsx';
 import { KNav } from './sections-1.jsx';
-import { KTestimonials, KLogos, KFAQ, KFinalCTA, KFooter } from './sections-3.jsx';
+import { KLogos, KFAQ, KFinalCTA, KFooter } from './sections-3.jsx';
 import { BOOKING_URL } from './config.js';
 
 // ═════════════════════════════════════════════════════════════
@@ -490,12 +490,6 @@ function AdsDeliverables({ isMobile }) {
 // ═════════════════════════════════════════════════════════════
 // ADS PAGE ROOT
 // ═════════════════════════════════════════════════════════════
-const ADS_TESTIMONIALS = [
-  { q: 'Ils ont divisé notre CPL par 2.5 en 45 jours. Meta + Google restructurés, tracking serveur enfin propre.', n: 'Julien Abergel', p: 'Head of Growth', c: 'Nebula' },
-  { q: 'Les rapports hebdo sont d\'une transparence rare. Je sais exactement où va chaque euro, pourquoi, et ce que ça rapporte.', n: 'Clara Boutry', p: 'CMO', c: 'Helios' },
-  { q: 'On avait plafonné sur Meta. Ils ont ouvert LinkedIn et TikTok proprement, avec un tracking unifié. Game changer.', n: 'Martin Paoletti', p: 'Founder', c: 'Axiom' },
-];
-
 const ADS_FAQ = [
   { q: 'Quel est le budget mensuel minimum pour travailler avec vous ?', a: 'Budget média de 10 000€/mois minimum par canal. En dessous, on ne peut pas produire assez de créas pour itérer proprement, et les apprentissages Meta/Google sont trop lents.' },
   { q: 'Y a-t-il un engagement minimum ?', a: 'Trois mois minimum. Un mois = setup + learning Meta. Deux mois = premiers arbitrages. Trois mois = vous voyez ce qu\'on vaut. Au-delà, pas d\'engagement, préavis 30 jours.' },
@@ -516,9 +510,8 @@ export default function AdsPage({ variant = 'desktop' }) {
       <AdsMethodology isMobile={isMobile} />
       <AdsProcess isMobile={isMobile} />
       <AdsDeliverables isMobile={isMobile} />
-      <KTestimonials isMobile={isMobile} items={ADS_TESTIMONIALS} />
       <KLogos isMobile={isMobile} />
-      <KFAQ isMobile={isMobile} items={ADS_FAQ} />
+      <KFAQ isMobile={isMobile} items={ADS_FAQ} sectionNumber="06" />
       <KFinalCTA isMobile={isMobile} />
       <KFooter isMobile={isMobile} />
       {isMobile && (
