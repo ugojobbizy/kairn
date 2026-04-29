@@ -6,6 +6,11 @@ import BuildPage from './build.jsx';
 import AdsPage from './ads.jsx';
 import RealisationsPage from './realisations.jsx';
 import ContactPage from './contact.jsx';
+import LandingPage from './landing.jsx';
+import LandingPage2 from './landing2.jsx';
+import AdminLogin from './admin/login.jsx';
+import AdminCRM from './admin/crm.jsx';
+import { AuthProvider, AuthGuard } from './admin/auth-context.jsx';
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -45,6 +50,10 @@ function Shell() {
         <Route path="/ads" element={<AdsPage variant={variant} />} />
         <Route path="/realisations" element={<RealisationsPage variant={variant} />} />
         <Route path="/contact" element={<ContactPage variant={variant} />} />
+        <Route path="/landing" element={<LandingPage variant={variant} />} />
+        <Route path="/landing2" element={<LandingPage2 variant={variant} />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AuthGuard><AdminCRM /></AuthGuard>} />
         <Route path="*" element={<KairnHome variant={variant} />} />
       </Routes>
     </>
@@ -54,7 +63,9 @@ function Shell() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Shell />
+      <AuthProvider>
+        <Shell />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
