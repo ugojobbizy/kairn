@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { KairnMark } from './sections-1.jsx';
+import { KProcess, KSpline } from './sections-2.jsx';
+import { KLogos, KCases, KFAQ } from './sections-3.jsx';
 import { BOOKING_URL, CONTACT_EMAIL } from './config.js';
 import { supabase, isSupabaseConfigured } from './lib/supabase.js';
 
@@ -14,7 +16,7 @@ function useNoIndex() {
     meta.content = 'noindex,nofollow';
     document.head.appendChild(meta);
     const prevTitle = document.title;
-    document.title = 'Kairn — Audit gratuit · Romandie';
+    document.title = 'Kairn — Landing page + Meta Ads · Livré en 48h';
     return () => {
       document.head.removeChild(meta);
       document.title = prevTitle;
@@ -60,7 +62,7 @@ function LandingNav() {
 }
 
 // ═════════════════════════════════════════════════════════════
-// HERO — mental image + scarcity
+// HERO — landing page specialist · 48h promise · Romandie
 // ═════════════════════════════════════════════════════════════
 function LandingHero({ isMobile, onScrollToForm, onScrollToProof }) {
   return (
@@ -71,16 +73,16 @@ function LandingHero({ isMobile, onScrollToForm, onScrollToProof }) {
       <div style={{ textAlign: 'center', paddingTop: isMobile ? 36 : 72, position: 'relative' }}>
         <span className="k-eyebrow">
           <span className="k-eyebrow-dot"></span>
-          T2 2026 · 2 places restantes · Romandie
+          Spécialiste landing page + Meta Ads · Romandie
         </span>
       </div>
 
-      <h1 className="k-hero-headline" style={{ fontSize: isMobile ? 42 : 88, marginTop: isMobile ? 22 : 32, textAlign: 'center', maxWidth: 1100, marginLeft: 'auto', marginRight: 'auto' }}>
-        Lundi 9h. Votre agenda affiche déjà <em>3 RDV qualifiés</em>.
+      <h1 className="k-hero-headline" style={{ fontSize: isMobile ? 40 : 84, marginTop: isMobile ? 22 : 32, textAlign: 'center', maxWidth: 1100, marginLeft: 'auto', marginRight: 'auto' }}>
+        Une landing page qui convertit. <em>Livrée en 48h.</em> Vos ads lancées dans la foulée.
       </h1>
 
       <p className="k-hero-sub" style={{ fontSize: isMobile ? 16 : 19, marginTop: isMobile ? 20 : 28, textAlign: 'center', maxWidth: 760, marginLeft: 'auto', marginRight: 'auto' }}>
-        Pendant que vous dormiez, votre site a converti 14 visiteurs Meta en demandes prêtes à closer. Votre seule tâche aujourd'hui&nbsp;: choisir lesquelles vous voulez rappeler.
+        On construit la page, on lance Meta Ads, vos leads tombent dans votre CRM. Vous suivez tout en temps réel — sans toucher à un outil.
       </p>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: isMobile ? 28 : 36, flexWrap: 'wrap', padding: '0 20px' }}>
@@ -91,14 +93,14 @@ function LandingHero({ isMobile, onScrollToForm, onScrollToProof }) {
           color: '#fff', border: 'none', cursor: 'pointer',
           boxShadow: '0 14px 36px -10px rgba(124,58,237,.55)',
         }}>
-          Identifier mon plan en 60 secondes
+          Recevoir mon plan en 24h
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         <button onClick={onScrollToProof} className="k-cta k-cta-ghost" style={{
           padding: isMobile ? '14px 18px' : '16px 22px',
           fontSize: isMobile ? 14.5 : 15, cursor: 'pointer', background: 'transparent',
         }}>
-          Voir des résultats
+          Voir un cas client
         </button>
       </div>
 
@@ -107,9 +109,9 @@ function LandingHero({ isMobile, onScrollToForm, onScrollToProof }) {
         flexWrap: 'wrap', textAlign: 'center', padding: '0 20px',
       }}>
         {[
-          { v: '47+', l: 'projets livrés' },
-          { v: '−38%', l: 'CPL moyen' },
-          { v: '18 jours', l: 'time-to-launch' },
+          { v: '48h', l: 'page + tracking livrés' },
+          { v: '7 jours', l: 'vos premiers leads' },
+          { v: '8%+', l: 'taux de conversion moyen' },
         ].map((m, i) => (
           <React.Fragment key={m.l}>
             <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: 8 }}>
@@ -120,70 +122,50 @@ function LandingHero({ isMobile, onScrollToForm, onScrollToProof }) {
           </React.Fragment>
         ))}
       </div>
+
     </section>
   );
 }
 
 // ═════════════════════════════════════════════════════════════
-// LOGO STRIP — quick social proof
+// PROCESS 48H — premium 3D spatial timeline (uses shared KProcess)
 // ═════════════════════════════════════════════════════════════
-function LandingLogos({ isMobile }) {
-  const brands = [
-    { name: 'TradeAuto', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 12 L4 8 C4.2 7.2 4.8 7 5.5 7 H14.5 C15.2 7 15.8 7.2 16 8 L17 12 V14 H15 V13 H5 V14 H3 Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><circle cx="6.5" cy="13.5" r="1.2" fill="currentColor" /><circle cx="13.5" cy="13.5" r="1.2" fill="currentColor" /></svg>) },
-    { name: 'Rénovia', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10 L10 4 L17 10 V16 H12 V12 H8 V16 H3 Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg>) },
-    { name: 'MadameLaGouvernante', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3 L10 17 M5 6 L15 6 M6 10 L14 10 M7 14 L13 14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>) },
-    { name: 'Cabinet Véran', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 17 V8 L10 3 L16 8 V17" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><path d="M8 17 V12 H12 V17" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><circle cx="10" cy="8.5" r="1" fill="currentColor" /></svg>) },
-    { name: 'BistroNomie', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 9 C4 6 6.5 4 10 4 C13.5 4 16 6 16 9 C16 10 15.5 10.5 14.5 10.5 H5.5 C4.5 10.5 4 10 4 9 Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><path d="M10 10.5 V16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /><path d="M6 16 H14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>) },
-    { name: 'Lumibat', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" fill="currentColor" /><path d="M10 2 V5 M10 15 V18 M2 10 H5 M15 10 H18 M4.5 4.5 L6.5 6.5 M13.5 13.5 L15.5 15.5 M4.5 15.5 L6.5 13.5 M13.5 6.5 L15.5 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>) },
+function LandingProcess48h({ isMobile }) {
+  const steps = [
+    { n: '01', t: 'Audit & cadrage', d: "On cadre offre, ICP, angle et message. Brief dense en 30 minutes — zéro flou, zéro réunion superflue." },
+    { n: '02', t: 'Page livrée', d: "Wireframe, copy et design validés en J+1. Page en ligne en J+2 avec tracking pixel + serveur branchés." },
+    { n: '03', t: 'Meta Ads en ligne', d: "Creatives produites, audiences ciblées Romandie, campagnes activées en J+3 avec votre budget validé." },
+    { n: '04', t: 'Premiers leads', d: "Prospects qualifiés dans le CRM dès J+5. Reporting clair chaque lundi, optimisation hebdo." },
   ];
   return (
-    <section style={{
-      padding: isMobile ? '32px 20px 28px' : '48px 120px 36px',
-      borderTop: '1px solid var(--line-2)',
-      borderBottom: '1px solid var(--line-2)',
-      background: '#fff',
-    }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div className="mono" style={{
-          fontSize: 11.5, color: 'var(--muted)', letterSpacing: '0.18em', textTransform: 'uppercase',
-          textAlign: 'center', marginBottom: 22,
-        }}>
-          Ils nous font confiance pour piloter leurs leads
-        </div>
-        <div style={{
-          display: 'flex', justifyContent: 'space-around', alignItems: 'center',
-          gap: isMobile ? 18 : 32, flexWrap: 'wrap', color: 'var(--ink-soft)',
-          opacity: 0.78,
-        }}>
-          {brands.map((b) => (
-            <div key={b.name} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontSize: 14.5, fontWeight: 500, letterSpacing: '-0.012em' }}>
-              {b.logo}
-              <span>{b.name}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+    <KProcess
+      isMobile={isMobile}
+      steps={steps}
+      kpis={['30 min', '48h', 'J+3', 'hebdo']}
+      sectionLabel="01 — Méthode 48h"
+      heading={<>Quatre étapes. <span style={{ color: 'var(--muted)' }}>Pas plus.</span></>}
+      subheading="On bosse en exclusivité sur 1 client à la fois pendant les 48h de production. C'est ce qui rend le délai tenable — et qui force à cadrer dur en amont."
+    />
   );
 }
 
 // ═════════════════════════════════════════════════════════════
-// BEFORE / AFTER — vivid contrast for System 1
+// BEFORE / AFTER — landing page contrast
 // ═════════════════════════════════════════════════════════════
 function LandingBeforeAfter({ isMobile }) {
   const before = [
-    'Leads dispersés entre formulaires, mails, WhatsApp',
+    'Un site corporate qui convertit 1%',
+    'Formulaire à 7 champs que personne ne remplit',
     'Vous payez Meta sans savoir ce qui marche',
-    'Site qui convertit 1-2% (vous laissez 80% sur la table)',
-    'Agence Build + Agence Ads (2 contrats, 0 cohérence)',
-    'Reporting flou, vous y croyez ou pas',
+    'Pas de tracking serveur → 40% des leads invisibles',
+    'Vos prospects dorment dans une boîte mail',
   ];
   const after = [
-    'Un seul tableau de bord, un seul flux clean',
-    'Tracking serveur — vous voyez chaque euro',
-    'Pages qui convertissent au-delà de 8%',
-    'Une seule équipe, un seul livrable, un seul reporting',
-    'Chiffres exacts chaque lundi · pas de zone de flou',
+    'Une landing dédiée à une seule offre, un seul ICP',
+    'Formulaire en 60 secondes qui qualifie vos leads',
+    'Tracking pixel + serveur — vous voyez chaque euro dépensé',
+    'Page connectée à votre CRM, suivi en temps réel',
+    'Optimisation A/B chaque semaine, CPL qui descend',
   ];
   const pad = isMobile ? '64px 20px' : '110px 120px';
   return (
@@ -191,14 +173,14 @@ function LandingBeforeAfter({ isMobile }) {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div className="k-section-label" style={{ justifyContent: 'center' }}>
           <span className="k-section-label-sq"></span>
-          01 — Le contraste
+          02 — Le contraste
         </div>
         <h2 style={{
           fontSize: isMobile ? 32 : 52, marginTop: 18,
           letterSpacing: '-0.035em', lineHeight: 1.04,
           textAlign: 'center', maxWidth: 880, margin: '18px auto 0',
         }}>
-          La différence entre <span style={{ color: 'var(--muted)' }}>"on espère"</span> et <em style={{ background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'normal' }}>"on sait"</em>.
+          La différence entre <span style={{ color: 'var(--muted)' }}>"un site"</span> et <em style={{ background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'normal' }}>"une machine à leads"</em>.
         </h2>
 
         <div style={{
@@ -214,10 +196,10 @@ function LandingBeforeAfter({ isMobile }) {
             opacity: 0.92,
           }}>
             <div className="mono" style={{ fontSize: 11.5, letterSpacing: '0.18em', color: 'var(--muted)', textTransform: 'uppercase' }}>
-              Sans Kairn
+              Sans landing dédiée
             </div>
             <h3 style={{ fontSize: 24, fontWeight: 500, marginTop: 10, letterSpacing: '-0.02em', color: 'var(--ink-soft)' }}>
-              L'acquisition au feeling
+              Vous brûlez le budget Meta
             </h3>
             <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
               {before.map((t) => (
@@ -245,10 +227,10 @@ function LandingBeforeAfter({ isMobile }) {
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 80% 0%, rgba(139,92,246,.30), transparent 60%)', pointerEvents: 'none' }}></div>
             <div style={{ position: 'relative' }}>
               <div className="mono" style={{ fontSize: 11.5, letterSpacing: '0.18em', color: '#C4B5FD', textTransform: 'uppercase' }}>
-                Avec Kairn
+                Avec une landing Kairn
               </div>
               <h3 style={{ fontSize: 24, fontWeight: 500, marginTop: 10, letterSpacing: '-0.02em', color: '#fff' }}>
-                La machine qui tourne
+                Vos prospects tombent en continu
               </h3>
               <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {after.map((t) => (
@@ -281,10 +263,10 @@ const SECTORS = [
   { v: 'autre', l: 'Autre' },
 ];
 const GOALS = [
-  { v: 'leads', l: 'Plus de leads qualifiés' },
-  { v: 'refonte', l: 'Refonte du site / funnel' },
-  { v: 'ads', l: 'Lancer Meta Ads' },
-  { v: 'automation', l: 'Automatiser mes ventes' },
+  { v: 'new_landing', l: 'Créer ma landing + lancer Meta Ads' },
+  { v: 'fix_landing', l: "J'ai déjà une landing, elle ne convertit pas" },
+  { v: 'scale_ads', l: 'Mes ads tournent mais le CPL est trop haut' },
+  { v: 'explore', l: "J'explore, je veux comprendre" },
 ];
 const BUDGETS = [
   { v: 'none', l: "Pas encore d'ads" },
@@ -317,7 +299,6 @@ function buildCalendlyUrl(data) {
   const url = new URL(BOOKING_URL);
   if (data.first_name) url.searchParams.set('name', data.first_name);
   if (data.email) url.searchParams.set('email', data.email);
-  // Calendly custom questions: a1, a2, a3...
   const summary = `${SECTOR_LABEL[data.sector] || ''} · Objectif: ${GOAL_LABEL[data.goal] || ''} · Budget: ${BUDGET_LABEL[data.budget] || ''} · Timing: ${TIMING_LABEL[data.timing] || ''}${data.company ? ' · ' + data.company : ''}${data.phone ? ' · ' + data.phone : ''}`;
   url.searchParams.set('a1', summary);
   return url.toString();
@@ -462,7 +443,6 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
         const { error: insertErr } = await supabase.from('leads').insert(payload);
         if (insertErr) throw insertErr;
       }
-      // Meta Pixel (conditional, no-op if not loaded)
       if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
         try { window.fbq('track', 'Lead'); } catch (_) {}
       }
@@ -548,7 +528,7 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
       }}>
         <div className="k-section-label">
           <span className="k-section-label-sq"></span>
-          02 — Votre plan en 60 secondes
+          03 — Votre plan en 60 secondes
         </div>
         <h2 style={{ fontSize: isMobile ? 28 : 38, marginTop: 14, letterSpacing: '-0.03em', lineHeight: 1.08 }}>
           Quelques questions. <span style={{ color: 'var(--muted)' }}>Et on revient avec une réponse honnête.</span>
@@ -576,10 +556,10 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
 
           {step === 2 && (
             <div>
-              <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.015em' }}>Quel est votre objectif principal ?</h3>
-              <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 6 }}>Une seule réponse — la plus prioritaire pour vous.</p>
+              <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.015em' }}>Où en êtes-vous aujourd'hui&nbsp;?</h3>
+              <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 6 }}>Une seule réponse — la situation qui vous parle le plus.</p>
               <div style={{
-                display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                display: 'grid', gridTemplateColumns: '1fr',
                 gap: 10, marginTop: 18,
               }}>
                 {GOALS.map((g) => (
@@ -699,109 +679,110 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
 });
 
 // ═════════════════════════════════════════════════════════════
-// SOCIAL PROOF — Rénovia case + testimonial
+// SPLINE — DARK section · "the machine never sleeps"
 // ═════════════════════════════════════════════════════════════
-const LandingSocialProof = React.forwardRef(function LandingSocialProof({ isMobile }, ref) {
-  const pad = isMobile ? '64px 20px' : '110px 120px';
+function LandingSpline({ isMobile, onScrollToForm, onScrollToProof }) {
   return (
-    <section ref={ref} id="proof" style={{ padding: pad, background: '#fff', borderTop: '1px solid var(--line-2)' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div className="k-section-label">
-          <span className="k-section-label-sq"></span>
-          03 — Résultats concrets
+    <KSpline
+      isMobile={isMobile}
+      sectionLabel="04 — Pendant que vous dormez"
+      title={(<>Vos ads tournent.<br /><span style={{ color: 'rgba(255,255,255,.55)' }}>Vos leads tombent.</span><br />Vous voyez tout.</>)}
+      body="Tracking serveur 24/7, optimisation Meta automatique, reporting clair chaque lundi. La machine ne dort jamais — vous, oui."
+      ctas={(
+        <div style={{ display: 'flex', gap: 12, marginTop: 32, flexWrap: 'wrap' }}>
+          <button onClick={onScrollToForm} className="k-cta k-cta-violet" style={{ cursor: 'pointer', border: 'none' }}>
+            Recevoir mon plan en 24h
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+          <button onClick={onScrollToProof} className="k-cta" style={{ background: 'rgba(255,255,255,.08)', color: '#fff', border: '1px solid rgba(255,255,255,.14)', cursor: 'pointer' }}>
+            Voir un cas concret
+          </button>
         </div>
-        <h2 style={{ fontSize: isMobile ? 32 : 52, marginTop: 18, letterSpacing: '-0.035em', lineHeight: 1.04, maxWidth: 880 }}>
-          On s'engage sur des chiffres. <span style={{ color: 'var(--muted)' }}>Pas sur des promesses.</span>
-        </h2>
+      )}
+    />
+  );
+}
 
-        <div style={{
-          display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.05fr 0.95fr',
-          gap: isMobile ? 24 : 32, marginTop: isMobile ? 32 : 48,
-        }}>
-          {/* CASE STUDY MINI */}
-          <div style={{
-            padding: isMobile ? '28px 24px' : '36px 36px',
-            borderRadius: 18,
-            background: 'linear-gradient(180deg, #FBFAFF 0%, #F5F3FF 100%)',
-            border: '1px solid var(--line-2)',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <img src="/renovia-logo.svg" alt="Rénovia" style={{ height: 28, opacity: 0.9 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-              <span className="mono" style={{ fontSize: 11, padding: '4px 9px', borderRadius: 999, background: 'rgba(139,92,246,.10)', color: 'var(--violet-deep)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 500 }}>
-                Rénovation · France
-              </span>
-            </div>
-            <h3 style={{ fontSize: isMobile ? 22 : 26, marginTop: 18, letterSpacing: '-0.025em', lineHeight: 1.18 }}>
-              CPL divisé par deux. Conversion doublée. Dossiers prêts à closer.
-            </h3>
-            <div style={{
-              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 10, marginTop: 24,
-            }}>
-              {[
-                { v: '+158%', l: 'taux conversion · 12% → 31%' },
-                { v: '−46%', l: 'CPL · 24€ → 13€' },
-                { v: '5×', l: 'plus de data par lead' },
-              ].map((k) => (
-                <div key={k.l} style={{
-                  padding: '14px 12px', borderRadius: 12,
-                  background: '#fff', border: '1px solid var(--line-2)',
-                  textAlign: 'center',
-                }}>
-                  <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 600, color: 'var(--violet-deep)', letterSpacing: '-0.02em' }}>{k.v}</div>
-                  <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4, lineHeight: 1.35 }}>{k.l}</div>
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: 14, color: 'var(--muted)', marginTop: 22, lineHeight: 1.6 }}>
-              Funnel refondu, qualification enrichie (DPE live, profil ANAH), tracking serveur complet. Les leads arrivent avec un dossier signé prêt à closer.
-            </p>
-          </div>
+// ═════════════════════════════════════════════════════════════
+// CASES — premium case studies (uses shared KCases)
+// ═════════════════════════════════════════════════════════════
+const CASES = [
+  {
+    company: { name: 'Rénovia', logo: '/renovia-logo.svg' },
+    tags: ['Rénovation', 'Landing + Meta Ads', 'France'],
+    title: "Une landing dédiée. CPL divisé par deux. Conversion doublée.",
+    challenge: "Funnel ANAH/DPE générique avec un site qui convertissait à 12% et un CPL bloqué à 24€. Leads peu qualifiés que l'équipe commerciale mettait des heures à closer.",
+    solution: "Landing dédiée à un seul ICP, qualification enrichie en 60 secondes (DPE live, profil ANAH), tracking serveur complet, optimisation Meta hebdo. Les leads arrivent avec un dossier prêt.",
+    kpis: [
+      { value: '+158%', label: 'taux conversion · 12% → 31%' },
+      { value: '−46%', label: 'CPL · 24€ → 13€' },
+      { value: '5×', label: 'plus de data par lead' },
+    ],
+    quote: "Conversion doublée en 3 semaines. Les leads qui tombent sont déjà chauds — l'équipe commerciale gagne 2h par dossier.",
+    author: 'Direction Rénovia · France',
+  },
+  {
+    company: { name: 'TradeAuto', logo: '/tradeauto-logo.svg' },
+    tags: ['Automobile', 'Landing + Meta + CRM', 'Suisse'],
+    title: "Landing livrée en 48h. Meta Ads dans la foulée. CPL stable à 10 CHF.",
+    challenge: "Site corporate qui ne convertissait pas, leads dispersés entre boîte mail et WhatsApp, zéro visibilité sur le ROI Meta Ads. Budget brûlé sans savoir d'où venaient les bons leads.",
+    solution: "Landing dédiée + tracking pixel/serveur + CRM intégré + Meta Ads pilotés en temps réel. Tout livré par la même équipe en 4 semaines.",
+    kpis: [
+      { value: '10 CHF', label: 'CPL stable depuis 6 mois' },
+      { value: '48h', label: 'délai de livraison page' },
+      { value: '100%', label: 'des leads dans le CRM' },
+    ],
+    quote: "Landing livrée en 48h, Meta Ads en ligne le surlendemain. CPL stable à 10 CHF et je vois tout en temps réel. Je recommande les yeux fermés.",
+    author: 'Louis · Fondateur · TRADEAUTO.CH',
+  },
+];
 
-          {/* TESTIMONIAL */}
-          <div style={{
-            padding: isMobile ? '28px 24px' : '36px 36px',
-            borderRadius: 18,
-            background: 'linear-gradient(180deg, #1A1033 0%, #0A0A0A 100%)',
-            border: '1px solid rgba(139,92,246,.30)',
-            color: '#fff',
-            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-            position: 'relative', overflow: 'hidden',
-            boxShadow: '0 30px 80px -28px rgba(124,58,237,.45)',
-          }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 80% 0%, rgba(139,92,246,.30), transparent 60%)', pointerEvents: 'none' }}></div>
-            <div style={{ position: 'relative' }}>
-              <div style={{ fontFamily: 'Georgia, serif', fontSize: 64, lineHeight: 0.6, color: '#C4B5FD', opacity: 0.7 }}>"</div>
-              <p style={{
-                fontFamily: 'Georgia, serif', fontStyle: 'italic',
-                fontSize: isMobile ? 18 : 22, lineHeight: 1.45,
-                color: 'rgba(255,255,255,.95)', marginTop: 4,
-              }}>
-                Site, CRM, dashboard, Meta + Google Ads — tout livré par la même équipe en 4 semaines. Aujourd'hui le coût par lead est stable à 10 CHF et je vois tout en temps réel. Je recommande les yeux fermés.
-              </p>
-            </div>
-            <div style={{ position: 'relative', marginTop: 28, display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #C4B5FD, #6D28D9)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, fontWeight: 600, color: '#fff',
-              }}>
-                L
-              </div>
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 500, letterSpacing: '-0.012em' }}>Louis</div>
-                <div className="mono" style={{ fontSize: 11.5, color: 'rgba(196,181,253,.85)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 2 }}>
-                  Fondateur · TRADEAUTO.CH
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+const LandingCases = React.forwardRef(function LandingCases({ isMobile }, ref) {
+  return (
+    <div ref={ref} id="proof">
+      <KCases
+        isMobile={isMobile}
+        cases={CASES}
+        sectionLabel="05 — Cas clients"
+        heading={<>On s'engage sur des chiffres. <span style={{ color: 'rgba(255,255,255,.5)' }}>Pas sur des promesses.</span></>}
+      />
+    </div>
   );
 });
+
+// ═════════════════════════════════════════════════════════════
+// FAQ — landing-page specific objections
+// ═════════════════════════════════════════════════════════════
+const FAQ_ITEMS = [
+  {
+    q: 'Vraiment 48h ? Comment c\'est possible ?',
+    a: "Méthode rodée, brief dense au jour 0, on bosse en exclusivité sur 1 client à la fois pendant ces 48h. Pas de ping-pong, pas d'attente. C'est la raison pour laquelle on n'accepte qu'un nombre limité de slots par trimestre.",
+  },
+  {
+    q: 'Et si ma landing ne convertit pas ?',
+    a: "On s'engage sur une fourchette de CPL et de leads/mois fixée à l'audit. Si à 90 jours les chiffres ne sont pas atteints, on optimise à nos frais (refonte page, nouvelles creatives ads, A/B tests) jusqu'à y être.",
+  },
+  {
+    q: 'Vous gérez les ads en plus ? Quel budget Meta minimum ?',
+    a: "Oui, tout est bundlé : page + tracking + Meta Ads + reporting hebdo. Budget Meta minimum recommandé : CHF 1500 par mois. En dessous, les algorithmes Meta n'ont pas assez de signal pour optimiser correctement.",
+  },
+  {
+    q: 'Hébergement, domaine, mails — qui s\'en occupe ?',
+    a: "Tout pris en main de A à Z. Vous n'ouvrez aucun compte technique. La page est hébergée sur infrastructure Suisse (rapide, RGPD-compliant), les leads arrivent dans votre CRM (le nôtre ou le vôtre selon votre setup).",
+  },
+  {
+    q: 'Pourquoi pas faire ça moi-même avec Webflow ou Wix ?',
+    a: "Le visuel ne suffit pas. La structure d'une page qui convertit (ordre des sections, copywriting, hiérarchie d'information) ne se devine pas. Surtout, la tuyauterie ads → tracking serveur → CRM est invisible mais critique : sans elle, vous payez Meta à l'aveugle.",
+  },
+  {
+    q: 'Vous travaillez avec quels secteurs ?',
+    a: "Romandie principalement : dentaire, immobilier, automobile, restauration, services aux pros (avocats, comptables, conseillers). Si on ne connaît pas votre vertical, on dit non — pas de bricolage.",
+  },
+];
+
+function LandingFAQ({ isMobile }) {
+  return <KFAQ isMobile={isMobile} items={FAQ_ITEMS} sectionNumber="06" />;
+}
 
 // ═════════════════════════════════════════════════════════════
 // DIFFERENTIATORS + FINAL CTA
@@ -810,18 +791,18 @@ function LandingFinalCTA({ isMobile, onScrollToForm }) {
   const reasons = [
     {
       n: '01',
-      t: 'Build + Ads sous un seul toit',
-      d: "Une seule équipe, un seul reporting, un seul fil. Plus de ping-pong entre 2 prestas qui se renvoient la balle.",
+      t: 'Livré en 48h, garanti',
+      d: "Si on ne tient pas le délai, le mois d'ads est offert. Notre méthode est calibrée pour ça : 1 client à la fois, brief dense, zéro ping-pong.",
     },
     {
       n: '02',
       t: 'Engagement chiffré, pas de promesse',
-      d: "On commit sur des fourchettes à l'audit. Si les objectifs ne sont pas atteints à 90 jours, on ajuste à nos frais.",
+      d: "Fourchette CPL + nombre de leads/mois fixée à l'audit. Pas atteint à 90 jours ? On optimise à nos frais jusqu'à y être.",
     },
     {
       n: '03',
-      t: 'Refus si pas le bon fit',
-      d: "On ne signe pas pour signer. Pas le bon match ? On vous renvoie vers une agence mieux placée. Pas de gaspillage.",
+      t: 'Page + ads + CRM en une seule équipe',
+      d: "Une seule équipe, un seul fil, une seule facture. Plus de ping-pong entre 2 prestas qui se renvoient la balle.",
     },
   ];
   const pad = isMobile ? '72px 20px 80px' : '120px 120px';
@@ -831,7 +812,7 @@ function LandingFinalCTA({ isMobile, onScrollToForm }) {
         <div style={{ textAlign: 'center' }}>
           <span className="k-eyebrow" style={{ background: 'rgba(255,255,255,.55)' }}>
             <span className="k-eyebrow-dot"></span>
-            T2 2026 · 2 places restantes
+            07 — Q2 2026 · 2 places restantes
           </span>
         </div>
         <h2 style={{
@@ -841,6 +822,13 @@ function LandingFinalCTA({ isMobile, onScrollToForm }) {
         }}>
           On regarde votre cas ensemble. <em style={{ background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'normal' }}>30 minutes. Honnête.</em>
         </h2>
+        <p style={{
+          fontSize: isMobile ? 15 : 17, color: 'rgba(31,27,46,.72)',
+          marginTop: 18, lineHeight: 1.55, textAlign: 'center',
+          maxWidth: 620, marginLeft: 'auto', marginRight: 'auto',
+        }}>
+          Si on accepte votre projet, votre landing est livrée 48h après. Si on refuse, on vous oriente vers la bonne agence — pas de gaspillage.
+        </p>
 
         <div style={{
           display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
@@ -916,16 +904,19 @@ export default function LandingPage({ variant = 'desktop' }) {
     <div className="kairn">
       <LandingNav />
       <LandingHero isMobile={isMobile} onScrollToForm={scrollToForm} onScrollToProof={scrollToProof} />
-      <LandingLogos isMobile={isMobile} />
+      <KLogos isMobile={isMobile} />
+      <LandingProcess48h isMobile={isMobile} />
       <LandingBeforeAfter isMobile={isMobile} />
       <LandingForm ref={formRef} isMobile={isMobile} />
-      <LandingSocialProof ref={proofRef} isMobile={isMobile} />
+      <LandingSpline isMobile={isMobile} onScrollToForm={scrollToForm} onScrollToProof={scrollToProof} />
+      <LandingCases ref={proofRef} isMobile={isMobile} />
+      <LandingFAQ isMobile={isMobile} />
       <LandingFinalCTA isMobile={isMobile} onScrollToForm={scrollToForm} />
       <LandingFooter />
       {isMobile && (
         <div style={{ position: 'sticky', bottom: 0, padding: '0 0 12px', pointerEvents: 'none', zIndex: 30 }}>
           <button onClick={scrollToForm} className="k-mob-cta" style={{ pointerEvents: 'auto', border: 'none', cursor: 'pointer', width: 'calc(100% - 24px)', margin: '0 12px' }}>
-            <span style={{ fontSize: 14, fontWeight: 500 }}>Mon plan en 60 secondes.</span>
+            <span style={{ fontSize: 14, fontWeight: 500 }}>Ma landing en 48h.</span>
             <span style={{ fontSize: 13, color: '#C4B5FD', fontWeight: 500 }}>Commencer →</span>
           </button>
         </div>

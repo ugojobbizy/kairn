@@ -42,9 +42,9 @@ export function KMetrics({ isMobile, metrics }) {
 // ═════════════════════════════════════════════════════════════
 // PROCESS — spatial 3D timeline
 // ═════════════════════════════════════════════════════════════
-export function KProcess({ isMobile, steps }) {
+export function KProcess({ isMobile, steps, kpis: kpisProp, sectionLabel = '04 — Processus', heading, subheading }) {
   const pad = isMobile ? '60px 20px 80px' : '120px 120px 140px';
-  const kpis = ['48h', '2–4 sem', 'J-Day', 'hebdo'];
+  const kpis = kpisProp || ['48h', '2–4 sem', 'J-Day', 'hebdo'];
   return (
     <section style={{ padding: pad, background: 'linear-gradient(180deg, #F5F3FF 0%, #FAFAFA 60%, #F5F3FF 100%)', position: 'relative', overflow: 'hidden' }}>
       {!isMobile && <div className="k-proc-gridfloor"></div>}
@@ -54,14 +54,14 @@ export function KProcess({ isMobile, steps }) {
           <div>
             <div className="k-section-label">
               <span className="k-section-label-sq"></span>
-              04 — Processus
+              {sectionLabel}
             </div>
             <h2 style={{ fontSize: isMobile ? 36 : 64, marginTop: 20, letterSpacing: '-0.035em', maxWidth: 780, lineHeight: 1.02 }}>
-              Quatre étapes. <span style={{ color: 'var(--muted)' }}>Rien de plus.</span>
+              {heading || (<>Quatre étapes. <span style={{ color: 'var(--muted)' }}>Rien de plus.</span></>)}
             </h2>
           </div>
           <p style={{ color: 'var(--muted)', fontSize: 15, maxWidth: 340, lineHeight: 1.55 }}>
-            On refuse les projets qui n'entrent pas dans ce cadre. C'est ce qui permet de tenir les délais.
+            {subheading || "On refuse les projets qui n'entrent pas dans ce cadre. C'est ce qui permet de tenir les délais."}
           </p>
         </div>
 
@@ -133,7 +133,7 @@ export function KProcess({ isMobile, steps }) {
 // ═════════════════════════════════════════════════════════════
 // SPLINE — 3D sphere
 // ═════════════════════════════════════════════════════════════
-export function KSpline({ isMobile }) {
+export function KSpline({ isMobile, sectionLabel = '05 — Execution', title, body, ctas }) {
   const pad = isMobile ? '64px 20px 72px' : '140px 120px 160px';
   const sphereSize = isMobile ? 260 : 440;
 
@@ -188,25 +188,25 @@ export function KSpline({ isMobile }) {
         <div style={{ position: 'relative' }}>
           <div className="k-section-label" style={{ background: 'rgba(255,255,255,.08)', borderColor: 'rgba(196,181,253,.25)', color: '#fff' }}>
             <span className="k-section-label-sq"></span>
-            05 — Execution
+            {sectionLabel}
           </div>
           <h2 style={{ fontSize: isMobile ? 34 : 64, marginTop: 20, letterSpacing: '-0.035em', lineHeight: 1.02 }}>
-            La performance<br />
-            <span style={{ color: 'rgba(255,255,255,.55)' }}>n’attend pas.</span><br />
-            Nous non plus.
+            {title || (<>La performance<br /><span style={{ color: 'rgba(255,255,255,.55)' }}>n’attend pas.</span><br />Nous non plus.</>)}
           </h2>
           <p style={{ color: 'rgba(255,255,255,.65)', fontSize: 16, marginTop: 24, maxWidth: 440, lineHeight: 1.6 }}>
-            Notre vitesse d’exécution vient d’une règle simple&nbsp;: on ne commence que ce qu’on peut finir en moins de 30 jours. Les projets plus longs sont découpés, pas étalés.
+            {body || "Notre vitesse d’exécution vient d’une règle simple : on ne commence que ce qu’on peut finir en moins de 30 jours. Les projets plus longs sont découpés, pas étalés."}
           </p>
-          <div style={{ display: 'flex', gap: 12, marginTop: 32, flexWrap: 'wrap' }}>
-            <button className="k-cta k-cta-violet">
-              Voir nos dernières livraisons
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </button>
-            <button className="k-cta" style={{ background: 'rgba(255,255,255,.08)', color: '#fff', border: '1px solid rgba(255,255,255,.14)' }}>
-              Parler au fondateur
-            </button>
-          </div>
+          {ctas || (
+            <div style={{ display: 'flex', gap: 12, marginTop: 32, flexWrap: 'wrap' }}>
+              <button className="k-cta k-cta-violet">
+                Voir nos dernières livraisons
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+              <button className="k-cta" style={{ background: 'rgba(255,255,255,.08)', color: '#fff', border: '1px solid rgba(255,255,255,.14)' }}>
+                Parler au fondateur
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>

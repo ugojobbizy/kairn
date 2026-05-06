@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { KairnMark } from './sections-1.jsx';
-import { KProcess } from './sections-2.jsx';
-import { KCases, KFinalCTA, KLogos } from './sections-3.jsx';
+import { KProcess, KSpline } from './sections-2.jsx';
+import { KLogos, KCases, KFAQ } from './sections-3.jsx';
 import { BOOKING_URL, CONTACT_EMAIL } from './config.js';
 import { supabase, isSupabaseConfigured } from './lib/supabase.js';
 
@@ -16,7 +16,7 @@ function useNoIndex() {
     meta.content = 'noindex,nofollow';
     document.head.appendChild(meta);
     const prevTitle = document.title;
-    document.title = 'Kairn — Landing page + Ads tout-en-un · Romandie';
+    document.title = 'Kairn — Plus de RDV grâce à Facebook · Mise en ligne en 48h';
     return () => {
       document.head.removeChild(meta);
       document.title = prevTitle;
@@ -62,62 +62,45 @@ function LandingNav() {
 }
 
 // ═════════════════════════════════════════════════════════════
-// HERO — mental image + scarcity
+// HERO — landing page specialist · 48h promise · Romandie
 // ═════════════════════════════════════════════════════════════
-function LandingHero({ isMobile, onScrollToOffer, onScrollToProof }) {
+function LandingHero({ isMobile, onScrollToForm, onScrollToProof }) {
   return (
     <section className="k-hero k-hero-bg" style={{ position: 'relative', paddingBottom: isMobile ? 48 : 96 }}>
       <div className="k-hero-blob" style={{ width: 460, height: 460, background: '#C4B5FD', top: -120, left: '14%' }}></div>
       <div className="k-hero-blob" style={{ width: 540, height: 540, background: '#8B5CF6', top: -80, right: '8%', opacity: .26, animationDelay: '-6s' }}></div>
 
       <div style={{ textAlign: 'center', paddingTop: isMobile ? 36 : 72, position: 'relative' }}>
-        <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: 10,
-          padding: '7px 16px 7px 12px', borderRadius: 999,
-          background: 'rgba(255,255,255,.65)', backdropFilter: 'blur(14px)',
-          WebkitBackdropFilter: 'blur(14px)',
-          border: '1px solid rgba(196,181,253,.4)',
-          boxShadow: '0 1px 0 rgba(255,255,255,.8) inset, 0 14px 30px -16px rgba(124,58,237,.30)',
-        }}>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--violet)', boxShadow: '0 0 10px rgba(139,92,246,.7)' }} />
-          <span className="mono" style={{ fontSize: 11, color: 'var(--violet-deep)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 500 }}>
-            Landing Page + Ads · Tout-en-un · Romandie
-          </span>
+        <span className="k-eyebrow">
+          <span className="k-eyebrow-dot"></span>
+          Plus de RDV. Sans rien comprendre à la pub en ligne.
         </span>
       </div>
 
-      <h1 className="k-hero-headline" style={{
-        fontSize: isMobile ? 44 : 104, marginTop: isMobile ? 24 : 38,
-        textAlign: 'center', maxWidth: 1180, marginLeft: 'auto', marginRight: 'auto',
-        letterSpacing: '-0.05em', lineHeight: 0.94, fontWeight: 500,
-      }}>
-        Plus de RDV qualifiés<br />
-        <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-          chaque semaine,
-        </span><br />
-        sans gérer vos ads.
+      <h1 className="k-hero-headline" style={{ fontSize: isMobile ? 40 : 84, marginTop: isMobile ? 22 : 32, textAlign: 'center', maxWidth: 1100, marginLeft: 'auto', marginRight: 'auto' }}>
+        On vous fabrique une page web qui prend des RDV à votre place. <em>En 48h.</em>
       </h1>
 
-      <p className="k-hero-sub" style={{ fontSize: isMobile ? 17 : 21, marginTop: isMobile ? 24 : 32, textAlign: 'center', maxWidth: 760, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.55, color: 'rgba(31,27,46,.72)', fontWeight: 400 }}>
-        On crée votre landing page, on lance vos campagnes Meta &amp; Google, on les optimise chaque semaine. <span style={{ color: 'var(--ink)', fontWeight: 500 }}>Mise en ligne sous 7 jours, premier RDV qualifié sous 14.</span>
+      <p className="k-hero-sub" style={{ fontSize: isMobile ? 16 : 19, marginTop: isMobile ? 20 : 28, textAlign: 'center', maxWidth: 760, marginLeft: 'auto', marginRight: 'auto' }}>
+        On crée une page simple où vos clients laissent leurs coordonnées. On lance des publicités Facebook et Instagram qui amènent du monde dessus. Vous recevez les demandes de RDV directement dans votre boîte mail.
       </p>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: isMobile ? 28 : 36, flexWrap: 'wrap', padding: '0 20px' }}>
-        <button onClick={onScrollToOffer} className="k-cta" style={{
+        <button onClick={onScrollToForm} className="k-cta" style={{
           padding: isMobile ? '14px 22px' : '16px 26px',
           fontSize: isMobile ? 15 : 16,
           background: 'linear-gradient(180deg, #9B6FFB 0%, #7C3AED 100%)',
           color: '#fff', border: 'none', cursor: 'pointer',
           boxShadow: '0 14px 36px -10px rgba(124,58,237,.55)',
         }}>
-          Voir l'offre tout-en-un
+          Voir si c'est pour moi (60 secondes)
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         <button onClick={onScrollToProof} className="k-cta k-cta-ghost" style={{
           padding: isMobile ? '14px 18px' : '16px 22px',
           fontSize: isMobile ? 14.5 : 15, cursor: 'pointer', background: 'transparent',
         }}>
-          Voir des résultats
+          Voir des exemples concrets
         </button>
       </div>
 
@@ -126,9 +109,9 @@ function LandingHero({ isMobile, onScrollToOffer, onScrollToProof }) {
         flexWrap: 'wrap', textAlign: 'center', padding: '0 20px',
       }}>
         {[
-          { v: '12+', l: 'projets livrés' },
-          { v: '−38%', l: 'CPL moyen' },
-          { v: '7 jours', l: 'mise en ligne' },
+          { v: '48h', l: 'votre page en ligne' },
+          { v: '7 jours', l: 'vos premières demandes' },
+          { v: '1 sur 12', l: 'visiteurs qui prennent contact' },
         ].map((m, i) => (
           <React.Fragment key={m.l}>
             <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: 8 }}>
@@ -139,274 +122,50 @@ function LandingHero({ isMobile, onScrollToOffer, onScrollToProof }) {
           </React.Fragment>
         ))}
       </div>
+
     </section>
   );
 }
 
 // ═════════════════════════════════════════════════════════════
-// OFFER — single all-in-one bundle, transparent pricing
+// PROCESS 48H — premium 3D spatial timeline (uses shared KProcess)
 // ═════════════════════════════════════════════════════════════
-const LandingOffer = React.forwardRef(function LandingOffer({ isMobile, onScrollToForm }, ref) {
-  const deliverables = [
-    {
-      t: 'Landing page sur-mesure',
-      d: 'Design + dev, hébergée et tracked, livrée en 7 jours.',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.6" />
-          <path d="M3 9 H21" stroke="currentColor" strokeWidth="1.6" />
-          <circle cx="6" cy="6.5" r="0.7" fill="currentColor" />
-          <circle cx="8.5" cy="6.5" r="0.7" fill="currentColor" />
-          <path d="M7 13 H13 M7 16 H17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-      ),
-    },
-    {
-      t: 'Setup complet Meta & Google Ads',
-      d: 'Pixel serveur, audiences, créas, campagnes calibrées.',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M4 12 L11 12 L18 5 V19 L11 12" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-          <path d="M4 9 H4.01 M4 15 H4.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          <circle cx="20" cy="12" r="1.4" fill="currentColor" />
-        </svg>
-      ),
-    },
-    {
-      t: 'Gestion mensuelle des ads',
-      d: 'A/B continu, optim hebdo, reporting tous les lundis.',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M12 3 V5 M12 19 V21 M21 12 H19 M5 12 H3 M18.4 5.6 L17 7 M7 17 L5.6 18.4 M18.4 18.4 L17 17 M7 7 L5.6 5.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          <circle cx="12" cy="12" r="3.4" stroke="currentColor" strokeWidth="1.6" />
-        </svg>
-      ),
-    },
-    {
-      t: 'Dashboard client live',
-      d: 'Vos leads et perfs en temps réel, accessibles 24/7.',
-      icon: (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.6" />
-          <path d="M7 14 V11 M11 14 V8 M15 14 V12 M19 14 V9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          <path d="M9 21 H15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-          <path d="M12 18 V21" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-      ),
-    },
-  ];
-
-  const pad = isMobile ? '64px 20px' : '110px 120px';
-
-  return (
-    <section ref={ref} id="offer" style={{ padding: pad, background: 'var(--bg)', position: 'relative' }}>
-      <div className="k-hero-blob" style={{ width: 380, height: 380, background: '#C4B5FD', top: -60, right: '6%', opacity: .22 }}></div>
-      <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
-        <div style={{ textAlign: 'center' }}>
-          <span className="k-section-label" style={{ display: 'inline-flex' }}>
-            <span className="k-section-label-sq"></span>
-            01 — L'offre
-          </span>
-        </div>
-        <h2 style={{
-          fontSize: isMobile ? 36 : 60, marginTop: 18,
-          letterSpacing: '-0.04em', lineHeight: 1.02,
-          textAlign: 'center', maxWidth: 880, margin: '18px auto 0', fontWeight: 500,
-        }}>
-          Une seule offre.{' '}
-          <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-            Tout-en-un.
-          </span>{' '}
-          Accessible.
-        </h2>
-        <p style={{
-          fontSize: isMobile ? 16 : 18, marginTop: 18, textAlign: 'center',
-          maxWidth: 640, margin: '18px auto 0', lineHeight: 1.55,
-          color: 'rgba(31,27,46,.72)',
-        }}>
-          Pas de devis sur 14 pages. Pas de prestataires multiples. Une équipe, un livrable, un prix clair.
-        </p>
-
-        {/* Pricing card */}
-        <div style={{
-          marginTop: isMobile ? 36 : 56,
-          maxWidth: 880, marginLeft: 'auto', marginRight: 'auto',
-          background: '#fff',
-          border: '1px solid var(--line-2)',
-          borderRadius: 22,
-          boxShadow: '0 30px 80px -32px rgba(124,58,237,.28), 0 1px 0 rgba(255,255,255,.8) inset',
-          overflow: 'hidden',
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-        }}>
-          {/* Setup */}
-          <div style={{
-            padding: isMobile ? '28px 24px' : '38px 40px',
-            borderRight: isMobile ? 'none' : '1px solid var(--line-2)',
-            borderBottom: isMobile ? '1px solid var(--line-2)' : 'none',
-          }}>
-            <div className="mono" style={{ fontSize: 11.5, letterSpacing: '0.18em', color: 'var(--violet-deep)', textTransform: 'uppercase', fontWeight: 500 }}>
-              Lancement
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 14 }}>
-              <span style={{ fontSize: 13, color: 'var(--muted)', fontWeight: 500 }}>dès</span>
-              <span style={{ fontSize: isMobile ? 36 : 44, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--ink)' }}>CHF 1'490</span>
-            </div>
-            <div style={{ marginTop: 10, fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.5 }}>
-              Facturation one-shot — landing page livrée et campagnes lancées.
-            </div>
-          </div>
-          {/* Monthly */}
-          <div style={{
-            padding: isMobile ? '28px 24px' : '38px 40px',
-            background: 'linear-gradient(180deg, #FAF8FF 0%, #F5F3FF 100%)',
-          }}>
-            <div className="mono" style={{ fontSize: 11.5, letterSpacing: '0.18em', color: 'var(--violet-deep)', textTransform: 'uppercase', fontWeight: 500 }}>
-              Pilotage
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 14 }}>
-              <span style={{ fontSize: 13, color: 'var(--muted)', fontWeight: 500 }}>dès</span>
-              <span style={{ fontSize: isMobile ? 36 : 44, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--ink)' }}>CHF 390</span>
-              <span style={{ fontSize: 16, color: 'var(--muted)', fontWeight: 500 }}>/mois</span>
-            </div>
-            <div style={{ marginTop: 10, fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.5 }}>
-              Sans engagement après 90 jours — gestion + reporting hebdo.
-            </div>
-          </div>
-        </div>
-
-        {/* Deliverables grid */}
-        <div style={{
-          marginTop: isMobile ? 36 : 48,
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-          gap: isMobile ? 14 : 18,
-          maxWidth: 880, marginLeft: 'auto', marginRight: 'auto',
-        }}>
-          {deliverables.map((d) => (
-            <div key={d.t} style={{
-              padding: isMobile ? '20px 22px' : '24px 26px',
-              background: '#fff',
-              border: '1px solid var(--line-2)',
-              borderRadius: 16,
-              display: 'flex', gap: 16, alignItems: 'flex-start',
-            }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 10,
-                background: 'linear-gradient(180deg, #F5F3FF 0%, #EDE9FE 100%)',
-                color: 'var(--violet-deep)',
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
-                boxShadow: '0 1px 0 rgba(255,255,255,.8) inset',
-              }}>
-                {d.icon}
-              </div>
-              <div>
-                <div style={{ fontSize: 15.5, fontWeight: 500, color: 'var(--ink)', letterSpacing: '-0.012em' }}>
-                  {d.t}
-                </div>
-                <div style={{ fontSize: 13.5, color: 'var(--muted)', marginTop: 4, lineHeight: 1.5 }}>
-                  {d.d}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Trust strip */}
-        <div className="mono" style={{
-          marginTop: isMobile ? 28 : 36,
-          fontSize: 11, color: 'var(--muted)', letterSpacing: '0.16em', textTransform: 'uppercase',
-          textAlign: 'center', display: 'flex', flexWrap: 'wrap', justifyContent: 'center',
-          gap: '6px 14px',
-        }}>
-          <span>Mise en ligne 7 jours</span>
-          <span style={{ color: 'var(--lav)' }}>·</span>
-          <span>Sans lock-in</span>
-          <span style={{ color: 'var(--lav)' }}>·</span>
-          <span>100% propriétaire des assets</span>
-          <span style={{ color: 'var(--lav)' }}>·</span>
-          <span>nLPD &amp; RGPD</span>
-        </div>
-
-        {/* CTA */}
-        <div style={{ marginTop: isMobile ? 28 : 36, display: 'flex', justifyContent: 'center' }}>
-          <button onClick={onScrollToForm} className="k-cta" style={{
-            padding: isMobile ? '14px 22px' : '16px 28px',
-            fontSize: isMobile ? 15 : 16,
-            background: 'linear-gradient(180deg, #9B6FFB 0%, #7C3AED 100%)',
-            color: '#fff', border: 'none', cursor: 'pointer',
-            boxShadow: '0 14px 36px -10px rgba(124,58,237,.55)',
-          }}>
-            Démarrer mon projet
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-});
-
-// ═════════════════════════════════════════════════════════════
-// LOGO STRIP — quick social proof
-// ═════════════════════════════════════════════════════════════
-function LandingLogos({ isMobile }) {
-  const brands = [
-    { name: 'TradeAuto', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 12 L4 8 C4.2 7.2 4.8 7 5.5 7 H14.5 C15.2 7 15.8 7.2 16 8 L17 12 V14 H15 V13 H5 V14 H3 Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><circle cx="6.5" cy="13.5" r="1.2" fill="currentColor" /><circle cx="13.5" cy="13.5" r="1.2" fill="currentColor" /></svg>) },
-    { name: 'Rénovia', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10 L10 4 L17 10 V16 H12 V12 H8 V16 H3 Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg>) },
-    { name: 'MadameLaGouvernante', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3 L10 17 M5 6 L15 6 M6 10 L14 10 M7 14 L13 14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>) },
-    { name: 'Cabinet Véran', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 17 V8 L10 3 L16 8 V17" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><path d="M8 17 V12 H12 V17" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><circle cx="10" cy="8.5" r="1" fill="currentColor" /></svg>) },
-    { name: 'BistroNomie', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 9 C4 6 6.5 4 10 4 C13.5 4 16 6 16 9 C16 10 15.5 10.5 14.5 10.5 H5.5 C4.5 10.5 4 10 4 9 Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><path d="M10 10.5 V16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /><path d="M6 16 H14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>) },
-    { name: 'Lumibat', logo: (<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" fill="currentColor" /><path d="M10 2 V5 M10 15 V18 M2 10 H5 M15 10 H18 M4.5 4.5 L6.5 6.5 M13.5 13.5 L15.5 15.5 M4.5 15.5 L6.5 13.5 M13.5 6.5 L15.5 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>) },
+function LandingProcess48h({ isMobile }) {
+  const steps = [
+    { n: '01', t: 'On parle 30 minutes', d: "On comprend votre métier, qui sont vos clients idéaux et ce que vous voulez vendre. Pas de jargon, pas de blabla." },
+    { n: '02', t: 'Page mise en ligne', d: "On vous montre une maquette en 24h. Validée ? Le surlendemain votre page est en ligne, prête à recevoir des visiteurs." },
+    { n: '03', t: 'Pubs lancées', d: "On crée vos publicités Facebook et Instagram. Elles tournent dès le 3e jour avec le budget que vous avez choisi." },
+    { n: '04', t: 'Premiers RDV', d: "Les demandes de RDV tombent dans votre boîte mail. Vous rappelez ceux qui vous intéressent. Chaque lundi, on vous envoie un récap clair." },
   ];
   return (
-    <section style={{
-      padding: isMobile ? '32px 20px 28px' : '48px 120px 36px',
-      borderTop: '1px solid var(--line-2)',
-      borderBottom: '1px solid var(--line-2)',
-      background: '#fff',
-    }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div className="mono" style={{
-          fontSize: 11.5, color: 'var(--muted)', letterSpacing: '0.18em', textTransform: 'uppercase',
-          textAlign: 'center', marginBottom: 22,
-        }}>
-          Ils nous font confiance pour piloter leurs leads
-        </div>
-        <div style={{
-          display: 'flex', justifyContent: 'space-around', alignItems: 'center',
-          gap: isMobile ? 18 : 32, flexWrap: 'wrap', color: 'var(--ink-soft)',
-          opacity: 0.78,
-        }}>
-          {brands.map((b) => (
-            <div key={b.name} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontSize: 14.5, fontWeight: 500, letterSpacing: '-0.012em' }}>
-              {b.logo}
-              <span>{b.name}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+    <KProcess
+      isMobile={isMobile}
+      steps={steps}
+      kpis={['30 min', '48h', 'J+3', 'chaque lundi']}
+      sectionLabel="01 — Comment ça marche"
+      heading={<>Quatre étapes. <span style={{ color: 'var(--muted)' }}>C'est tout.</span></>}
+      subheading="Pas de jargon, pas de réunions interminables. Vous nous donnez 30 minutes au début, et on s'occupe absolument de tout le reste."
+    />
   );
 }
 
 // ═════════════════════════════════════════════════════════════
-// BEFORE / AFTER — vivid contrast for System 1
+// BEFORE / AFTER — landing page contrast
 // ═════════════════════════════════════════════════════════════
 function LandingBeforeAfter({ isMobile }) {
   const before = [
-    '2 prestataires : un pour le site, un pour les ads',
-    'Délai de 6 à 8 semaines avant la mise en ligne',
-    'Coûts cachés et factures qui s\'empilent à chaque révision',
-    'Pages qui convertissent 1-2% (vous laissez 80% sur la table)',
-    'Reporting flou ou inexistant, zéro visibilité sur le ROI',
+    "Votre site essaie de tout dire à tout le monde — résultat, personne ne se sent concerné",
+    "Les visiteurs regardent votre site, mais personne ne décroche le téléphone",
+    "Les demandes arrivent partout : mail, WhatsApp, formulaire... vous en perdez régulièrement",
+    "Vous payez Facebook et Instagram, mais impossible de savoir si ça vous rapporte vraiment",
+    "Le formulaire de contact est trop long — la moitié des gens abandonne en route",
   ];
   const after = [
-    'Une seule équipe, un seul livrable, un seul interlocuteur',
-    'En ligne sous 7 jours, premiers RDV qualifiés sous 14',
-    'Prix clair : dès CHF 1\'490 setup + 390/mois pilotage',
-    'Pages qui convertissent au-delà de 8% (tracking serveur)',
-    'Dashboard live + reporting détaillé chaque lundi',
+    "Une page dédiée qui parle directement à vos clients idéaux",
+    "Un formulaire ultra-court (60 secondes) que les gens remplissent vraiment",
+    "Toutes vos demandes au même endroit, dans votre boîte mail (et un récap chaque lundi)",
+    "Vous voyez exactement combien chaque demande de RDV vous coûte en pub",
+    "Chaque semaine, on ajuste pour que ça vous coûte moins cher et rapporte plus",
   ];
   const pad = isMobile ? '64px 20px' : '110px 120px';
   return (
@@ -421,7 +180,7 @@ function LandingBeforeAfter({ isMobile }) {
           letterSpacing: '-0.035em', lineHeight: 1.04,
           textAlign: 'center', maxWidth: 880, margin: '18px auto 0',
         }}>
-          La différence entre <span style={{ color: 'var(--muted)' }}>"morcelé"</span> et <em style={{ background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'normal' }}>"intégré"</em>.
+          Aujourd'hui <span style={{ color: 'var(--muted)' }}>vs</span> <em style={{ background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'normal' }}>avec une page bien faite.</em>
         </h2>
 
         <div style={{
@@ -437,10 +196,10 @@ function LandingBeforeAfter({ isMobile }) {
             opacity: 0.92,
           }}>
             <div className="mono" style={{ fontSize: 11.5, letterSpacing: '0.18em', color: 'var(--muted)', textTransform: 'uppercase' }}>
-              Sans Kairn
+              Aujourd'hui
             </div>
             <h3 style={{ fontSize: 24, fontWeight: 500, marginTop: 10, letterSpacing: '-0.02em', color: 'var(--ink-soft)' }}>
-              L'acquisition au feeling
+              Vous payez la pub, mais le téléphone ne sonne pas
             </h3>
             <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
               {before.map((t) => (
@@ -468,10 +227,10 @@ function LandingBeforeAfter({ isMobile }) {
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 80% 0%, rgba(139,92,246,.30), transparent 60%)', pointerEvents: 'none' }}></div>
             <div style={{ position: 'relative' }}>
               <div className="mono" style={{ fontSize: 11.5, letterSpacing: '0.18em', color: '#C4B5FD', textTransform: 'uppercase' }}>
-                Avec Kairn
+                Avec une page Kairn
               </div>
               <h3 style={{ fontSize: 24, fontWeight: 500, marginTop: 10, letterSpacing: '-0.02em', color: '#fff' }}>
-                La machine qui tourne
+                Les demandes de RDV arrivent toutes seules
               </h3>
               <ul style={{ listStyle: 'none', padding: 0, margin: '20px 0 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {after.map((t) => (
@@ -504,10 +263,10 @@ const SECTORS = [
   { v: 'autre', l: 'Autre' },
 ];
 const GOALS = [
-  { v: 'leads', l: 'Plus de leads qualifiés' },
-  { v: 'refonte', l: 'Refonte du site / funnel' },
-  { v: 'ads', l: 'Lancer Meta Ads' },
-  { v: 'automation', l: 'Automatiser mes ventes' },
+  { v: 'new_landing', l: "Je veux plus de RDV (je n'ai rien aujourd'hui)" },
+  { v: 'fix_landing', l: "J'ai un site, mais personne ne me contacte" },
+  { v: 'scale_ads', l: "Je fais déjà des pubs, mais ça me coûte trop cher" },
+  { v: 'explore', l: "Je découvre, je veux comprendre comment ça marche" },
 ];
 const BUDGETS = [
   { v: 'none', l: "Pas encore d'ads" },
@@ -540,7 +299,6 @@ function buildCalendlyUrl(data) {
   const url = new URL(BOOKING_URL);
   if (data.first_name) url.searchParams.set('name', data.first_name);
   if (data.email) url.searchParams.set('email', data.email);
-  // Calendly custom questions: a1, a2, a3...
   const summary = `${SECTOR_LABEL[data.sector] || ''} · Objectif: ${GOAL_LABEL[data.goal] || ''} · Budget: ${BUDGET_LABEL[data.budget] || ''} · Timing: ${TIMING_LABEL[data.timing] || ''}${data.company ? ' · ' + data.company : ''}${data.phone ? ' · ' + data.phone : ''}`;
   url.searchParams.set('a1', summary);
   return url.toString();
@@ -620,7 +378,7 @@ function ProgressBar({ step, total }) {
   );
 }
 
-const LANDING_FORM_KEY = 'kairn_landing2_form_v1';
+const LANDING_FORM_KEY = 'kairn_landing3_form_v1';
 
 const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
   const [step, setStep] = useState(1);
@@ -659,8 +417,8 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
   const submit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!data.first_name || !data.email || !data.phone) {
-      setError('Prénom, email et téléphone sont requis.');
+    if (!data.first_name || !data.email) {
+      setError('Prénom et email sont requis.');
       return;
     }
     setSubmitting(true);
@@ -685,7 +443,6 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
         const { error: insertErr } = await supabase.from('leads').insert(payload);
         if (insertErr) throw insertErr;
       }
-      // Meta Pixel (conditional, no-op if not loaded)
       if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
         try { window.fbq('track', 'Lead'); } catch (_) {}
       }
@@ -746,7 +503,7 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
                 Réserver mon RDV de 30 min
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </a>
-              <a className="k-cta k-cta-ghost" href={`mailto:${CONTACT_EMAIL}?subject=Suite%20de%20ma%20demande%20landing`} style={{ padding: '16px 22px', fontSize: 15 }}>
+              <a className="k-cta k-cta-ghost" href={`mailto:${CONTACT_EMAIL}?subject=Suite%20de%20ma%20demande%20Kairn`} style={{ padding: '16px 22px', fontSize: 15 }}>
                 Préférer un email
               </a>
             </div>
@@ -799,10 +556,10 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
 
           {step === 2 && (
             <div>
-              <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.015em' }}>Quel est votre objectif principal ?</h3>
-              <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 6 }}>Une seule réponse — la plus prioritaire pour vous.</p>
+              <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.015em' }}>Où en êtes-vous aujourd'hui&nbsp;?</h3>
+              <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 6 }}>Choisissez la situation qui vous ressemble le plus.</p>
               <div style={{
-                display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                display: 'grid', gridTemplateColumns: '1fr',
                 gap: 10, marginTop: 18,
               }}>
                 {GOALS.map((g) => (
@@ -816,8 +573,8 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
 
           {step === 3 && (
             <div>
-              <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.015em' }}>Budget mensuel actuel sur Meta&nbsp;Ads ?</h3>
-              <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 6 }}>Une fourchette suffit. Pas de jugement — on s'adapte.</p>
+              <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.015em' }}>Combien pouvez-vous investir par mois en pub Facebook&nbsp;/&nbsp;Instagram ?</h3>
+              <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 6 }}>Une fourchette suffit. Pas de jugement — on s'adapte à votre situation.</p>
               <div style={{
                 display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
                 gap: 10, marginTop: 18,
@@ -834,7 +591,7 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
           {step === 4 && (
             <form onSubmit={submit}>
               <h3 style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.015em' }}>Vos coordonnées</h3>
-              <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 6 }}>Réponse personnelle d'un consultant Kairn sous 24h ouvrées.</p>
+              <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: 6 }}>Réponse personnelle de Moshe sous 24h ouvrées.</p>
               <div style={{
                 display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
                 gap: 14, marginTop: 18,
@@ -842,7 +599,7 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
                 <Input label="Prénom" value={data.first_name} onChange={(v) => set('first_name', v)} required autoComplete="given-name" />
                 <Input label="Entreprise" value={data.company} onChange={(v) => set('company', v)} autoComplete="organization" />
                 <Input label="Email" type="email" value={data.email} onChange={(v) => set('email', v)} required autoComplete="email" />
-                <Input label="Téléphone" type="tel" value={data.phone} onChange={(v) => set('phone', v)} required autoComplete="tel" />
+                <Input label="Téléphone (optionnel)" type="tel" value={data.phone} onChange={(v) => set('phone', v)} autoComplete="tel" />
               </div>
 
               <div style={{ marginTop: 22 }}>
@@ -886,7 +643,7 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
               </button>
 
               <div style={{ marginTop: 16, fontSize: 12.5, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.6 }}>
-                Pas de spam · Réponse personnelle sous 24h · Données hébergées en UE · Conforme nLPD/RGPD
+                Pas de spam · Réponse personnelle sous 24h · Vos données restent en Suisse
               </div>
             </form>
           )}
@@ -922,169 +679,198 @@ const LandingForm = React.forwardRef(function LandingForm({ isMobile }, ref) {
 });
 
 // ═════════════════════════════════════════════════════════════
-// CASES + STEPS data (re-using main-site components KCases, KProcess)
+// SPLINE — DARK section · "the machine never sleeps"
 // ═════════════════════════════════════════════════════════════
-const LANDING_CASES = [
-  {
-    company: { name: 'TradeAuto', logo: '/tradeauto-logo.png' },
-    tags: ['Automobile', 'Suisse', 'Build + Ads'],
-    title: 'Site, CRM et acquisition livrés en 4 semaines',
-    challenge: "Leads dispersés entre formulaires, emails et WhatsApp. Pas de visibilité sur le coût réel d'acquisition ni sur la qualité des sources.",
-    solution: 'Site + CRM + dashboard temps réel + campagnes Meta & Google par la même équipe. Tracking serveur end-to-end, attribution multi-source.',
-    kpis: [
-      { value: '−64%', label: 'CPL · de 27 à 10 CHF' },
-      { value: '86', label: 'leads qualifiés / semaine' },
-      { value: '4 sem.', label: 'du brief au tunnel complet' },
-    ],
-    quote: 'Site, CRM, dashboard, Meta + Google Ads — tout livré par la même équipe en 4 semaines. Je recommande les yeux fermés.',
-    author: 'Louis · Fondateur, TRADEAUTO.CH',
-  },
+function LandingSpline({ isMobile, onScrollToForm, onScrollToProof }) {
+  return (
+    <KSpline
+      isMobile={isMobile}
+      sectionLabel="04 — Pendant que vous dormez"
+      title={(<>Vos pubs tournent.<br /><span style={{ color: 'rgba(255,255,255,.55)' }}>Les RDV arrivent.</span><br />Vous voyez tout.</>)}
+      body="Vos publicités Facebook et Instagram tournent 24h/24. Chaque semaine on les ajuste pour qu'elles vous coûtent moins cher et vous ramènent plus de monde. Chaque lundi vous recevez un email clair : voilà combien ça vous a rapporté."
+      ctas={(
+        <div style={{ display: 'flex', gap: 12, marginTop: 32, flexWrap: 'wrap' }}>
+          <button onClick={onScrollToForm} className="k-cta k-cta-violet" style={{ cursor: 'pointer', border: 'none' }}>
+            Voir si c'est pour moi
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+          <button onClick={onScrollToProof} className="k-cta" style={{ background: 'rgba(255,255,255,.08)', color: '#fff', border: '1px solid rgba(255,255,255,.14)', cursor: 'pointer' }}>
+            Voir un exemple concret
+          </button>
+        </div>
+      )}
+    />
+  );
+}
+
+// ═════════════════════════════════════════════════════════════
+// CASES — premium case studies (uses shared KCases)
+// ═════════════════════════════════════════════════════════════
+const CASES = [
   {
     company: { name: 'Rénovia', logo: '/renovia-logo.svg' },
-    tags: ['Rénovation', 'Lead Gen', 'Funnel & Qualification'],
-    title: 'CPL divisé par 2 avec des dossiers prêts à closer',
-    challenge: 'Leads tièdes, dossiers incomplets, équipe commerciale qui relance dans le vide. Conversion en chute, no-shows fréquents.',
-    solution: 'Funnel refondu, qualification enrichie (DPE live, profil ANAH), tracking serveur complet. Les leads arrivent avec un dossier signé prêt à closer.',
+    tags: ['Rénovation', 'Page + Pubs Facebook', 'France'],
+    title: "Une page dédiée. Deux fois plus de demandes. Coût par RDV divisé par deux.",
+    challenge: "Site classique qui parlait de tout : devis, infos, équipe, services... Les gens ne savaient pas quoi faire en arrivant. Sur 100 visiteurs, seulement 12 demandaient un devis. Et chaque demande coûtait 24€ en pub Facebook.",
+    solution: "On a créé UNE page dédiée à UN seul service (rénovation énergétique). Le formulaire pose 4 questions simples en 1 minute. Les demandes arrivent prêtes — l'équipe sait déjà à qui elle parle avant le premier appel.",
     kpis: [
-      { value: '+158%', label: 'taux de conversion · 12% → 31%' },
-      { value: '−46%', label: 'CPL · de 24 € à 13 €' },
-      { value: '5×', label: 'plus de data par lead · 3 → 15+ champs' },
+      { value: '×2,5', label: 'demandes de RDV · 12 → 31 sur 100 visiteurs' },
+      { value: '−46%', label: 'coût par demande · 24€ → 13€' },
+      { value: '5×', label: 'plus d\'infos par demande de RDV' },
     ],
-    quote: 'CPL divisé par 2, conversion doublée. Mais surtout : les leads arrivent avec un dossier complet. Le closing a suivi.',
-    author: 'Samuel · Fondateur, RENOVIA.FR',
+    quote: "Deux fois plus de RDV en 3 semaines. Les gens qu'on rappelle sont déjà chauds — l'équipe commerciale gagne 2 heures sur chaque dossier.",
+    author: 'Direction Rénovia · France',
   },
   {
-    company: { name: 'Madame la Gouvernante', logo: '/madame-logo.png' },
-    tags: ['Marketplace', 'Two-sided', 'Stripe & Automation'],
-    title: 'Plateforme two-sided pour piloter 150+ missions / semaine',
-    challenge: 'Coordination manuelle via WhatsApp et tableurs. Matching entreprises/auto-entrepreneurs lent, relances oubliées, facturation manuelle.',
-    solution: 'Plateforme two-sided avec matching intelligent, dispatch auto, paiement Stripe et facturation générée. Un seul back-office pour piloter tout le flux.',
+    company: { name: 'TradeAuto', logo: '/tradeauto-logo.svg' },
+    tags: ['Automobile', 'Page + Pubs Facebook', 'Suisse'],
+    title: "Page en ligne en 48h. Pubs Facebook le surlendemain. RDV à 10 CHF chacun.",
+    challenge: "Site classique qui ne convertissait personne. Les demandes arrivaient mélangées entre boîte mail et WhatsApp — il en perdait régulièrement. Et impossible de savoir si les pubs Facebook rapportaient vraiment quelque chose.",
+    solution: "Page dédiée + pubs Facebook qui amènent les bons clients dessus. Toutes les demandes arrivent au même endroit. On voit en temps réel ce qui marche et on ajuste chaque semaine.",
     kpis: [
-      { value: '150+', label: 'missions réalisées chaque semaine' },
-      { value: '26+', label: 'endpoints API REST' },
-      { value: '14', label: 'spécialités métiers supportées' },
+      { value: '10 CHF', label: 'coût par demande de RDV (stable)' },
+      { value: '48h', label: 'page mise en ligne' },
+      { value: '100%', label: 'des demandes au même endroit' },
     ],
-    quote: "Aujourd'hui on pilote 150+ missions par semaine depuis un seul back-office. La différence est nuit et jour.",
-    author: 'Manon · Co-fondatrice, MADAMELAGOUVERNANTE.COM',
+    quote: "Page en ligne en 48h, pubs Facebook le surlendemain. Aujourd'hui chaque demande de RDV me coûte 10 CHF, c'est stable, et je vois tout en temps réel. Je recommande les yeux fermés.",
+    author: 'Louis · Fondateur · TRADEAUTO.CH',
   },
 ];
 
-const LANDING_STEPS = [
-  { n: '01', t: 'Brief', d: 'Cadrage offre, ICP, message clé. Jour 1 — un seul call de 60 minutes.' },
-  { n: '02', t: 'Build', d: 'Landing page sur-mesure, tracking serveur, setup Meta & Google Ads. Jours 2 à 6.' },
-  { n: '03', t: 'Launch', d: 'Mise en ligne, campagnes activées, budget calibré. Jour 7 — vous êtes en ligne.' },
-  { n: '04', t: 'Optimize', d: 'Itérations hebdo sur créas, audiences et funnel. Reporting détaillé chaque lundi.' },
-];
-
-// Wrapper to attach proofRef while reusing the main-site KCases component
-const LandingCasesAnchor = React.forwardRef(function LandingCasesAnchor({ isMobile }, ref) {
+const LandingCases = React.forwardRef(function LandingCases({ isMobile }, ref) {
   return (
     <div ref={ref} id="proof">
-      <KCases isMobile={isMobile} cases={LANDING_CASES} />
+      <KCases
+        isMobile={isMobile}
+        cases={CASES}
+        sectionLabel="05 — Exemples concrets"
+        heading={<>On parle chiffres. <span style={{ color: 'rgba(255,255,255,.5)' }}>Pas promesses.</span></>}
+      />
     </div>
   );
 });
 
+// ═════════════════════════════════════════════════════════════
+// FAQ — landing-page specific objections
+// ═════════════════════════════════════════════════════════════
+const FAQ_ITEMS = [
+  {
+    q: "C'est quoi exactement, une « page » comme ça ?",
+    a: "Une page web ultra-simple, dédiée à une seule chose : que vos visiteurs vous laissent leurs coordonnées. Pas de menu, pas de blog, pas de pages cachées. Juste votre offre, vos arguments clés, et un formulaire court. Les gens arrivent dessus depuis vos pubs Facebook ou Instagram, ils comprennent en 5 secondes ce que vous proposez, et ceux qui sont intéressés vous laissent leur prénom + email + téléphone.",
+  },
+  {
+    q: "Vraiment 48h ? Comment c'est possible ?",
+    a: "On a une méthode rodée. Vous nous donnez 30 minutes au début pour qu'on comprenne votre métier, et ensuite on bosse en exclusivité sur votre projet pendant 2 jours. Pas d'allers-retours interminables, pas d'attente. C'est exactement pour ça qu'on accepte seulement 2 nouveaux clients par trimestre.",
+  },
+  {
+    q: "Et si ça ne marche pas pour moi ?",
+    a: "Au début, on vous dit combien de demandes de RDV vous devriez avoir par mois (une fourchette honnête). Si à 3 mois on n'y est pas, on continue à optimiser à nos frais : on refait la page, on change les pubs, on teste d'autres approches — jusqu'à ce que ça marche.",
+  },
+  {
+    q: "Qui s'occupe de quoi ? Je dois faire quelque chose ?",
+    a: "Vous donnez 30 minutes au début (un appel pour qu'on comprenne votre métier). Après ça, on s'occupe de tout : créer la page, écrire les textes, lancer les pubs Facebook/Instagram, gérer le budget pub, suivre les résultats. Vous, vous rappelez les gens qui vous laissent leurs coordonnées. C'est tout.",
+  },
+  {
+    q: "Combien faut-il investir en pub Facebook chaque mois ?",
+    a: "Minimum CHF 1500/mois en pub. En dessous, Facebook n'a pas assez de signal pour vous trouver les bons clients. Ça c'est le budget pub (qui va à Facebook directement). Pour notre travail (création de la page + gestion des pubs + suivi), on en parle au call.",
+  },
+  {
+    q: "Pourquoi pas faire ça avec mon site actuel ?",
+    a: "Votre site actuel essaie de tout dire à tout le monde — c'est normal, c'est sa fonction. Mais quand quelqu'un clique sur une pub Facebook ciblée, il faut une page qui parle directement de ce qu'il cherche. Sinon il se perd et il part. Et puis il y a toute une partie technique invisible (mesurer ce qui marche, brancher les pubs sur la page) qui ne se fait pas avec un site classique.",
+  },
+  {
+    q: "Hébergement, nom de domaine — qui s'occupe de tout ça ?",
+    a: "Tout pris en main de A à Z. Vous n'ouvrez aucun compte technique. La page est hébergée chez nous en Suisse (rapide, conforme RGPD), et les demandes arrivent dans votre boîte mail + un récap clair chaque lundi.",
+  },
+  {
+    q: "Vous travaillez avec quels métiers ?",
+    a: "Romandie : dentistes, immobilier, garages auto, restaurants, professions libérales (avocats, comptables, conseillers). Si on ne connaît pas votre métier, on vous le dit honnêtement et on vous oriente ailleurs — pas de bricolage.",
+  },
+];
+
+function LandingFAQ({ isMobile }) {
+  return <KFAQ isMobile={isMobile} items={FAQ_ITEMS} sectionNumber="06" />;
+}
 
 // ═════════════════════════════════════════════════════════════
-// FAQ — silent objections
+// DIFFERENTIATORS + FINAL CTA
 // ═════════════════════════════════════════════════════════════
-function LandingFAQ({ isMobile }) {
-  const [open, setOpen] = useState(0);
-  const items = [
+function LandingFinalCTA({ isMobile, onScrollToForm }) {
+  const reasons = [
     {
-      q: 'Pourquoi un prix unique au lieu d\'un devis sur-mesure ?',
-      a: 'On a standardisé un livrable qui marche pour 90% des PME romandes : landing page + ads Meta & Google + gestion mensuelle. Si votre cas sort du cadre, on vous le dit en audit — mais dans la majorité des situations, vous payez ce qui est affiché, pas un devis qui gonfle au fil des semaines.',
+      n: '01',
+      t: 'En ligne en 48h, garanti',
+      d: "Si on ne tient pas le délai, le premier mois de pub est offert. Notre méthode est calibrée pour ça : un seul client à la fois, brief dense, zéro allers-retours.",
     },
     {
-      q: 'Combien de temps avant les premiers leads ?',
-      a: 'Mise en ligne sous 7 jours après le brief. Premiers leads dès la 1re semaine de diffusion ads — la phase d\'optimisation CPL prend typiquement 2 à 4 semaines supplémentaires pour atteindre les seuils visés.',
+      n: '02',
+      t: 'Un objectif chiffré, pas une promesse vague',
+      d: "On vous dit combien de demandes de RDV vous devriez avoir par mois. Pas atteint à 3 mois ? On corrige à nos frais jusqu'à y arriver.",
     },
     {
-      q: 'La gestion mensuelle inclut quoi exactement ?',
-      a: 'Optimisation continue des campagnes, A/B sur créas et audiences, ajustement des budgets, reporting détaillé chaque lundi, 1 call mensuel de point. Le budget ads que vous dépensez chez Meta/Google est en plus — vous le contrôlez intégralement.',
-    },
-    {
-      q: 'Et si je veux juste la landing page sans les ads ?',
-      a: 'Possible mais ce n\'est pas notre offre principale. On performe quand on contrôle l\'intégralité du tunnel (page + tracking + ads) — c\'est ce qui nous permet de tenir le prix d\'entrée à CHF 1\'490. Pour une LP seule, parlons-en en audit.',
-    },
-    {
-      q: 'Que se passe-t-il à la fin de l\'engagement ?',
-      a: 'Vous récupérez 100% des assets : code source du site, comptes Meta/Google Ads, dashboards, automatisations. Pas de lock-in. Vous pouvez partir avec un préavis de 30 jours après les 90 premiers jours.',
-    },
-    {
-      q: 'Qui est propriétaire des assets (site, comptes ads) ?',
-      a: 'Vous, intégralement. Comptes Meta/Google créés à votre nom, code livré sous votre repo, automations sur vos workspaces. On a accès tant que la mission est active — vous gardez tout après.',
-    },
-    {
-      q: 'Vous gardez nos données en Suisse ?',
-      a: 'Données utilisateurs hébergées en UE (Frankfurt, Supabase). Conforme nLPD et RGPD. Si vous avez des contraintes spécifiques de souveraineté CH, on adapte le stack à votre charge — c\'est rare mais possible.',
+      n: '03',
+      t: 'Tout inclus, une seule équipe',
+      d: "Page + pubs Facebook/Instagram + suivi des demandes + récap chaque lundi. Une seule équipe, un seul interlocuteur, une seule facture.",
     },
   ];
-  const pad = isMobile ? '80px 20px' : '140px 80px';
+  const pad = isMobile ? '72px 20px 80px' : '120px 120px';
   return (
-    <section style={{ padding: pad, background: '#fff', position: 'relative' }}>
-      <div style={{ maxWidth: 920, margin: '0 auto' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 14px 6px 12px', borderRadius: 999, background: '#fff', border: '1px solid var(--line-2)', boxShadow: '0 1px 0 rgba(10,10,10,.02)' }}>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--violet)' }} />
-          <span className="mono" style={{ fontSize: 11, color: 'var(--violet-deep)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 500 }}>
-            05 — Questions fréquentes
+    <section className="k-cta-final" style={{ padding: pad }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
+        <div style={{ textAlign: 'center' }}>
+          <span className="k-eyebrow" style={{ background: 'rgba(255,255,255,.55)' }}>
+            <span className="k-eyebrow-dot"></span>
+            07 — Q2 2026 · 2 places restantes
           </span>
         </div>
-        <h2 style={{ fontSize: isMobile ? 36 : 64, marginTop: 22, letterSpacing: '-0.04em', lineHeight: 1.0, fontWeight: 500, maxWidth: 800 }}>
-          Ce que les autres<br/>
-          <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontWeight: 400, background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-            prospects nous demandent.
-          </span>
+        <h2 style={{
+          fontSize: isMobile ? 38 : 64, marginTop: 22,
+          letterSpacing: '-0.04em', lineHeight: 0.99, color: 'var(--ink)',
+          textAlign: 'center', maxWidth: 880, margin: '22px auto 0',
+        }}>
+          On regarde votre cas ensemble. <em style={{ background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'normal' }}>30 minutes. Honnête.</em>
         </h2>
-        <div style={{ marginTop: isMobile ? 32 : 44 }}>
-          {items.map((item, i) => {
-            const isOpen = open === i;
-            return (
-              <div key={i} style={{
-                borderTop: '1px solid var(--line-2)',
-                borderBottom: i === items.length - 1 ? '1px solid var(--line-2)' : 'none',
-              }}>
-                <button
-                  onClick={() => setOpen(isOpen ? -1 : i)}
-                  style={{
-                    width: '100%', padding: '20px 0',
-                    background: 'transparent', border: 'none', cursor: 'pointer',
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14,
-                    textAlign: 'left', fontFamily: 'Geist, sans-serif',
-                  }}
-                >
-                  <span style={{ fontSize: isMobile ? 16 : 17, fontWeight: 500, color: 'var(--ink)', letterSpacing: '-0.012em' }}>
-                    {item.q}
-                  </span>
-                  <span style={{
-                    width: 26, height: 26, borderRadius: '50%',
-                    background: isOpen ? 'var(--violet)' : 'var(--line)',
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'background .18s, transform .25s',
-                    transform: isOpen ? 'rotate(45deg)' : 'rotate(0)',
-                    flexShrink: 0,
-                  }}>
-                    <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
-                      <path d="M7 1 V13 M1 7 H13" stroke={isOpen ? '#fff' : 'var(--ink-soft)'} strokeWidth="1.6" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                </button>
-                <div style={{
-                  maxHeight: isOpen ? 400 : 0,
-                  overflow: 'hidden',
-                  transition: 'max-height .35s cubic-bezier(.4,0,.2,1)',
-                }}>
-                  <p style={{
-                    fontSize: 14.5, color: 'var(--muted)',
-                    lineHeight: 1.65, paddingBottom: 22, paddingRight: 40, margin: 0,
-                  }}>
-                    {item.a}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
+        <p style={{
+          fontSize: isMobile ? 15 : 17, color: 'rgba(31,27,46,.72)',
+          marginTop: 18, lineHeight: 1.55, textAlign: 'center',
+          maxWidth: 620, marginLeft: 'auto', marginRight: 'auto',
+        }}>
+          Si on accepte votre projet, votre page est en ligne 48h après. Si on refuse, on vous oriente vers la bonne agence — vous ne perdez ni temps ni argent.
+        </p>
+
+        <div style={{
+          display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+          gap: isMobile ? 16 : 20, marginTop: isMobile ? 36 : 56,
+        }}>
+          {reasons.map((r) => (
+            <div key={r.n} style={{
+              padding: '24px 22px',
+              borderRadius: 14,
+              background: 'rgba(255,255,255,.55)',
+              border: '1px solid rgba(255,255,255,.7)',
+              backdropFilter: 'blur(6px)',
+            }}>
+              <div className="mono" style={{ fontSize: 11, color: 'var(--violet-deep)', letterSpacing: '0.16em', fontWeight: 500 }}>{r.n}</div>
+              <h3 style={{ fontSize: 17, fontWeight: 500, marginTop: 12, letterSpacing: '-0.015em', color: 'var(--ink)' }}>{r.t}</h3>
+              <p style={{ fontSize: 13.5, color: 'rgba(31,27,46,.75)', marginTop: 8, lineHeight: 1.55 }}>{r.d}</p>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: isMobile ? 36 : 52, flexWrap: 'wrap' }}>
+          <button onClick={onScrollToForm} className="k-cta" style={{
+            padding: '16px 26px', fontSize: 16, cursor: 'pointer', border: 'none',
+            background: '#0A0A0A', color: '#fff',
+          }}>
+            Compléter le formulaire
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 11 L7 3 M3 7 L7 3 L11 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+          <a className="k-cta k-cta-ghost" href={BOOKING_URL} target="_blank" rel="noopener noreferrer" style={{
+            padding: '16px 22px', fontSize: 15, borderColor: 'rgba(10,10,10,.2)',
+          }}>
+            Réserver direct
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </a>
         </div>
       </div>
     </section>
@@ -1097,25 +883,11 @@ function LandingFAQ({ isMobile }) {
 function LandingFooter() {
   return (
     <footer style={{
-      padding: '32px 24px 28px',
+      padding: '24px 20px',
       background: '#0A0A0A', color: 'rgba(255,255,255,.6)',
-      fontSize: 13, letterSpacing: '0.01em',
+      fontSize: 13, textAlign: 'center', letterSpacing: '0.01em',
     }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center', textAlign: 'center' }}>
-        <div style={{ fontSize: 14, color: '#fff', fontWeight: 500 }}>
-          Kairn · Suisse Romande
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 16px', fontSize: 12.5 }}>
-          <span>Lausanne · Genève</span>
-          <span>·</span>
-          <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: '#C4B5FD', textDecoration: 'none' }}>{CONTACT_EMAIL}</a>
-          <span>·</span>
-          <a href="/" style={{ color: 'rgba(255,255,255,.6)', textDecoration: 'none' }}>Découvrir l'agence</a>
-        </div>
-        <div className="mono" style={{ fontSize: 10.5, color: 'rgba(255,255,255,.45)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 4 }}>
-          Données hébergées en UE · Conforme nLPD &amp; RGPD · © 2026
-        </div>
-      </div>
+      Kairn · Suisse Romande · <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: '#C4B5FD', textDecoration: 'none' }}>{CONTACT_EMAIL}</a> · © 2026
     </footer>
   );
 }
@@ -1123,12 +895,11 @@ function LandingFooter() {
 // ═════════════════════════════════════════════════════════════
 // LANDING PAGE ROOT
 // ═════════════════════════════════════════════════════════════
-export default function LandingPage({ variant = 'desktop' }) {
+export default function LandingPage3({ variant = 'desktop' }) {
   useNoIndex();
   const isMobile = variant === 'mobile';
   const formRef = useRef(null);
   const proofRef = useRef(null);
-  const offerRef = useRef(null);
 
   const scrollToForm = () => {
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1136,28 +907,25 @@ export default function LandingPage({ variant = 'desktop' }) {
   const scrollToProof = () => {
     proofRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-  const scrollToOffer = () => {
-    offerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   return (
     <div className="kairn">
       <LandingNav />
-      <LandingHero isMobile={isMobile} onScrollToOffer={scrollToOffer} onScrollToProof={scrollToProof} />
-      <LandingOffer ref={offerRef} isMobile={isMobile} onScrollToForm={scrollToForm} />
+      <LandingHero isMobile={isMobile} onScrollToForm={scrollToForm} onScrollToProof={scrollToProof} />
       <KLogos isMobile={isMobile} />
+      <LandingProcess48h isMobile={isMobile} />
       <LandingBeforeAfter isMobile={isMobile} />
       <LandingForm ref={formRef} isMobile={isMobile} />
-      <LandingCasesAnchor ref={proofRef} isMobile={isMobile} />
-      <KProcess isMobile={isMobile} steps={LANDING_STEPS} kpis={['Jour 1', 'Jours 2-6', 'Jour 7', 'Hebdo']} />
+      <LandingSpline isMobile={isMobile} onScrollToForm={scrollToForm} onScrollToProof={scrollToProof} />
+      <LandingCases ref={proofRef} isMobile={isMobile} />
       <LandingFAQ isMobile={isMobile} />
-      <KFinalCTA isMobile={isMobile} />
+      <LandingFinalCTA isMobile={isMobile} onScrollToForm={scrollToForm} />
       <LandingFooter />
       {isMobile && (
         <div style={{ position: 'sticky', bottom: 0, padding: '0 0 12px', pointerEvents: 'none', zIndex: 30 }}>
-          <button onClick={scrollToOffer} className="k-mob-cta" style={{ pointerEvents: 'auto', border: 'none', cursor: 'pointer', width: 'calc(100% - 24px)', margin: '0 12px' }}>
-            <span style={{ fontSize: 14, fontWeight: 500 }}>Voir l'offre</span>
-            <span style={{ fontSize: 13, color: '#C4B5FD', fontWeight: 500 }}>CHF 1'490 + 390/mois →</span>
+          <button onClick={scrollToForm} className="k-mob-cta" style={{ pointerEvents: 'auto', border: 'none', cursor: 'pointer', width: 'calc(100% - 24px)', margin: '0 12px' }}>
+            <span style={{ fontSize: 14, fontWeight: 500 }}>Ma page en 48h.</span>
+            <span style={{ fontSize: 13, color: '#C4B5FD', fontWeight: 500 }}>Commencer →</span>
           </button>
         </div>
       )}

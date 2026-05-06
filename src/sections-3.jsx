@@ -5,7 +5,7 @@ import { KairnMark } from './sections-1.jsx';
 // ═════════════════════════════════════════════════════════════
 // CASE STUDIES
 // ═════════════════════════════════════════════════════════════
-export function KCases({ isMobile, cases }) {
+export function KCases({ isMobile, cases, sectionLabel = '06 — Réalisations', heading }) {
   const [idx, setIdx] = useState(0);
   const c = cases[idx];
   const next = () => setIdx((i) => (i + 1) % cases.length);
@@ -32,10 +32,10 @@ export function KCases({ isMobile, cases }) {
           <div>
             <div className="k-section-label">
               <span className="k-section-label-sq"></span>
-              06 — Réalisations
+              {sectionLabel}
             </div>
             <h2 style={{ fontSize: isMobile ? 36 : 64, marginTop: 20, letterSpacing: '-0.035em', maxWidth: 780, lineHeight: 1.02 }}>
-              Ce qu'on a livré. <span style={{ color: 'rgba(255,255,255,.5)' }}>Et ce que ça a donné.</span>
+              {heading || (<>Ce qu'on a livré. <span style={{ color: 'rgba(255,255,255,.5)' }}>Et ce que ça a donné.</span></>)}
             </h2>
           </div>
           {!isMobile && (
