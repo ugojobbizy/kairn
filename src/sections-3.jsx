@@ -152,6 +152,40 @@ export function KCases({ isMobile, cases, sectionLabel = '06 — Réalisations',
             <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,.55)', marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,.08)' }}>
               {c.author}
             </div>
+            {c.liveUrl && (
+              <a
+                href={c.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="k-case-live"
+                style={{
+                  marginTop: 18,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  padding: '12px 18px',
+                  background: 'rgba(255,255,255,.06)',
+                  border: '1px solid rgba(255,255,255,.14)',
+                  borderRadius: 12,
+                  color: '#fff',
+                  fontSize: 13.5, fontWeight: 500, letterSpacing: '-0.005em',
+                  textDecoration: 'none',
+                  transition: 'background .22s, border-color .22s, transform .22s',
+                  position: 'relative', overflow: 'hidden',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(139,92,246,.18)'; e.currentTarget.style.borderColor = 'rgba(196,181,253,.45)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,.14)'; e.currentTarget.style.transform = ''; }}
+              >
+                <span style={{
+                  width: 6, height: 6, borderRadius: '50%',
+                  background: '#22C55E',
+                  boxShadow: '0 0 0 3px rgba(34,197,94,.18), 0 0 10px rgba(34,197,94,.55)',
+                  flexShrink: 0,
+                }} />
+                Voir le projet en live
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                  <path d="M5 3 H11 V9 M11 3 L4 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            )}
           </div>
         </div>
 
@@ -294,8 +328,8 @@ export function KTestimonials({ isMobile, items, cols = 3, sectionNumber = '07' 
 // ═════════════════════════════════════════════════════════════
 // LOGOS STRIP
 // ═════════════════════════════════════════════════════════════
-export function KLogos({ isMobile }) {
-  const brands = [
+export function KLogos({ isMobile, brands: brandsProp, label = 'Des équipes qui nous font confiance' }) {
+  const brands = brandsProp || [
     {
       name: 'TradeAuto',
       logo: (
@@ -446,17 +480,28 @@ export function KLogos({ isMobile }) {
       ),
     },
   ];
-  const LogoItem = ({ brand }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, opacity: .55, color: 'var(--ink)' }}>
-      {brand.logo}
-      <span style={{ fontSize: 19, fontWeight: 500, letterSpacing: '-0.025em' }}>{brand.name}</span>
-    </div>
-  );
+  const LogoItem = ({ brand }) => {
+    const hasMeta = brand.city || brand.sector;
+    const meta = [brand.city, brand.sector].filter(Boolean).join(' · ');
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, opacity: .62, color: 'var(--ink)' }}>
+        {brand.logo}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontSize: hasMeta ? 17 : 19, fontWeight: 500, letterSpacing: '-0.025em', lineHeight: 1.1 }}>{brand.name}</span>
+          {hasMeta && (
+            <span className="mono" style={{ fontSize: 9.5, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', lineHeight: 1.2 }}>
+              {meta}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
   return (
     <section style={{ padding: isMobile ? '48px 0' : '72px 0', background: 'var(--bg)' }}>
       <div style={{ textAlign: 'center', marginBottom: isMobile ? 28 : 40 }}>
         <p className="mono" style={{ fontSize: 11, color: 'var(--muted)', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-          Des équipes qui nous font confiance
+          {label}
         </p>
       </div>
       <div className="k-logo-mask">
@@ -518,96 +563,327 @@ export function KFAQ({ isMobile, items, sectionNumber = '08' }) {
 // ═════════════════════════════════════════════════════════════
 // FINAL CTA
 // ═════════════════════════════════════════════════════════════
-export function KFinalCTA({ isMobile }) {
+export function KFinalCTA({ isMobile, eyebrow, heading, body, primaryCta, secondaryCta, steps: stepsProp, trustline }) {
   const pad = isMobile ? '80px 20px 90px' : '140px 120px 150px';
 
-  const steps = [
+  const steps = stepsProp || [
     { n: '01', t: 'On échange 30 min', d: 'Vous nous racontez où vous en êtes. On pose les bonnes questions.' },
     { n: '02', t: 'Audit sous 48h', d: 'Diagnostic chiffré de votre stack + plan d\'action priorisé.' },
     { n: '03', t: 'Mission lancée', d: 'Si le match est là, on démarre. Sinon on vous recommande.' },
   ];
 
+  const renderCta = (cta, isPrimary) => {
+    if (!cta) return null;
+    const baseStyle = isPrimary
+      ? {
+          padding: '18px 30px', fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em',
+          background: 'linear-gradient(180deg, #9B6FFB 0%, #7C3AED 100%)',
+          color: '#fff', border: 'none',
+          boxShadow: '0 1px 0 rgba(255,255,255,.18) inset, 0 14px 36px -10px rgba(124,58,237,.55), 0 22px 60px -20px rgba(124,58,237,.4)',
+          position: 'relative', overflow: 'hidden',
+        }
+      : {
+          padding: '18px 26px', fontSize: 15, fontWeight: 500, letterSpacing: '-0.005em',
+          background: 'rgba(255,255,255,.7)',
+          backdropFilter: 'saturate(140%) blur(8px)',
+          WebkitBackdropFilter: 'saturate(140%) blur(8px)',
+          border: '1px solid rgba(124,58,237,.22)',
+          color: 'var(--ink)',
+          boxShadow: '0 1px 0 rgba(255,255,255,.6) inset, 0 6px 18px -8px rgba(124,58,237,.25)',
+          display: 'inline-flex', alignItems: 'center', gap: 10,
+        };
+    const className = isPrimary ? 'k-cta k-cta-quiz' : 'k-cta k-cta-soft';
+    const arrow = (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    );
+    const innerSheen = isPrimary ? <span aria-hidden="true" className="k-cta-quiz-sheen" /> : null;
+    if (cta.onClick) {
+      return (
+        <button className={className} onClick={cta.onClick} type="button" style={{ ...baseStyle, cursor: 'pointer' }}>
+          {innerSheen}
+          <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 10 }}>{cta.label}{arrow}</span>
+        </button>
+      );
+    }
+    return (
+      <a className={className} href={cta.href} target={cta.external ? '_blank' : undefined} rel={cta.external ? 'noopener noreferrer' : undefined} style={baseStyle}>
+        {innerSheen}
+        <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 10 }}>{cta.label}{arrow}</span>
+      </a>
+    );
+  };
+
   return (
     <section className="k-cta-final" style={{ padding: pad, position: 'relative', overflow: 'hidden' }}>
+      <style>{`
+        @keyframes k-cta-quiz-sheen { 0% { transform: translateX(-150%) skewX(-20deg); } 60%, 100% { transform: translateX(250%) skewX(-20deg); } }
+        @keyframes k-cta-quiz-pulse { 0%, 100% { box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 14px 36px -10px rgba(124,58,237,.55), 0 22px 60px -20px rgba(124,58,237,.4); } 50% { box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 18px 44px -8px rgba(124,58,237,.7), 0 26px 70px -18px rgba(124,58,237,.5); } }
+        .k-cta-quiz { position: relative; transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s; animation: k-cta-quiz-pulse 3.4s ease-in-out infinite; }
+        .k-cta-quiz:hover { transform: translateY(-2px); }
+        .k-cta-quiz:active { transform: translateY(0); }
+        .k-cta-quiz-sheen { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }
+        .k-cta-quiz-sheen::after {
+          content: ''; position: absolute; top: 0; left: 0; width: 60%; height: 100%;
+          background: linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.35) 50%, rgba(255,255,255,0) 100%);
+          animation: k-cta-quiz-sheen 3.4s ease-in-out infinite;
+        }
+        .k-cta-soft { transition: transform .22s cubic-bezier(.4,0,.2,1), box-shadow .22s, border-color .22s, background .22s; }
+        .k-cta-soft:hover { transform: translateY(-2px); border-color: rgba(124,58,237,.45); background: rgba(255,255,255,.92); box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 12px 28px -10px rgba(124,58,237,.45); }
+        .k-cta-soft:active { transform: translateY(0); }
+        .k-cta-soft svg { transition: transform .22s cubic-bezier(.4,0,.2,1); }
+        .k-cta-soft:hover svg { transform: translateX(3px); }
+      `}</style>
       <div style={{ maxWidth: 1040, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
         <span className="k-eyebrow">
           <span className="k-eyebrow-dot"></span>
-          Prochaine disponibilité · T2 2026
+          {eyebrow || 'Prochaine disponibilité · T2 2026'}
         </span>
 
         <h2 style={{
-          fontSize: isMobile ? 44 : 96,
+          fontSize: isMobile ? 40 : 72,
           marginTop: 28,
-          letterSpacing: '-0.04em', lineHeight: 0.96,
+          letterSpacing: '-0.035em', lineHeight: 1.04,
           color: 'var(--ink)',
           fontWeight: 600,
           textWrap: 'balance',
-        }}>
-          Parlons de<br />votre projet.
-        </h2>
-
-        <p style={{
-          fontSize: isMobile ? 16 : 19,
-          color: 'rgba(31,27,46,.72)',
-          marginTop: 24, lineHeight: 1.55,
-          maxWidth: 560,
+          maxWidth: 920,
           marginLeft: 'auto', marginRight: 'auto',
         }}>
-          30 minutes suffisent pour savoir si on peut vous aider. Pas de pitch commercial — juste un audit honnête.
-        </p>
+          {heading || (<>Parlons de<br />votre projet.</>)}
+        </h2>
+
+        <div style={{
+          fontSize: isMobile ? 15.5 : 17,
+          color: 'rgba(31,27,46,.72)',
+          marginTop: 24, lineHeight: 1.65,
+          maxWidth: 620,
+          marginLeft: 'auto', marginRight: 'auto',
+          textAlign: 'left',
+        }}>
+          {body || '30 minutes suffisent pour savoir si on peut vous aider. Pas de pitch commercial — juste un audit honnête.'}
+        </div>
 
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 36, flexWrap: 'wrap' }}>
-          <a className="k-cta" href={BOOKING_URL} target="_blank" rel="noopener noreferrer" style={{ padding: '16px 26px', fontSize: 16 }}>
-            Réserver 30 minutes
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </a>
-          <a className="k-cta k-cta-ghost" href={`mailto:${CONTACT_EMAIL}`} style={{ padding: '16px 22px', fontSize: 14.5, borderColor: 'rgba(10,10,10,.18)', fontFamily: 'Geist Mono, monospace', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="3" width="11" height="8" rx="1.2" stroke="currentColor" strokeWidth="1.3" /><path d="M2 4 L7 8 L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            {CONTACT_EMAIL}
-          </a>
+          {primaryCta ? renderCta(primaryCta, true) : (
+            <a className="k-cta" href={BOOKING_URL} target="_blank" rel="noopener noreferrer" style={{ padding: '16px 26px', fontSize: 16 }}>
+              Réserver 30 minutes
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </a>
+          )}
+          {secondaryCta ? renderCta(secondaryCta, false) : (
+            <a className="k-cta k-cta-ghost" href={`mailto:${CONTACT_EMAIL}`} style={{ padding: '16px 22px', fontSize: 14.5, borderColor: 'rgba(10,10,10,.18)', fontFamily: 'Geist Mono, monospace', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="3" width="11" height="8" rx="1.2" stroke="currentColor" strokeWidth="1.3" /><path d="M2 4 L7 8 L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              {CONTACT_EMAIL}
+            </a>
+          )}
         </div>
 
-        {/* What happens next — 3 steps */}
+        {/* What happens next — 3 steps with connecting flow */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-          gap: isMobile ? 12 : 16,
-          margin: isMobile ? '60px auto 0' : '80px auto 0',
-          maxWidth: 960,
+          position: 'relative',
+          margin: isMobile ? '60px auto 0' : '88px auto 0',
+          maxWidth: 1040,
         }}>
-          {steps.map((s) => (
-            <div key={s.n} style={{
-              padding: '22px 24px',
-              borderRadius: 14,
-              background: '#fff',
-              border: '1px solid var(--line-2)',
-              textAlign: 'left',
-              display: 'flex',
-              gap: 14,
-              alignItems: 'flex-start',
-              boxShadow: '0 1px 2px rgba(10,10,10,.02), 0 12px 30px -20px rgba(124,58,237,.2)',
-              transition: 'transform .3s, box-shadow .3s, border-color .3s',
-            }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = 'rgba(139,92,246,.3)'; e.currentTarget.style.boxShadow = '0 1px 2px rgba(10,10,10,.02), 0 20px 40px -18px rgba(124,58,237,.3)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = ''; e.currentTarget.style.boxShadow = '0 1px 2px rgba(10,10,10,.02), 0 12px 30px -20px rgba(124,58,237,.2)'; }}
-            >
-              <span style={{
-                fontFamily: 'Geist Mono, monospace',
-                fontSize: 11, fontWeight: 600,
-                padding: '4px 9px', borderRadius: 6,
-                background: 'rgba(139,92,246,.12)',
-                color: 'var(--violet-deep)',
-                letterSpacing: '0.1em',
-                flexShrink: 0,
-                height: 'fit-content',
-              }}>{s.n}</span>
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em', color: 'var(--ink)' }}>{s.t}</div>
-                <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 6, lineHeight: 1.55 }}>{s.d}</div>
-              </div>
-            </div>
-          ))}
+          {/* Desktop connecting line — dashed gradient behind the cards */}
+          {!isMobile && (
+            <div aria-hidden="true" style={{
+              position: 'absolute',
+              top: '54px',
+              left: '14%', right: '14%',
+              height: 2,
+              background: 'repeating-linear-gradient(90deg, rgba(124,58,237,.35) 0 6px, transparent 6px 12px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }} />
+          )}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: isMobile ? 14 : 24,
+            alignItems: 'stretch',
+            position: 'relative',
+            zIndex: 1,
+          }}>
+            {steps.map((s, idx) => {
+              const isFeatured = !!s.featured;
+              const stepIcons = [
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" key="i1"><path d="M5 6h11a3 3 0 013 3v6a3 3 0 01-3 3h-3l-3 3v-3H8a3 3 0 01-3-3V9a3 3 0 010-3z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M9 11h6M9 14h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>,
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" key="i2"><path d="M7 4h7l4 4v11a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M14 4v4h4" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M9 13l2 2 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" key="i3"><rect x="3" y="6" width="13" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" /><path d="M16 10l5-3v10l-5-3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>,
+              ];
+
+              return (
+                <div
+                  key={s.n}
+                  className={`k-step-card${isFeatured ? ' k-step-card-featured' : ''}`}
+                  onMouseEnter={(e) => { if (!isFeatured && !isMobile) { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 1px 2px rgba(10,10,10,.02), 0 22px 44px -18px rgba(124,58,237,.32)'; } }}
+                  onMouseLeave={(e) => { if (!isFeatured && !isMobile) { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 1px 2px rgba(10,10,10,.02), 0 12px 30px -20px rgba(124,58,237,.2)'; } }}
+                  style={{
+                    position: 'relative',
+                    padding: isFeatured ? '28px 26px 22px' : '26px 24px 22px',
+                    borderRadius: 18,
+                    background: isFeatured
+                      ? 'linear-gradient(165deg, #7C3AED 0%, #6D28D9 60%, #5B21B6 100%)'
+                      : '#fff',
+                    border: isFeatured ? '1px solid rgba(255,255,255,.12)' : '1px solid var(--line-2)',
+                    textAlign: 'left',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 14,
+                    color: isFeatured ? '#fff' : 'var(--ink)',
+                    boxShadow: isFeatured
+                      ? '0 1px 0 rgba(255,255,255,.18) inset, 0 24px 60px -20px rgba(124,58,237,.6), 0 12px 28px -16px rgba(91,33,182,.5)'
+                      : '0 1px 2px rgba(10,10,10,.02), 0 12px 30px -20px rgba(124,58,237,.2)',
+                    transition: 'transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s, border-color .3s',
+                    transform: isFeatured && !isMobile ? 'translateY(-6px)' : 'none',
+                  }}>
+                  {/* Decorative top-right glow for featured card */}
+                  {isFeatured && (
+                    <span aria-hidden="true" style={{
+                      position: 'absolute', top: -40, right: -40,
+                      width: 180, height: 180, borderRadius: '50%',
+                      background: 'radial-gradient(circle, rgba(196,181,253,.45) 0%, rgba(196,181,253,0) 70%)',
+                      pointerEvents: 'none',
+                    }} />
+                  )}
+
+                  {/* Header row : icon circle + step label + badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between', position: 'relative' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12 }}>
+                      <span style={{
+                        flexShrink: 0,
+                        width: 40, height: 40, borderRadius: 12,
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        background: isFeatured ? 'rgba(255,255,255,.14)' : 'linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%)',
+                        color: isFeatured ? '#fff' : 'var(--violet-deep)',
+                        border: isFeatured ? '1px solid rgba(255,255,255,.18)' : '1px solid rgba(124,58,237,.14)',
+                        boxShadow: isFeatured ? 'none' : '0 4px 10px -4px rgba(124,58,237,.25)',
+                      }}>
+                        {stepIcons[idx]}
+                      </span>
+                      <span style={{
+                        fontFamily: 'Geist Mono, monospace',
+                        fontSize: 11, fontWeight: 600,
+                        letterSpacing: '0.18em', textTransform: 'uppercase',
+                        color: isFeatured ? 'rgba(255,255,255,.7)' : 'var(--violet-deep)',
+                      }}>Étape {s.n}</span>
+                    </div>
+                    {s.badge && (
+                      <span style={{
+                        fontFamily: 'Geist Mono, monospace',
+                        fontSize: 10.5, fontWeight: 700,
+                        padding: '5px 10px', borderRadius: 999,
+                        background: isFeatured ? '#fff' : 'linear-gradient(120deg, #8B5CF6, #6D28D9)',
+                        color: isFeatured ? '#5B21B6' : '#fff',
+                        letterSpacing: '0.18em', textTransform: 'uppercase',
+                        boxShadow: isFeatured
+                          ? '0 1px 0 rgba(255,255,255,.6) inset, 0 6px 18px -4px rgba(91,33,182,.55), 0 0 0 1px rgba(196,181,253,.45)'
+                          : '0 6px 16px -6px rgba(124,58,237,.55)',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {s.badge}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <div style={{
+                    fontSize: isMobile ? 16 : 17.5, fontWeight: 600,
+                    letterSpacing: '-0.012em', lineHeight: 1.3,
+                    color: isFeatured ? '#fff' : 'var(--ink)',
+                    textWrap: 'balance',
+                    position: 'relative',
+                  }}>{s.t}</div>
+
+                  {/* Description */}
+                  <div style={{
+                    fontSize: 13.5,
+                    color: isFeatured ? 'rgba(255,255,255,.85)' : 'var(--muted)',
+                    lineHeight: 1.6,
+                    position: 'relative',
+                    flex: 1,
+                  }}>{s.d}</div>
+
+                  {/* Footer meta — duration + actor */}
+                  {(s.duration || s.delivery) && (
+                    <div style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+                      paddingTop: 14,
+                      borderTop: isFeatured ? '1px solid rgba(255,255,255,.16)' : '1px dashed var(--line-2)',
+                      position: 'relative',
+                    }}>
+                      {s.duration && (
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 6,
+                          fontSize: 12, fontWeight: 500,
+                          color: isFeatured ? 'rgba(255,255,255,.92)' : 'var(--ink)',
+                          padding: '5px 10px', borderRadius: 999,
+                          background: isFeatured ? 'rgba(255,255,255,.14)' : 'rgba(124,58,237,.08)',
+                          border: isFeatured ? '1px solid rgba(255,255,255,.16)' : '1px solid rgba(124,58,237,.14)',
+                        }}>
+                          <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                            <circle cx="6" cy="6" r="4.6" stroke="currentColor" strokeWidth="1.2" />
+                            <path d="M6 3.6 L6 6 L7.8 7.2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                          </svg>
+                          {s.duration}
+                        </span>
+                      )}
+                      {s.delivery && (
+                        <span className="mono" style={{
+                          fontSize: 10.5,
+                          letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 600,
+                          color: isFeatured ? 'rgba(255,255,255,.65)' : 'var(--muted)',
+                        }}>
+                          {s.delivery}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
+
+        {/* Trustline — promise below the cards */}
+        {trustline && (
+          <div style={{
+            margin: isMobile ? '32px auto 0' : '40px auto 0',
+            maxWidth: 720,
+            padding: isMobile ? '16px 18px' : '18px 26px',
+            background: 'rgba(255,255,255,.55)',
+            backdropFilter: 'saturate(140%) blur(8px)',
+            WebkitBackdropFilter: 'saturate(140%) blur(8px)',
+            border: '1px solid rgba(124,58,237,.18)',
+            borderRadius: 999,
+            display: 'inline-flex', alignItems: 'center', gap: 14,
+            justifyContent: 'center',
+            boxShadow: '0 1px 0 rgba(255,255,255,.6) inset, 0 10px 28px -16px rgba(124,58,237,.35)',
+            color: 'var(--ink)',
+            fontSize: isMobile ? 13.5 : 14.5,
+            lineHeight: 1.5,
+            fontWeight: 500,
+            textAlign: 'left',
+            textWrap: 'balance',
+          }}>
+            <span aria-hidden="true" style={{
+              flexShrink: 0,
+              width: 36, height: 36, borderRadius: 10,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              background: 'linear-gradient(135deg, #C4B5FD 0%, #8B5CF6 100%)',
+              color: '#fff',
+              boxShadow: '0 6px 14px -4px rgba(124,58,237,.5), 0 0 0 1px rgba(255,255,255,.6) inset',
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5" stroke="#fff" strokeWidth="1.6" fill="none" />
+                <path d="M12 6.5 L14 12 L12 17.5 L10 12 Z" fill="#fff" />
+                <path d="M12 6.5 L14 12 L12 12 Z" fill="rgba(255,255,255,.55)" />
+                <circle cx="12" cy="12" r="1.1" fill="#7C3AED" />
+              </svg>
+            </span>
+            <span>{trustline}</span>
+          </div>
+        )}
 
         {/* meta footer */}
         <div style={{

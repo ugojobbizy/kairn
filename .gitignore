@@ -21,3 +21,6 @@ pnpm-debug.log*
 .vscode
 *.log
 *.swp
+
+# Claude Code local config
+.claude/

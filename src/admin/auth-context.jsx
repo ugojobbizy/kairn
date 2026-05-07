@@ -1,42 +1,54 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 
-const AuthContext = createContext({ user: null, loading: true });
+const AuthContext = createContext({ authed: false, loading: true });
+
+const SESSION_KEY = 'kairn_admin_session';
+const EXPIRY_MS = 30 * 24 * 60 * 60 * 1000;
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [authed, setAuthed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
-      setLoading(false);
-      return;
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s?.ok && typeof s.exp === 'number' && s.exp > Date.now()) {
+          setAuthed(true);
+        } else {
+          localStorage.removeItem(SESSION_KEY);
+        }
+      }
+    } catch (_) {
+      try { localStorage.removeItem(SESSION_KEY); } catch (_) {}
     }
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => sub.subscription.unsubscribe();
+    setLoading(false);
   }, []);
 
-  const signIn = async (email, password) => {
-    if (!isSupabaseConfigured) {
-      return { error: { message: 'Supabase non configuré. Renseigne VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans .env.' } };
+  const signIn = (password) => {
+    const expected = import.meta.env.VITE_ADMIN_PASSWORD;
+    if (!expected) {
+      return { ok: false, error: 'VITE_ADMIN_PASSWORD non configuré dans .env.local' };
     }
-    return supabase.auth.signInWithPassword({ email, password });
+    if (password !== expected) {
+      return { ok: false, error: 'Mot de passe invalide.' };
+    }
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ ok: true, exp: Date.now() + EXPIRY_MS }));
+    } catch (_) {}
+    setAuthed(true);
+    return { ok: true };
   };
 
-  const signOut = async () => {
-    if (!isSupabaseConfigured) return;
-    await supabase.auth.signOut();
+  const signOut = () => {
+    try { localStorage.removeItem(SESSION_KEY); } catch (_) {}
+    setAuthed(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ authed, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
@@ -47,7 +59,7 @@ export function useAuth() {
 }
 
 export function AuthGuard({ children }) {
-  const { user, loading } = useAuth();
+  const { authed, loading } = useAuth();
   const location = useLocation();
   if (loading) {
     return (
@@ -64,7 +76,7 @@ export function AuthGuard({ children }) {
       </div>
     );
   }
-  if (!user) {
+  if (!authed) {
     return <Navigate to="/admin/login" state={{ from: location.pathname }} replace />;
   }
   return children;

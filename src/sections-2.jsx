@@ -60,9 +60,11 @@ export function KProcess({ isMobile, steps, kpis: kpisProp, sectionLabel = '04 �
               {heading || (<>Quatre étapes. <span style={{ color: 'var(--muted)' }}>Rien de plus.</span></>)}
             </h2>
           </div>
-          <p style={{ color: 'var(--muted)', fontSize: 15, maxWidth: 340, lineHeight: 1.55 }}>
-            {subheading || "On refuse les projets qui n'entrent pas dans ce cadre. C'est ce qui permet de tenir les délais."}
-          </p>
+          {subheading !== null && (
+            <p style={{ color: 'var(--muted)', fontSize: 15, maxWidth: 340, lineHeight: 1.55 }}>
+              {subheading || "On refuse les projets qui n'entrent pas dans ce cadre. C'est ce qui permet de tenir les délais."}
+            </p>
+          )}
         </div>
 
         {isMobile ? (

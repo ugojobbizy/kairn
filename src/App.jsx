@@ -9,6 +9,7 @@ import ContactPage from './contact.jsx';
 import LandingPage from './landing.jsx';
 import LandingPage2 from './landing2.jsx';
 import LandingPage3 from './landing3.jsx';
+import { MentionsLegales, Confidentialite, CGV } from './legal.jsx';
 import AdminLogin from './admin/login.jsx';
 import AdminCRM from './admin/crm.jsx';
 import { AuthProvider, AuthGuard } from './admin/auth-context.jsx';
@@ -54,6 +55,9 @@ function Shell() {
         <Route path="/landing" element={<LandingPage variant={variant} />} />
         <Route path="/landing2" element={<LandingPage2 variant={variant} />} />
         <Route path="/landing3" element={<LandingPage3 variant={variant} />} />
+        <Route path="/mentions-legales" element={<MentionsLegales />} />
+        <Route path="/confidentialite" element={<Confidentialite />} />
+        <Route path="/cgv" element={<CGV />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AuthGuard><AdminCRM /></AuthGuard>} />
         <Route path="*" element={<KairnHome variant={variant} />} />
