@@ -119,7 +119,7 @@ export async function createEvent({ start, name, phone }) {
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       summary: `Appel de découverte — ${name}`,
-      description: `Réservé depuis kairn.agency\n\nNom : ${name}\nTéléphone : ${phone}`,
+      description: `Réservé depuis kairnagency.com\n\nNom : ${name}\nTéléphone : ${phone}`,
       start: { dateTime: start.toISOString(), timeZone: CONFIG.timeZone },
       end: { dateTime: end.toISOString(), timeZone: CONFIG.timeZone },
     }),

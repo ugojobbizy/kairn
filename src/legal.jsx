@@ -101,7 +101,7 @@ export function MentionsLegales() {
   return (
     <LegalLayout title="Mentions légales" lastUpdate="6 mai 2026">
       <p>
-        Le présent site <strong>kairn.agency</strong> est édité dans le cadre d'une activité indépendante exercée en Suisse romande.
+        Le présent site <strong>kairnagency.com</strong> est édité dans le cadre d'une activité indépendante exercée en Suisse romande.
         En vertu du droit suisse (notamment l'art. 3 LCD) et du règlement (UE) 2016/679 (RGPD), les informations suivantes sont mises à votre disposition.
       </p>
 
@@ -174,7 +174,7 @@ export function Confidentialite() {
     <LegalLayout title="Politique de confidentialité" lastUpdate="6 mai 2026">
       <p>
         Cette politique décrit comment Kairn collecte, utilise et protège vos données à caractère personnel. Elle s'applique à toute personne qui visite
-        le site <strong>kairn.agency</strong>, remplit un formulaire de contact, prend rendez-vous via Calendly ou échange par email avec nous.
+        le site <strong>kairnagency.com</strong>, remplit un formulaire de contact, prend rendez-vous via Calendly ou échange par email avec nous.
       </p>
       <p>
         Le présent document est rédigé en conformité avec la <strong>Loi fédérale sur la protection des données (nLPD, en vigueur depuis le 1er&nbsp;septembre 2023)</strong> et
