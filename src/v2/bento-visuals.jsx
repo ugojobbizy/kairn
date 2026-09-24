@@ -32,6 +32,8 @@ const DOWN = 'm22 17-8.5-8.5-5 5L2 7M16 17h6v-6';
 const BOLT = 'M13 2 3 14h9l-1 8 10-12h-9l1-8z';
 
 // ─ Campagnes : test A/B, la meilleure créa passe de main en main ─
+// Volontairement en CSS pur (pas de layoutId ni d'animation JS) : la carte doit s'afficher
+// sur tous les navigateurs, même si le moteur d'animation n'a pas la main.
 export function AdsVisual() {
   const [ref, win] = useLoop(3, 2400);
   const ads = [
@@ -43,27 +45,17 @@ export function AdsVisual() {
     <div className="vz" ref={ref}>
       <div className="ads-row">
         {ads.map((a, i) => (
-          <motion.div
-            key={i}
-            className={`mini ad${i === win ? ' is-win' : ''}`}
-            animate={{ y: i === win ? -12 : 0, scale: i === win ? 1.04 : 0.97 }}
-            transition={{ type: 'spring', stiffness: 220, damping: 22 }}
-          >
-            {i === win && (
-              <motion.span layoutId="ad-win" className="ad-win" transition={{ type: 'spring', stiffness: 300, damping: 28 }}>
-                <Ico d={BOLT} size={10} /> Meilleure créa
-              </motion.span>
-            )}
+          <div key={i} className={`mini ad${i === win ? ' is-win' : ''}`}>
+            <span className="ad-win"><Ico d={BOLT} size={10} /> Meilleure créa</span>
             <div className="ad-head"><i /><span><b>Votre marque</b><small>Sponsorisé · {a.net}</small></span></div>
             <div className={`ad-img ${a.img}`} />
             <div className="ad-foot"><span className="ad-l" /><span className="ad-cta">En savoir plus</span></div>
-          </motion.div>
+          </div>
         ))}
       </div>
       <span className="cpl-chip">
         <svg width="46" height="18" viewBox="0 0 46 18" aria-hidden="true">
-          <motion.path d="M1 3 L10 6 L18 5 L27 10 L35 11 L45 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 1.6, ease: 'easeInOut' }} />
+          <path className="cpl-line" d="M1 3 L10 6 L18 5 L27 10 L35 11 L45 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" pathLength="100" />
         </svg>
         CPL en baisse
       </span>
@@ -247,11 +239,11 @@ export function CrmVisual() {
           <div key={name} className={`crm-col${col === 3 ? ' is-won' : ''}`}>
             <div className="crm-col-head"><span>{name}</span><em>{PARKED[col].length + (stage === col ? 1 : 0)}</em></div>
             {stage === col && (
-              <motion.div layoutId="crm-lead" className="crm-card is-live" transition={{ type: 'spring', stiffness: 260, damping: 26 }}>
+              <div key={`live-${col}`} className="crm-card is-live">
                 <span className="crm-name" />
                 <span className="crm-src is-meta">Meta · Créa B</span>
                 {col === 3 && <span className="crm-won"><Ico d={CHECK} size={10} /> Signé</span>}
-              </motion.div>
+              </div>
             )}
             {PARKED[col].map((c, i) => (
               <div key={i} className="crm-card">
