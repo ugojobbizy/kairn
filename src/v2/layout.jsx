@@ -64,12 +64,12 @@ export function Nav() {
     <header className={`nav${scrolled ? ' is-scrolled' : ''}`}>
       <div className="wrap">
         <div className="nav-bar">
-          <Link to="/v2" className="brand" aria-label="Kairn, accueil"><KairnLogo />Kairn</Link>
+          <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo />Kairn</Link>
           <nav className="nav-links" aria-label="Navigation principale">
-            <Link to="/v2#systeme">Le système</Link>
-            <Link to="/v2#methode">Méthode</Link>
-            <Link to="/v2/realisations">Réalisations</Link>
-            <Link to="/v2#faq">Questions</Link>
+            <Link to="/#systeme">Le système</Link>
+            <Link to="/#methode">Méthode</Link>
+            <Link to="/realisations">Réalisations</Link>
+            <Link to="/#faq">Questions</Link>
           </nav>
           <BookCta><span className="long">Réserver un appel</span><span className="short">Réserver</span></BookCta>
         </div>
@@ -84,7 +84,7 @@ export function Footer() {
       <div className="wrap">
         <div className="footer-grid">
           <div>
-            <Link to="/v2" className="brand"><KairnLogo />Kairn</Link>
+            <Link to="/" className="brand"><KairnLogo />Kairn</Link>
             <p style={{ marginTop: 12, maxWidth: '34ch', fontSize: 15, color: 'var(--muted)' }}>
               Agence de génération de leads. Campagnes, landing pages et CRM sur mesure, par une seule équipe.
             </p>
@@ -92,9 +92,9 @@ export function Footer() {
           <div>
             <h3>Agence</h3>
             <ul>
-              <li><Link to="/v2#systeme">Le système</Link></li>
-              <li><Link to="/v2#methode">Méthode</Link></li>
-              <li><Link to="/v2/realisations">Réalisations</Link></li>
+              <li><Link to="/#systeme">Le système</Link></li>
+              <li><Link to="/#methode">Méthode</Link></li>
+              <li><Link to="/realisations">Réalisations</Link></li>
             </ul>
           </div>
           <div>

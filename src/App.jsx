@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './styles.js';
 import KairnHome from './home.jsx';
 import BuildPage from './build.jsx';
@@ -49,22 +49,24 @@ function Shell() {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<KairnHome variant={variant} />} />
+        <Route path="/" element={<KairnHomeV2 />} />
+        <Route path="/v1" element={<KairnHome variant={variant} />} />
         <Route path="/build" element={<BuildPage variant={variant} />} />
         <Route path="/ads" element={<AdsPage variant={variant} />} />
-        <Route path="/realisations" element={<RealisationsPage variant={variant} />} />
+        <Route path="/realisations" element={<RealisationsV2 />} />
+        <Route path="/v1/realisations" element={<RealisationsPage variant={variant} />} />
         <Route path="/contact" element={<ContactPage variant={variant} />} />
         <Route path="/landing" element={<LandingPage variant={variant} />} />
         <Route path="/landing2" element={<LandingPage2 variant={variant} />} />
-        <Route path="/v2" element={<KairnHomeV2 />} />
-        <Route path="/v2/realisations" element={<RealisationsV2 />} />
+        <Route path="/v2" element={<Navigate to="/" replace />} />
+        <Route path="/v2/realisations" element={<Navigate to="/realisations" replace />} />
         <Route path="/landing3" element={<LandingPage3 variant={variant} />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/confidentialite" element={<Confidentialite />} />
         <Route path="/cgv" element={<CGV />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AuthGuard><AdminCRM /></AuthGuard>} />
-        <Route path="*" element={<KairnHome variant={variant} />} />
+        <Route path="*" element={<KairnHomeV2 />} />
       </Routes>
     </>
   );

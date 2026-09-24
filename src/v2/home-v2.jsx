@@ -123,7 +123,7 @@ export default function KairnHomeV2() {
   useV2Favicon();
   useEffect(() => {
     const prev = document.title;
-    document.title = 'Kairn · Agence de génération de leads';
+    document.title = 'Kairn · Création web & génération de leads';
     return () => { document.title = prev; };
   }, []);
 
@@ -228,7 +228,7 @@ export default function KairnHomeV2() {
               </Reveal>
               <Cases />
               <div className="cases-more">
-                <Link to="/v2/realisations" className="btn btn-light">Toutes les réalisations</Link>
+                <Link to="/realisations" className="btn btn-light">Toutes les réalisations</Link>
               </div>
             </div>
           </section>
