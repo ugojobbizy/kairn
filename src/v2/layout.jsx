@@ -29,7 +29,7 @@ export function useV2Favicon() {
     const link = document.querySelector('link[rel="icon"]');
     if (!link) return undefined;
     const prev = link.getAttribute('href');
-    link.setAttribute('href', '/v2/favicon.svg');
+    link.setAttribute('href', '/favicon.svg?v=2');
     return () => link.setAttribute('href', prev);
   }, []);
 }
