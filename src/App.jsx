@@ -9,6 +9,8 @@ import ContactPage from './contact.jsx';
 import LandingPage from './landing.jsx';
 import LandingPage2 from './landing2.jsx';
 import LandingPage3 from './landing3.jsx';
+import KairnHomeV2 from './v2/home-v2.jsx';
+import RealisationsV2 from './v2/realisations-v2.jsx';
 import { MentionsLegales, Confidentialite, CGV } from './legal.jsx';
 import AdminLogin from './admin/login.jsx';
 import AdminCRM from './admin/crm.jsx';
@@ -54,6 +56,8 @@ function Shell() {
         <Route path="/contact" element={<ContactPage variant={variant} />} />
         <Route path="/landing" element={<LandingPage variant={variant} />} />
         <Route path="/landing2" element={<LandingPage2 variant={variant} />} />
+        <Route path="/v2" element={<KairnHomeV2 />} />
+        <Route path="/v2/realisations" element={<RealisationsV2 />} />
         <Route path="/landing3" element={<LandingPage3 variant={variant} />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/confidentialite" element={<Confidentialite />} />
