@@ -5,6 +5,7 @@ import { GlowCard } from './glow-card.jsx';
 // Cas clients au format d'origine du site : chiffres à gauche, contexte au centre,
 // citation à droite, navigation entre les cas. Textes TradeAuto et Rénovia repris du site en ligne ;
 // chiffres Isolation d'Aquitaine relevés dans son CRM (Supabase, tables ad_spend et leads), le 2026-09-23.
+// Madame la Gouvernante : chiffres plateforme repris du site V1 ; pas de CPL publié tant qu'il n'est pas relevé.
 
 const CASES = [
   {
@@ -31,11 +32,26 @@ const CASES = [
     solution: 'Site + CRM + dashboard temps réel + campagnes Meta & Google par la même équipe. Tracking serveur end-to-end, attribution multi-source.',
     kpis: [
       { v: '−64 %', l: 'CPL · de 27,40 CHF à 10 CHF' },
-      { v: '86', l: 'leads ultra-qualifiés générés cette semaine' },
+      { v: '86', l: 'leads ultra-qualifiés générés en un mois (avril 2026)' },
       { v: '4 sem.', l: 'du brief au tunnel complet' },
     ],
     quote: 'Site, CRM, dashboard, Meta + Google Ads : tout livré par la même équipe en 4 semaines. Je recommande les yeux fermés.',
     author: 'Louis · Fondateur, TRADEAUTO.CH',
+  },
+  {
+    name: 'Madame la Gouvernante',
+    logo: '/madame-logo.png',
+    tags: ['Marketplace', 'Plateforme sur mesure', 'Acquisition des deux côtés'],
+    title: 'La plateforme, puis les leads des deux côtés du marché',
+    challenge: 'Coordination manuelle via WhatsApp et tableurs, et un double défi d’acquisition : attirer des freelances qui veulent des missions, et des entreprises qui cherchent du personnel.',
+    solution: 'Plateforme two-sided avec matching, dispatch automatique et paiement Stripe. Puis une campagne d’acquisition sur les deux publics, qui a amené des centaines de leads entrants, freelances comme entreprises.',
+    kpis: [
+      { v: '150+', l: 'missions pilotées chaque semaine depuis un seul back-office' },
+      { v: '2', l: 'publics acquis en parallèle : freelances et entreprises' },
+      { v: '14', l: 'spécialités métiers gérées par la plateforme' },
+    ],
+    quote: 'Aujourd’hui on pilote 150+ missions par semaine depuis un seul back-office. La différence est nuit et jour.',
+    author: 'Manon · Co-fondatrice, MADAMELAGOUVERNANTE.COM',
   },
   {
     name: 'Rénovia',

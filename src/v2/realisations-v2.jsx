@@ -337,7 +337,7 @@ function FeaturedTradeauto({ isMobile }) {
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 20 : 32 }}>
               {[
                 { n: '−64', suf: '%', l: 'CPL · de 27,40 CHF à 10 CHF en quelques semaines' },
-                { n: '86', suf: '', l: 'Leads ultra qualifiés générés ce mois' },
+                { n: '86', suf: '', l: 'Leads ultra qualifiés générés en un mois (avril 2026)' },
                 { n: '7', suf: '%', l: 'Taux de conversion lead → vente' },
                 { n: '4', suf: ' sem', l: 'Du brief au tunnel complet en ligne' },
               ].map((x) => (
