@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CONTACT_EMAIL } from '../config.js';
+import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
 
 // Éléments communs aux pages de la V2 : logo, navigation, pied de page, bouton de réservation.
 
@@ -70,6 +70,12 @@ export function Nav() {
             <Link to="/#methode">Méthode</Link>
             <Link to="/realisations">Réalisations</Link>
             <Link to="/#faq">Questions</Link>
+            {WHATSAPP_NUMBER && (
+              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="nav-wa" aria-label="Contact sur WhatsApp (nouvel onglet)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4 1 2.9.8 3.4.7.5-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z" /></svg>
+                Contact
+              </a>
+            )}
           </nav>
           <BookCta><span className="long">Réserver un appel</span><span className="short">Réserver</span></BookCta>
         </div>
