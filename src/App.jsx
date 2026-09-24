@@ -6,10 +6,7 @@ import SeoManager from './seo-manager.jsx';
 
 // Pages chargées à la demande : la page d'accueil n'embarque pas le code des autres pages.
 const KairnHome = lazy(() => import('./home.jsx'));
-const BuildPage = lazy(() => import('./build.jsx'));
-const AdsPage = lazy(() => import('./ads.jsx'));
 const RealisationsPage = lazy(() => import('./realisations.jsx'));
-const ContactPage = lazy(() => import('./contact.jsx'));
 const LandingPage = lazy(() => import('./landing.jsx'));
 const LandingPage2 = lazy(() => import('./landing2.jsx'));
 const LandingPage3 = lazy(() => import('./landing3.jsx'));
@@ -57,15 +54,16 @@ function Shell() {
       <Routes>
         <Route path="/" element={<KairnHomeV2 />} />
         <Route path="/v1" element={<KairnHome variant={variant} />} />
-        <Route path="/build" element={<BuildPage variant={variant} />} />
-        <Route path="/ads" element={<AdsPage variant={variant} />} />
         <Route path="/realisations" element={<RealisationsV2 />} />
         <Route path="/v1/realisations" element={<RealisationsPage variant={variant} />} />
-        <Route path="/contact" element={<ContactPage variant={variant} />} />
         <Route path="/landing" element={<LandingPage variant={variant} />} />
         <Route path="/landing2" element={<LandingPage2 variant={variant} />} />
         <Route path="/v2" element={<Navigate to="/" replace />} />
         <Route path="/v2/realisations" element={<Navigate to="/realisations" replace />} />
+        {/* Anciennes pages de la V1, retirées : renvoi vers l'accueil */}
+        <Route path="/build" element={<Navigate to="/" replace />} />
+        <Route path="/ads" element={<Navigate to="/" replace />} />
+        <Route path="/contact" element={<Navigate to="/" replace />} />
         <Route path="/landing3" element={<LandingPage3 variant={variant} />} />
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/confidentialite" element={<Confidentialite />} />

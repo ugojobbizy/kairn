@@ -20,18 +20,6 @@ export const PAGES = {
     title: 'Réalisations et cas clients · Kairn',
     description: 'Landing pages, campagnes Meta et CRM sur mesure : nos cas clients chiffrés, dont un coût par lead divisé par 3,5 en trois mois pour Isolation d’Aquitaine.',
   },
-  '/build': {
-    title: 'Création de sites, landing pages et CRM sur mesure · Kairn',
-    description: 'Landing pages, tunnels de conversion, plateformes et automatisations développés sur mesure et livrés en quelques semaines. Le code vous appartient.',
-  },
-  '/ads': {
-    title: 'Campagnes Meta Ads et Google Ads · Kairn',
-    description: 'On baisse votre coût par lead avant d’augmenter le budget : tests de créas, tracking serveur et attribution. Campagnes Meta et Google pilotées chaque semaine.',
-  },
-  '/contact': {
-    title: 'Contact · Kairn',
-    description: 'Réservez un appel de 30 minutes, écrivez-nous sur WhatsApp ou à contact@kairnagency.com. Une réponse honnête : oui, non, ou une recommandation.',
-  },
   '/mentions-legales': { title: 'Mentions légales · Kairn', description: 'Mentions légales du site kairnagency.com, édité par Kairn.' },
   '/confidentialite': { title: 'Politique de confidentialité · Kairn', description: 'Comment Kairn collecte, utilise et protège vos données personnelles sur kairnagency.com.' },
   '/cgv': { title: 'Conditions générales de vente · Kairn', description: 'Conditions générales de vente des prestations de Kairn : création web, campagnes publicitaires et CRM sur mesure.' },

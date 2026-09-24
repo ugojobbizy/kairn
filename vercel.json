@@ -1,4 +1,9 @@
 {
+  "redirects": [
+    { "source": "/build", "destination": "/", "permanent": true },
+    { "source": "/ads", "destination": "/", "permanent": true },
+    { "source": "/contact", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]

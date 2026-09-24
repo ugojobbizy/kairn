@@ -104,11 +104,12 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3>Services</h3>
+            <h3>Contact</h3>
             <ul>
-              <li><Link to="/ads">Acquisition</Link></li>
-              <li><Link to="/build">Build</Link></li>
-              <li><Link to="/contact">Contact</Link></li>
+              {WHATSAPP_NUMBER && (
+                <li><a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+              )}
+              <li><a href="#reserver">Réserver un appel</a></li>
             </ul>
           </div>
           <div>
