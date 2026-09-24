@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './styles.js';
-import KairnHome from './home.jsx';
-import BuildPage from './build.jsx';
-import AdsPage from './ads.jsx';
-import RealisationsPage from './realisations.jsx';
-import ContactPage from './contact.jsx';
-import LandingPage from './landing.jsx';
-import LandingPage2 from './landing2.jsx';
-import LandingPage3 from './landing3.jsx';
 import KairnHomeV2 from './v2/home-v2.jsx';
-import RealisationsV2 from './v2/realisations-v2.jsx';
-import { MentionsLegales, Confidentialite, CGV } from './legal.jsx';
-import AdminLogin from './admin/login.jsx';
-import AdminCRM from './admin/crm.jsx';
-import { AuthProvider, AuthGuard } from './admin/auth-context.jsx';
+import SeoManager from './seo-manager.jsx';
+
+// Pages chargées à la demande : la page d'accueil n'embarque pas le code des autres pages.
+const KairnHome = lazy(() => import('./home.jsx'));
+const BuildPage = lazy(() => import('./build.jsx'));
+const AdsPage = lazy(() => import('./ads.jsx'));
+const RealisationsPage = lazy(() => import('./realisations.jsx'));
+const ContactPage = lazy(() => import('./contact.jsx'));
+const LandingPage = lazy(() => import('./landing.jsx'));
+const LandingPage2 = lazy(() => import('./landing2.jsx'));
+const LandingPage3 = lazy(() => import('./landing3.jsx'));
+const RealisationsV2 = lazy(() => import('./v2/realisations-v2.jsx'));
+const MentionsLegales = lazy(() => import('./legal.jsx').then((m) => ({ default: m.MentionsLegales })));
+const Confidentialite = lazy(() => import('./legal.jsx').then((m) => ({ default: m.Confidentialite })));
+const CGV = lazy(() => import('./legal.jsx').then((m) => ({ default: m.CGV })));
+const AdminLoginPage = lazy(() => import('./admin/admin-pages.jsx').then((m) => ({ default: m.AdminLoginPage })));
+const AdminCRMPage = lazy(() => import('./admin/admin-pages.jsx').then((m) => ({ default: m.AdminCRMPage })));
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -48,6 +52,8 @@ function Shell() {
   return (
     <>
       <ScrollToTop />
+      <SeoManager />
+      <Suspense fallback={null}>
       <Routes>
         <Route path="/" element={<KairnHomeV2 />} />
         <Route path="/v1" element={<KairnHome variant={variant} />} />
@@ -64,10 +70,11 @@ function Shell() {
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/confidentialite" element={<Confidentialite />} />
         <Route path="/cgv" element={<CGV />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AuthGuard><AdminCRM /></AuthGuard>} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin" element={<AdminCRMPage />} />
         <Route path="*" element={<KairnHomeV2 />} />
       </Routes>
+      </Suspense>
     </>
   );
 }
@@ -75,9 +82,7 @@ function Shell() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Shell />
-      </AuthProvider>
+      <Shell />
     </BrowserRouter>
   );
 }

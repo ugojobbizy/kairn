@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /v1
 Disallow: /api/
 
 Sitemap: https://www.kairnagency.com/sitemap.xml

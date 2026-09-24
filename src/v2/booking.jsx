@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { BOOKING_URL, CONTACT_EMAIL } from '../config.js';
 
 // Réservation en deux étapes, à la manière d'iClosed :
@@ -118,6 +117,8 @@ export default function Booking() {
     if (!validate()) return;
     setSaving(true);
     try {
+      // Supabase n'est chargé qu'au moment d'enregistrer un lead (allège la page d'accueil).
+      const { supabase, isSupabaseConfigured } = await import('../lib/supabase.js');
       if (isSupabaseConfigured) {
         const utm = getUtm();
         const lead = {

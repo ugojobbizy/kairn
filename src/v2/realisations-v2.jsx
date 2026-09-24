@@ -1964,11 +1964,6 @@ function useIsMobile() {
 export default function RealisationsV2() {
   useV2Favicon();
   const isMobile = useIsMobile();
-  useEffect(() => {
-    const prev = document.title;
-    document.title = 'Réalisations · Kairn';
-    return () => { document.title = prev; };
-  }, []);
   return (
     <MotionConfig reducedMotion="user">
       <div className="v2 real">
