@@ -89,7 +89,7 @@ export default function LeadForm({ onSubmit, onCancel, submitting }) {
             placeholder="Marie"
             autoFocus
             style={inputBase}
-            onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,.12)'; }}
+            onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,.12)'; }}
             onBlur={(e) => { e.target.style.borderColor = 'var(--line-2)'; e.target.style.boxShadow = 'none'; }}
           />
         </Field>
@@ -99,7 +99,7 @@ export default function LeadForm({ onSubmit, onCancel, submitting }) {
             onChange={(e) => set('company', e.target.value)}
             placeholder="Cabinet Véran"
             style={inputBase}
-            onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,.12)'; }}
+            onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,.12)'; }}
             onBlur={(e) => { e.target.style.borderColor = 'var(--line-2)'; e.target.style.boxShadow = 'none'; }}
           />
         </Field>
@@ -110,7 +110,7 @@ export default function LeadForm({ onSubmit, onCancel, submitting }) {
             onChange={(e) => set('email', e.target.value)}
             placeholder="marie@example.com"
             style={inputBase}
-            onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,.12)'; }}
+            onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,.12)'; }}
             onBlur={(e) => { e.target.style.borderColor = 'var(--line-2)'; e.target.style.boxShadow = 'none'; }}
           />
         </Field>
@@ -121,7 +121,7 @@ export default function LeadForm({ onSubmit, onCancel, submitting }) {
             onChange={(e) => set('phone', e.target.value)}
             placeholder="+41 ..."
             style={inputBase}
-            onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,.12)'; }}
+            onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,.12)'; }}
             onBlur={(e) => { e.target.style.borderColor = 'var(--line-2)'; e.target.style.boxShadow = 'none'; }}
           />
         </Field>
@@ -149,7 +149,7 @@ export default function LeadForm({ onSubmit, onCancel, submitting }) {
           placeholder="Source, contexte, première conversation…"
           rows={3}
           style={{ ...inputBase, resize: 'vertical', lineHeight: 1.5, minHeight: 80 }}
-          onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(139,92,246,.12)'; }}
+          onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,.12)'; }}
           onBlur={(e) => { e.target.style.borderColor = 'var(--line-2)'; e.target.style.boxShadow = 'none'; }}
         />
       </Field>
@@ -175,12 +175,12 @@ export default function LeadForm({ onSubmit, onCancel, submitting }) {
         </button>
         <button type="submit" disabled={submitting} style={{
           padding: '11px 22px', borderRadius: 999,
-          background: 'linear-gradient(180deg, #9B6FFB 0%, #7C3AED 100%)',
+          background: 'linear-gradient(180deg, #4F7DF3 0%, #2F5BEA 100%)',
           color: '#fff', border: 'none',
           fontFamily: 'Geist, sans-serif', fontSize: 13.5, fontWeight: 600,
           cursor: submitting ? 'wait' : 'pointer',
           opacity: submitting ? 0.7 : 1,
-          boxShadow: '0 10px 24px -8px rgba(124,58,237,.5)',
+          boxShadow: '0 10px 24px -8px rgba(47,91,234,.5)',
           display: 'inline-flex', alignItems: 'center', gap: 8,
         }}>
           {submitting ? 'Création…' : 'Créer le lead'}

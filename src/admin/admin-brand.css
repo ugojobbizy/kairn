@@ -1,0 +1,15 @@
+/* CRM et connexion admin : jetons de couleur au branding bleu Kairn (V2). */
+.kairn.kairn-admin {
+  --bg: #F8FAFF;
+  --bg-alt: #F2F6FF;
+  --ink: #0C0A1A;
+  --ink-soft: #1B2240;
+  --muted: #5B6178;
+  --line: #E3ECFF;
+  --line-2: #E4E9F5;
+  --violet: #3B82F6;
+  --violet-deep: #2F5BEA;
+  --lav: #A9C1FF;
+  --lav-pale: #F2F6FF;
+}
+.kairn-admin .kairn-logo { display: block; flex: none; }

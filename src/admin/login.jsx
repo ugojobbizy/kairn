@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { KairnMark } from '../sections-1.jsx';
+import { KairnLogo } from '../v2/layout.jsx';
+import './admin-brand.css';
 import { useAuth } from './auth-context.jsx';
 
 function useAdminMeta() {
@@ -49,10 +50,10 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="kairn" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg)' }}>
+    <div className="kairn kairn-admin" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg)' }}>
       <style>{`
         @keyframes k-shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
-        @keyframes k-login-pulse { 0%, 100% { box-shadow: 0 14px 36px -10px rgba(124,58,237,.45); } 50% { box-shadow: 0 18px 44px -8px rgba(124,58,237,.6); } }
+        @keyframes k-login-pulse { 0%, 100% { box-shadow: 0 14px 36px -10px rgba(47,91,234,.45); } 50% { box-shadow: 0 18px 44px -8px rgba(47,91,234,.6); } }
         .k-login-cta { position: relative; overflow: hidden; transition: transform .2s; animation: k-login-pulse 3.4s ease-in-out infinite; }
         .k-login-cta:hover { transform: translateY(-1px); }
         .k-login-cta:active { transform: translateY(0); }
@@ -60,22 +61,22 @@ export default function AdminLogin() {
       `}</style>
 
       <div className="k-hero-bg" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', position: 'relative', overflow: 'hidden' }}>
-        <div className="k-hero-blob" style={{ width: 420, height: 420, background: '#C4B5FD', top: -120, left: '12%' }}></div>
-        <div className="k-hero-blob" style={{ width: 480, height: 480, background: '#8B5CF6', top: -40, right: '10%', opacity: .24, animationDelay: '-6s' }}></div>
+        <div className="k-hero-blob" style={{ width: 420, height: 420, background: '#A9C1FF', top: -120, left: '12%' }}></div>
+        <div className="k-hero-blob" style={{ width: 480, height: 480, background: '#3B82F6', top: -40, right: '10%', opacity: .24, animationDelay: '-6s' }}></div>
 
         <div style={{ width: '100%', maxWidth: 420, position: 'relative' }}>
           <Link to="/" style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
             textDecoration: 'none', color: 'var(--ink)', marginBottom: 28,
           }}>
-            <KairnMark />
+            <KairnLogo />
             <span style={{ fontFamily: 'Geist, sans-serif', fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em' }}>Kairn</span>
           </Link>
 
           <div className={shake ? 'k-login-shake' : ''} style={{
             padding: 32, borderRadius: 18, background: '#fff',
             border: '1px solid var(--line-2)',
-            boxShadow: '0 30px 80px -30px rgba(124,58,237,.30)',
+            boxShadow: '0 30px 80px -30px rgba(47,91,234,.30)',
           }}>
             <span className="mono" style={{ fontSize: 11, color: 'var(--violet-deep)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600 }}>
               Espace privé · Kairn
@@ -83,7 +84,7 @@ export default function AdminLogin() {
             <h1 style={{ fontSize: 32, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.05, marginTop: 12 }}>
               <span style={{
                 fontFamily: 'Georgia, serif', fontStyle: 'italic', fontWeight: 400,
-                background: 'linear-gradient(120deg, #8B5CF6, #6D28D9)',
+                background: 'linear-gradient(120deg, #3B82F6, #1D4ED8)',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
               }}>Bienvenue.</span>
             </h1>
@@ -116,7 +117,7 @@ export default function AdminLogin() {
 
               <button type="submit" disabled={loading} className="k-login-cta" style={{
                 marginTop: 22, padding: '14px 22px', width: '100%',
-                background: 'linear-gradient(180deg, #9B6FFB 0%, #7C3AED 100%)',
+                background: 'linear-gradient(180deg, #4F7DF3 0%, #2F5BEA 100%)',
                 color: '#fff', border: 'none', borderRadius: 999,
                 fontFamily: 'Geist, sans-serif', fontSize: 15, fontWeight: 600,
                 letterSpacing: '-0.005em',
@@ -183,7 +184,7 @@ function PasswordField({ value, onChange, inputRef, hasError }) {
             border: '1px solid ' + (hasError ? '#FECACA' : focused ? 'var(--violet)' : 'var(--line-2)'),
             borderRadius: 12, outline: 'none', boxSizing: 'border-box',
             transition: 'border-color .15s, box-shadow .15s',
-            boxShadow: focused ? '0 0 0 4px rgba(139,92,246,.14)' : 'none',
+            boxShadow: focused ? '0 0 0 4px rgba(59,130,246,.14)' : 'none',
             letterSpacing: reveal ? '0' : '0.06em',
           }}
         />

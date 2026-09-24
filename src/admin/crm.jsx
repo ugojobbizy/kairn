@@ -4,7 +4,8 @@ import {
   DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
   closestCorners, useDroppable, useDraggable,
 } from '@dnd-kit/core';
-import { KairnMark } from '../sections-1.jsx';
+import { KairnLogo } from '../v2/layout.jsx';
+import './admin-brand.css';
 import { useAuth } from './auth-context.jsx';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { BOOKING_URL } from '../config.js';
@@ -15,7 +16,7 @@ import { leadsToCsv, downloadCsv, dateStamp } from './csv-export.js';
 // CONSTANTS — pipeline stages and form value labels
 // ═════════════════════════════════════════════════════════════
 const STAGES = [
-  { v: 'new',       l: 'Nouveau',     accent: '#8B5CF6', desc: 'À traiter' },
+  { v: 'new',       l: 'Nouveau',     accent: '#3B82F6', desc: 'À traiter' },
   { v: 'contacted', l: 'Contacté',    accent: '#6366F1', desc: '1er contact envoyé' },
   { v: 'booked',    l: 'RDV pris',    accent: '#0EA5E9', desc: 'Calendly confirmé' },
   { v: 'qualified', l: 'Qualifié',    accent: '#F59E0B', desc: 'Call effectué' },
@@ -99,15 +100,15 @@ function formatDateTime(iso) {
 
 function avatarColor(seed) {
   // Simple hash → hue offset, anchored on violet palette
-  if (!seed) return 'linear-gradient(135deg, #C4B5FD, #8B5CF6)';
+  if (!seed) return 'linear-gradient(135deg, #A9C1FF, #3B82F6)';
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
   const tints = [
-    'linear-gradient(135deg, #C4B5FD, #8B5CF6)',
-    'linear-gradient(135deg, #DDD6FE, #7C3AED)',
+    'linear-gradient(135deg, #A9C1FF, #3B82F6)',
+    'linear-gradient(135deg, #D3E0FF, #2F5BEA)',
     'linear-gradient(135deg, #BFDBFE, #6366F1)',
-    'linear-gradient(135deg, #FBCFE8, #A78BFA)',
-    'linear-gradient(135deg, #C7D2FE, #8B5CF6)',
+    'linear-gradient(135deg, #FBCFE8, #7DA2FF)',
+    'linear-gradient(135deg, #C7D2FE, #3B82F6)',
   ];
   return tints[h % tints.length];
 }
@@ -139,12 +140,12 @@ function ToastStack({ toasts, onDismiss }) {
           minWidth: 220, maxWidth: 360,
           animation: 'k-toast-in .25s cubic-bezier(.2,.7,.3,1)',
         }}>
-          {t.icon && <span style={{ flexShrink: 0, color: t.color || '#A78BFA', display: 'inline-flex' }}>{t.icon}</span>}
+          {t.icon && <span style={{ flexShrink: 0, color: t.color || '#7DA2FF', display: 'inline-flex' }}>{t.icon}</span>}
           <span style={{ flex: 1, lineHeight: 1.4 }}>{t.text}</span>
           {t.action && (
             <button onClick={() => { t.action.onClick(); onDismiss(t.id); }} style={{
               background: 'transparent', border: 'none', cursor: 'pointer',
-              color: '#A78BFA', fontFamily: 'Geist, sans-serif',
+              color: '#7DA2FF', fontFamily: 'Geist, sans-serif',
               fontSize: 13, fontWeight: 600, padding: '4px 8px', borderRadius: 6,
             }}>
               {t.action.label}
@@ -204,8 +205,8 @@ function LeadCard({ lead, onClick, onAdvanceStage, isOverlay = false }) {
         borderRadius: 14,
         cursor: isOverlay ? 'grabbing' : 'pointer',
         boxShadow: isOverlay
-          ? '0 28px 70px -14px rgba(124,58,237,.5)'
-          : isDragging ? 'none' : (hover ? '0 14px 32px -16px rgba(124,58,237,.35)' : '0 1px 0 rgba(10,10,10,.02)'),
+          ? '0 28px 70px -14px rgba(47,91,234,.5)'
+          : isDragging ? 'none' : (hover ? '0 14px 32px -16px rgba(47,91,234,.35)' : '0 1px 0 rgba(10,10,10,.02)'),
         opacity: isDragging && !isOverlay ? 0.4 : 1,
         transition: isOverlay ? 'none' : 'transform .18s cubic-bezier(.4,0,.2,1), box-shadow .18s, border-color .18s',
         transform: hover && !isDragging ? 'translateY(-2px)' : 'none',
@@ -242,7 +243,7 @@ function LeadCard({ lead, onClick, onAdvanceStage, isOverlay = false }) {
           position: 'absolute', top: 12, right: 12,
           width: 8, height: 8, borderRadius: '50%',
           background: 'var(--violet)',
-          boxShadow: '0 0 0 4px rgba(139,92,246,.18)',
+          boxShadow: '0 0 0 4px rgba(59,130,246,.18)',
           animation: 'k-card-pulse 2.4s ease-in-out infinite',
         }} />
       )}
@@ -254,7 +255,7 @@ function LeadCard({ lead, onClick, onAdvanceStage, isOverlay = false }) {
           background: avatarColor(lead.first_name || lead.email),
           color: '#fff', fontWeight: 600, fontSize: 13,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 0 1.5px rgba(255,255,255,.6) inset, 0 4px 10px -4px rgba(124,58,237,.35)',
+          boxShadow: '0 0 0 1.5px rgba(255,255,255,.6) inset, 0 4px 10px -4px rgba(47,91,234,.35)',
           letterSpacing: '-0.01em',
         }}>{getInitial(lead)}</span>
         <div style={{ flex: 1, minWidth: 0, paddingRight: isNew ? 14 : 0 }}>
@@ -278,7 +279,7 @@ function LeadCard({ lead, onClick, onAdvanceStage, isOverlay = false }) {
           {lead.sector && (
             <span style={{
               fontSize: 11, padding: '3px 9px', borderRadius: 999,
-              background: 'rgba(139,92,246,.10)', color: 'var(--violet-deep)',
+              background: 'rgba(59,130,246,.10)', color: 'var(--violet-deep)',
               fontWeight: 500,
             }}>
               {SECTOR_EMOJI[lead.sector] || '✦'} {SECTOR_LABEL[lead.sector] || lead.sector}
@@ -389,7 +390,7 @@ function Column({ stage, leads, onCardClick, onAdvanceStage }) {
         style={{
           flex: 1, minHeight: 100,
           padding: 10, borderRadius: 14,
-          background: isOver ? 'rgba(139,92,246,.10)' : 'rgba(245,243,255,.55)',
+          background: isOver ? 'rgba(59,130,246,.10)' : 'rgba(245,243,255,.55)',
           border: '1px dashed ' + (isOver ? 'var(--violet)' : 'transparent'),
           transition: 'background .15s, border-color .15s',
           display: 'flex', flexDirection: 'column', gap: 10,
@@ -466,7 +467,7 @@ function ListView({ leads, onRowClick }) {
     <div style={{
       background: '#fff', borderRadius: 14, border: '1px solid var(--line-2)',
       overflow: 'hidden',
-      boxShadow: '0 1px 0 rgba(10,10,10,.02), 0 12px 30px -20px rgba(124,58,237,.18)',
+      boxShadow: '0 1px 0 rgba(10,10,10,.02), 0 12px 30px -20px rgba(47,91,234,.18)',
     }}>
       <div style={{ overflowX: 'auto' }}>
         <table style={{
@@ -608,7 +609,7 @@ function LeadDrawer({ lead, onClose, onUpdate, onDelete, pushToast }) {
   const copy = (text, label) => {
     if (!text) return;
     navigator.clipboard?.writeText(text);
-    pushToast?.({ text: `${label || 'Copié'} : ${text}`, icon: ICONS.check, color: '#A78BFA' });
+    pushToast?.({ text: `${label || 'Copié'} : ${text}`, icon: ICONS.check, color: '#7DA2FF' });
   };
 
   return (
@@ -646,7 +647,7 @@ function LeadDrawer({ lead, onClose, onUpdate, onDelete, pushToast }) {
               background: avatarColor(lead.first_name || lead.email),
               color: '#fff', fontWeight: 600, fontSize: 20,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 0 1.5px rgba(255,255,255,.6) inset, 0 8px 18px -6px rgba(124,58,237,.5)',
+              boxShadow: '0 0 0 1.5px rgba(255,255,255,.6) inset, 0 8px 18px -6px rgba(47,91,234,.5)',
             }}>{getInitial(lead)}</span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h2 style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.025em', lineHeight: 1.15, margin: 0 }}>
@@ -768,7 +769,7 @@ function LeadDrawer({ lead, onClose, onUpdate, onDelete, pushToast }) {
                 outline: 'none', lineHeight: 1.6,
                 transition: 'border-color .15s, box-shadow .15s', boxSizing: 'border-box',
               }}
-              onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 4px rgba(139,92,246,.12)'; }}
+              onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 4px rgba(59,130,246,.12)'; }}
               onMouseLeave={(e) => { /* keep focus */ }}
             />
           </DrawerSection>
@@ -785,11 +786,11 @@ function LeadDrawer({ lead, onClose, onUpdate, onDelete, pushToast }) {
 
 const quickActionPrimary = {
   flex: 1, padding: '10px 14px', borderRadius: 10,
-  background: 'linear-gradient(180deg, #9B6FFB, #7C3AED)', color: '#fff',
+  background: 'linear-gradient(180deg, #4F7DF3, #2F5BEA)', color: '#fff',
   fontSize: 13, fontWeight: 600, textAlign: 'center',
   textDecoration: 'none', fontFamily: 'Geist, sans-serif',
   display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-  boxShadow: '0 8px 18px -6px rgba(124,58,237,.5)',
+  boxShadow: '0 8px 18px -6px rgba(47,91,234,.5)',
 };
 const quickActionSecondary = {
   flex: 1, padding: '10px 14px', borderRadius: 10,
@@ -995,7 +996,7 @@ function CreateLeadModal({ open, onClose, onCreated, pushToast }) {
             </div>
             <pre style={{
               fontFamily: 'Geist Mono, monospace', fontSize: 11, lineHeight: 1.5,
-              background: '#0A0A0A', color: '#E9D5FF',
+              background: '#0A0A0A', color: '#D3E0FF',
               padding: '10px 12px', borderRadius: 8,
               overflowX: 'auto', margin: 0,
             }}>{`CREATE POLICY "anon insert leads" ON leads
@@ -1217,18 +1218,18 @@ export default function AdminCRM() {
   const exportCsv = () => {
     const csv = leadsToCsv(filtered);
     downloadCsv(`kairn-leads-${dateStamp()}.csv`, csv);
-    pushToast({ text: `CSV exporté · ${filtered.length} lead${filtered.length > 1 ? 's' : ''}`, icon: ICONS.download, color: '#A78BFA' });
+    pushToast({ text: `CSV exporté · ${filtered.length} lead${filtered.length > 1 ? 's' : ''}`, icon: ICONS.download, color: '#7DA2FF' });
   };
 
   const activeLead = leads.find(l => l.id === activeLeadId);
   const filtersActive = !!(search || filterSector || filterBudget || filterStage);
 
   return (
-    <div className="kairn" style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+    <div className="kairn kairn-admin" style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @keyframes k-card-pulse {
-          0%, 100% { box-shadow: 0 0 0 4px rgba(139,92,246,.18); }
-          50% { box-shadow: 0 0 0 7px rgba(139,92,246,.06); }
+          0%, 100% { box-shadow: 0 0 0 4px rgba(59,130,246,.18); }
+          50% { box-shadow: 0 0 0 7px rgba(59,130,246,.06); }
         }
         @keyframes k-spin { to { transform: rotate(360deg); } }
       `}</style>
@@ -1251,7 +1252,7 @@ export default function AdminCRM() {
         }}>
           {/* Logo */}
           <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'var(--ink)', flexShrink: 0 }}>
-            <KairnMark />
+            <KairnLogo />
             <span style={{ fontFamily: 'Geist, sans-serif', fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Kairn</span>
           </Link>
           <span style={{ height: 18, width: 1, background: 'var(--line-2)', flexShrink: 0 }} />
@@ -1279,7 +1280,7 @@ export default function AdminCRM() {
                   color: 'var(--ink)', outline: 'none', boxSizing: 'border-box',
                   transition: 'border-color .15s, box-shadow .15s',
                 }}
-                onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 4px rgba(139,92,246,.12)'; }}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--violet)'; e.target.style.boxShadow = '0 0 0 4px rgba(59,130,246,.12)'; }}
                 onBlur={(e) => { e.target.style.borderColor = 'var(--line-2)'; e.target.style.boxShadow = 'none'; }}
               />
               <span className="mono" style={{
@@ -1307,11 +1308,11 @@ export default function AdminCRM() {
             <div style={{ position: 'relative' }}>
               <button onClick={() => setAccountOpen((v) => !v)} aria-label="Compte" style={{
                 width: 36, height: 36, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #C4B5FD, #7C3AED)',
+                background: 'linear-gradient(135deg, #A9C1FF, #2F5BEA)',
                 color: '#fff', fontWeight: 600, fontSize: 14,
                 border: 'none', cursor: 'pointer',
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 0 0 1.5px rgba(255,255,255,.7) inset, 0 6px 16px -6px rgba(124,58,237,.45)',
+                boxShadow: '0 0 0 1.5px rgba(255,255,255,.7) inset, 0 6px 16px -6px rgba(47,91,234,.45)',
               }}>M</button>
               {accountOpen && (
                 <>
@@ -1356,7 +1357,7 @@ export default function AdminCRM() {
             label="Pipeline actif"
             value={kpis.activeCount}
             sub={`${ACTIVE_STAGES.length} étapes`}
-            accent="#8B5CF6"
+            accent="#3B82F6"
             icon={<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="3" rx="1" stroke="currentColor" strokeWidth="1.4" /><rect x="2" y="7" width="9" height="3" rx="1" stroke="currentColor" strokeWidth="1.4" /><rect x="2" y="11" width="6" height="3" rx="1" stroke="currentColor" strokeWidth="1.4" /></svg>}
           />
           <KpiCard
@@ -1518,23 +1519,23 @@ const topBtnGhost = {
 const topBtnPrimary = {
   display: 'inline-flex', alignItems: 'center',
   padding: '9px 16px', borderRadius: 999,
-  background: 'linear-gradient(180deg, #9B6FFB, #7C3AED)',
+  background: 'linear-gradient(180deg, #4F7DF3, #2F5BEA)',
   color: '#fff', border: 'none',
   fontFamily: 'Geist, sans-serif', fontSize: 13, fontWeight: 600,
   cursor: 'pointer',
-  boxShadow: '0 8px 18px -6px rgba(124,58,237,.55)',
+  boxShadow: '0 8px 18px -6px rgba(47,91,234,.55)',
 };
 
 function ToggleBtn({ active, onClick, children }) {
   return (
     <button onClick={onClick} style={{
       padding: '7px 14px', borderRadius: 999,
-      background: active ? 'linear-gradient(180deg, #9B6FFB, #7C3AED)' : 'transparent',
+      background: active ? 'linear-gradient(180deg, #4F7DF3, #2F5BEA)' : 'transparent',
       color: active ? '#fff' : 'var(--ink-soft)',
       border: 'none', cursor: 'pointer',
       fontFamily: 'Geist, sans-serif', fontSize: 12.5, fontWeight: 600,
       display: 'inline-flex', alignItems: 'center', gap: 6,
-      boxShadow: active ? '0 4px 12px -4px rgba(124,58,237,.5)' : 'none',
+      boxShadow: active ? '0 4px 12px -4px rgba(47,91,234,.5)' : 'none',
       transition: 'all .15s',
     }}>{children}</button>
   );
@@ -1545,7 +1546,7 @@ function KpiCard({ label, value, sub, subColor, accent, icon, progress }) {
     <div style={{
       padding: 18, borderRadius: 14,
       background: '#fff', border: '1px solid var(--line-2)',
-      boxShadow: '0 1px 0 rgba(10,10,10,.02), 0 12px 30px -22px rgba(124,58,237,.22)',
+      boxShadow: '0 1px 0 rgba(10,10,10,.02), 0 12px 30px -22px rgba(47,91,234,.22)',
       position: 'relative', overflow: 'hidden',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
