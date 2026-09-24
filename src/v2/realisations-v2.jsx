@@ -211,7 +211,7 @@ function FeaturedTradeauto({ isMobile }) {
                 marginTop: 20, lineHeight: 1.6,
                 maxWidth: 680,
               }}>
-                Le <strong style={{ color: '#fff', fontWeight: 600 }}>tunnel d'acquisition complet</strong> pour le rachat automobile en Suisse — de la première impression Ads jusqu'au paiement. Site public, CRM dealer, dashboard financier, campagnes Meta + Google Ads, SEO, catalogue B2B. Sous un seul toit, livré en 4 semaines.
+                Le <strong style={{ color: '#fff', fontWeight: 600 }}>tunnel d'acquisition complet</strong> pour le rachat automobile en Suisse, de la première impression Ads jusqu'au paiement. Site public, CRM dealer, dashboard financier, campagnes Meta + Google Ads, SEO, catalogue B2B. Sous un seul toit, livré en 4 semaines.
               </p>
             </div>
             {!isMobile && (
@@ -253,7 +253,7 @@ function FeaturedTradeauto({ isMobile }) {
               body="Landing pages bilingues, funnel d'estimation 7 étapes optimisé mobile, Meta + Google Ads ciblés par région, SEO local. Tracking server-side (Meta CAPI + GA4) pour que chaque franc d'Ads soit attribué à une vente."
               url="tradeauto.ch"
               img="/tradeauto-landing.png"
-              alt="TRADEAUTO — landing & funnel d'estimation"
+              alt="TRADEAUTO : landing & funnel d'estimation"
               objectPosition="top"
               isMobile={isMobile}
             />
@@ -262,10 +262,10 @@ function FeaturedTradeauto({ isMobile }) {
               step="02"
               label="Gestion"
               title="Qualifier, relancer, convertir."
-              body="CRM dealer sur mesure — pipeline kanban (Nouveau → Contacté → RDV → Offre → Gagné), notes et activités, relances WhatsApp / email automatisées, export CSV. Les leads ne dorment plus dans une inbox."
+              body="CRM dealer sur mesure : pipeline kanban (Nouveau → Contacté → RDV → Offre → Gagné), notes et activités, relances WhatsApp / email automatisées, export CSV. Les leads ne dorment plus dans une inbox."
               url="tradeauto.ch/crm"
               img="/tradeauto-crm.png"
-              alt="TRADEAUTO — pipeline CRM dealer"
+              alt="TRADEAUTO : pipeline CRM dealer"
               objectPosition="center"
               objectFit="contain"
               isMobile={isMobile}
@@ -275,10 +275,10 @@ function FeaturedTradeauto({ isMobile }) {
               step="03"
               label="Pilotage"
               title="Voir chaque franc dépensé. Et ce qu'il rapporte."
-              body="Dashboard financier live : volume de leads par jour, coût par lead, coût par lead gagné, taux de conversion, dépenses Meta Ads. Plus besoin de Looker Studio ou d'un export manuel — tout est dans le back-office."
+              body="Dashboard financier live : volume de leads par jour, coût par lead, coût par lead gagné, taux de conversion, dépenses Meta Ads. Plus besoin de Looker Studio ou d'un export manuel : tout est dans le back-office."
               url="tradeauto.ch/analytics"
               img="/tradeauto-dashboard.png"
-              alt="TRADEAUTO — dashboard financier"
+              alt="TRADEAUTO : dashboard financier"
               objectPosition="center"
               objectFit="contain"
               isMobile={isMobile}
@@ -307,8 +307,8 @@ function FeaturedTradeauto({ isMobile }) {
                 gap: '10px 32px',
               }}>
                 {[
-                  'Site public Next.js (FR + DE) — funnel d\'estimation 7 étapes',
-                  'Catalogue B2B — publication des véhicules aux concessionnaires',
+                  'Site public Next.js (FR + DE) : funnel d\'estimation 7 étapes',
+                  'Catalogue B2B : publication des véhicules aux concessionnaires',
                   'CRM dealer avec pipeline kanban drag & drop',
                   'Dashboard financier live (leads, ventes, coût par lead)',
                   'Campagnes Meta Ads · CH-FR + CH-DE',
@@ -378,7 +378,7 @@ function FeaturedTradeauto({ isMobile }) {
             {[
               { label: 'Le contexte', title: 'Un marché opaque', body: 'Le rachat automobile en Suisse est dominé par des plateformes B2B aux tarifs peu transparents. L\'objectif : une plateforme B2C qui capte le particulier, centralise les leads côté dealer, et redistribue les véhicules aux concessionnaires partenaires.' },
               { label: 'Build', title: 'Tunnel complet, 4 semaines', body: 'Site public + funnel d\'estimation 7 étapes, CRM dealer avec pipeline kanban, catalogue B2B, dashboard financier live. Stack Next.js + Supabase, tracking server-side, automatisations WhatsApp / email.' },
-              { label: 'Ads', title: 'CPL divisé par 2,7', body: 'Meta Ads + Google Ads + SEO local, ciblage Suisse romande puis alémanique. Itérations creative hebdomadaires, restructuration CBO, tracking server-side Meta CAPI + GA4. Résultat : CPL passé de 27,40 CHF à 10 CHF en quelques semaines — et stabilisé.' },
+              { label: 'Ads', title: 'CPL divisé par 2,7', body: 'Meta Ads + Google Ads + SEO local, ciblage Suisse romande puis alémanique. Itérations creative hebdomadaires, restructuration CBO, tracking server-side Meta CAPI + GA4. Résultat : CPL passé de 27,40 CHF à 10 CHF en quelques semaines : et stabilisé.' },
             ].map((x, i) => (
               <div key={x.label} style={{ position: 'relative' }}>
                 <div className="mono" style={{
@@ -787,7 +787,7 @@ function FeaturedMadameLaGouvernante({ isMobile }) {
                 {[
                   { t: '3 dashboards spécialisés (freelance, entreprise, admin)' },
                   { t: 'Onboarding freelance réglementé (SIRET, RIB, pièce d\'identité, références)' },
-                  { t: 'Matching intelligent — géolocalisation + spécialité + indispos + rating', hl: true },
+                  { t: 'Matching intelligent : géolocalisation + spécialité + indispos + rating', hl: true },
                   { t: 'Paiement intégré Stripe · facturation automatisée', hl: true },
                   { t: 'Marge plateforme calculée à la volée (taux entreprise vs reversé freelance)', hl: true },
                   { t: 'Factures PDF générées automatiquement · envoi Resend', hl: true },
@@ -996,7 +996,7 @@ function FeaturedMadameLaGouvernante({ isMobile }) {
               <div style={{ background: '#FAFAFA', overflow: 'hidden' }}>
                 <img
                   src="/madamelagouv.png"
-                  alt="Madame La Gouvernante — back-office admin"
+                  alt="Madame La Gouvernante : back-office admin"
                   style={{ display: 'block', width: '100%', height: 'auto' }}
                 />
               </div>
@@ -1015,7 +1015,7 @@ function FeaturedMadameLaGouvernante({ isMobile }) {
             {[
               { label: 'Le contexte', title: 'Un marché fragmenté', body: 'Les extras de la restauration sont gérés au fil de l\'eau : groupes WhatsApp, tableurs, appels. Aucune plateforme ne couvre l\'ensemble du cycle (candidature, validation admin, dispatch, reviews, paiement) tout en respectant les contraintes réglementaires du statut auto-entrepreneur.' },
               { label: 'Build', title: 'Plateforme full-stack', body: 'Next.js 16 App Router + Prisma v7 + Supabase. 11 modèles relationnels (User, Profile, Mission, Application, Assignment, Offer, Review, Unavailability, Upload, tokens…). Auth NextAuth v5, uploads signés Cloudinary, tracking serveur. 3 dashboards, 1 back-office admin.' },
-              { label: 'Automatisations', title: 'Matching intelligent + paiement', body: 'Matching multi-critères (spécialité × géoloc/rayon × indispos × rating) qui fait remonter les meilleurs profils, puis dispatch WhatsApp + email avec tokens signés pour réponse 1-clic. Paiement Stripe intégré, facturation automatisée avec marge plateforme, PDF générés à la complétion — fin du WhatsApp qui perd des leads et de la facture Excel.' },
+              { label: 'Automatisations', title: 'Matching intelligent + paiement', body: 'Matching multi-critères (spécialité × géoloc/rayon × indispos × rating) qui fait remonter les meilleurs profils, puis dispatch WhatsApp + email avec tokens signés pour réponse 1-clic. Paiement Stripe intégré, facturation automatisée avec marge plateforme, PDF générés à la complétion : fin du WhatsApp qui perd des leads et de la facture Excel.' },
             ].map((x, i) => (
               <div key={x.label} style={{ position: 'relative' }}>
                 <div className="mono" style={{
@@ -1051,9 +1051,9 @@ function FeaturedMadameLaGouvernante({ isMobile }) {
               gap: 10,
             }}>
               {[
-                { t: 'Matching intelligent', d: 'Score multi-critères : spécialité + géoloc/rayon + dispo + rating — les top profils remontent en tête', hl: true },
+                { t: 'Matching intelligent', d: 'Score multi-critères : spécialité + géoloc/rayon + dispo + rating, les top profils remontent en tête', hl: true },
                 { t: 'Dispatch multi-canal', d: 'Top matchs notifiés via WhatsApp Twilio + email · tokens signés pour répondre en 1 clic', hl: true },
-                { t: 'Paiement Stripe intégré', d: 'L\'entreprise paie la plateforme, qui reverse au freelance après prestation — marge auto', hl: true },
+                { t: 'Paiement Stripe intégré', d: 'L\'entreprise paie la plateforme, qui reverse au freelance après prestation : marge auto', hl: true },
                 { t: 'Facturation automatisée', d: 'Factures PDF générées dès mission complétée · envoi Resend · archivage', hl: true },
                 { t: 'Indispos → Filtre auto', d: 'Calendrier freelance exclu en temps réel du matching, slots multiples' },
                 { t: 'Validation admin KYC', d: 'Onboarding multi-étapes · SIRET / RIB / pièce d\'identité vérifiés avant accès' },
@@ -1260,7 +1260,7 @@ function FeaturedRenovia({ isMobile }) {
                 marginTop: 22, lineHeight: 1.6,
                 maxWidth: 680,
               }}>
-                Plateforme de simulation d'aides pour la rénovation énergétique (MaPrimeRénov', CEE, Éco-PTZ). Le client arrivait avec une landing qui convertissait à <strong style={{ color: '#fff', fontWeight: 600 }}>12%</strong> avec un CPL à <strong style={{ color: '#fff', fontWeight: 600 }}>24 €</strong> — basique : nom, prénom, téléphone. On a <strong style={{ color: '#4ADE80', fontWeight: 600 }}>repensé toute l'architecture du système</strong> pour des leads <strong style={{ color: '#4ADE80', fontWeight: 600 }}>ultra-qualifiés et intentionnistes</strong>, avec un dossier complet livré au RGE partenaire.
+                Plateforme de simulation d'aides pour la rénovation énergétique (MaPrimeRénov', CEE, Éco-PTZ). Le client arrivait avec une landing qui convertissait à <strong style={{ color: '#fff', fontWeight: 600 }}>12%</strong> avec un CPL à <strong style={{ color: '#fff', fontWeight: 600 }}>24 €</strong> : basique : nom, prénom, téléphone. On a <strong style={{ color: '#4ADE80', fontWeight: 600 }}>repensé toute l'architecture du système</strong> pour des leads <strong style={{ color: '#4ADE80', fontWeight: 600 }}>ultra-qualifiés et intentionnistes</strong>, avec un dossier complet livré au RGE partenaire.
               </p>
             </div>
             {!isMobile && (
@@ -1530,7 +1530,7 @@ function FeaturedRenovia({ isMobile }) {
               <div style={{ background: '#FBFDFC', overflow: 'hidden' }}>
                 <img
                   src="/capture-landingpage.png"
-                  alt="Rénovia — landing page en production"
+                  alt="Rénovia : landing page en production"
                   style={{ display: 'block', width: '100%', height: 'auto' }}
                 />
               </div>
@@ -1586,7 +1586,7 @@ function FeaturedRenovia({ isMobile }) {
             borderTop: '1px solid rgba(255,255,255,.08)',
           }}>
             {[
-              { label: 'Le contexte', title: 'Un lead sans contexte vaut zéro', body: 'L\'ancienne landing capturait 3 champs — nom, prénom, numéro. Le RGE rappelait à froid, sans savoir si la personne est éligible, propriétaire, dans quelle classe énergétique. Résultat : rappels infructueux, no-shows, CPL qui explose sans ROAS.' },
+              { label: 'Le contexte', title: 'Un lead sans contexte vaut zéro', body: 'L\'ancienne landing capturait 3 champs : nom, prénom, numéro. Le RGE rappelait à froid, sans savoir si la personne est éligible, propriétaire, dans quelle classe énergétique. Résultat : rappels infructueux, no-shows, CPL qui explose sans ROAS.' },
               { label: 'La refonte', title: 'Architecture repensée, lead intentionniste', body: 'On a inversé l\'équation : au lieu de capturer vite, on engage d\'abord. Adresse → DPE tiré en live de la base ADEME (15M de records officiels). IA en fallback si le DPE n\'existe pas. 3 questions d\'éligibilité ANAH. Moteur qui chiffre 3 scénarios (MaPrimeRénov, CEE, Éco-PTZ). Le visiteur VOIT son montant d\'aide avant de donner ses coordonnées.' },
               { label: 'Le résultat', title: 'CPL divisé par 2, intention ×5', body: 'Le visiteur passe 5 minutes à qualifier son propre dossier. Quand il remplit ses coordonnées, il est déjà investi et intentionniste. Le RGE reçoit un dossier complet : DPE, surface, chauffage, scénario chiffré, profil ANAH. Les rappels closent mieux, le no-show s\'effondre, le CPL tombe à 13 €.' },
             ].map((x, i) => (
@@ -1731,7 +1731,7 @@ function OtherCases({ isMobile }) {
           <div>
             <div className="k-section-label">
               <span className="k-section-label-sq"></span>
-              01 — Autres missions
+              01 · Autres missions
             </div>
             <h2 style={{ fontSize: isMobile ? 34 : 56, marginTop: 20, letterSpacing: '-0.035em', maxWidth: 720, lineHeight: 1.04 }}>
               Missions récentes. <span style={{ color: 'var(--muted)' }}>Un aperçu.</span>
@@ -1813,7 +1813,7 @@ function SelectionCriteria({ isMobile }) {
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <div className="k-section-label">
           <span className="k-section-label-sq"></span>
-          02 — Comment on choisit nos projets
+          02 · Comment on choisit nos projets
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.2fr', gap: isMobile ? 28 : 60, marginTop: 20, alignItems: 'center' }}>
           <h2 style={{ fontSize: isMobile ? 34 : 52, letterSpacing: '-0.035em', lineHeight: 1.04 }}>
@@ -1854,8 +1854,8 @@ function SelectionCriteria({ isMobile }) {
 // ROOT
 // ═════════════════════════════════════════════════════════════
 const REALIS_TESTIMONIALS = [
-  { q: 'Site, CRM, dashboard, Meta + Google Ads — tout livré par la même équipe en 4 semaines. Aujourd\'hui le coût par lead est stable à 10 CHF et je vois tout en temps réel dans le back-office. Je recommande les yeux fermés.', n: 'Louis', p: 'Fondateur', c: 'TRADEAUTO.CH', logo: '/tradeauto-logo.png' },
-  { q: 'Avant on jonglait entre WhatsApp, tableurs et relances oubliées. Kairn nous a livré une plateforme two-sided complète — matching intelligent, dispatch auto, paiement Stripe, facturation. Aujourd\'hui on pilote 150+ missions par semaine depuis un seul back-office.', n: 'Manon', p: 'Co-fondatrice', c: 'MADAMELAGOUVERNANTE.COM', logo: '/madame-logo.png' },
+  { q: 'Site, CRM, dashboard, Meta + Google Ads : tout livré par la même équipe en 4 semaines. Aujourd\'hui le coût par lead est stable à 10 CHF et je vois tout en temps réel dans le back-office. Je recommande les yeux fermés.', n: 'Louis', p: 'Fondateur', c: 'TRADEAUTO.CH', logo: '/tradeauto-logo.png' },
+  { q: 'Avant on jonglait entre WhatsApp, tableurs et relances oubliées. Kairn nous a livré une plateforme two-sided complète : matching intelligent, dispatch auto, paiement Stripe, facturation. Aujourd\'hui on pilote 150+ missions par semaine depuis un seul back-office.', n: 'Manon', p: 'Co-fondatrice', c: 'MADAMELAGOUVERNANTE.COM', logo: '/madame-logo.png' },
   { q: 'CPL divisé par 2, conversion doublée. Mais surtout : les leads arrivent avec un dossier complet. Le closing a suivi.', n: 'Samuel', p: 'Fondateur', c: 'RENOVIA.FR', logo: '/renovia-logo.svg' },
 ];
 

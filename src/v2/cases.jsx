@@ -34,7 +34,7 @@ const CASES = [
       { v: '86', l: 'leads ultra-qualifiés générés cette semaine' },
       { v: '4 sem.', l: 'du brief au tunnel complet' },
     ],
-    quote: 'Site, CRM, dashboard, Meta + Google Ads — tout livré par la même équipe en 4 semaines. Je recommande les yeux fermés.',
+    quote: 'Site, CRM, dashboard, Meta + Google Ads : tout livré par la même équipe en 4 semaines. Je recommande les yeux fermés.',
     author: 'Louis · Fondateur, TRADEAUTO.CH',
   },
   {
