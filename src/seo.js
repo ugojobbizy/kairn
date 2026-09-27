@@ -3,7 +3,7 @@
 //  - scripts/seo-prerender.mjs écrit une page HTML par adresse à la compilation (lue par Google
 //    et par les aperçus de partage, qui n'exécutent pas toujours le JavaScript) ;
 //  - <SeoManager /> (App.jsx) remet les mêmes balises à jour pendant la navigation.
-import { FAQ, FAQ_LEADS, FAQ_WEB } from './v2/faq-data.js';
+import { FAQ, FAQ_LEADS, FAQ_WEB, FAQ_LP } from './v2/faq-data.js';
 
 export const SITE_URL = 'https://www.kairnagency.com';
 export const SITE_NAME = 'Kairn';
@@ -33,6 +33,13 @@ export const PAGES = {
     crumb: 'Création de site internet',
     faq: FAQ_WEB,
     service: { name: 'Création de site internet', serviceType: 'Création de site internet' },
+  },
+  '/creation-landing-page': {
+    title: 'Création de landing page qui convertit · Kairn',
+    description: 'Landing pages pour vos campagnes Meta et Google Ads : textes inclus, formulaire qualifiant, tracking serveur et A/B testing. Livrée en deux semaines par Kairn, à Bordeaux.',
+    crumb: 'Création de landing page',
+    faq: FAQ_LP,
+    service: { name: 'Création de landing page', serviceType: 'Création de landing page' },
   },
   '/mentions-legales': { title: 'Mentions légales · Kairn', description: 'Mentions légales du site kairnagency.com, édité par Kairn.' },
   '/confidentialite': { title: 'Politique de confidentialité · Kairn', description: 'Comment Kairn collecte, utilise et protège vos données personnelles sur kairnagency.com.' },

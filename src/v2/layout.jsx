@@ -108,6 +108,7 @@ export function Footer() {
             <ul>
               <li><Link to="/generation-de-leads">Génération de leads</Link></li>
               <li><Link to="/creation-site-internet">Création de site internet</Link></li>
+              <li><Link to="/creation-landing-page">Création de landing page</Link></li>
             </ul>
           </div>
           <div>

@@ -7,6 +7,7 @@ import Booking from './booking.jsx';
 import { PageVisual, QualVisual, TrackingVisual, CrmVisual, BuildVisual } from './bento-visuals.jsx';
 import { EASE, Icon, Pill, Glow, Reveal, BentoGrid, BentoCard, FaqList } from './blocks.jsx';
 import { FAQ_WEB } from './faq-data.js';
+import WorkGallery from './work-gallery.jsx';
 import { CONTACT_EMAIL } from '../config.js';
 import './v2.css';
 
@@ -25,11 +26,6 @@ const PROMISES = [
   { icon: 'layers', t: 'Des technologies standards', d: 'React, Next.js, Supabase, n8n. Aucun abonnement imposé, aucune dépendance à Kairn : n’importe quel développeur peut reprendre le projet.' },
 ];
 
-const WORK = [
-  { img: '/v2/tradeauto-landing.jpg', w: 1489, h: 914, url: 'tradeauto.ch', name: 'TradeAuto', what: 'Site, tunnel de reprise de véhicule, CRM et tableau de bord, livrés en 4 semaines.', alt: 'Page d’accueil du site TradeAuto, reprise de véhicules en Suisse.' },
-  { img: '/v2/isolation-aquitaine-landing.jpg', w: 1440, h: 900, url: 'isolation-aquitaine', name: 'Isolation d’Aquitaine', what: 'Landing page avec simulateur d’aides en 5 étapes, branchée sur un CRM sur mesure.', alt: 'Landing page Isolation d’Aquitaine : titre « Froide l’hiver, trop chaude l’été », simulateur d’aides.' },
-  { img: '/v2/capture-landingpage.jpg', w: 1225, h: 822, url: 'renovia.fr', name: 'Rénovia', what: 'Parcours de simulation des aides à la rénovation, qualification et tracking serveur.', alt: 'Page d’accueil Rénovia : simulateur d’aides à la rénovation énergétique à partir de l’adresse.' },
-];
 
 const STEPS = [
   { t: 'Cadrage', d: 'On regarde l’existant, on fixe le périmètre et l’architecture. Vous savez exactement ce qui sera livré, et quand.' },
@@ -82,7 +78,7 @@ export default function WebCreationPage() {
               <Reveal className="sec-head">
                 <Pill>Ce qu’on construit</Pill>
                 <h2 className="h2">Du site vitrine <span className="serif grad-text">à la plateforme sur mesure.</span></h2>
-                <p>Un site n’est pas une plaquette en ligne. Chaque page est pensée pour transformer un visiteur en demande, et chaque demande arrive au bon endroit.</p>
+                <p>Un site n’est pas une plaquette en ligne. Chaque page est pensée pour transformer un visiteur en demande, et chaque demande arrive au bon endroit. Besoin d’une page pour vos campagnes ? Voir la <Link to="/creation-landing-page">création de landing page</Link>.</p>
               </Reveal>
               <BentoGrid>
                 <BentoCard icon="layout" title="Sites et landing pages" description="Design sur mesure, textes travaillés avec vous, pensés d’abord pour le téléphone."><PageVisual /></BentoCard>
@@ -102,15 +98,7 @@ export default function WebCreationPage() {
                 <h2 className="h2">Des sites en ligne, <span className="serif grad-text">qui travaillent.</span></h2>
                 <p>Chacun de ces sites alimente les campagnes et le CRM du client. Les résultats sont détaillés dans nos cas clients.</p>
               </Reveal>
-              <div className="wb-work">
-                {WORK.map((x, i) => (
-                  <Reveal key={x.name} delay={i * 0.08} as="figure" className="wb-shot">
-                    <div className="shot-bar" aria-hidden="true"><span className="shot-dots"><i /><i /><i /></span><span className="shot-url">{x.url}</span></div>
-                    <img src={x.img} width={x.w} height={x.h} loading="lazy" decoding="async" alt={x.alt} />
-                    <figcaption><b>{x.name}</b><span>{x.what}</span></figcaption>
-                  </Reveal>
-                ))}
-              </div>
+              <WorkGallery />
               <div className="cases-more">
                 <Link to="/realisations" className="btn btn-dark">Voir les cas clients</Link>
               </div>

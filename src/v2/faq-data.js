@@ -27,3 +27,13 @@ export const FAQ_WEB = [
   ['Pouvez-vous reprendre un site existant ?', 'Oui. On commence par un audit technique de 2 à 5 jours selon la taille, puis on propose un plan : ce qu’on garde, ce qu’on migre, ce qu’on refait.'],
   ['Offrez-vous du support après la livraison ?', 'Oui, 30 jours de support sont inclus : bugs, ajustements, questions. Au-delà, on propose un suivi mensuel de maintenance ou d’évolution, sans engagement.'],
 ];
+
+// Questions de la page « Création de landing page ». Délai, textes, A/B testing et hébergement repris du pack Landing de l'ancienne page Build.
+export const FAQ_LP = [
+  ['Quelle différence entre un site et une landing page ?', 'Un site présente toute l’entreprise. Une landing page ne porte qu’une offre et un objectif : obtenir la demande. C’est la page vers laquelle on envoie une campagne publicitaire.'],
+  ['Combien de temps faut-il pour créer une landing page ?', 'Deux semaines en moyenne, de l’appel de cadrage à la mise en ligne. Les maquettes et les textes sont validés avec vous avant le développement.'],
+  ['Les textes sont-ils inclus ?', 'Oui. On rédige les textes à partir de ce que disent vos clients et de ce qui fait signer dans votre métier. Vous validez avant la mise en ligne.'],
+  ['Pouvez-vous la brancher sur mes campagnes actuelles ?', 'Oui. On installe le tracking serveur Meta et GA4 et on connecte le formulaire à votre CRM ou à votre email. Vos campagnes peuvent pointer vers la nouvelle page dès sa mise en ligne.'],
+  ['Peut-on tester plusieurs versions de la page ?', 'Oui, l’A/B testing est configuré dès la mise en ligne. On compare les versions sur le coût par lead et la qualité des demandes, pas seulement sur les clics.'],
+  ['Où la page est-elle hébergée ?', 'L’hébergement est inclus pendant 6 mois. Ensuite, vous l’hébergez où vous voulez, ou on continue de s’en occuper. Le code vous appartient dans tous les cas.'],
+];
