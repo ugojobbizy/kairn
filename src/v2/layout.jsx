@@ -101,6 +101,7 @@ export function Footer() {
               <li><Link to="/#systeme">Le système</Link></li>
               <li><Link to="/#methode">Méthode</Link></li>
               <li><Link to="/realisations">Réalisations</Link></li>
+              <li><Link to="/agence-bordeaux">Agence à Bordeaux</Link></li>
             </ul>
           </div>
           <div>

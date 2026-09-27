@@ -15,6 +15,7 @@ const LeadGenPage = lazy(() => import('./v2/lead-gen.jsx'));
 const WebCreationPage = lazy(() => import('./v2/web-creation.jsx'));
 const LandingCreationPage = lazy(() => import('./v2/landing-creation.jsx'));
 const CrmPage = lazy(() => import('./v2/crm-page.jsx'));
+const BordeauxPage = lazy(() => import('./v2/bordeaux-page.jsx'));
 const MentionsLegales = lazy(() => import('./legal.jsx').then((m) => ({ default: m.MentionsLegales })));
 const Confidentialite = lazy(() => import('./legal.jsx').then((m) => ({ default: m.Confidentialite })));
 const CGV = lazy(() => import('./legal.jsx').then((m) => ({ default: m.CGV })));
@@ -63,6 +64,7 @@ function Shell() {
         <Route path="/creation-site-internet" element={<WebCreationPage />} />
         <Route path="/creation-landing-page" element={<LandingCreationPage />} />
         <Route path="/crm-sur-mesure" element={<CrmPage />} />
+        <Route path="/agence-bordeaux" element={<BordeauxPage />} />
         <Route path="/v1/realisations" element={<RealisationsPage variant={variant} />} />
         <Route path="/landing" element={<LandingPage variant={variant} />} />
         <Route path="/landing2" element={<LandingPage2 variant={variant} />} />

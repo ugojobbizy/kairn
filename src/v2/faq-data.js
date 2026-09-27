@@ -47,3 +47,12 @@ export const FAQ_CRM = [
   ['À qui appartiennent le code et les données ?', 'À vous. Le code est déposé sur votre compte GitHub, et vos données restent les vôtres : vous pouvez les exporter à tout moment.'],
   ['Mon équipe va-t-elle s’en servir ?', 'C’est pour ça qu’on construit les écrans avec elle. À la mise en service, une heure de prise en main est incluse, puis 30 jours de support pour les ajustements.'],
 ];
+
+// Questions de la page « Agence à Bordeaux ».
+export const FAQ_BDX = [
+  ['Travaillez-vous uniquement avec des entreprises bordelaises ?', 'Non. Kairn est basée à Bordeaux, mais on travaille sur des projets partout en France, et au-delà : TradeAuto, par exemple, est en Suisse.'],
+  ['Comment se passe un projet à distance ?', 'Tout se fait en visio : appel de cadrage, validation des maquettes, points réguliers. Pendant le développement, une version de test est en ligne et mise à jour chaque semaine : vous suivez l’avancement d’où vous êtes.'],
+  ['Quels services proposez-vous ?', 'Génération de leads avec des campagnes Meta et Google Ads, création de site internet, création de landing page et CRM sur mesure. On peut prendre un seul de ces sujets ou toute la chaîne.'],
+  ['Quel est votre délai de démarrage ?', 'Sous 5 jours ouvrés après l’appel de cadrage. Les campagnes peuvent démarrer en 48 h si le tracking est déjà en place.'],
+  ['Travaillez-vous avec un engagement minimum ?', 'Non. La mise en place est au forfait, l’acquisition au mois reconductible. Vous pouvez partir à tout moment avec un préavis de 30 jours.'],
+];

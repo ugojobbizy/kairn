@@ -1114,3 +1114,16 @@
 .v2 .crm-quote { margin: 40px auto 0; max-width: 760px; text-align: center; }
 .v2 .crm-quote blockquote { margin: 0; font-family: var(--serif); font-style: italic; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.35; letter-spacing: -0.01em; }
 .v2 .crm-quote figcaption { margin-top: 14px; font: 500 12.5px var(--mono); letter-spacing: .06em; color: var(--muted); }
+
+/* ── Page Agence à Bordeaux ── */
+.v2 .hero.lg-hero h1.bdx-h1 { max-width: 22ch; font-size: clamp(38px, 4.8vw, 70px); }
+.v2 .bdx-services { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 56px; }
+.v2 .bdx-services > div { display: flex; }
+.v2 .bdx-service { display: flex; flex-direction: column; width: 100%; padding: 28px 24px; border-radius: var(--r-xl); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-card); color: inherit; text-decoration: none; transition: transform .35s var(--ease), box-shadow .35s, border-color .35s; }
+.v2 .bdx-service:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); border-color: rgba(47,91,234,.3); }
+.v2 .bdx-service h3 { margin-top: 18px; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+.v2 .bdx-service p { margin-top: 10px; color: var(--muted); font-size: 15.5px; flex: 1; }
+.v2 .bdx-more { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; font-weight: 600; color: var(--violet); }
+@media (max-width: 1080px) { .v2 .bdx-services { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .v2 .bdx-services { grid-template-columns: 1fr; margin-top: 40px; } }
+@media (max-width: 760px) { .v2 .bdx-proof li { display: block; text-align: center; } .v2 .bdx-proof span { margin-top: 6px; } }

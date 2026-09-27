@@ -3,7 +3,7 @@
 //  - scripts/seo-prerender.mjs écrit une page HTML par adresse à la compilation (lue par Google
 //    et par les aperçus de partage, qui n'exécutent pas toujours le JavaScript) ;
 //  - <SeoManager /> (App.jsx) remet les mêmes balises à jour pendant la navigation.
-import { FAQ, FAQ_LEADS, FAQ_WEB, FAQ_LP, FAQ_CRM } from './v2/faq-data.js';
+import { FAQ, FAQ_LEADS, FAQ_WEB, FAQ_LP, FAQ_CRM, FAQ_BDX } from './v2/faq-data.js';
 
 export const SITE_URL = 'https://www.kairnagency.com';
 export const SITE_NAME = 'Kairn';
@@ -47,6 +47,17 @@ export const PAGES = {
     crumb: 'CRM sur mesure',
     faq: FAQ_CRM,
     service: { name: 'CRM sur mesure', serviceType: 'Développement de CRM sur mesure' },
+  },
+  '/agence-bordeaux': {
+    title: 'Agence web et génération de leads à Bordeaux · Kairn',
+    description: 'Kairn, agence basée à Bordeaux : sites, landing pages, CRM sur mesure et campagnes Meta et Google Ads, pour des entreprises bordelaises et des projets partout en France.',
+    crumb: 'Agence à Bordeaux',
+    faq: FAQ_BDX,
+    service: {
+      name: 'Agence web et génération de leads à Bordeaux',
+      serviceType: 'Création web et génération de leads',
+      areaServed: [{ '@type': 'City', name: 'Bordeaux' }, { '@type': 'Country', name: 'France' }],
+    },
   },
   '/mentions-legales': { title: 'Mentions légales · Kairn', description: 'Mentions légales du site kairnagency.com, édité par Kairn.' },
   '/confidentialite': { title: 'Politique de confidentialité · Kairn', description: 'Comment Kairn collecte, utilise et protège vos données personnelles sur kairnagency.com.' },
@@ -132,7 +143,7 @@ export function structuredData(path) {
         description: page.description,
         url: `${SITE_URL}${path}`,
         provider: { '@id': `${SITE_URL}/#organization` },
-        areaServed: { '@type': 'Country', name: 'France' },
+        areaServed: page.service.areaServed || { '@type': 'Country', name: 'France' },
       }] : []),
       ...(page.faq ? [{
         '@type': 'FAQPage',
