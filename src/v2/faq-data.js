@@ -37,3 +37,13 @@ export const FAQ_LP = [
   ['Peut-on tester plusieurs versions de la page ?', 'Oui, l’A/B testing est configuré dès la mise en ligne. On compare les versions sur le coût par lead et la qualité des demandes, pas seulement sur les clics.'],
   ['Où la page est-elle hébergée ?', 'L’hébergement est inclus pendant 6 mois. Ensuite, vous l’hébergez où vous voulez, ou on continue de s’en occuper. Le code vous appartient dans tous les cas.'],
 ];
+
+// Questions de la page « CRM et outils sur mesure ». Délais, intégrations et support repris de l'ancienne page Build et des cas clients.
+export const FAQ_CRM = [
+  ['Pourquoi un CRM sur mesure plutôt que HubSpot ou Pipedrive ?', 'Un CRM du marché convient quand votre vente suit un schéma standard. Le sur mesure prend le relais quand vous voulez relier chaque vente à la pub qui l’a amenée, suivre des étapes propres à votre métier ou ne plus payer par utilisateur.'],
+  ['Pouvez-vous connecter l’outil que j’utilise déjà ?', 'Oui. Si vous êtes sur HubSpot, Pipedrive ou Attio, on peut s’y brancher plutôt que tout remplacer : formulaires, relances et reporting remontent dans votre outil actuel.'],
+  ['Comment fonctionne l’attribution des leads ?', 'Chaque lead est enregistré avec sa source, sa campagne et son annonce. Les dépenses publicitaires sont synchronisées chaque jour : le CRM calcule le coût par lead et le coût par vente, campagne par campagne.'],
+  ['Combien de temps faut-il pour le mettre en place ?', 'Quelques semaines. Chez TradeAuto, le site, le CRM et le tableau de bord ont été livrés en 4 semaines. Une plateforme plus complète demande 6 à 8 semaines.'],
+  ['À qui appartiennent le code et les données ?', 'À vous. Le code est déposé sur votre compte GitHub, et vos données restent les vôtres : vous pouvez les exporter à tout moment.'],
+  ['Mon équipe va-t-elle s’en servir ?', 'C’est pour ça qu’on construit les écrans avec elle. À la mise en service, une heure de prise en main est incluse, puis 30 jours de support pour les ajustements.'],
+];

@@ -12,7 +12,7 @@ if (!template.includes('<!--seo:start-->') || !template.includes('<!--seo:noscri
 }
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const MAIN_LINKS = [['/', 'Accueil'], ['/realisations', 'Réalisations'], ['/generation-de-leads', 'Génération de leads'], ['/creation-site-internet', 'Création de site internet'], ['/creation-landing-page', 'Création de landing page']];
+const MAIN_LINKS = [['/', 'Accueil'], ['/realisations', 'Réalisations'], ['/generation-de-leads', 'Génération de leads'], ['/creation-site-internet', 'Création de site internet'], ['/creation-landing-page', 'Création de landing page'], ['/crm-sur-mesure', 'CRM sur mesure']];
 
 function render(path) {
   const page = PAGES[path];

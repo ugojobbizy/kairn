@@ -78,7 +78,7 @@ export default function WebCreationPage() {
               <Reveal className="sec-head">
                 <Pill>Ce qu’on construit</Pill>
                 <h2 className="h2">Du site vitrine <span className="serif grad-text">à la plateforme sur mesure.</span></h2>
-                <p>Un site n’est pas une plaquette en ligne. Chaque page est pensée pour transformer un visiteur en demande, et chaque demande arrive au bon endroit. Besoin d’une page pour vos campagnes ? Voir la <Link to="/creation-landing-page">création de landing page</Link>.</p>
+                <p>Un site n’est pas une plaquette en ligne. Chaque page est pensée pour transformer un visiteur en demande, et chaque demande arrive au bon endroit. Besoin d’une page pour vos campagnes ? Voir la <Link to="/creation-landing-page">création de landing page</Link>. Un outil pour suivre vos leads ? Voir le <Link to="/crm-sur-mesure">CRM sur mesure</Link>.</p>
               </Reveal>
               <BentoGrid>
                 <BentoCard icon="layout" title="Sites et landing pages" description="Design sur mesure, textes travaillés avec vous, pensés d’abord pour le téléphone."><PageVisual /></BentoCard>

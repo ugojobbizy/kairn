@@ -3,7 +3,7 @@
 //  - scripts/seo-prerender.mjs écrit une page HTML par adresse à la compilation (lue par Google
 //    et par les aperçus de partage, qui n'exécutent pas toujours le JavaScript) ;
 //  - <SeoManager /> (App.jsx) remet les mêmes balises à jour pendant la navigation.
-import { FAQ, FAQ_LEADS, FAQ_WEB, FAQ_LP } from './v2/faq-data.js';
+import { FAQ, FAQ_LEADS, FAQ_WEB, FAQ_LP, FAQ_CRM } from './v2/faq-data.js';
 
 export const SITE_URL = 'https://www.kairnagency.com';
 export const SITE_NAME = 'Kairn';
@@ -40,6 +40,13 @@ export const PAGES = {
     crumb: 'Création de landing page',
     faq: FAQ_LP,
     service: { name: 'Création de landing page', serviceType: 'Création de landing page' },
+  },
+  '/crm-sur-mesure': {
+    title: 'CRM sur mesure et outils commerciaux · Kairn',
+    description: 'Kairn développe votre CRM sur mesure : pipeline à vos étapes, attribution de chaque lead à sa campagne, relances automatiques et tableau de bord. Le code vous appartient.',
+    crumb: 'CRM sur mesure',
+    faq: FAQ_CRM,
+    service: { name: 'CRM sur mesure', serviceType: 'Développement de CRM sur mesure' },
   },
   '/mentions-legales': { title: 'Mentions légales · Kairn', description: 'Mentions légales du site kairnagency.com, édité par Kairn.' },
   '/confidentialite': { title: 'Politique de confidentialité · Kairn', description: 'Comment Kairn collecte, utilise et protège vos données personnelles sur kairnagency.com.' },
