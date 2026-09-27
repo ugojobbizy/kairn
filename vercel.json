@@ -1,7 +1,7 @@
 {
   "redirects": [
     { "source": "/build", "destination": "/", "permanent": true },
-    { "source": "/ads", "destination": "/", "permanent": true },
+    { "source": "/ads", "destination": "/generation-de-leads", "permanent": true },
     { "source": "/contact", "destination": "/", "permanent": true }
   ],
   "rewrites": [

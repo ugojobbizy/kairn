@@ -3,7 +3,7 @@
 //  - scripts/seo-prerender.mjs écrit une page HTML par adresse à la compilation (lue par Google
 //    et par les aperçus de partage, qui n'exécutent pas toujours le JavaScript) ;
 //  - <SeoManager /> (App.jsx) remet les mêmes balises à jour pendant la navigation.
-import { FAQ } from './v2/faq-data.js';
+import { FAQ, FAQ_LEADS } from './v2/faq-data.js';
 
 export const SITE_URL = 'https://www.kairnagency.com';
 export const SITE_NAME = 'Kairn';
@@ -19,6 +19,13 @@ export const PAGES = {
   '/realisations': {
     title: 'Réalisations et cas clients · Kairn',
     description: 'Landing pages, campagnes Meta et CRM sur mesure : nos cas clients chiffrés, dont un coût par lead divisé par 3,5 en trois mois pour Isolation d’Aquitaine.',
+  },
+  '/generation-de-leads': {
+    title: 'Agence de génération de leads : Meta Ads, landing page et CRM · Kairn',
+    description: 'Kairn, agence de génération de leads basée à Bordeaux : campagnes Meta et Google Ads, landing page, qualification et CRM sur mesure. Chaque lead tracé jusqu’à la vente.',
+    crumb: 'Génération de leads',
+    faq: FAQ_LEADS,
+    service: { name: 'Génération de leads', serviceType: 'Génération de leads' },
   },
   '/mentions-legales': { title: 'Mentions légales · Kairn', description: 'Mentions légales du site kairnagency.com, édité par Kairn.' },
   '/confidentialite': { title: 'Politique de confidentialité · Kairn', description: 'Comment Kairn collecte, utilise et protège vos données personnelles sur kairnagency.com.' },
@@ -52,6 +59,7 @@ const ORGANIZATION = {
   image: OG_IMAGE,
   email: 'contact@kairnagency.com',
   telephone: '+33781274179',
+  address: { '@type': 'PostalAddress', addressLocality: 'Bordeaux', addressRegion: 'Nouvelle-Aquitaine', addressCountry: 'FR' },
   areaServed: { '@type': 'Country', name: 'France' },
   description: PAGES['/'].description,
   knowsAbout: ['Création de landing pages', 'Génération de leads', 'Meta Ads', 'Google Ads', 'CRM sur mesure', 'Tracking serveur'],
@@ -95,11 +103,25 @@ export function structuredData(path) {
         isPartOf: { '@id': `${SITE_URL}/#website` },
         publisher: { '@id': `${SITE_URL}/#organization` },
       },
+      ...(page.service ? [{
+        '@type': 'Service',
+        '@id': `${SITE_URL}${path}#service`,
+        name: page.service.name,
+        serviceType: page.service.serviceType,
+        description: page.description,
+        url: `${SITE_URL}${path}`,
+        provider: { '@id': `${SITE_URL}/#organization` },
+        areaServed: { '@type': 'Country', name: 'France' },
+      }] : []),
+      ...(page.faq ? [{
+        '@type': 'FAQPage',
+        mainEntity: page.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+      }] : []),
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE_URL}/` },
-          { '@type': 'ListItem', position: 2, name: page.title.split(' · ')[0], item: `${SITE_URL}${path}` },
+          { '@type': 'ListItem', position: 2, name: page.crumb || page.title.split(' · ')[0], item: `${SITE_URL}${path}` },
         ],
       },
     ],

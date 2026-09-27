@@ -104,6 +104,12 @@ export function Footer() {
             </ul>
           </div>
           <div>
+            <h3>Services</h3>
+            <ul>
+              <li><Link to="/generation-de-leads">Génération de leads</Link></li>
+            </ul>
+          </div>
+          <div>
             <h3>Contact</h3>
             <ul>
               {WHATSAPP_NUMBER && (

@@ -12,7 +12,7 @@ if (!template.includes('<!--seo:start-->') || !template.includes('<!--seo:noscri
 }
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const MAIN_LINKS = [['/', 'Accueil'], ['/realisations', 'Réalisations']];
+const MAIN_LINKS = [['/', 'Accueil'], ['/realisations', 'Réalisations'], ['/generation-de-leads', 'Génération de leads']];
 
 function render(path) {
   const page = PAGES[path];
