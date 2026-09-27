@@ -3,7 +3,7 @@
 //  - scripts/seo-prerender.mjs écrit une page HTML par adresse à la compilation (lue par Google
 //    et par les aperçus de partage, qui n'exécutent pas toujours le JavaScript) ;
 //  - <SeoManager /> (App.jsx) remet les mêmes balises à jour pendant la navigation.
-import { FAQ, FAQ_LEADS } from './v2/faq-data.js';
+import { FAQ, FAQ_LEADS, FAQ_WEB } from './v2/faq-data.js';
 
 export const SITE_URL = 'https://www.kairnagency.com';
 export const SITE_NAME = 'Kairn';
@@ -26,6 +26,13 @@ export const PAGES = {
     crumb: 'Génération de leads',
     faq: FAQ_LEADS,
     service: { name: 'Génération de leads', serviceType: 'Génération de leads' },
+  },
+  '/creation-site-internet': {
+    title: 'Création de site internet sur mesure · Kairn',
+    description: 'Kairn, agence web à Bordeaux : sites internet, landing pages, tunnels de conversion et plateformes sur mesure, livrés en quelques semaines. Le code vous appartient.',
+    crumb: 'Création de site internet',
+    faq: FAQ_WEB,
+    service: { name: 'Création de site internet', serviceType: 'Création de site internet' },
   },
   '/mentions-legales': { title: 'Mentions légales · Kairn', description: 'Mentions légales du site kairnagency.com, édité par Kairn.' },
   '/confidentialite': { title: 'Politique de confidentialité · Kairn', description: 'Comment Kairn collecte, utilise et protège vos données personnelles sur kairnagency.com.' },

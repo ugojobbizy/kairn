@@ -17,3 +17,13 @@ export const FAQ_LEADS = [
   ['Quel est votre délai de démarrage ?', 'Sous 5 jours ouvrés après l’appel de cadrage. Les campagnes peuvent démarrer en 48 h si le tracking est déjà en place.'],
   ['Travaillez-vous seulement à Bordeaux ?', 'Non. Kairn est basé à Bordeaux, mais on travaille avec des entreprises partout en France, et au-delà : TradeAuto est en Suisse. Tout se fait en visio.'],
 ];
+
+// Questions de la page « Création de site internet ». Délais, code et support repris de l'ancienne page Build.
+export const FAQ_WEB = [
+  ['Quel est le délai de livraison ?', 'Entre 2 et 4 semaines pour une landing page ou un tunnel, 6 à 8 semaines pour une plateforme. Les projets plus longs sont découpés en étapes livrables de 4 semaines maximum.'],
+  ['À qui appartient le code après la livraison ?', 'À vous, entièrement. Il est déposé sur votre compte GitHub dès le départ, sans clause de propriété intellectuelle ni abonnement obligatoire.'],
+  ['Faut-il héberger le site chez vous ?', 'Non. On vous livre le code et la documentation de déploiement, vous hébergez où vous voulez. Si vous préférez ne pas vous en occuper, on peut gérer l’hébergement pour vous.'],
+  ['Mon site sera-t-il bien référencé sur Google ?', 'Chaque page est livrée avec son titre, sa description, le balisage lu par Google et un sitemap, et elle est pensée d’abord pour le téléphone. Le référencement se construit ensuite avec le contenu et les avis.'],
+  ['Pouvez-vous reprendre un site existant ?', 'Oui. On commence par un audit technique de 2 à 5 jours selon la taille, puis on propose un plan : ce qu’on garde, ce qu’on migre, ce qu’on refait.'],
+  ['Offrez-vous du support après la livraison ?', 'Oui, 30 jours de support sont inclus : bugs, ajustements, questions. Au-delà, on propose un suivi mensuel de maintenance ou d’évolution, sans engagement.'],
+];
