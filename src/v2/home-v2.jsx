@@ -65,7 +65,7 @@ export default function KairnHomeV2() {
 
               <Reveal delay={0.55} y={16}>
                 <p className="hero-lead">
-                  Kairn est une agence <strong>Build &amp; Ads</strong>. On conçoit vos funnels, on déploie vos campagnes, on optimise vos CPL, le tout sous un seul toit, en moins de 30 jours.
+                  Kairn est une agence de <strong>génération de leads</strong>. On construit votre site et votre CRM, on lance vos campagnes Meta et Google, et on baisse votre coût par lead. Le tout sous un seul toit, en moins de 30 jours.
                 </p>
               </Reveal>
 
