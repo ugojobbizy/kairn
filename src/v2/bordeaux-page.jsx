@@ -20,7 +20,7 @@ const PROOF = [
 ];
 
 const WHERE = [
-  { t: 'Vous êtes à Bordeaux ou en Gironde', d: 'Une agence dans votre ville, qui répond sous 24 h et fait tout sous un seul toit : le site, les campagnes et le CRM.' },
+  { t: 'Vous êtes à Bordeaux ou en Gironde', d: 'Le projet se mène en visio, comme pour tous nos clients. Et si vous préférez en parler de vive voix, on peut venir vous rencontrer. Le site, les campagnes et le CRM, tout sous un seul toit.' },
   { t: 'Vous êtes ailleurs en France', d: 'Tout se fait en visio : cadrage, validation des maquettes, points réguliers. La distance ne change ni le délai ni la méthode. Nos clients sont partout en France, et jusqu’en Suisse.', on: true },
 ];
 
