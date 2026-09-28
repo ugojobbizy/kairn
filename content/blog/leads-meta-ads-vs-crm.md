@@ -13,7 +13,7 @@ related:
   - acheter-des-leads-renovation-energetique
 faq:
   - q: "Est-ce normal que Meta affiche plus de leads que mon CRM ?"
-    a: "Un petit écart, oui : Meta et votre CRM ne comptent pas la même chose ni au même moment. Un écart du simple au double, non. Il signale presque toujours un événement mal placé, un doublon ou des demandes qui n'arrivent jamais dans le CRM."
+    a: "Un petit écart, oui : Meta et votre CRM ne comptent pas la même chose ni au même moment. Un écart du simple au double mérite une vérification : il signale souvent un événement mal placé, un doublon ou des demandes qui n'arrivent jamais dans le CRM."
   - q: "Quel chiffre faut-il utiliser pour calculer son coût par lead ?"
     a: "Celui du CRM, c'est-à-dire les demandes réellement reçues et exploitables. Le chiffre de Meta sert à comparer les annonces entre elles dans Meta, pas à juger la rentabilité d'une campagne."
   - q: "L'API de conversions Meta règle-t-elle le problème ?"
@@ -22,7 +22,7 @@ faq:
     a: "En enregistrant avec chaque demande les paramètres de l'adresse de la page (campagne, ensemble de publicités, annonce) et l'identifiant de clic Meta. Il suffit ensuite de rapprocher ces leads des dépenses de chaque annonce pour obtenir un vrai coût par lead, annonce par annonce."
 ---
 
-De mai à août 2026, une campagne Meta Ads que nous pilotions pour une entreprise d'isolation par l'extérieur a produit **634 leads selon le Gestionnaire de publicités**. Sur la même période, son CRM en a enregistré **293**. Plus de deux fois moins.
+De mai à août 2026, une campagne Meta Ads que nous pilotions pour une entreprise d'isolation par l'extérieur a produit **634 leads comptés par Meta**. Sur la même période, son CRM en a enregistré **293**. Plus de deux fois moins.
 
 La réponse courte : Meta compte des **événements** qu'il attribue à ses publicités, votre CRM compte des **demandes** reçues. Ce ne sont pas les mêmes objets. Et c'est le second chiffre qui paie vos factures.
 
@@ -34,10 +34,10 @@ Sur ces quatre mois, la campagne a dépensé 3 345,51 €. Selon la source reten
 
 | | Leads comptés | Coût par lead |
 |---|---|---|
-| Gestionnaire de publicités Meta | 634 | 5,28 € |
+| Leads comptés par Meta | 634 | 5,28 € |
 | CRM (demandes réellement reçues) | 293 | 11,42 € |
 
-Le tableau de bord Meta affichait un coût par lead **deux fois plus bas que la réalité**. Une entreprise qui pilote sur ce chiffre prend trois mauvaises décisions :
+Calculé sur les leads de Meta, le coût par lead était **deux fois plus bas que la réalité**. Une entreprise qui pilote sur ce chiffre prend trois mauvaises décisions :
 
 - **Elle garde des annonces qui ne rapportent rien.** Une annonce peut déclencher beaucoup d'événements « lead » sans produire une seule demande exploitable.
 - **Elle se croit rentable alors qu'elle ne l'est pas.** Si votre coût par lead maximum est de 8 €, la campagne semble gagnante à 5,28 € et perd de l'argent à 11,42 €. (Pour calculer ce seuil chez vous, voir [notre article sur le coût par lead](/blog/cout-par-lead-calcul).)
@@ -55,7 +55,7 @@ Deux mots comptent dans cette définition.
 
 **« Attribué »** : par défaut, Meta s'attribue une conversion survenue jusqu'à 7 jours après un clic sur une publicité, ou 1 jour après une simple vue. Il la range au jour de l'impression ou du clic, pas au jour de la demande. Votre CRM, lui, enregistre la demande le jour où elle arrive, quelle que soit son origine.
 
-Ces deux différences expliquent un décalage de quelques pour cent. Elles n'expliquent pas un écart du simple au double. Pour ça, il faut chercher du côté des six causes suivantes.
+Ces deux différences expliquent un décalage limité. Pour un écart du simple au double, il faut aussi regarder du côté des six causes suivantes. Sur la campagne citée plus haut, nous n'avons pas établi la part de chacune : l'article décrit ce qu'il faut vérifier, pas un diagnostic de ce cas.
 
 ## Les 6 causes d'un écart du simple au double
 
@@ -97,7 +97,7 @@ Si ces leads ne sont pas synchronisés automatiquement avec votre CRM, une parti
 
 ### 6. Les conversions estimées
 
-Quand une partie des visiteurs refuse le suivi (bandeau de cookies, iPhone, bloqueurs), Meta **estime** une partie des conversions qu'il ne peut plus observer. Ces conversions modélisées apparaissent dans les rapports sans correspondre à une demande identifiable. Leur poids est variable, et Meta ne le détaille pas publicité par publicité.
+Quand une partie des visiteurs refuse le suivi (notamment sur iPhone, ou quand les cookies sont refusés), Meta **estime** une partie des conversions qu'il ne peut plus observer. Ces conversions modélisées apparaissent dans les rapports sans correspondre à une demande identifiable. Leur poids est variable, et Meta ne le détaille pas publicité par publicité.
 
 **Comment vérifier :** on ne peut pas les isoler finement. C'est une raison de plus de juger une campagne sur les demandes réellement reçues.
 
@@ -131,11 +131,11 @@ Encore faut-il que le CRM sache d'où vient chaque lead. Concrètement, chaque d
 
 Il suffit ensuite de synchroniser chaque jour les dépenses de chaque annonce avec le CRM pour obtenir un coût par lead **réel**, annonce par annonce. Puis, quand vos commerciaux mettent à jour le statut des leads (joint, rendez-vous, devis, signé), un coût par client signé, par annonce.
 
-C'est ce que nous construisons pour nos clients : un [CRM qui relie chaque lead à la publicité qui l'a amené](/crm-sur-mesure) et à la vente qu'il a rapportée. Sur la campagne décrite plus haut, c'est ce CRM qui a mis l'écart en évidence : sans lui, le seul chiffre disponible aurait été celui de Meta.
+C'est ce que nous construisons pour nos clients : un [CRM qui relie chaque lead à la publicité qui l'a amené](/crm-sur-mesure) et à la vente qu'il a rapportée. Sur la campagne décrite plus haut, c'est en comparant les deux sources que l'écart est apparu : le chiffre de Meta seul ne l'aurait pas montré.
 
 ## À retenir
 
 - Meta compte des événements attribués à ses publicités. Votre CRM compte des demandes reçues. Les deux chiffres ne seront jamais égaux.
-- Un écart de quelques pour cent est normal. Un écart du simple au double signale un problème de mesure, presque toujours l'une des six causes ci-dessus.
+- Un petit écart est normal. Un écart du simple au double mérite une vérification, en commençant par les six causes ci-dessus.
 - Le coût par lead se calcule avec les leads du CRM. Sur notre exemple, le chiffre de Meta le sous-estimait de moitié.
 - Un événement mal placé ne fausse pas seulement les rapports : il apprend à l'algorithme à chercher les mauvaises personnes.

@@ -54,17 +54,17 @@ Trois conséquences, qui se cumulent :
 - **La mesure devient précise.** Une page par offre, c'est un taux de transformation par offre. Sur un site vitrine, toutes les offres et toutes les sources de visiteurs se mélangent.
 - **L'algorithme apprend mieux.** Meta et Google optimisent vos campagnes sur les demandes qu'ils voient passer. Plus il y en a, plus vite ils trouvent les bonnes personnes.
 
-## Où les demandes se perdent vraiment : le formulaire
+## Où les demandes se perdent : mesurer les deux fuites
 
-On pense souvent que tout se joue sur le titre ou les photos. Nos chiffres disent autre chose.
+Une landing page perd des visiteurs à deux endroits : ceux qui partent sans rien remplir, et ceux qui commencent le formulaire sans l'envoyer. Les deux se mesurent séparément, et c'est la seule façon de savoir où agir.
 
 Sur une campagne Google Search que nous avons menée en septembre 2026 pour une offre d'isolation des combles, nous mesurions séparément deux moments : le **démarrage** du formulaire (le visiteur saisit sa première réponse) et l'**envoi**. Résultat sur deux semaines : 31 démarrages, **3 envois**. Neuf visiteurs sur dix qui avaient commencé à répondre sont partis avant la fin.
 
-Autrement dit, la page avait fait son travail : elle avait convaincu 31 personnes de commencer. C'est le formulaire qui les perdait. Sans la mesure du démarrage, on aurait cherché le problème dans les annonces ou dans le titre.
+La mesure montrait donc deux fuites : la plupart des visiteurs partaient sans commencer, et neuf sur dix de ceux qui commençaient abandonnaient avant l'envoi. Sans la mesure du démarrage, on n'aurait vu qu'un chiffre global, sans savoir s'il fallait retravailler la page ou le formulaire.
 
 Ce qu'on en tire pour toute landing page :
 
-- **Mesurez le démarrage du formulaire**, pas seulement l'envoi. C'est ce qui montre où se trouve la fuite.
+- **Mesurez le démarrage du formulaire**, pas seulement l'envoi. C'est ce qui sépare les deux fuites.
 - **Commencez par la question la plus facile.** Un code postal ou un choix entre deux boutons, pas un nom et un téléphone.
 - **Découpez en étapes** quand il y a plus de trois questions. Une question par écran se remplit mieux qu'un bloc de huit champs.
 - **Demandez le téléphone en dernier**, quand le visiteur a déjà investi du temps et voit qu'il approche du résultat.
@@ -83,7 +83,7 @@ Une bonne landing page n'a rien de spectaculaire. Elle respecte quelques règles
 
 **Un formulaire qui trie.** Quelques questions bien choisies (propriétaire, type de logement, délai) font gagner des heures d'appels inutiles à vos commerciaux.
 
-Un exemple : pour une entreprise d'isolation par l'extérieur, nous avons construit une page avec un **simulateur d'aides en cinq étapes**, sous un titre qui parle au quotidien du visiteur (« Froide l'hiver, trop chaude l'été »). Le visiteur répond à des questions simples sur son logement, une par écran. Ses réponses servent aussi à qualifier la demande avant l'appel.
+Un exemple : pour une entreprise d'isolation par l'extérieur, nous avons construit une page avec un **simulateur d'aides en cinq étapes**, sous un titre qui parle du confort de la maison au quotidien, pas d'isolation. Le visiteur répond à des questions simples sur son logement, une par écran. Ses réponses servent aussi à qualifier la demande avant l'appel.
 
 ## Quand un site vitrine suffit
 
@@ -107,7 +107,7 @@ Et même quand vous faites de la publicité, le site vitrine reste utile : une p
 
 - Trafic payant : une landing page par offre. Visiteurs qui vous cherchent : le site vitrine.
 - La page doit reprendre la promesse de l'annonce, dans les mêmes mots.
-- Mesurez le démarrage du formulaire : c'est souvent là que se perdent la majorité des demandes.
+- Mesurez le démarrage du formulaire : c'est ce qui dit si la fuite est dans la page ou dans le formulaire.
 - Une page par offre donne aussi une mesure par offre, et c'est ce qui permet de piloter un budget.
 
 Nous concevons des [landing pages pour vos campagnes Meta et Google Ads](/creation-landing-page), avec le formulaire, la mesure et le suivi des demandes jusqu'à votre CRM. Et quand il vous faut aussi un site complet, nous faisons la [création de votre site internet](/creation-site-internet).

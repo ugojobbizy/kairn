@@ -13,7 +13,7 @@ related:
   - acheter-des-leads-renovation-energetique
 faq:
   - q: "Quelle est la formule du coût par lead ?"
-    a: "Coût par lead = dépense publicitaire ÷ nombre de leads reçus sur la même période. Par exemple, 1 500 € dépensés pour 78 demandes reçues donnent un coût par lead de 19,23 €."
+    a: "Coût par lead = dépense publicitaire ÷ nombre de leads reçus sur la même période. Par exemple, 1 500 € dépensés pour 60 demandes reçues donnent un coût par lead de 25 €."
   - q: "Comment calculer le coût par lead maximum ?"
     a: "Coût par lead maximum = marge brute par vente × taux de signature des leads × part de la marge que vous acceptez de consacrer à l'acquisition. Avec 1 500 € de marge, 10 % de leads signés et 30 % de la marge pour l'acquisition, le plafond est de 45 € par lead."
   - q: "Quel est un bon coût par lead ?"
@@ -22,7 +22,7 @@ faq:
     a: "Autour de 30 leads, l'incertitude est encore d'environ 18 %. À 10 leads, elle est d'environ 32 %. Avant une trentaine de leads, on ne peut pas dire qu'une campagne est bonne ou mauvaise."
 ---
 
-Le coût par lead se calcule en divisant ce que vous avez dépensé en publicité par le nombre de demandes reçues. **1 500 € dépensés, 78 demandes : 19,23 € le lead.**
+Le coût par lead se calcule en divisant ce que vous avez dépensé en publicité par le nombre de demandes reçues. **1 500 € dépensés, 60 demandes : 25 € le lead.**
 
 Cette formule dit combien vous payez. Elle ne dit pas si c'est trop. Pour ça, il faut un second chiffre, que très peu d'entreprises calculent : **le coût par lead maximum**, au-delà duquel chaque vente vous coûte plus qu'elle ne rapporte. Il dépend de trois choses que vous connaissez déjà : votre marge, votre taux de signature, et ce que vous acceptez de dépenser pour gagner un client.
 
@@ -93,7 +93,7 @@ Voici les chiffres mesurés dans le CRM d'une entreprise d'isolation par l'exté
 
 Le coût par lead a baissé de 72 % entre juin et août. Deux lectures honnêtes de ce tableau :
 
-- **De juin à juillet, la baisse est réelle** : budget presque identique, presque deux fois plus de leads. Ce n'est pas un effet de budget, c'est la campagne qui a mieux converti.
+- **De juin à juillet, la baisse est réelle** : budget presque identique, presque deux fois plus de leads. La baisse ne s'explique donc pas par le budget.
 - **En août, le budget a été divisé par plus de quatre.** Un budget plus petit se concentre sur les personnes les plus réceptives, ce qui tend à faire baisser le coût par lead. Comparer août à juin sans le dire serait trompeur.
 
 La règle générale : **on ne compare deux coûts par lead qu'à budget comparable**. Un coût par lead qui baisse quand le budget baisse n'est pas une performance. Un coût par lead qui baisse à budget constant en est une.
@@ -102,13 +102,13 @@ La règle générale : **on ne compare deux coûts par lead qu'à budget compara
 
 Les moyennes sectorielles circulent beaucoup. Elles posent trois problèmes.
 
-**Elles mélangent des leads qui n'ont rien à voir.** Un lead qui vient d'une recherche Google (« isolation combles prix ») est quelqu'un qui cherche. Un lead qui vient d'une bannière sur un site d'actualité est quelqu'un qu'on a interrompu. Un vendeur de leads nous a indiqué en septembre 2026 que ses leads d'isolation des combles, revendus 25 €, venaient de bannières display. À prix égal, ces deux leads ne signent pas au même taux.
+**Elles mélangent des leads qui n'ont rien à voir.** Un lead qui vient d'une recherche Google (« isolation combles prix ») est quelqu'un qui cherche. Un lead qui vient d'une bannière sur un site d'actualité est quelqu'un qu'on a interrompu. Un vendeur de leads nous a indiqué en septembre 2026 que ses leads d'isolation des combles, revendus 25 €, venaient de bannières display. À prix égal, rien ne permet de supposer que ces deux leads signent au même taux.
 
 **Elles ignorent votre offre.** La même campagne donne des coûts par lead très différents selon que l'offre est une isolation à 1 € financée par des primes ou un chantier à 20 000 €.
 
 **Elles ignorent votre taux de signature**, donc la seule chose qui compte : le coût d'un client.
 
-Un exemple de ce que ça donne en vrai : sur une campagne Google Search pour de l'isolation de combles que nous avons menée en septembre 2026, 484,57 € ont produit 3 demandes, soit **161,52 € le lead**. Sur le même marché, des leads se revendaient 25 €. Nous avons arrêté la campagne : aucune moyenne n'aurait prédit cet écart, seul le suivi réel l'a montré, en deux semaines.
+Un exemple de ce que ça donne en vrai : sur une campagne Google Search pour de l'isolation de combles que nous avons menée en septembre 2026, 484,57 € ont produit 3 demandes, soit **161,52 € le lead**. Sur le même marché, des leads se revendaient 25 €. Nous avons mis la campagne en veille : aucune moyenne n'aurait prédit cet écart, seul le suivi réel l'a montré, en deux semaines.
 
 ## Ce qui fait vraiment baisser un coût par lead
 
@@ -116,7 +116,7 @@ Un coût par lead, c'est le coût d'un clic divisé par le taux de clics qui dev
 
 **Le coût du clic** dépend surtout de la concurrence sur votre audience ou vos mots-clés. Il bouge peu, et lentement.
 
-**Le taux de transformation** bouge beaucoup, et vite. Sur la campagne Google Search citée plus haut, 31 personnes ont commencé à remplir le formulaire et 3 l'ont envoyé : neuf sur dix abandonnaient en cours de route. Le problème n'était pas le prix du clic, il était dans le formulaire.
+**Le taux de transformation** bouge beaucoup, et vite. Sur la campagne Google Search citée plus haut, 31 personnes ont commencé à remplir le formulaire et 3 l'ont envoyé : neuf sur dix abandonnaient en cours de route. La fuite la plus visible n'était pas le prix du clic, mais le formulaire.
 
 Les leviers qui agissent sur ce taux :
 

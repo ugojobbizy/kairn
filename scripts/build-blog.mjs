@@ -33,7 +33,10 @@ const slugify = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
   .replace(/<[^>]+>/g, '').replace(/&#?\w+;/g, '-').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const plain = (s) => s.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
 
-const files = readdirSync(SRC).filter((f) => f.endsWith('.md')).sort();
+// Brouillons (draft: true) : ignorés, sauf avec BLOG_DRAFTS=1 pour les relire en local.
+const WITH_DRAFTS = process.env.BLOG_DRAFTS === '1';
+const files = readdirSync(SRC).filter((f) => f.endsWith('.md')).sort()
+  .filter((f) => WITH_DRAFTS || !matter(readFileSync(join(SRC, f), 'utf8')).data.draft);
 const errors = [];
 const warnings = [];
 const posts = [];
@@ -42,7 +45,6 @@ const bodies = {};
 for (const file of files) {
   const slug = basename(file, '.md');
   const { data, content } = matter(readFileSync(join(SRC, file), 'utf8'));
-  if (data.draft) continue;
   const where = `${file}`;
 
   for (const k of REQUIRED) if (data[k] == null || data[k] === '') errors.push(`${where} : champ « ${k} » manquant`);

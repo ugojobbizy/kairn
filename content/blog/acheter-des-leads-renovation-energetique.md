@@ -79,7 +79,7 @@ Pour une entreprise d'isolation thermique par l'extérieur, nous avons construit
 | Juillet | 1 458,68 € | 147 | 9,92 € |
 | Août | 329,49 € | 60 | 5,49 € |
 
-De mai à septembre, **323 leads** sont arrivés dans le CRM. Ce sont des leads exclusifs par construction : personne d'autre ne les a reçus. (Le budget d'août était plus faible, ce qui tend à faire baisser le coût par lead. La baisse de juin à juillet, à budget presque égal, est la plus parlante.)
+De mai à septembre, **323 leads** sont arrivés dans le CRM. Produits par l'entreprise pour elle-même, ils ne sont partagés avec aucun concurrent. (Le budget d'août était plus faible, ce qui tend à faire baisser le coût par lead. La baisse de juin à juillet, à budget presque égal, est la plus parlante.)
 
 ### Un cas qui n'a pas marché : combles à 1 €, Google Search
 
@@ -87,9 +87,8 @@ Pour une offre d'isolation des combles à 1 € dans le Sud-Ouest, nous avons la
 
 Ce qu'on en retient :
 
-- **Le canal doit correspondre à l'offre.** Une offre à 1 € très connue du public ne se vend pas de la même façon qu'un chantier à plusieurs milliers d'euros.
-- **La fuite était dans le formulaire**, pas dans le prix du clic : neuf personnes sur dix abandonnaient après l'avoir commencé.
-- **Le plafond de dépense décidé à l'avance a fait son travail** : on a su en deux semaines, pour moins de 500 €, que ce canal ne marchait pas sur cette offre.
+- **La fuite la plus visible était dans le formulaire** : neuf personnes sur dix abandonnaient après l'avoir commencé. Nous n'en avons pas établi la cause.
+- **On a su en deux semaines, pour moins de 500 €,** que cette campagne ne marchait pas. C'est l'intérêt de décider à l'avance combien on accepte de dépenser pour un test.
 
 Produire ses leads n'est donc pas « moins cher » par principe. C'est un pari plus variable, avec un avantage décisif quand il marche : vous contrôlez la source, la qualification et la vitesse, et vous ne partagez vos prospects avec personne.
 
@@ -133,5 +132,5 @@ C'est ce que nous mettons en place pour les entreprises de rénovation : des [ca
 
 - Comparez le coût par chantier signé (prix du lead ÷ taux de signature), jamais le prix du lead seul.
 - Demandez toujours la source d'un lead acheté : recherche, réseaux sociaux ou bannières, ce n'est pas le même produit.
-- Produire ses leads peut coûter 5 € comme 160 € le lead selon l'offre et le canal. Testez avec un plafond de dépense décidé à l'avance.
+- Produire ses leads peut coûter de moins de 10 € à plus de 160 € le lead selon l'offre, le canal et la page. Testez avec un plafond de dépense décidé à l'avance.
 - Qualifiez dans le formulaire : propriétaire, type de logement, zone, délai.
