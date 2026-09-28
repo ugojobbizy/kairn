@@ -3,8 +3,7 @@ title: "Artisans du bâtiment : comment trouver des chantiers chez les particuli
 seoTitle: "Trouver des chantiers chez les particuliers : 6 canaux comparés"
 description: "Bouche-à-oreille, fiche Google, site, plateformes, leads, publicité : ce que chaque canal coûte à un artisan, et dans quel ordre les mettre en place."
 category: metiers
-datePublished: 2026-10-08
-draft: true
+datePublished: 2026-09-28
 cover:
   big: "6 canaux"
   caption: "comparés pour un artisan"

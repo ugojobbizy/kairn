@@ -3,8 +3,7 @@ title: "Meta Ads ou Google Ads : lequel choisir selon votre activité"
 seoTitle: "Meta Ads ou Google Ads : lequel choisir pour vos leads ?"
 description: "Google capte une demande qui existe, Meta crée une demande qui n'existe pas encore. Comment choisir selon votre offre, avec deux campagnes réelles."
 category: acquisition
-datePublished: 2026-10-08
-draft: true
+datePublished: 2026-09-28
 cover:
   big: "9,92 € · 161,52 €"
   caption: "deux campagnes, deux coûts par lead"

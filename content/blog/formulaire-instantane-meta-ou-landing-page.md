@@ -3,8 +3,7 @@ title: "Formulaire instantané Meta ou landing page : où envoyer vos prospects 
 seoTitle: "Formulaire instantané Meta ou landing page : que choisir ?"
 description: "Le formulaire instantané donne plus de leads, la landing page de meilleurs leads. Comment choisir, comment trier les demandes, et comment comparer les deux."
 category: acquisition
-datePublished: 2026-10-08
-draft: true
+datePublished: 2026-09-28
 cover:
   big: "1 clic"
   caption: "contre une page entière pour convaincre"
