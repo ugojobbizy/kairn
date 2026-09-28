@@ -4,8 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node scripts/seo-prerender.mjs",
+    "blog": "node scripts/build-blog.mjs",
+    "dev": "node scripts/build-blog.mjs && vite",
+    "build": "node scripts/build-blog.mjs && vite build && node scripts/seo-prerender.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,6 +20,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "gray-matter": "^4.0.3",
+    "marked": "^15.0.12",
     "vite": "^6.0.0"
   }
 }

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { pageFor, SITE_URL } from './seo.js';
+import { pageFor, structuredData, SITE_URL, OG_IMAGE } from './seo.js';
 
 // Met à jour titre, description, indexation et balises de partage à chaque changement de page.
 // Les pages HTML générées à la compilation portent déjà les bonnes balises ; ce composant
@@ -29,6 +29,22 @@ export default function SeoManager() {
     setMeta('property', 'og:url', canonical);
     setMeta('name', 'twitter:title', page.title);
     setMeta('name', 'twitter:description', page.description);
+    setMeta('property', 'og:type', page.kind === 'article' ? 'article' : 'website');
+    setMeta('property', 'og:image', page.image || OG_IMAGE);
+    setMeta('name', 'twitter:image', page.image || OG_IMAGE);
+    // Données structurées de la page affichée (article, FAQ, fil d'Ariane…).
+    const data = structuredData(path);
+    let ld = document.head.querySelector('script[type="application/ld+json"]');
+    if (data) {
+      if (!ld) {
+        ld = document.createElement('script');
+        ld.type = 'application/ld+json';
+        document.head.appendChild(ld);
+      }
+      ld.textContent = JSON.stringify(data);
+    } else if (ld) {
+      ld.remove();
+    }
     let link = document.head.querySelector('link[rel="canonical"]');
     if (!link) {
       link = document.createElement('link');

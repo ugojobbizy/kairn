@@ -4,6 +4,8 @@
 //    et par les aperçus de partage, qui n'exécutent pas toujours le JavaScript) ;
 //  - <SeoManager /> (App.jsx) remet les mêmes balises à jour pendant la navigation.
 import { FAQ, FAQ_LEADS, FAQ_WEB, FAQ_LP, FAQ_CRM, FAQ_BDX } from './v2/faq-data.js';
+import { POSTS } from './blog/generated/index.js';
+import { BLOG_PATH, CATEGORIES, AUTHOR } from './blog/meta.js';
 
 export const SITE_URL = 'https://www.kairnagency.com';
 export const SITE_NAME = 'Kairn';
@@ -62,6 +64,22 @@ export const PAGES = {
   '/mentions-legales': { title: 'Mentions légales · Kairn', description: 'Mentions légales du site kairnagency.com, édité par Kairn.' },
   '/confidentialite': { title: 'Politique de confidentialité · Kairn', description: 'Comment Kairn collecte, utilise et protège vos données personnelles sur kairnagency.com.' },
   '/cgv': { title: 'Conditions générales de vente · Kairn', description: 'Conditions générales de vente des prestations de Kairn : création web, campagnes publicitaires et CRM sur mesure.' },
+
+  // Blog : la page d'accueil du blog, puis un article par fichier de content/blog (voir scripts/build-blog.mjs).
+  [BLOG_PATH]: {
+    title: 'Blog · Sites, publicité et génération de leads · Kairn',
+    description: 'Guides pratiques pour les entreprises qui veulent des clients sur internet : sites, landing pages, Meta et Google Ads, CRM et suivi des leads. Chiffres réels, sans jargon.',
+    crumb: 'Blog',
+    kind: 'blog',
+  },
+  ...Object.fromEntries(POSTS.map((post) => [post.path, {
+    title: post.seoTitle,
+    description: post.description,
+    crumb: post.title,
+    faq: post.faq.length ? post.faq : undefined,
+    kind: 'article',
+    post,
+  }])),
 
   // Pages à ne pas référencer : anciennes versions, landing pages publicitaires, espace privé.
   '/v1': { title: 'Kairn (ancienne version)', description: 'Ancienne version du site Kairn.', robots: NOINDEX, canonical: '/' },
@@ -122,6 +140,8 @@ export function structuredData(path) {
   }
   const page = PAGES[path];
   if (!page || page.robots) return null;
+  if (page.kind === 'article') return articleData(path, page);
+  if (page.kind === 'blog') return blogData(path, page);
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -160,6 +180,80 @@ export function structuredData(path) {
   };
 }
 
+const faqData = (faq) => ({
+  '@type': 'FAQPage',
+  mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+});
+
+const PERSON = {
+  '@type': 'Person',
+  '@id': `${SITE_URL}${BLOG_PATH}#auteur`,
+  name: AUTHOR.name,
+  worksFor: { '@id': `${SITE_URL}/#organization` },
+  ...(AUTHOR.linkedin ? { sameAs: [AUTHOR.linkedin] } : {}),
+};
+
+function articleData(path, page) {
+  const { post } = page;
+  const url = `${SITE_URL}${path}`;
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BlogPosting',
+        '@id': `${url}#article`,
+        mainEntityOfPage: url,
+        url,
+        headline: post.title,
+        description: post.description,
+        datePublished: post.datePublished,
+        dateModified: post.dateModified,
+        inLanguage: 'fr-FR',
+        articleSection: CATEGORIES.find((c) => c.id === post.category)?.label,
+        wordCount: post.words,
+        image: page.image || OG_IMAGE,
+        author: PERSON,
+        publisher: { '@id': `${SITE_URL}/#organization` },
+        isPartOf: { '@id': `${SITE_URL}${BLOG_PATH}#blog` },
+      },
+      ...(page.faq ? [faqData(page.faq)] : []),
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE_URL}/` },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}${BLOG_PATH}` },
+          { '@type': 'ListItem', position: 3, name: post.title, item: url },
+        ],
+      },
+    ],
+  };
+}
+
+function blogData(path, page) {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Blog',
+        '@id': `${SITE_URL}${path}#blog`,
+        url: `${SITE_URL}${path}`,
+        name: page.title,
+        description: page.description,
+        inLanguage: 'fr-FR',
+        publisher: { '@id': `${SITE_URL}/#organization` },
+        blogPost: POSTS.map((p) => ({ '@type': 'BlogPosting', headline: p.title, url: `${SITE_URL}${p.path}`, datePublished: p.datePublished })),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE_URL}/` },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}${path}` },
+        ],
+      },
+    ],
+  };
+}
+
 // Balises <head> d'une adresse, sous forme de texte HTML (utilisé par le script de compilation).
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -171,21 +265,28 @@ export function headTags(path) {
     `<meta name="description" content="${esc(page.description)}" />`,
     `<meta name="robots" content="${page.robots || 'index, follow, max-image-preview:large'}" />`,
     `<link rel="canonical" href="${canonical}" />`,
-    `<meta property="og:type" content="website" />`,
+    `<meta property="og:type" content="${page.kind === 'article' ? 'article' : 'website'}" />`,
     `<meta property="og:site_name" content="${SITE_NAME}" />`,
     `<meta property="og:locale" content="fr_FR" />`,
     `<meta property="og:title" content="${esc(page.title)}" />`,
     `<meta property="og:description" content="${esc(page.description)}" />`,
     `<meta property="og:url" content="${canonical}" />`,
-    `<meta property="og:image" content="${OG_IMAGE}" />`,
+    `<meta property="og:image" content="${page.image || OG_IMAGE}" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
     `<meta property="og:image:alt" content="Kairn, création web et génération de leads" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(page.title)}" />`,
     `<meta name="twitter:description" content="${esc(page.description)}" />`,
-    `<meta name="twitter:image" content="${OG_IMAGE}" />`,
+    `<meta name="twitter:image" content="${page.image || OG_IMAGE}" />`,
   ];
+  if (page.kind === 'article') {
+    tags.push(
+      `<meta property="article:published_time" content="${page.post.datePublished}" />`,
+      `<meta property="article:modified_time" content="${page.post.dateModified}" />`,
+      `<meta property="article:author" content="${esc(AUTHOR.name)}" />`,
+    );
+  }
   const data = structuredData(path);
   if (data) tags.push(`<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`);
   return tags.join('\n    ');

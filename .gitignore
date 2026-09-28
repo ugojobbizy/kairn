@@ -24,3 +24,6 @@ pnpm-debug.log*
 
 # Claude Code local config
 .claude/
+
+# Blog : modules générés par scripts/build-blog.mjs
+src/blog/generated/
