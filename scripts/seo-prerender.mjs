@@ -16,7 +16,8 @@ if (!template.includes('<!--seo:start-->') || !template.includes('<!--seo:noscri
 }
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const MAIN_LINKS = [['/', 'Accueil'], ['/realisations', 'Réalisations'], ['/generation-de-leads', 'Génération de leads'], ['/creation-site-internet', 'Création de site internet'], ['/creation-landing-page', 'Création de landing page'], ['/crm-sur-mesure', 'CRM sur mesure'], ['/agence-bordeaux', 'Agence à Bordeaux'], [BLOG_PATH, 'Blog']];
+// Le blog n'apparaît pas dans ces liens : il n'est accessible que par Google et le sitemap (choix de l'utilisateur).
+const MAIN_LINKS = [['/', 'Accueil'], ['/realisations', 'Réalisations'], ['/generation-de-leads', 'Génération de leads'], ['/creation-site-internet', 'Création de site internet'], ['/creation-landing-page', 'Création de landing page'], ['/crm-sur-mesure', 'CRM sur mesure'], ['/agence-bordeaux', 'Agence à Bordeaux']];
 const nav = `<nav>${MAIN_LINKS.map(([href, label]) => `<a href="${href}">${esc(label)}</a>`).join(' · ')}</nav>`;
 const dateFr = (iso) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 

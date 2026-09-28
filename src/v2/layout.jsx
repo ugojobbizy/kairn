@@ -62,7 +62,6 @@ const SERVICES = [
 ];
 const LINKS = [
   { to: '/realisations', t: 'Réalisations' },
-  { to: '/blog', t: 'Blog' },
   { to: '/#methode', t: 'Méthode' },
   { to: '/#faq', t: 'Questions' },
 ];
@@ -179,7 +178,7 @@ export function Nav() {
           <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo />Kairn</Link>
           <nav className="nav-links" aria-label="Navigation principale">
             <ServicesMenu />
-            {LINKS.map((x) => <Link key={x.to} to={x.to} className={pathname === x.to || (x.to === '/blog' && pathname.startsWith('/blog/')) ? 'is-active' : undefined}>{x.t}</Link>)}
+            {LINKS.map((x) => <Link key={x.to} to={x.to} className={pathname === x.to ? 'is-active' : undefined}>{x.t}</Link>)}
             {WHATSAPP_NUMBER && (
               <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="nav-wa" aria-label="Contact sur WhatsApp (nouvel onglet)">
                 <WhatsAppIcon />
@@ -217,7 +216,6 @@ export function Footer() {
               <li><Link to="/#systeme">Le système</Link></li>
               <li><Link to="/#methode">Méthode</Link></li>
               <li><Link to="/realisations">Réalisations</Link></li>
-              <li><Link to="/blog">Blog</Link></li>
               <li><Link to="/agence-bordeaux">Agence à Bordeaux</Link></li>
             </ul>
           </div>
