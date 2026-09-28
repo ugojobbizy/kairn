@@ -1,19 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MotionConfig, motion } from 'framer-motion';
 import { Nav, Footer, BookCta, useV2Favicon } from './layout.jsx';
 import Booking from './booking.jsx';
-import { EASE, Pill, Glow, Reveal } from './blocks.jsx';
-import { PostCard } from './article.jsx';
+import { EASE, Icon, Pill, Glow, Reveal } from './blocks.jsx';
+import { PostCard, PostCover, categoryLabel } from './article.jsx';
+import { Link } from 'react-router-dom';
 import { POSTS } from '../blog/generated/index.js';
 import { CATEGORIES } from '../blog/meta.js';
 import './v2.css';
 import './blog.css';
 
-// Page d'accueil du blog (/blog) : les articles rangés par catégorie.
+// Page d'accueil du blog (/blog) : un article à la une, puis tous les articles, filtrables par catégorie.
+// L'article à la une est celui marqué « featured: true » dans son en-tête, sinon le plus récent.
 
 export default function BlogIndex() {
   useV2Favicon();
-  const groups = CATEGORIES.map((c) => ({ ...c, posts: POSTS.filter((p) => p.category === c.id) })).filter((g) => g.posts.length);
+  const [cat, setCat] = useState('all');
+  const featured = POSTS.find((p) => p.featured) || POSTS[0];
+  const cats = CATEGORIES.filter((c) => POSTS.some((p) => p.category === c.id));
+  const list = POSTS.filter((p) => p !== featured && (cat === 'all' || p.category === cat));
 
   return (
     <MotionConfig reducedMotion="user">
@@ -32,27 +37,37 @@ export default function BlogIndex() {
               <p className="post-lead">
                 Sites, landing pages, Meta et Google Ads, CRM : ce qu’on a appris en lançant des campagnes pour des entreprises, avec les vrais chiffres et les erreurs qu’on ne refera pas.
               </p>
-              {groups.length > 1 && (
-                <nav className="blog-cats" aria-label="Catégories">
-                  {groups.map((g) => <a key={g.id} href={`#${g.id}`}>{g.label}</a>)}
-                </nav>
-              )}
             </div>
           </section>
 
-          {groups.map((g) => (
-            <section key={g.id} id={g.id} className="band blog-group">
-              <div className="wrap">
-                <div className="blog-group-head">
-                  <h2>{g.label}</h2>
-                  <p>{g.intro}</p>
-                </div>
-                <div className="post-cards">
-                  {g.posts.map((p) => <PostCard key={p.slug} post={p} />)}
-                </div>
+          <section className="band blog-list">
+            <div className="wrap">
+              {featured && (
+                <Link to={featured.path} className="post-feature">
+                  <PostCover post={featured} className="is-big" />
+                  <div className="post-feature-body">
+                    <span className="post-card-cat">À la une · {categoryLabel(featured.category)}</span>
+                    <h2>{featured.title}</h2>
+                    <p>{featured.description}</p>
+                    <span className="post-card-meta">Lire l’article · {featured.minutes} min <Icon name="arrow" size={15} stroke={2} /></span>
+                  </div>
+                </Link>
+              )}
+
+              <div className="blog-filter" role="tablist" aria-label="Filtrer par catégorie">
+                {[{ id: 'all', label: 'Tous les articles' }, ...cats].map((c) => (
+                  <button key={c.id} type="button" role="tab" aria-selected={cat === c.id} className={cat === c.id ? 'is-on' : undefined} onClick={() => setCat(c.id)}>
+                    {c.label}
+                  </button>
+                ))}
               </div>
-            </section>
-          ))}
+              {cat !== 'all' && <p className="blog-filter-intro">{CATEGORIES.find((c) => c.id === cat)?.intro}</p>}
+
+              <div className="post-cards">
+                {list.map((p) => <PostCard key={p.slug} post={p} />)}
+              </div>
+            </div>
+          </section>
 
           <section id="contact" style={{ paddingBottom: 'var(--band-sm)' }}>
             <Reveal className="final">

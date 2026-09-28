@@ -5,6 +5,9 @@ description: "Dans la plupart des cas, un CRM du marché suffit. Les quatre situ
 category: suivi
 datePublished: 2026-10-20
 draft: true
+cover:
+  big: "4 cas"
+  caption: "où un CRM développé pour vous devient plus simple"
 servicePage: /crm-sur-mesure
 ctaTitle: "Votre CRM vous dit-il quelle pub fait signer ?"
 ctaText: "Racontez-nous comment un lead arrive et comment il devient client. On vous dit si votre outil actuel suffit, et ce qu'on changerait."

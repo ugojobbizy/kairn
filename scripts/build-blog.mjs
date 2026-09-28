@@ -104,6 +104,8 @@ for (const file of files) {
     datePublished: isoDate(data.datePublished),
     dateModified: isoDate(data.dateModified || data.datePublished),
     servicePage: data.servicePage,
+    featured: Boolean(data.featured),
+    cover: data.cover ? { big: data.cover.big, caption: typo(data.cover.caption) } : null,
     ctaTitle: data.ctaTitle ? typo(data.ctaTitle) : null,
     ctaText: data.ctaText ? typo(data.ctaText) : null,
     faq: (data.faq || []).map((f) => [typo(f.q), typo(f.a)]),

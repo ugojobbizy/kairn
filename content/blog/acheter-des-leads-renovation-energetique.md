@@ -4,6 +4,9 @@ seoTitle: "Acheter des leads pompe à chaleur, isolation : le vrai calcul"
 description: "Pompe à chaleur, isolation, photovoltaïque : comparer lead acheté et lead produit sur le seul chiffre qui compte, le coût par chantier signé."
 category: metiers
 datePublished: 2026-09-28
+cover:
+  big: "25 € ≠ 25 €"
+  caption: "même prix, pas le même lead"
 servicePage: /generation-de-leads
 ctaTitle: "Vous achetez des leads aujourd'hui ?"
 ctaText: "Donnez-nous votre prix par lead et votre taux de signature : on calcule votre coût par chantier, et ce que coûterait de produire vos propres demandes."

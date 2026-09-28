@@ -5,6 +5,9 @@ description: "Google capte une demande qui existe, Meta crée une demande qui n'
 category: acquisition
 datePublished: 2026-10-08
 draft: true
+cover:
+  big: "9,92 € · 161,52 €"
+  caption: "deux campagnes, deux coûts par lead"
 servicePage: /generation-de-leads
 ctaTitle: "Meta, Google, ou les deux ?"
 ctaText: "Décrivez-nous votre offre et votre zone : on vous dit sur quel canal on commencerait, avec quel budget de test, et pourquoi."

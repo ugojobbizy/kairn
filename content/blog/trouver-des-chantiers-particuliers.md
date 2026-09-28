@@ -5,6 +5,9 @@ description: "Bouche-à-oreille, fiche Google, site, plateformes, leads, publici
 category: metiers
 datePublished: 2026-10-08
 draft: true
+cover:
+  big: "6 canaux"
+  caption: "comparés pour un artisan"
 servicePage: /creation-site-internet
 ctaTitle: "Vous voulez des chantiers plus réguliers ?"
 ctaText: "Dites-nous votre métier et votre zone : on vous dit quel canal on activerait en premier chez vous, et ce qu'il faudrait pour qu'il rapporte."

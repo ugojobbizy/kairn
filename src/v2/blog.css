@@ -129,3 +129,78 @@
   .v2.blog .post-card { padding: 22px; }
   .v2.blog .post-cta-actions .btn { width: 100%; }
 }
+
+/* ─ couvertures d'articles (cartes) ─ */
+.v2.blog .post-card { padding: 10px 10px 26px; }
+.v2.blog .post-card > :not(.post-cover) { margin-left: 18px; margin-right: 18px; }
+.v2.blog .post-cover {
+  --c1: #67E8F9; --c2: #818CF8;
+  position: relative; overflow: hidden; isolation: isolate;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 8px;
+  aspect-ratio: 16 / 9; margin-bottom: 8px; padding: 22px 24px;
+  border-radius: calc(var(--r-lg) - 6px); background: var(--night); color: #fff;
+}
+.v2.blog .post-cover[data-cat='acquisition'] { --c1: #818CF8; --c2: #C084FC; }
+.v2.blog .post-cover[data-cat='suivi'] { --c1: #38BDF8; --c2: #6366F1; }
+.v2.blog .post-cover[data-cat='metiers'] { --c1: #5EEAD4; --c2: #38BDF8; }
+.v2.blog .post-cover-glow {
+  position: absolute; inset: -40% -20% auto auto; width: 80%; aspect-ratio: 1; z-index: -1; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--c2) 55%, transparent), transparent 65%);
+  transition: transform .6s var(--ease);
+}
+.v2.blog .post-cover-grid {
+  position: absolute; inset: 0; z-index: -1; opacity: .5;
+  background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(180deg, transparent, #000 70%); -webkit-mask-image: linear-gradient(180deg, transparent, #000 70%);
+}
+.v2.blog .post-cover-big {
+  font-size: clamp(30px, 3.2vw, 40px); font-weight: 600; letter-spacing: -0.04em; line-height: 1.05;
+  background: linear-gradient(100deg, var(--c1), var(--c2)); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.v2.blog .post-cover-cap { max-width: 30ch; font: 500 12.5px/1.45 var(--mono); letter-spacing: .02em; color: rgba(255,255,255,.62); }
+.v2.blog .post-card:hover .post-cover-glow { transform: translate(-8%, 8%) scale(1.08); }
+
+/* ─ page d'accueil du blog : à la une, filtres, grille ─ */
+.v2.blog .blog-list { padding-top: clamp(40px, 5vw, 72px); padding-bottom: var(--band-sm); }
+.v2.blog .post-feature {
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: center;
+  padding: 12px; border-radius: var(--r-xl); background: var(--surface); border: 1px solid var(--line-2);
+  transition: border-color .25s var(--ease);
+}
+.v2.blog .post-feature:hover { border-color: rgba(47, 91, 234, .45); }
+.v2.blog .post-feature:hover .post-cover-glow { transform: translate(-8%, 8%) scale(1.08); }
+.v2.blog .post-feature .post-cover { margin: 0; aspect-ratio: 16 / 10; padding: clamp(24px, 3vw, 40px); }
+.v2.blog .post-cover.is-big .post-cover-big { font-size: clamp(44px, 6vw, 84px); }
+.v2.blog .post-cover.is-big .post-cover-cap { font-size: 14px; }
+.v2.blog .post-feature-body { display: flex; flex-direction: column; gap: 14px; padding: 12px clamp(8px, 2vw, 24px) 12px 0; }
+.v2.blog .post-feature h2 { font-size: clamp(28px, 3vw, 40px); line-height: 1.1; letter-spacing: -0.035em; font-weight: 600; text-wrap: balance; }
+.v2.blog .post-feature p { color: var(--muted); font-size: 17px; line-height: 1.55; }
+.v2.blog .blog-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: clamp(40px, 5vw, 64px) 0 20px; }
+.v2.blog .blog-filter button {
+  min-height: 42px; padding: 0 18px; border-radius: 999px; cursor: pointer;
+  font: 500 14.5px var(--font); color: var(--ink-2); background: var(--surface); border: 1px solid var(--line-2);
+  transition: background .2s, color .2s, border-color .2s;
+}
+.v2.blog .blog-filter button:hover { border-color: var(--ink); }
+.v2.blog .blog-filter button.is-on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.v2.blog .blog-filter-intro { margin: -4px 0 20px; color: var(--muted); font-size: 16px; }
+.v2.blog .post-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* couvertures : deux halos aux couleurs de la catégorie */
+.v2.blog .post-cover::before {
+  content: ''; position: absolute; inset: auto auto -50% -25%; width: 70%; aspect-ratio: 1; z-index: -1; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--c1) 38%, transparent), transparent 65%);
+}
+.v2.blog .post-cover-glow { background: radial-gradient(circle, color-mix(in srgb, var(--c2) 70%, transparent), transparent 62%); }
+
+@media (max-width: 1080px) {
+  .v2.blog .post-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 800px) {
+  .v2.blog .post-feature { grid-template-columns: 1fr; }
+  .v2.blog .post-feature-body { padding: 8px 12px 14px; }
+}
+@media (max-width: 640px) {
+  .v2.blog .post-cards { grid-template-columns: 1fr; }
+}

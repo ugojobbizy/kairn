@@ -4,6 +4,9 @@ seoTitle: "Landing page ou site vitrine : que choisir pour vos pubs ?"
 description: "Pour de la publicité payante, une landing page par offre ; le site vitrine sert au reste. Le mécanisme, et où les demandes se perdent vraiment."
 category: sites
 datePublished: 2026-09-28
+cover:
+  big: "31 → 3"
+  caption: "formulaires commencés, formulaires envoyés"
 servicePage: /creation-landing-page
 ctaTitle: "Vos publicités pointent vers votre page d'accueil ?"
 ctaText: "Montrez-nous vos annonces et la page où elles mènent. On vous dit ce qui fait fuir vos visiteurs, et ce qu'une landing page changerait."

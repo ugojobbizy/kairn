@@ -5,6 +5,9 @@ description: "Le formulaire instantané donne plus de leads, la landing page de 
 category: acquisition
 datePublished: 2026-10-08
 draft: true
+cover:
+  big: "1 clic"
+  caption: "contre une page entière pour convaincre"
 servicePage: /creation-landing-page
 ctaTitle: "Vos leads Meta ne décrochent pas ?"
 ctaText: "On regarde votre formulaire, vos questions et votre délai de rappel, et on vous dit ce qui fait fuir les bons prospects."

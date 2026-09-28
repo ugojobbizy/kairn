@@ -5,6 +5,9 @@ description: "Les fonctionnalités indispensables, l'ordre pour les construire, 
 category: sites
 datePublished: 2026-10-20
 draft: true
+cover:
+  big: "2 publics"
+  caption: "à attirer en même temps"
 servicePage: /creation-site-internet
 ctaTitle: "Un projet de plateforme ?"
 ctaText: "Décrivez-nous vos deux publics et ce qui se passe entre eux. On vous dit ce qu'on construirait en premier, en combien de temps, et comment trouver vos premiers utilisateurs."

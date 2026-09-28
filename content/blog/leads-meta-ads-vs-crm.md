@@ -4,6 +4,10 @@ seoTitle: "Leads Meta Ads et CRM : pourquoi les chiffres ne collent pas"
 description: "Meta annonçait 634 leads, le CRM en avait 293. Les 6 causes de cet écart, comment les vérifier en 30 minutes, et pourquoi il faut piloter sur le CRM."
 category: suivi
 datePublished: 2026-09-28
+featured: true
+cover:
+  big: "634 vs 293"
+  caption: "leads comptés par Meta, leads reçus dans le CRM"
 servicePage: /crm-sur-mesure
 ctaTitle: "Vos chiffres Meta et votre CRM ne collent pas ?"
 ctaText: "On compare vos leads Meta et vos leads réels, jour par jour, et on vous montre d'où vient l'écart. 30 minutes, en visio."

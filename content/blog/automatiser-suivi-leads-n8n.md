@@ -5,6 +5,9 @@ description: "Alerte en moins d'une minute, message au prospect, relances, coût
 category: suivi
 datePublished: 2026-10-20
 draft: true
+cover:
+  big: "< 1 min"
+  caption: "entre la demande et l'alerte à l'équipe"
 servicePage: /crm-sur-mesure
 ctaTitle: "Qu'est-ce qu'on automatiserait chez vous ?"
 ctaText: "Racontez-nous comment un lead arrive et comment il devient client. On vous dit ce qu'on automatiserait, et ce qu'on laisserait tel quel."

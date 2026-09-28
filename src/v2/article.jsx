@@ -40,9 +40,23 @@ function Body({ html }) {
   });
 }
 
+// Visuel de couverture : le chiffre ou l'idée clé de l'article, sur fond sombre aux couleurs de la catégorie.
+export function PostCover({ post, className = '' }) {
+  if (!post.cover) return null;
+  return (
+    <div className={`post-cover ${className}`} data-cat={post.category} aria-hidden="true">
+      <span className="post-cover-glow" />
+      <span className="post-cover-grid" />
+      <span className="post-cover-big">{post.cover.big}</span>
+      <span className="post-cover-cap">{post.cover.caption}</span>
+    </div>
+  );
+}
+
 export function PostCard({ post, big }) {
   return (
     <Link to={post.path} className={`post-card${big ? ' is-big' : ''}`}>
+      <PostCover post={post} />
       <span className="post-card-cat">{categoryLabel(post.category)}</span>
       <h3>{post.title}</h3>
       <p>{post.description}</p>

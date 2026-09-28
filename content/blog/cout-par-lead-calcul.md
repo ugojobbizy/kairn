@@ -4,6 +4,9 @@ seoTitle: "Coût par lead (CPL) : calcul, formule et CPL maximum"
 description: "La formule du coût par lead, le calcul du CPL maximum que vous pouvez payer (avec un calculateur), et pourquoi un CPL ne se lit pas avant 30 leads."
 category: acquisition
 datePublished: 2026-09-28
+cover:
+  big: "19,43 → 5,49 €"
+  caption: "coût par lead mesuré, de juin à août 2026"
 servicePage: /generation-de-leads
 ctaTitle: "Votre coût par lead est-il bon ?"
 ctaText: "Envoyez-nous vos dépenses et vos leads des trois derniers mois : on calcule votre coût par lead réel, votre plafond, et ce qu'on ferait pour passer dessous."

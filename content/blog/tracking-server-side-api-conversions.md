@@ -5,6 +5,9 @@ description: "Pourquoi le navigateur perd des conversions, ce que le suivi côt�
 category: suivi
 datePublished: 2026-10-20
 draft: true
+cover:
+  big: "fbclid · gclid"
+  caption: "relier chaque vente au clic qui l'a amenée"
 servicePage: /crm-sur-mesure
 ctaTitle: "Vos campagnes optimisent-elles sur de vraies demandes ?"
 ctaText: "On vérifie ce que vos pixels envoient vraiment à Meta et Google, et ce qu'un envoi côté serveur changerait chez vous."
