@@ -107,6 +107,7 @@
 .v2 .nav.is-scrolled .nav-bar { background: rgba(255,255,255,.78); border-color: var(--line); box-shadow: var(--shadow-card); backdrop-filter: saturate(180%) blur(14px); -webkit-backdrop-filter: saturate(180%) blur(14px); }
 .v2 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; letter-spacing: -0.02em; min-height: 44px; }
 .v2 .brand .kairn-logo { display: block; flex: none; filter: drop-shadow(0 0 10px rgba(103,232,249,.25)); }
+.v2 .brand .kairn-wordmark { display: block; flex: none; }
 .v2 .nav-links { display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.6); border: 1px solid var(--line); }
 .v2 .nav-links a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; font-size: 14.5px; font-weight: 500; color: var(--muted); transition: color .2s, background .2s; }
 .v2 .nav-links a:hover { color: var(--ink); background: var(--tint); }
@@ -173,6 +174,7 @@
 
 /* nav posée sur le hero sombre, avant défilement */
 .v2 .nav:not(.is-scrolled) .brand { color: #fff; }
+.v2 .nav:not(.is-scrolled) .brand .kl-edge { stop-color: #3D63F0; }
 .v2 .nav:not(.is-scrolled) .nav-links { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.12); }
 .v2 .nav:not(.is-scrolled) .nav-links a { color: rgba(255,255,255,.72); }
 .v2 .nav:not(.is-scrolled) .nav-links a:hover { color: #fff; background: rgba(255,255,255,.08); }

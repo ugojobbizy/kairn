@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 52 532 152"><title>Kairn</title><defs><radialGradient id="kd" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".35" stop-color="#67E8F9"/><stop offset="1" stop-color="#2F5BEA"/></radialGradient></defs>
+<g fill="#0E1A5C">
+<path d="M0 56H28V110L82 56H122L28 150V200H0Z"/><path d="M48.8 123.8L69.6 103L122 200H90Z"/>
+<path fill-rule="evenodd" d="M144 148A52 52 0 1 0 248 148A52 52 0 1 0 144 148ZM172 148A24 24 0 1 0 220 148A24 24 0 1 0 172 148Z"/><path d="M220 96H248V200H220Z"/>
+<path d="M270 96H298V200H270Z"/>
+<path d="M320 96H348V200H320Z"/><path d="M330 152A56 56 0 0 1 386 96H404V124H386A28 28 0 0 0 358 152Z"/>
+<path d="M428 96H456V200H428Z"/><path d="M428 148A52 52 0 0 1 532 148V200H504V148A24 24 0 0 0 456 148Z"/>
+</g><circle cx="284" cy="69" r="17" fill="url(#kd)"/></svg>

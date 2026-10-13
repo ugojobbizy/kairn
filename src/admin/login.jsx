@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { KairnLogo } from '../v2/layout.jsx';
+import { KairnLogo, KairnWordmark } from '../v2/layout.jsx';
 import './admin-brand.css';
 import { useAuth } from './auth-context.jsx';
 
@@ -70,7 +70,7 @@ export default function AdminLogin() {
             textDecoration: 'none', color: 'var(--ink)', marginBottom: 28,
           }}>
             <KairnLogo />
-            <span style={{ fontFamily: 'Geist, sans-serif', fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em' }}>Kairn</span>
+            <KairnWordmark height={18} />
           </Link>
 
           <div className={shake ? 'k-login-shake' : ''} style={{
