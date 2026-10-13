@@ -1,0 +1,227 @@
+/* Présentation PAC pour iPad (paysage et portrait). Portée : .pp uniquement. */
+
+.pp {
+  --night: #0B0918;
+  --ink: #0C0A1A;
+  --muted: #5B5773;
+  --cyan: #67E8F9;
+  --indigo: #818CF8;
+  --blue: #2F5BEA;
+  --line: rgba(255, 255, 255, .12);
+  --grad: linear-gradient(100deg, #67E8F9 0%, #38BDF8 45%, #818CF8 100%);
+  position: fixed; inset: 0; overflow: hidden;
+  background: var(--night); color: #fff;
+  font-family: 'Geist', -apple-system, system-ui, sans-serif; letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y; user-select: none; -webkit-user-select: none;
+}
+.pp *, .pp *::before, .pp *::after { box-sizing: border-box; }
+:where(.pp) :where(h1, h2, p, ol, dl, dd) { margin: 0; padding: 0; }
+:where(.pp) :where(button) { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+.pp-glow {
+  position: absolute; inset: -20%; pointer-events: none;
+  background: radial-gradient(45% 40% at 25% 20%, rgba(79,70,229,.35), transparent 70%), radial-gradient(40% 40% at 80% 85%, rgba(14,165,233,.22), transparent 70%);
+}
+.pp-progress { position: absolute; left: 0; right: 0; top: 0; height: 4px; background: rgba(255,255,255,.06); z-index: 3; }
+.pp-progress i { display: block; height: 100%; background: var(--grad); transition: width .45s cubic-bezier(.22,.8,.24,1); }
+
+.pp-stage { position: absolute; inset: 0 0 96px; display: grid; place-items: center; padding: clamp(28px, 5vh, 56px) clamp(28px, 6vw, 80px) 0; }
+.pp-frame { width: 100%; max-width: 1120px; max-height: 100%; }
+
+/* ─ typographie ─ */
+.pp-eyebrow { font: 500 clamp(13px, 1.4vw, 16px) 'Geist Mono', ui-monospace, monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); }
+.pp-cover h1, .pp h1 { margin-top: 18px; font-size: clamp(44px, 6.4vw, 84px); font-weight: 600; letter-spacing: -0.045em; line-height: 1; text-wrap: balance; }
+.pp h2 { margin-top: 14px; font-size: clamp(34px, 4.4vw, 58px); font-weight: 600; letter-spacing: -0.04em; line-height: 1.04; text-wrap: balance; }
+.pp-grad { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-weight: 500; letter-spacing: -0.02em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .05em; }
+.pp-lead { margin-top: 20px; max-width: 34ch; font-size: clamp(19px, 2vw, 24px); line-height: 1.45; color: rgba(255,255,255,.75); }
+.pp-foot { margin-top: 30px; font-size: clamp(18px, 1.9vw, 22px); color: rgba(255,255,255,.75); }
+.pp-foot b { color: #fff; }
+
+/* ─ couverture ─ */
+.pp-cover { text-align: center; display: flex; flex-direction: column; align-items: center; }
+.pp-cover .pp-lead { margin-left: auto; margin-right: auto; }
+.pp-brand { display: flex; align-items: center; gap: 12px; font-size: 30px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 34px; }
+.pp-btn { margin-top: 40px; display: inline-flex; align-items: center; gap: 14px; min-height: 64px; padding: 0 34px; border-radius: 999px; background: #fff !important; color: var(--ink) !important; font-size: 21px !important; font-weight: 600; box-shadow: 0 16px 40px -14px rgba(59,130,246,.6); }
+.pp-btn:active { transform: scale(.97); }
+
+/* ─ cartes ─ */
+.pp-cards { display: grid; gap: 18px; margin-top: 34px; }
+.pp-cards.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pp-card { text-align: left; padding: clamp(22px, 2.6vw, 32px); border-radius: 24px; background: rgba(255,255,255,.05); border: 1px solid var(--line); font-size: clamp(17px, 1.7vw, 20px); line-height: 1.5; color: rgba(255,255,255,.78); }
+.pp-card-t { font-size: clamp(21px, 2.2vw, 26px); font-weight: 600; color: #fff; letter-spacing: -0.02em; margin-bottom: 10px; }
+.pp-card-t.big { font-size: clamp(28px, 3vw, 36px); margin: 14px 0 6px; }
+.pp-model { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; transition: border-color .2s, transform .2s; }
+.pp-model:active { transform: scale(.985); }
+.pp-model.is-accent { background: linear-gradient(160deg, rgba(79,70,229,.22), rgba(14,165,233,.08)); border-color: rgba(129,140,248,.45); }
+.pp-price { font-size: clamp(30px, 3.4vw, 42px); font-weight: 600; letter-spacing: -0.04em; color: #fff; margin: 4px 0 10px; }
+.pp-price small { font-size: .45em; font-weight: 500; letter-spacing: 0; color: rgba(255,255,255,.6); }
+.pp-more { margin-top: 10px; font-weight: 600; color: var(--cyan); font-size: 17px; }
+.pp-tag { display: inline-block; font: 500 13px 'Geist Mono', monospace; letter-spacing: .1em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid var(--line); color: rgba(255,255,255,.85); }
+.pp-tag.accent { background: rgba(129,140,248,.18); border-color: rgba(129,140,248,.45); }
+
+/* ─ détail d'un modèle ─ */
+.pp-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
+.pp-split h2 { margin-top: 18px; }
+.pp-steps { list-style: none; display: grid; gap: 14px; }
+.pp-steps li { display: flex; gap: 16px; align-items: flex-start; padding: 18px 20px; border-radius: 18px; background: rgba(255,255,255,.05); border: 1px solid var(--line); font-size: clamp(17px, 1.75vw, 20px); line-height: 1.45; color: rgba(255,255,255,.88); }
+.pp-step-n { flex: none; width: 34px; height: 34px; border-radius: 999px; display: grid; place-items: center; background: var(--grad); color: var(--night); font-weight: 700; font-size: 17px; }
+.pp-best { margin-top: 26px; display: inline-block; padding: 14px 20px; border-radius: 16px; background: rgba(103,232,249,.08); border: 1px solid rgba(103,232,249,.3); font-size: 18px; color: rgba(255,255,255,.85); }
+.pp-best b { color: var(--cyan); margin-right: 6px; }
+.pp-rule { margin-top: 26px; padding: 20px 22px; border-radius: 20px; background: #fff; color: var(--ink); }
+.pp-rule-t { font: 500 13px 'Geist Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
+.pp-formula { margin: 8px 0 6px; font-size: clamp(26px, 2.8vw, 34px); font-weight: 600; letter-spacing: -0.03em; }
+.pp-formula i { font-style: normal; color: var(--blue); }
+.pp-rule p:last-child { color: var(--muted); font-size: 17px; line-height: 1.45; }
+
+/* ─ simulateur ─ */
+.pp-sim { margin-top: 28px; display: grid; gap: 20px; user-select: none; }
+.pp-sim-inputs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.pp-sim-inputs label { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 6px 14px; padding: 18px 22px; border-radius: 20px; background: rgba(255,255,255,.05); border: 1px solid var(--line); font-size: 17px; color: rgba(255,255,255,.78); }
+.pp-sim-inputs em { font-style: normal; color: rgba(255,255,255,.45); }
+.pp-sim-inputs b { font-size: 30px; font-weight: 600; color: #fff; letter-spacing: -0.03em; }
+.pp-sim input[type=range] { grid-column: 1 / -1; width: 100%; height: 44px; margin: 0; -webkit-appearance: none; appearance: none; background: transparent; touch-action: none; }
+.pp-sim input[type=range]::-webkit-slider-runnable-track { height: 8px; border-radius: 8px; background: linear-gradient(90deg, #67E8F9, #818CF8); }
+.pp-sim input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 36px; height: 36px; margin-top: -14px; border-radius: 999px; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+.pp-sim input[type=range]::-moz-range-track { height: 8px; border-radius: 8px; background: linear-gradient(90deg, #67E8F9, #818CF8); }
+.pp-sim input[type=range]::-moz-range-thumb { width: 36px; height: 36px; border: 0; border-radius: 999px; background: #fff; }
+.pp-sim-out { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.pp-sim-col { padding: 20px 24px; border-radius: 22px; background: #fff; color: var(--ink); }
+.pp-sim-col.is-accent { box-shadow: 0 0 0 3px rgba(129,140,248,.6); }
+.pp-sim-h { font: 500 13px 'Geist Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.pp-sim-col dl div { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid #EEF1F8; font-size: 18px; }
+.pp-sim-col dt { color: var(--muted); }
+.pp-sim-col dd { font-weight: 600; font-variant-numeric: tabular-nums; }
+.pp-sim-col dl .is-total { border-bottom: 0; padding-top: 12px; }
+.pp-sim-col dl .is-total dd { font-size: 28px; letter-spacing: -0.03em; }
+.pp-sim-note { font-size: 18px; color: rgba(255,255,255,.75); text-align: center; }
+
+/* ─ comparatif ─ */
+.pp-table { margin-top: 30px; border-radius: 24px; overflow: hidden; border: 1px solid var(--line); }
+.pp-tr { display: grid; grid-template-columns: 1fr 1.2fr 1.5fr; }
+.pp-tr + .pp-tr { border-top: 1px solid var(--line); }
+.pp-td { padding: 16px 20px; font-size: clamp(16px, 1.65vw, 19px); line-height: 1.4; color: rgba(255,255,255,.85); }
+.pp-td:first-child { color: rgba(255,255,255,.55); }
+.pp-td:last-child { background: rgba(129,140,248,.08); }
+.pp-tr.is-head .pp-td { font-weight: 600; color: #fff; background: rgba(255,255,255,.06); }
+.pp-tr.is-head .pp-td:last-child { background: rgba(129,140,248,.2); }
+
+/* ─ clôture ─ */
+.pp-choice { margin-top: 40px; display: grid; grid-template-columns: repeat(2, minmax(0, 300px)); gap: 18px; }
+.pp-choice-b { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 28px 22px; border-radius: 24px; background: rgba(255,255,255,.05) !important; border: 2px solid var(--line) !important; font-size: 26px !important; font-weight: 600; letter-spacing: -0.02em; transition: border-color .2s, background .2s; }
+.pp-choice-b.is-on { border-color: var(--cyan) !important; background: rgba(103,232,249,.1) !important; box-shadow: 0 0 40px rgba(103,232,249,.2); }
+.pp-contact { margin-top: 44px; display: flex; align-items: center; gap: 10px; font-size: 17px; color: rgba(255,255,255,.6); }
+
+/* ─ navigation ─ */
+.pp-nav { position: absolute; left: 0; right: 0; bottom: 0; height: 96px; display: flex; align-items: center; justify-content: center; gap: 22px; z-index: 3; }
+.pp-arrow { width: 60px; height: 60px; border-radius: 999px; background: rgba(255,255,255,.08) !important; border: 1px solid var(--line) !important; font-size: 24px !important; transition: opacity .2s; }
+.pp-arrow:disabled { opacity: .25; cursor: default; }
+.pp-dots { display: flex; gap: 6px; }
+.pp-dots button { width: 28px; height: 28px; display: grid; place-items: center; }
+.pp-dots button::before { content: ''; width: 9px; height: 9px; border-radius: 999px; background: rgba(255,255,255,.25); transition: width .3s, background .3s; }
+.pp-dots button.is-on::before { width: 26px; background: var(--grad); }
+
+/* ─ iPad en portrait et petits écrans ─ */
+@media (orientation: portrait), (max-width: 900px) {
+  .pp-split { grid-template-columns: 1fr; gap: 26px; }
+  .pp-cards.two, .pp-sim-inputs, .pp-sim-out { grid-template-columns: 1fr; }
+  .pp-tr { grid-template-columns: 1fr 1fr 1.2fr; }
+  .pp-stage { align-items: start; overflow-y: auto; }
+}
+
+/* ─ étapes de mise en place, avec captures ─ */
+.pp-build { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(24px, 4vw, 56px); align-items: center; }
+.pp-build h2 { margin-top: 14px; }
+.pp-build .pp-lead { max-width: 30ch; }
+.pp-caption { margin-top: 22px; font: 400 14px 'Geist Mono', monospace; color: rgba(255,255,255,.45); line-height: 1.5; }
+.pp-browser { border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 40px 90px -30px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.12); }
+.pp-browser-bar { height: 28px; display: flex; align-items: center; gap: 6px; padding: 0 12px; background: #EEF1F7; }
+.pp-browser-bar i { width: 9px; height: 9px; border-radius: 99px; background: #CDD3E0; }
+.pp-browser img { display: block; width: 100%; height: auto; max-height: 58vh; object-fit: cover; object-position: top left; }
+.pp-browser img.is-crop { max-height: none; }
+.pp-phones { display: flex; justify-content: center; gap: 4%; padding: 20px 0; }
+.pp-phone { width: 30%; aspect-ratio: 9 / 16; border-radius: 22px; overflow: hidden; border: 6px solid #0B0A14; box-shadow: 0 30px 70px -20px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.15); background: #000; }
+.pp-phone img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pp-stack { position: relative; padding-bottom: 18%; }
+.pp-stack-front { position: absolute; right: -4%; bottom: 0; width: 62%; }
+@media (orientation: portrait), (max-width: 900px) {
+  .pp-build { grid-template-columns: 1fr; }
+  .pp-build .pp-lead { max-width: none; }
+  .pp-browser img { max-height: 42vh; }
+}
+.pp-card.is-good { border-color: rgba(103,232,249,.35); background: linear-gradient(160deg, rgba(103,232,249,.08), rgba(129,140,248,.05)); }
+.pp-card.is-good .pp-card-t::before { content: '✓'; display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 12px; border-radius: 999px; background: var(--grad); color: var(--night); font-size: 16px; vertical-align: 2px; }
+.pp-instead { margin-top: 14px !important; padding-top: 12px; border-top: 1px solid var(--line); font-size: 15px; color: rgba(255,255,255,.5); }
+.pp-steps li b { color: #fff; font-weight: 600; }
+.pp-fame { display: block; margin-top: 16px; line-height: 1.45; }
+.pp-fame b { display: block; margin: 0 0 4px; }
+
+/* ─ maquettes Instagram (photo, Reels, carrousel) ─ */
+.pp-format { margin: 0; width: 30%; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.pp-format figcaption { font: 500 14px 'Geist Mono', monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--cyan); }
+.pp-format .pp-phone { width: 100%; border-width: 7px; border-radius: 30px; }
+.pp-ig { position: relative; display: flex; flex-direction: column; background: #fff !important; color: #111; font-family: -apple-system, 'SF Pro Text', 'Geist', sans-serif; letter-spacing: 0; }
+.pp-ig-status { display: flex; justify-content: space-between; align-items: center; padding: 7px 14px 3px; font-size: 10px; color: #111; position: relative; z-index: 2; }
+.pp-ig-status.is-dark { color: #fff; }
+.pp-ig-sys { display: flex; gap: 2px; align-items: flex-end; }
+.pp-ig-sys i { width: 3px; background: currentColor; border-radius: 1px; }
+.pp-ig-sys i:nth-child(1) { height: 4px; } .pp-ig-sys i:nth-child(2) { height: 6px; } .pp-ig-sys i:nth-child(3) { height: 8px; }
+.pp-ig-sys em { width: 16px; height: 8px; margin-left: 4px; border: 1.5px solid currentColor; border-radius: 3px; }
+.pp-ig-head { display: flex; align-items: center; gap: 7px; padding: 5px 9px 6px; position: relative; z-index: 2; }
+.pp-ig-head.is-dark { color: #fff; padding: 0 0 4px; }
+.pp-ig-ring { width: 24px; height: 24px; border-radius: 99px; padding: 2px; background: conic-gradient(#FEDA75, #FA7E1E, #D62976, #962FBF, #4F5BD5, #FEDA75); flex: none; }
+.pp-ig-ring span { display: block; width: 100%; height: 100%; border-radius: 99px; border: 2px solid #fff; background: var(--grad); }
+.pp-ig-name { flex: 1; line-height: 1.15; }
+.pp-ig-name b { display: block; font-size: 10.5px; font-weight: 600; }
+.pp-ig-name small { font-size: 9px; opacity: .65; }
+.pp-ig-more { font-size: 9px; letter-spacing: 1px; opacity: .7; }
+.pp-ig-media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: #eee; }
+.pp-ig-media > .pp-art { width: 100%; height: 100%; display: block; }
+.pp-ig-track { display: flex; height: 100%; }
+.pp-ig-slide { position: relative; flex: none; width: 100%; height: 100%; }
+.pp-ig-slide .pp-art { width: 100%; height: 100%; display: block; }
+.pp-ig-slide-t { position: absolute; left: 10px; right: 10px; top: 12px; padding: 7px 9px; border-radius: 8px; background: rgba(255,255,255,.92); font-size: 11px; font-weight: 700; color: #0C0A1A; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+.pp-ig-count { position: absolute; top: 9px; right: 9px; padding: 3px 7px; border-radius: 99px; background: rgba(0,0,0,.6); color: #fff; font-size: 9px; font-weight: 600; }
+.pp-ig-cta { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: #3D5AFE; color: #fff; font-size: 10.5px; font-weight: 600; }
+.pp-ig-cta b { font-size: 14px; line-height: 1; }
+.pp-ig-actions { display: flex; align-items: center; gap: 10px; padding: 8px 9px 4px; position: relative; }
+.pp-ig-actions svg { width: 17px; height: 17px; }
+.pp-ig-save { margin-left: auto; }
+.pp-ig-dots { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 3px; }
+.pp-ig-dots i { width: 5px; height: 5px; border-radius: 99px; background: #C7C7CC; }
+.pp-ig-dots i.on { background: #3D5AFE; }
+.pp-ig-caption { padding: 0 9px 10px; font-size: 9.5px; line-height: 1.35; color: #222; }
+.pp-ig-caption b { font-weight: 600; }
+/* Reels */
+.pp-ig.is-reel { background: #000 !important; color: #fff; }
+.pp-ig.is-reel > .pp-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pp-reel-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 25%, transparent 50%, rgba(0,0,0,.75) 100%); }
+.pp-reel-progress { position: relative; z-index: 2; margin: 2px 10px 0; height: 2px; border-radius: 2px; background: rgba(255,255,255,.35); }
+.pp-reel-progress i { display: block; width: 35%; height: 100%; background: #fff; border-radius: 2px; }
+.pp-reel-title { position: relative; z-index: 2; margin: 22px 12px 0 !important; font-size: 15px; font-weight: 800; line-height: 1.15; text-shadow: 0 2px 10px rgba(0,0,0,.5); }
+.pp-reel-side { position: absolute; z-index: 2; right: 7px; bottom: 92px; display: flex; flex-direction: column; gap: 12px; }
+.pp-reel-side svg { width: 20px; height: 20px; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
+.pp-reel-bottom { position: absolute; z-index: 2; left: 9px; right: 36px; bottom: 10px; font-size: 9.5px; line-height: 1.35; }
+.pp-reel-bottom p { margin: 0 0 7px !important; }
+.pp-reel-cta { display: flex; justify-content: space-between; align-items: center; padding: 6px 9px; border-radius: 6px; background: rgba(255,255,255,.22); backdrop-filter: blur(6px); font-size: 10px; font-weight: 600; }
+
+/* ─ conversion : facteurs et chiffre d'affaires ─ */
+.pp-factors { margin-top: 22px; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; }
+.pp-factor { padding: 16px 20px; border-radius: 18px; background: rgba(255,255,255,.05); border: 1px solid var(--line); }
+.pp-factor b { display: block; font-size: 18px; color: #fff; margin-bottom: 4px; }
+.pp-factor p { font-size: 15px; line-height: 1.45; color: rgba(255,255,255,.72); }
+.pp-factor small { display: block; margin-top: 8px; font: 400 12px 'Geist Mono', monospace; color: rgba(255,255,255,.45); }
+.pp-factor.is-key { background: linear-gradient(135deg, rgba(103,232,249,.14), rgba(129,140,248,.14)); border-color: rgba(129,140,248,.5); }
+.pp-earn { margin-top: 16px; gap: 14px; }
+.pp-sim-inputs.is-three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.pp-earn .pp-sim-inputs label { padding: 14px 18px; font-size: 15px; }
+.pp-earn .pp-sim-inputs b { font-size: 24px; }
+.pp-earn-out { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 14px; }
+.pp-earn-out div { padding: 14px 20px; border-radius: 18px; background: #fff; color: var(--ink); display: grid; gap: 2px; }
+.pp-earn-out span { font-size: 14px; color: var(--muted); }
+.pp-earn-out b { font-size: 28px; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.pp-earn-out .is-main { box-shadow: 0 0 0 3px rgba(129,140,248,.6); }
+.pp-earn-out .is-main b { font-size: 36px; }
+.pp-conv .pp-caption { margin-top: 12px; text-align: center; }
+@media (orientation: portrait), (max-width: 900px) {
+  .pp-factors, .pp-sim-inputs.is-three, .pp-earn-out { grid-template-columns: 1fr; }
+}

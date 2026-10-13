@@ -87,6 +87,7 @@ export const PAGES = {
   '/landing': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
   '/landing2': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
   '/landing3': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
+  '/presentation-pac': { title: 'Kairn · Leads pompe à chaleur', description: 'Présentation des deux modèles de génération de leads pompe à chaleur.', robots: 'noindex, nofollow' },
   '/admin': { title: 'Kairn Admin', description: 'Espace privé.', robots: 'noindex, nofollow' },
   '/admin/login': { title: 'Kairn Admin · Connexion', description: 'Espace privé.', robots: 'noindex, nofollow' },
 };
