@@ -5,7 +5,7 @@ import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
 
 // Éléments communs aux pages de la V2 : logo, navigation, pied de page, bouton de réservation.
 
-// Logo « cairn au trait » : trois pierres en contour dégradé cyan → indigo, sans tuile.
+// Logo « cairn au trait » retourné en tunnel de conversion : la grande pierre en haut, la petite pleine en bas (le lead).
 let logoSeq = 0;
 export function KairnLogo({ size = 34 }) {
   const [id] = useState(() => `kl-${++logoSeq}`);
@@ -17,9 +17,9 @@ export function KairnLogo({ size = 34 }) {
           <stop offset="1" stopColor="#818CF8" />
         </linearGradient>
       </defs>
-      <rect x="7" y="32" width="34" height="9" rx="4.5" fill="none" stroke={`url(#${id})`} strokeWidth="3" />
-      <rect x="11.5" y="20.5" width="25" height="8.5" rx="4.25" fill="none" stroke={`url(#${id})`} strokeWidth="3" />
-      <rect x="16.5" y="9.5" width="15" height="8" rx="4" fill={`url(#${id})`} />
+      <rect x="7" y="9.5" width="34" height="9" rx="4.5" fill="none" stroke={`url(#${id})`} strokeWidth="3" />
+      <rect x="11.5" y="21.5" width="25" height="8.5" rx="4.25" fill="none" stroke={`url(#${id})`} strokeWidth="3" />
+      <rect x="16.5" y="33" width="15" height="8" rx="4" fill={`url(#${id})`} />
     </svg>
   );
 }
@@ -30,7 +30,7 @@ export function useV2Favicon() {
     const link = document.querySelector('link[rel="icon"]');
     if (!link) return undefined;
     const prev = link.getAttribute('href');
-    link.setAttribute('href', '/favicon.svg?v=2');
+    link.setAttribute('href', '/favicon.svg?v=4');
     return () => link.setAttribute('href', prev);
   }, []);
 }
