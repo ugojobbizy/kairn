@@ -4,7 +4,7 @@ import {
   DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
   closestCorners, useDroppable, useDraggable,
 } from '@dnd-kit/core';
-import { KairnLogo, KairnWordmark } from '../v2/layout.jsx';
+import { KairnLogo } from '../v2/layout.jsx';
 import './admin-brand.css';
 import { useAuth } from './auth-context.jsx';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
@@ -1253,7 +1253,7 @@ export default function AdminCRM() {
           {/* Logo */}
           <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: 'var(--ink)', flexShrink: 0 }}>
             <KairnLogo />
-            <KairnWordmark height={17} />
+            <span style={{ fontFamily: 'Geist, sans-serif', fontSize: 16, fontWeight: 600, letterSpacing: '-0.02em' }}>Kairn</span>
           </Link>
           <span style={{ height: 18, width: 1, background: 'var(--line-2)', flexShrink: 0 }} />
           <span style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--ink-soft)', flexShrink: 0 }}>CRM · Leads</span>

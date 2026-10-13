@@ -5,72 +5,21 @@ import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
 
 // Éléments communs aux pages de la V2 : logo, navigation, pied de page, bouton de réservation.
 
-// Logo « tunnel de verre » (13/10/2026) : le cairn retourné en tunnel de trois disques, d'où sort le lead.
-// Sources et règles d'usage : brand/. Les bords des disques (.kl-edge) s'éclaircissent sur fond foncé (v2.css).
+// Logo « cairn au trait » : trois pierres en contour dégradé cyan → indigo, sans tuile.
 let logoSeq = 0;
-const DISCS = [[40, 10, 150, 168], [64, 16, 106, 128], [92, 23, 60, 86]];
 export function KairnLogo({ size = 34 }) {
   const [id] = useState(() => `kl-${++logoSeq}`);
   return (
-    <svg className="kairn-logo" width={size} height={size} viewBox="30 30 196 196" aria-hidden="true">
+    <svg className="kairn-logo" width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
       <defs>
-        <linearGradient id={`${id}-b`} x1="0" y1="0" x2="1" y2="0">
-          <stop className="kl-edge" offset="0" stopColor="#1B2A86" />
-          <stop offset=".45" stopColor="#3D63F0" />
-          <stop offset=".7" stopColor="#6C8CFF" />
-          <stop className="kl-edge" offset="1" stopColor="#1B2A86" />
+        <linearGradient id={id} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#67E8F9" />
+          <stop offset="1" stopColor="#818CF8" />
         </linearGradient>
-        <linearGradient id={`${id}-t`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#CFFAFE" />
-          <stop offset="1" stopColor="#67E8F9" />
-        </linearGradient>
-        <radialGradient id={`${id}-g`} cx=".35" cy=".3" r=".75">
-          <stop offset="0" stopColor="#FFFFFF" />
-          <stop offset=".35" stopColor="#67E8F9" />
-          <stop offset="1" stopColor="#2F5BEA" />
-        </radialGradient>
-        <radialGradient id={`${id}-h`} cx=".5" cy=".5" r=".5">
-          <stop offset="0" stopColor="#67E8F9" stopOpacity=".45" />
-          <stop offset="1" stopColor="#67E8F9" stopOpacity="0" />
-        </radialGradient>
       </defs>
-      <circle cx="128" cy="206" r="34" fill={`url(#${id}-h)`} />
-      <circle cx="128" cy="206" r="18" fill={`url(#${id}-g)`} />
-      {DISCS.map(([rx, ry, ty, by]) => (
-        <g key={rx}>
-          <path fill={`url(#${id}-b)`} d={`M${128 - rx} ${ty}V${by}A${rx} ${ry} 0 0 0 ${128 + rx} ${by}V${ty}Z`} />
-          <ellipse cx="128" cy={ty} rx={rx} ry={ry} fill={`url(#${id}-t)`} />
-          <ellipse cx="128" cy={ty} rx={rx} ry={ry} fill="none" stroke="#E0FBFF" strokeOpacity=".7" strokeWidth="1.5" />
-        </g>
-      ))}
-    </svg>
-  );
-}
-
-// Logotype « Kairn » dessiné (pas une police) ; prend la couleur du texte, le point du i est la goutte du symbole.
-export function KairnWordmark({ height = 20 }) {
-  const [id] = useState(() => `kw-${++logoSeq}`);
-  return (
-    <svg className="kairn-wordmark" height={height} width={(height * 532) / 152} viewBox="0 52 532 152" aria-hidden="true">
-      <defs>
-        <radialGradient id={id} cx=".35" cy=".3" r=".75">
-          <stop offset="0" stopColor="#FFFFFF" />
-          <stop offset=".35" stopColor="#67E8F9" />
-          <stop offset="1" stopColor="#2F5BEA" />
-        </radialGradient>
-      </defs>
-      <g fill="currentColor">
-        <path d="M0 56H28V110L82 56H122L28 150V200H0Z" />
-        <path d="M48.8 123.8L69.6 103L122 200H90Z" />
-        <path fillRule="evenodd" d="M144 148A52 52 0 1 0 248 148A52 52 0 1 0 144 148ZM172 148A24 24 0 1 0 220 148A24 24 0 1 0 172 148Z" />
-        <path d="M220 96H248V200H220Z" />
-        <path d="M270 96H298V200H270Z" />
-        <path d="M320 96H348V200H320Z" />
-        <path d="M330 152A56 56 0 0 1 386 96H404V124H386A28 28 0 0 0 358 152Z" />
-        <path d="M428 96H456V200H428Z" />
-        <path d="M428 148A52 52 0 0 1 532 148V200H504V148A24 24 0 0 0 456 148Z" />
-      </g>
-      <circle cx="284" cy="69" r="17" fill={`url(#${id})`} />
+      <rect x="7" y="32" width="34" height="9" rx="4.5" fill="none" stroke={`url(#${id})`} strokeWidth="3" />
+      <rect x="11.5" y="20.5" width="25" height="8.5" rx="4.25" fill="none" stroke={`url(#${id})`} strokeWidth="3" />
+      <rect x="16.5" y="9.5" width="15" height="8" rx="4" fill={`url(#${id})`} />
     </svg>
   );
 }
@@ -81,7 +30,7 @@ export function useV2Favicon() {
     const link = document.querySelector('link[rel="icon"]');
     if (!link) return undefined;
     const prev = link.getAttribute('href');
-    link.setAttribute('href', '/favicon.svg?v=3');
+    link.setAttribute('href', '/favicon.svg?v=2');
     return () => link.setAttribute('href', prev);
   }, []);
 }
@@ -226,7 +175,7 @@ export function Nav() {
     <header className={`nav${scrolled || menu ? ' is-scrolled' : ''}${menu ? ' is-menu' : ''}`}>
       <div className="wrap">
         <div className="nav-bar">
-          <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo /><KairnWordmark /></Link>
+          <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo />Kairn</Link>
           <nav className="nav-links" aria-label="Navigation principale">
             <ServicesMenu />
             {LINKS.map((x) => <Link key={x.to} to={x.to} className={pathname === x.to ? 'is-active' : undefined}>{x.t}</Link>)}
@@ -256,7 +205,7 @@ export function Footer() {
       <div className="wrap">
         <div className="footer-grid">
           <div>
-            <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo /><KairnWordmark /></Link>
+            <Link to="/" className="brand"><KairnLogo />Kairn</Link>
             <p style={{ marginTop: 12, maxWidth: '34ch', fontSize: 15, color: 'var(--muted)' }}>
               Agence de génération de leads. Campagnes, landing pages et CRM sur mesure, par une seule équipe.
             </p>
