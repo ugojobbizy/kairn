@@ -203,3 +203,8 @@
 .oba-live.is-on { background: #E6F6EC; color: var(--ok); }
 .oba-live.is-on::before { background: var(--ok); animation: oba-pulse 1.6s ease-in-out infinite; }
 @keyframes oba-pulse { 50% { opacity: .35; } }
+.ob-others { display: grid; gap: 8px; margin-top: 6px; }
+.ob-other-row { display: flex; gap: 8px; align-items: center; }
+.ob-other-row .ob-other { margin-top: 0; flex: 1; }
+.ob-other-del { flex: none; width: 40px; height: 40px; border-radius: 10px; color: var(--faint); font-size: 20px; }
+.ob-other-del:hover { color: var(--err); background: #FFF4F4; }

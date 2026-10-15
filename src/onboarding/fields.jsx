@@ -51,8 +51,9 @@ export function Field({ f, answers, setValue, files, onUpload, onRemove }) {
             </button>
           ))}
         </div>
-        {f.other && isOn('Autre') && (
-          <input className="ob-other" placeholder="Précisez" value={answers[`${f.id}_autre`] || ''} onChange={(e) => setValue(`${f.id}_autre`, e.target.value)} />
+        {f.other && isOn('Autre') && (multi
+          ? <OtherList id={`${f.id}_autre`} value={answers[`${f.id}_autre`]} setValue={setValue} />
+          : <input className="ob-other" placeholder="Précisez" value={answers[`${f.id}_autre`] || ''} onChange={(e) => setValue(`${f.id}_autre`, e.target.value)} />
         )}
       </fieldset>
     );
@@ -108,6 +109,25 @@ export function Field({ f, answers, setValue, files, onUpload, onRemove }) {
   if (f.type === 'files') return <Files f={f} label={label} hint={hint} files={files.filter((x) => x.field === f.id)} onUpload={onUpload} onRemove={onRemove} />;
 
   return null;
+}
+
+// « Autre » d'un choix multiple : autant de précisions que nécessaire, une par ligne.
+// Ancien format (une seule chaîne) repris comme première ligne.
+function OtherList({ id, value, setValue }) {
+  const list = Array.isArray(value) ? value : value ? [value] : [''];
+  const rows = list.length ? list : [''];
+  const update = (next) => setValue(id, next);
+  return (
+    <div className="ob-others">
+      {rows.map((v, i) => (
+        <div className="ob-other-row" key={i}>
+          <input className="ob-other" placeholder={i === 0 ? 'Précisez' : 'Autre précision'} value={v} onChange={(e) => update(rows.map((x, k) => (k === i ? e.target.value : x)))} />
+          {rows.length > 1 && <button type="button" className="ob-other-del" onClick={() => update(rows.filter((_, k) => k !== i))} aria-label="Retirer cette ligne">×</button>}
+        </div>
+      ))}
+      <button type="button" className="ob-add" onClick={() => update([...rows, ''])}>+ En ajouter une autre</button>
+    </div>
+  );
 }
 
 function Files({ f, label, hint, files, onUpload, onRemove }) {

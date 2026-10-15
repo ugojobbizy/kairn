@@ -14,8 +14,9 @@ function show(v, answers, f) {
   if (!isFilled(v)) return '';
   if (f.type === 'list') return v.filter((r) => isFilled(r)).map((r) => f.fields.map((s) => r[s.id]).filter(Boolean).join(' · ')).join('\n');
   if (Array.isArray(v)) {
-    const other = answers[`${f.id}_autre`];
-    return v.map((x) => (x === 'Autre' && other ? `Autre : ${other}` : x)).join(', ');
+    const raw = answers[`${f.id}_autre`];
+    const others = (Array.isArray(raw) ? raw : [raw]).filter((x) => x && String(x).trim());
+    return v.flatMap((x) => (x === 'Autre' && others.length ? others.map((o) => `Autre : ${o}`) : [x])).join(', ');
   }
   if (v === 'Autre' && answers[`${f.id}_autre`]) return `Autre : ${answers[`${f.id}_autre`]}`;
   return String(v);
