@@ -43,6 +43,15 @@ export default function Onboarding() {
 
   const sections = useMemo(() => sectionsFor(state.sector), [state.sector]);
 
+  // Sur mobile, la liste des étapes défile à l'horizontale : garder l'étape en cours visible
+  useEffect(() => {
+    const list = document.querySelector('.ob-steps');
+    const on = list?.querySelector('button.is-on');
+    if (list && on && list.scrollWidth > list.clientWidth) {
+      list.scrollLeft = on.offsetLeft - (list.clientWidth - on.offsetWidth) / 2;
+    }
+  }, [step, state.loading]);
+
   const persist = useCallback(async (submit = false) => {
     clearTimeout(timer.current);
     setSaveState({ kind: 'saving' });
@@ -112,7 +121,7 @@ export default function Onboarding() {
   const go = (i) => {
     setStep(i);
     setShowMissing(false);
-    top.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const submit = async () => {
@@ -120,89 +129,137 @@ export default function Onboarding() {
     await persist(true);
   };
 
+  const pad = (n) => String(n).padStart(2, '0');
+  const next = sections[step + 1];
+
   return (
     <div className="ob">
-      <header className="ob-top">
-        <div className="ob-brand"><KairnLogo size={30} /><span>Kairn</span></div>
-        <SaveBadge s={saveState} onRetry={() => persist(false)} />
-      </header>
-      <div className="ob-bar" aria-hidden="true"><i style={{ width: `${pct}%` }} /></div>
-
-      <div className="ob-layout" ref={top}>
-        <aside className="ob-nav">
+      <aside className="ob-side">
+        <div className="ob-side-glow" aria-hidden="true" />
+        <div className="ob-side-in">
+          <div className="ob-brand"><KairnLogo size={28} /><span>Kairn</span></div>
           <p className="ob-eyebrow">Création de votre site</p>
           <h1 className="ob-title">{state.client || 'Votre projet'}</h1>
-          <p className="ob-pct">{pct} % complété</p>
-          <ol>
+          <div className="ob-progress">
+            <div className="ob-progress-bar"><i style={{ width: `${pct}%` }} /></div>
+            <span>{pct} %</span>
+          </div>
+          <ol className="ob-steps">
             {sections.map((s, i) => {
               const f = filledFor(s).length;
+              const st = f === s.fields.length ? 'is-full' : f ? 'is-part' : '';
               return (
                 <li key={s.id}>
-                  <button type="button" className={i === step ? 'is-on' : ''} onClick={() => go(i)}>
-                    <span className={`ob-dot${f === s.fields.length ? ' is-full' : f ? ' is-part' : ''}`} />
-                    {s.title}
+                  <button type="button" className={`${i === step ? 'is-on ' : ''}${st}`} onClick={() => go(i)} aria-current={i === step ? 'step' : undefined}>
+                    <span className="ob-num">{f === s.fields.length ? '✓' : pad(i + 1)}</span>
+                    <span className="ob-step-t">{s.title}</span>
+                    {f > 0 && f < s.fields.length && <span className="ob-step-c">{f}/{s.fields.length}</span>}
                   </button>
                 </li>
               );
             })}
             <li>
-              <button type="button" className={isLast ? 'is-on' : ''} onClick={() => go(sections.length)}>
-                <span className={`ob-dot${state.status === 'submitted' ? ' is-full' : ''}`} />Envoi
+              <button type="button" className={`${isLast ? 'is-on ' : ''}${state.status === 'submitted' ? 'is-full' : ''}`} onClick={() => go(sections.length)}>
+                <span className="ob-num">{state.status === 'submitted' ? '✓' : pad(sections.length + 1)}</span>
+                <span className="ob-step-t">Envoi</span>
               </button>
             </li>
           </ol>
-        </aside>
+          <div className="ob-side-foot">
+            <SaveBadge s={saveState} onRetry={() => persist(false)} />
+            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+          </div>
+        </div>
+      </aside>
 
-        <main className="ob-main">
+      <main className="ob-main" ref={top}>
+        <div className="ob-main-in">
           {!isLast ? (
-            <section className="ob-card" key={sec.id}>
-              <p className="ob-eyebrow">Étape {step + 1} sur {sections.length + 1}</p>
-              <h2>{sec.title}</h2>
-              {sec.intro && <p className="ob-intro">{sec.intro}</p>}
+            <section key={sec.id} className="ob-section">
+              {step === 0 && (
+                <div className="ob-welcome">
+                  <b>Bonjour,</b>
+                  <p>Ce questionnaire nous donne tout ce qu’il faut pour créer votre site. Comptez environ 15 minutes. Rien n’est obligatoire : répondez à ce que vous savez, vos réponses sont enregistrées au fur et à mesure et vous pouvez revenir quand vous voulez avec ce même lien.</p>
+                </div>
+              )}
+              <header className="ob-head">
+                <span className="ob-bignum">{pad(step + 1)}</span>
+                <div>
+                  <p className="ob-eyebrow">Étape {step + 1} sur {sections.length + 1}</p>
+                  <h2>{sec.title}</h2>
+                  {sec.intro && <p className="ob-intro">{sec.intro}</p>}
+                </div>
+              </header>
               <div className="ob-fields">
                 {sec.fields.map((f) => (
-                  <Field key={f.id} f={f} answers={answers} setValue={setValue} files={files} onUpload={onUpload} onRemove={onRemove} />
+                  <div key={f.id} className={`ob-cell${f.half ? ' is-half' : ''}`}>
+                    <Field f={f} answers={answers} setValue={setValue} files={files} onUpload={onUpload} onRemove={onRemove} />
+                  </div>
                 ))}
-              </div>
-              <div className="ob-actions">
-                {step > 0 && <button type="button" className="ob-btn is-ghost" onClick={() => go(step - 1)}>Précédent</button>}
-                <button type="button" className="ob-btn" onClick={() => go(step + 1)}>Continuer</button>
               </div>
             </section>
           ) : (
-            <section className="ob-card">
-              <p className="ob-eyebrow">Dernière étape</p>
-              {state.status === 'submitted' ? (
-                <>
-                  <h2>Merci, c’est envoyé.</h2>
-                  <p className="ob-intro">Nous revenons vers vous rapidement. Vous pouvez encore modifier vos réponses avec ce même lien : chaque changement est enregistré.</p>
-                </>
-              ) : (
-                <>
-                  <h2>Tout est prêt ?</h2>
-                  <p className="ob-intro">Vos réponses sont déjà enregistrées au fur et à mesure. Ce bouton nous prévient que le questionnaire est terminé. Vous pourrez encore le modifier ensuite.</p>
-                  {showMissing && missing.length > 0 && (
-                    <div className="ob-missing" role="alert">
-                      <b>Il manque {missing.length} réponse{missing.length > 1 ? 's' : ''} obligatoire{missing.length > 1 ? 's' : ''} :</b>
-                      <ul>
-                        {missing.map((m) => (
-                          <li key={m.section + m.label}><button type="button" onClick={() => go(m.step)}>{m.section} : {m.label}</button></li>
-                        ))}
-                      </ul>
-                    </div>
+            <section className="ob-section">
+              <header className="ob-head">
+                <span className="ob-bignum">{pad(sections.length + 1)}</span>
+                <div>
+                  <p className="ob-eyebrow">Dernière étape</p>
+                  {state.status === 'submitted' ? (
+                    <>
+                      <h2>Merci, c’est envoyé.</h2>
+                      <p className="ob-intro">Nous revenons vers vous rapidement. Vous pouvez encore modifier vos réponses avec ce même lien : chaque changement est enregistré.</p>
+                    </>
+                  ) : (
+                    <>
+                      <h2>Tout est prêt ?</h2>
+                      <p className="ob-intro">Vos réponses sont déjà enregistrées. Ce bouton nous prévient simplement que vous avez terminé. Vous pourrez encore les modifier ensuite.</p>
+                    </>
                   )}
-                  <div className="ob-actions">
-                    <button type="button" className="ob-btn is-ghost" onClick={() => go(step - 1)}>Précédent</button>
-                    <button type="button" className="ob-btn" onClick={submit} disabled={saveState.kind === 'saving'}>Envoyer à Kairn</button>
-                  </div>
-                </>
+                </div>
+              </header>
+              <ul className="ob-recap">
+                {sections.map((s, i) => {
+                  const f = filledFor(s).length;
+                  return (
+                    <li key={s.id}>
+                      <button type="button" onClick={() => go(i)}>
+                        <span>{s.title}</span>
+                        <small className={f === s.fields.length ? 'is-full' : f ? 'is-part' : ''}>{f === 0 ? 'Pas encore rempli' : `${f} sur ${s.fields.length}`}</small>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              {showMissing && missing.length > 0 && (
+                <div className="ob-missing" role="alert">
+                  <b>Il manque {missing.length} réponse{missing.length > 1 ? 's' : ''} obligatoire{missing.length > 1 ? 's' : ''} :</b>
+                  <ul>
+                    {missing.map((m) => (
+                      <li key={m.section + m.label}><button type="button" onClick={() => go(m.step)}>{m.section} : {m.label}</button></li>
+                    ))}
+                  </ul>
+                </div>
               )}
               {saveState.kind === 'error' && <p className="ob-err">{saveState.message}</p>}
             </section>
           )}
-          <p className="ob-help">Une question ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
-        </main>
-      </div>
+        </div>
+
+        <div className="ob-dock">
+          <div className="ob-dock-in">
+            {step > 0 ? <button type="button" className="ob-btn is-ghost" onClick={() => go(step - 1)}>← Précédent</button> : <span />}
+            {!isLast ? (
+              <button type="button" className="ob-btn" onClick={() => go(step + 1)}>
+                {next ? <>Continuer<span className="ob-btn-next"> · {next.title}</span></> : 'Continuer'} →
+              </button>
+            ) : state.status === 'submitted' ? (
+              <span className="ob-sent">✓ Envoyé</span>
+            ) : (
+              <button type="button" className="ob-btn is-accent" onClick={submit} disabled={saveState.kind === 'saving'}>Envoyer à Kairn</button>
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
