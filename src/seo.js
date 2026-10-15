@@ -88,6 +88,7 @@ export const PAGES = {
   '/landing2': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
   '/landing3': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
   '/presentation-pac': { title: 'Kairn · Leads pompe à chaleur', description: 'Présentation des deux modèles de génération de leads pompe à chaleur.', robots: 'noindex, nofollow' },
+  '/onboarding/admin': { title: 'Kairn · Onboarding clients', description: 'Espace privé.', robots: 'noindex, nofollow' },
   '/admin': { title: 'Kairn Admin', description: 'Espace privé.', robots: 'noindex, nofollow' },
   '/admin/login': { title: 'Kairn Admin · Connexion', description: 'Espace privé.', robots: 'noindex, nofollow' },
 };
@@ -95,8 +96,11 @@ export const PAGES = {
 // Adresse inconnue : le site affiche l'accueil, mais Google ne doit pas l'indexer (évite les « soft 404 »).
 export const NOT_FOUND = { title: 'Page introuvable · Kairn', description: PAGES['/'].description, robots: 'noindex, follow', canonical: '/' };
 
+const ONBOARDING = { title: 'Kairn · Votre projet de site', description: 'Questionnaire de création de site.', robots: 'noindex, nofollow' };
+
 export function pageFor(pathname) {
   const path = pathname !== '/' ? pathname.replace(/\/+$/, '') : '/';
+  if (!PAGES[path] && path.startsWith('/onboarding/')) return ONBOARDING; // lien privé d'un client
   return PAGES[path] || NOT_FOUND;
 }
 

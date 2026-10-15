@@ -18,6 +18,8 @@ const CrmPage = lazy(() => import('./v2/crm-page.jsx'));
 const BordeauxPage = lazy(() => import('./v2/bordeaux-page.jsx'));
 const BlogIndex = lazy(() => import('./v2/blog-index.jsx'));
 const PresentationPac = lazy(() => import('./v2/presentation-pac.jsx'));
+const Onboarding = lazy(() => import('./onboarding/onboarding.jsx'));
+const OnboardingAdmin = lazy(() => import('./onboarding/admin.jsx'));
 const ArticlePage = lazy(() => import('./v2/article.jsx'));
 const MentionsLegales = lazy(() => import('./legal.jsx').then((m) => ({ default: m.MentionsLegales })));
 const Confidentialite = lazy(() => import('./legal.jsx').then((m) => ({ default: m.Confidentialite })));
@@ -70,6 +72,8 @@ function Shell() {
         <Route path="/agence-bordeaux" element={<BordeauxPage />} />
         <Route path="/blog" element={<BlogIndex />} />
         <Route path="/presentation-pac" element={<PresentationPac />} />
+        <Route path="/onboarding/admin" element={<OnboardingAdmin />} />
+        <Route path="/onboarding/:token" element={<Onboarding />} />
         <Route path="/blog/:slug" element={<ArticlePage />} />
         <Route path="/v1/realisations" element={<RealisationsPage variant={variant} />} />
         <Route path="/landing" element={<LandingPage variant={variant} />} />

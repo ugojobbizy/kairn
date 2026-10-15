@@ -1,0 +1,140 @@
+/* Onboarding client et admin. Portée : .ob uniquement. Thème clair, lisible pour un long questionnaire. */
+
+.ob {
+  --ink: #0C0A1A;
+  --muted: #5B5773;
+  --line: #E4E6EF;
+  --soft: #F5F6FA;
+  --blue: #2F5BEA;
+  --blue-soft: #EAF0FE;
+  --ok: #0F9D58;
+  --err: #C62828;
+  --grad: linear-gradient(100deg, #67E8F9 0%, #38BDF8 45%, #818CF8 100%);
+  min-height: 100vh; background: var(--soft); color: var(--ink);
+  font-family: 'Geist', -apple-system, system-ui, sans-serif; letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+}
+.ob *, .ob *::before, .ob *::after { box-sizing: border-box; }
+:where(.ob) :where(h1, h2, h3, p, ol, ul, fieldset, legend) { margin: 0; padding: 0; }
+:where(.ob) :where(ol, ul) { list-style: none; }
+:where(.ob) :where(fieldset) { border: 0; min-width: 0; }
+:where(.ob) :where(button) { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+:where(.ob) :where(input, textarea, select) { font: inherit; color: inherit; }
+.ob a { color: var(--blue); }
+
+.ob-center { display: grid; place-items: center; padding: 24px; color: var(--muted); }
+.ob-msg { max-width: 460px; display: grid; gap: 12px; justify-items: start; }
+.ob-msg h1 { font-size: 26px; }
+.ob-msg .ob-field { width: 100%; }
+
+.ob-top { position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px clamp(16px, 4vw, 40px); background: rgba(255,255,255,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.ob-brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 19px; }
+.ob-bar { position: sticky; top: 61px; z-index: 5; height: 3px; background: var(--line); }
+.ob-bar i { display: block; height: 100%; background: var(--grad); transition: width .4s ease; }
+.ob-save { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.ob-save.is-ok { color: var(--ok); }
+.ob-save.is-err { color: var(--err); font-weight: 600; text-decoration: underline; }
+
+.ob-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); max-width: 1160px; margin: 0 auto; padding: clamp(20px, 4vw, 44px) clamp(16px, 4vw, 40px) 80px; scroll-margin-top: 70px; }
+.ob-nav { position: sticky; top: 90px; align-self: start; }
+.ob-eyebrow { font: 500 12px 'Geist Mono', ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
+.ob-title { font-size: 26px; line-height: 1.15; margin-top: 8px; letter-spacing: -0.03em; }
+.ob-pct { margin-top: 6px; color: var(--muted); font-size: 14px; }
+.ob-nav ol { margin-top: 22px; display: grid; gap: 2px; }
+.ob-nav li button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; text-align: left; font-size: 15px; color: var(--muted); }
+.ob-nav li button:hover { background: #fff; color: var(--ink); }
+.ob-nav li button.is-on { background: #fff; color: var(--ink); font-weight: 600; box-shadow: 0 1px 0 var(--line), 0 0 0 1px var(--line); }
+.ob-dot { flex: none; width: 10px; height: 10px; border-radius: 999px; border: 2px solid #C9CCDA; }
+.ob-dot.is-part { border-color: var(--blue); background: linear-gradient(90deg, var(--blue) 50%, transparent 50%); }
+.ob-dot.is-full { border-color: var(--blue); background: var(--blue); }
+
+.ob-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: clamp(20px, 4vw, 40px); box-shadow: 0 10px 30px -18px rgba(12,10,26,.18); }
+.ob-card h2 { font-size: clamp(24px, 3vw, 30px); letter-spacing: -0.03em; margin-top: 8px; }
+.ob-intro { margin-top: 10px; color: var(--muted); font-size: 16px; line-height: 1.55; max-width: 62ch; }
+.ob-fields { margin-top: 28px; display: grid; gap: 26px; }
+
+.ob-field { display: grid; gap: 8px; }
+.ob-field legend { display: grid; gap: 4px; margin-bottom: 8px; }
+.ob-label { font-weight: 600; font-size: 15.5px; }
+.ob-label em { color: var(--blue); font-style: normal; }
+.ob-hint { color: var(--muted); font-size: 14px; line-height: 1.45; }
+.ob-field input:not([type=color]), .ob-field textarea, .ob-other {
+  width: 100%; padding: 12px 14px; border: 1px solid #D5D8E4; border-radius: 12px; background: #fff; font-size: 16px; line-height: 1.45; transition: border-color .15s, box-shadow .15s;
+}
+.ob-field textarea { resize: vertical; min-height: 110px; }
+.ob-field input:focus, .ob-field textarea:focus, .ob-other:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47,91,234,.15); }
+.ob-other { margin-top: 4px; }
+
+.ob-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ob-chip { display: inline-flex; align-items: center; gap: 9px; padding: 10px 14px; border: 1px solid #D5D8E4; border-radius: 12px; background: #fff; font-size: 15px; text-align: left; }
+.ob-chip:hover { border-color: #AFB5CC; }
+.ob-chip.is-on { border-color: var(--blue); background: var(--blue-soft); color: #1B3FB8; font-weight: 500; }
+.ob-box, .ob-radio { flex: none; width: 16px; height: 16px; border: 1.5px solid #AFB5CC; background: #fff; }
+.ob-box { border-radius: 4px; }
+.ob-radio { border-radius: 999px; }
+.ob-chip.is-on .ob-box { background: var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat; border-color: var(--blue); }
+.ob-chip.is-on .ob-radio { border: 5px solid var(--blue); }
+
+.ob-rows { display: grid; gap: 10px; }
+.ob-row { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--soft); display: grid; gap: 8px; }
+.ob-row-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.ob-sub { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.ob-sub input { padding: 10px 12px !important; font-size: 15px !important; }
+.ob-row-del { justify-self: end; font-size: 13px; color: var(--muted); text-decoration: underline; }
+.ob-add { justify-self: start; padding: 8px 2px; color: var(--blue); font-weight: 600; font-size: 15px; }
+
+.ob-colors { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.ob-color { display: inline-flex; align-items: center; gap: 8px; padding: 6px 8px 6px 6px; border: 1px solid var(--line); border-radius: 12px; }
+.ob-color input { width: 36px; height: 36px; padding: 0; border: 0; border-radius: 8px; background: none; cursor: pointer; }
+.ob-color code { font-size: 13px; }
+.ob-color button { font-size: 18px; color: var(--muted); padding: 0 4px; }
+
+.ob-drop { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px; border: 1.5px dashed #C3C8DA; border-radius: 14px; background: var(--soft); color: var(--muted); font-size: 14px; }
+.ob-drop.is-drag { border-color: var(--blue); background: var(--blue-soft); }
+.ob-files { display: grid; gap: 6px; }
+.ob-files li { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; }
+.ob-files li span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ob-files small { color: var(--muted); }
+.ob-files button { font-size: 13px; color: var(--muted); text-decoration: underline; }
+
+.ob-actions { margin-top: 32px; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.ob-btn { display: inline-flex; align-items: center; justify-content: center; padding: 13px 22px; border-radius: 999px; background: var(--ink); color: #fff !important; font-weight: 600; font-size: 15px; }
+.ob-btn:hover { background: #24203D; }
+.ob-btn:disabled { opacity: .5; cursor: default; }
+.ob-btn.is-ghost { background: #fff; color: var(--ink) !important; border: 1px solid #D5D8E4; }
+.ob-btn.is-ghost:hover { background: var(--soft); }
+.ob-missing { margin-top: 20px; padding: 16px 18px; border-radius: 14px; background: #FFF4F4; border: 1px solid #F3C7C7; font-size: 15px; display: grid; gap: 8px; }
+.ob-missing button { color: var(--err); text-decoration: underline; text-align: left; }
+.ob-err { color: var(--err); font-size: 14px; margin-top: 8px; }
+.ob-help { margin-top: 18px; text-align: center; color: var(--muted); font-size: 14px; }
+
+@media (max-width: 860px) {
+  .ob-layout { grid-template-columns: minmax(0, 1fr); }
+  .ob-nav { position: static; }
+  .ob-nav ol { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 6px; scrollbar-width: none; }
+  .ob-nav li button { white-space: nowrap; background: #fff; box-shadow: 0 0 0 1px var(--line); }
+  .ob-top { padding: 12px 16px; }
+  .ob-bar { top: 57px; }
+}
+
+/* ─ Admin ─ */
+.oba { max-width: 1100px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 40px) 80px; display: grid; gap: 20px; }
+.oba-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.oba-new { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.oba-new label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.oba-new input, .oba-new select { padding: 10px 12px; border: 1px solid #D5D8E4; border-radius: 10px; background: #fff; font-size: 15px; }
+.oba-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; font-size: 14px; }
+.oba-table th, .oba-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.oba-table th { background: var(--soft); font-weight: 600; color: var(--muted); font-size: 13px; }
+.oba-table tr.is-on td { background: var(--blue-soft); }
+.oba-pill { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--soft); color: var(--muted); }
+.oba-pill.is-done { background: #E6F6EC; color: var(--ok); }
+.oba-link { display: flex; gap: 6px; align-items: center; }
+.oba-link code { font-size: 12px; color: var(--muted); max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oba-small { font-size: 13px; color: var(--blue); text-decoration: underline; }
+.oba-detail h3 { font-size: 18px; margin: 18px 0 8px; }
+.oba-detail dl { display: grid; grid-template-columns: minmax(160px, 260px) 1fr; gap: 6px 16px; font-size: 14px; }
+.oba-detail dt { color: var(--muted); }
+.oba-detail dd { margin: 0; white-space: pre-wrap; }
+.oba-detail .is-empty { color: #B3B6C6; }
+@media (max-width: 700px) { .oba-detail dl { grid-template-columns: 1fr; } .oba-detail dd { margin-bottom: 8px; } }
