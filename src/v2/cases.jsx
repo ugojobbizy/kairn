@@ -5,6 +5,7 @@ import { GlowCard } from './glow-card.jsx';
 // Cas clients au format d'origine du site : chiffres à gauche, contexte au centre,
 // citation à droite, navigation entre les cas. Textes TradeAuto et Rénovia repris du site en ligne ;
 // chiffres Isolation d'Aquitaine relevés dans son CRM (Supabase, tables ad_spend et leads), le 2026-09-23.
+// Sud Ouest Isolation : rapport du CRM (/api/report/weekly, cohorte du 05 au 14/10/2026, relevé le 2026-10-15).
 // Madame la Gouvernante : chiffres plateforme repris du site V1 ; pas de CPL publié tant qu'il n'est pas relevé.
 
 const CASES = [
@@ -22,6 +23,21 @@ const CASES = [
       { v: '5,49 €', l: 'coût par lead en août 2026' },
     ],
     deliverables: ['Landing page ITE en 5 étapes', 'Campagne Meta pilotable, créa par créa', 'CRM sur mesure : pipeline, attribution, finance', 'Suivi des dépenses publicitaires synchronisé'],
+  },
+  {
+    name: 'Sud Ouest Isolation',
+    logo: '/v2/sud-ouest-isolation-logo.png',
+    logoWide: true,
+    tags: ['Isolation des combles', 'Meta Ads', 'CRM sur mesure'],
+    title: '10 dossiers signés en 10 jours de campagne',
+    challenge: 'Lancer une offre d’isolation des combles dans douze départements du Sud-Ouest : il fallait des demandes en volume, et savoir tout de suite lesquelles finissaient signées.',
+    solution: 'Campagne Meta en formulaire instantané avec trois vidéos testées en parallèle, CRM sur mesure qui reçoit chaque lead en quelques minutes, et renvoi à Meta des leads qualifiés pour que la campagne apprenne à trouver les bons.',
+    kpis: [
+      { v: '93', l: 'leads en 10 jours (du 5 au 14 octobre 2026)' },
+      { v: '7,73 €', l: 'coût par lead, frais Meta compris' },
+      { v: '34 %', l: 'des leads qualifiés : rendez-vous, devis ou signé' },
+    ],
+    deliverables: ['Trois vidéos publicitaires, une par angle', 'Campagne Meta en formulaire instantané', 'CRM sur mesure : pipeline, attribution par pub, finance', 'Leads qualifiés renvoyés à Meta automatiquement'],
   },
   {
     name: 'TradeAuto',
