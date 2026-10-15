@@ -138,3 +138,8 @@
 .oba-detail dd { margin: 0; white-space: pre-wrap; }
 .oba-detail .is-empty { color: #B3B6C6; }
 @media (max-width: 700px) { .oba-detail dl { grid-template-columns: 1fr; } .oba-detail dd { margin-bottom: 8px; } }
+.oba-live { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; vertical-align: middle; padding: 3px 10px; border-radius: 999px; background: var(--soft); color: var(--muted); font: 600 12px 'Geist', system-ui, sans-serif; letter-spacing: 0; }
+.oba-live::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: #B3B6C6; }
+.oba-live.is-on { background: #E6F6EC; color: var(--ok); }
+.oba-live.is-on::before { background: var(--ok); animation: oba-pulse 1.6s ease-in-out infinite; }
+@keyframes oba-pulse { 50% { opacity: .35; } }

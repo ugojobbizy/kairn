@@ -97,7 +97,30 @@ function Dashboard({ email }) {
     if (error) return setErr(error.message);
     setRows(data);
   };
-  useEffect(() => { refresh(); }, []);
+  // Temps réel : chaque enregistrement d'un client (toutes les ~1 s de frappe) met à jour la liste et le détail.
+  // Filet de sécurité : relecture au retour sur l'onglet et toutes les 30 s.
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    refresh();
+    const channel = db
+      .channel('onboardings-admin')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'onboardings' }, (p) => {
+        setRows((rs) => {
+          if (!rs) return rs;
+          if (p.eventType === 'DELETE') return rs.filter((r) => r.id !== p.old.id);
+          const i = rs.findIndex((r) => r.id === p.new.id);
+          if (i === -1) return [p.new, ...rs];
+          const next = rs.slice();
+          next[i] = p.new;
+          return next;
+        });
+      })
+      .subscribe((status) => setLive(status === 'SUBSCRIBED'));
+    const onFocus = () => refresh();
+    window.addEventListener('focus', onFocus);
+    const poll = setInterval(refresh, 30000);
+    return () => { db.removeChannel(channel); window.removeEventListener('focus', onFocus); clearInterval(poll); };
+  }, []);
 
   const create = async (e) => {
     e.preventDefault();
@@ -118,7 +141,7 @@ function Dashboard({ email }) {
   return (
     <div className="oba">
       <div className="oba-head">
-        <h1 className="ob-title">Clients</h1>
+        <h1 className="ob-title">Clients <span className={`oba-live${live ? ' is-on' : ''}`}>{live ? 'En direct' : 'Connexion…'}</span></h1>
         <form className="oba-new" onSubmit={create}>
           <label>Nom du client<input value={name} onChange={(e) => setName(e.target.value)} placeholder="Cabinet Martin" /></label>
           <label>Type de site<select value={sector} onChange={(e) => setSector(e.target.value)}>{Object.entries(SECTORS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
