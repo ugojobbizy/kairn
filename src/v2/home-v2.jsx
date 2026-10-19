@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, MotionConfig } from 'framer-motion';
 import Cases from './cases.jsx';
@@ -28,6 +28,42 @@ const headline = [
   { w: 'Puis' }, { w: 'on', serif: true }, { w: 'la', serif: true }, { w: 'fait', serif: true }, { w: 'tourner', serif: true },
   { w: 'à' }, { w: 'plein' }, { w: 'régime.' },
 ];
+
+// VSL du hero (40 s, 16:9) : lecture automatique sans le son et en boucle ; « Activer le son » relance depuis le début avec le son.
+function HeroVsl() {
+  const ref = useRef(null);
+  const [sound, setSound] = useState(false);
+  const unmute = () => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = false;
+    v.loop = false;
+    v.currentTime = 0;
+    v.play();
+    setSound(true);
+  };
+  return (
+    <div className="hero-vsl">
+      <video
+        ref={ref}
+        src="/vsl-kairn.mp4"
+        poster="/vsl-kairn-poster.jpg"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        controls={sound}
+        aria-label="Vidéo de présentation de Kairn (40 secondes)"
+      />
+      {!sound && (
+        <button type="button" className="hero-vsl-sound" onClick={unmute}>
+          <span aria-hidden="true">🔊</span> Activer le son
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default function KairnHomeV2() {
   useV2Favicon();
@@ -62,6 +98,10 @@ export default function KairnHomeV2() {
                   </React.Fragment>
                 ))}
               </h1>
+
+              <Reveal delay={0.45} y={24}>
+                <HeroVsl />
+              </Reveal>
 
               <Reveal delay={0.55} y={16}>
                 <p className="hero-lead">
