@@ -2,6 +2,8 @@
 // balises de référencement, et un bloc <noscript> lisible sans JavaScript.
 // Pour le blog, le texte complet des articles est aussi écrit dans <div id="root"> : Google le lit
 // sans exécuter le JavaScript, puis React remplace ce contenu par la page interactive au chargement.
+// Pour les pages principales indexables, le HTML réel de la page (rendu React côté serveur, dist-ssr/)
+// est écrit dans <div id="root"> : texte complet et liens internes lisibles sans JavaScript.
 // Écrit enfin dist/sitemap.xml à partir de la liste des pages indexables.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -10,6 +12,15 @@ import { POSTS } from '../src/blog/generated/index.js';
 import { BLOG_PATH, CATEGORIES, AUTHOR } from '../src/blog/meta.js';
 
 const DIST = 'dist';
+const { render: ssr } = await import('../dist-ssr/entry-server.js');
+
+// Les animations d’apparition démarrent invisibles (opacity:0, décalage, flou) : dans le HTML pré-rendu,
+// le contenu doit être visible tel quel. On retire ces déclarations des attributs style.
+const visible = (html) => html.replace(/style="([^"]*)"/g, (m, css) => {
+  if (!/opacity:\s*0(?![.\d])/.test(css)) return m;
+  const kept = css.split(';').filter((d) => d.trim() && !/^\s*(opacity|transform|filter)\s*:/.test(d)).join(';');
+  return kept ? `style="${kept}"` : '';
+});
 const template = readFileSync(join(DIST, 'index.html'), 'utf8');
 if (!template.includes('<!--seo:start-->') || !template.includes('<!--seo:noscript-->') || !template.includes('<div id="root"></div>')) {
   throw new Error('Marqueurs SEO absents de dist/index.html');
@@ -47,10 +58,19 @@ async function render(path) {
       <nav>${MAIN_LINKS.map(([href, label]) => `<a href="${SITE_URL}${href}">${esc(label)}</a>`).join(' · ')}</nav>
       <p>Contact : <a href="mailto:contact@kairnagency.com">contact@kairnagency.com</a></p>
     </noscript>`;
+  const full = !page.kind && !page.robots; // pages principales indexables : rendu React complet
   let html = template
     .replace(/<!--seo:start-->[\s\S]*?<!--seo:end-->/, headTags(path))
-    .replace('<!--seo:noscript-->', page.kind ? '' : noscript);
+    .replace('<!--seo:noscript-->', page.kind || full ? '' : noscript);
   if (page.kind) html = html.replace('<div id="root"></div>', `<div id="root">${await blogBody(path)}</div>`);
+  if (full) {
+    // Le visiteur avec JavaScript ne voit pas ce HTML (sinon il apparaîtrait, disparaîtrait puis rejouerait
+    // ses animations quand React prend le relais). Filet : si l'application n'a pas démarré après 4 s, on l'affiche.
+    const guard = `<style>.ssr-wait #root[data-ssr]{visibility:hidden}</style><script>document.documentElement.classList.add('ssr-wait');setTimeout(function(){document.documentElement.classList.remove('ssr-wait')},4000)</script>`;
+    html = html
+      .replace('</head>', `${guard}</head>`)
+      .replace('<div id="root"></div>', `<div id="root" data-ssr>${visible(await ssr(path))}</div>`);
+  }
   return html;
 }
 

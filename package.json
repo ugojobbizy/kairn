@@ -6,7 +6,7 @@
   "scripts": {
     "blog": "node scripts/build-blog.mjs",
     "dev": "node scripts/build-blog.mjs && vite",
-    "build": "node scripts/build-blog.mjs && vite build && node scripts/seo-prerender.mjs",
+    "build": "node scripts/build-blog.mjs && vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/seo-prerender.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

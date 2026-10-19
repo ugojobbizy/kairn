@@ -53,7 +53,7 @@ function useIsMobile() {
   return isMobile;
 }
 
-function Shell() {
+export function Shell() {
   const isMobile = useIsMobile();
   const variant = isMobile ? 'mobile' : 'desktop';
   return (
