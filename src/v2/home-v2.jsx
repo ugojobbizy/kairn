@@ -29,7 +29,7 @@ const headline = [
   { w: 'à' }, { w: 'plein' }, { w: 'régime.' },
 ];
 
-// VSL du hero (40 s, 16:9) : lecture automatique sans le son et en boucle ; « Activer le son » relance depuis le début avec le son.
+// VSL du hero (40 s, 16:9) : lecture automatique sans le son et en boucle ; un clic n'importe où sur la vidéo relance depuis le début avec le son.
 function HeroVsl() {
   const ref = useRef(null);
   const [sound, setSound] = useState(false);
@@ -57,8 +57,8 @@ function HeroVsl() {
         aria-label="Vidéo de présentation de Kairn (40 secondes)"
       />
       {!sound && (
-        <button type="button" className="hero-vsl-sound" onClick={unmute}>
-          <span aria-hidden="true">🔊</span> Activer le son
+        <button type="button" className="hero-vsl-cover" onClick={unmute} aria-label="Activer le son de la vidéo">
+          <span className="hero-vsl-sound"><span aria-hidden="true">🔊</span> Activer le son</span>
         </button>
       )}
     </div>
