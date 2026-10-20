@@ -105,10 +105,16 @@ export function pageFor(pathname) {
 }
 
 // ─ Données structurées (schema.org) ─
+// Nom de la fiche Google et du domaine : « Kairn Agency » (choix d'Ugo, 20/10), alors que le site affiche « Kairn ».
+// Il ne figure que dans ces données invisibles, pour que Google relie le site, la fiche et les recherches « Kairn Agency ».
+const BRAND_NAME = 'Kairn Agency';
+const GOOGLE_PROFILE = 'https://maps.google.com/?cid=17839410346044495568';
+
 const ORGANIZATION = {
   '@type': 'ProfessionalService',
   '@id': `${SITE_URL}/#organization`,
-  name: SITE_NAME,
+  name: BRAND_NAME,
+  alternateName: SITE_NAME,
   url: `${SITE_URL}/`,
   logo: `${SITE_URL}/logo-512.png`,
   image: OG_IMAGE,
@@ -118,13 +124,16 @@ const ORGANIZATION = {
   areaServed: { '@type': 'Country', name: 'France' },
   description: PAGES['/'].description,
   knowsAbout: ['Création de landing pages', 'Génération de leads', 'Meta Ads', 'Google Ads', 'CRM sur mesure', 'Tracking serveur'],
+  hasMap: GOOGLE_PROFILE,
+  sameAs: [GOOGLE_PROFILE],
 };
 
 const WEBSITE = {
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
   url: `${SITE_URL}/`,
-  name: SITE_NAME,
+  name: BRAND_NAME,
+  alternateName: SITE_NAME,
   inLanguage: 'fr-FR',
   publisher: { '@id': `${SITE_URL}/#organization` },
 };
