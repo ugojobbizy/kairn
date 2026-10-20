@@ -8,7 +8,7 @@ import { GlowCard } from './glow-card.jsx';
 // Sud Ouest Isolation : rapport du CRM (/api/report/weekly, cohorte du 05 au 14/10/2026, relevé le 2026-10-15).
 // Madame la Gouvernante : chiffres plateforme repris du site V1 ; pas de CPL publié tant qu'il n'est pas relevé.
 
-const CASES = [
+const ALL_CASES = [
   {
     name: 'Isolation d’Aquitaine',
     logo: '/v2/isolation-aquitaine-logo.png',
@@ -55,6 +55,8 @@ const CASES = [
     author: 'Louis · Fondateur, TRADEAUTO.CH',
   },
   {
+    // Masqué le 20/10/2026 : en attente de l'accord du client (Ugo). Retirer `hidden` pour le remettre.
+    hidden: true,
     name: 'Madame la Gouvernante',
     logo: '/madame-logo.png',
     tags: ['Marketplace', 'Plateforme sur mesure', 'Acquisition des deux côtés'],
@@ -85,6 +87,8 @@ const CASES = [
     author: 'Samuel · Fondateur, RENOVIA.FR',
   },
 ];
+
+const CASES = ALL_CASES.filter((c) => !c.hidden);
 
 const pad = (n) => String(n).padStart(2, '0');
 

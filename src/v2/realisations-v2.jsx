@@ -1856,7 +1856,8 @@ function SelectionCriteria({ isMobile }) {
 // ═════════════════════════════════════════════════════════════
 const REALIS_TESTIMONIALS = [
   { q: 'Site, CRM, dashboard, Meta + Google Ads : tout livré par la même équipe en 4 semaines. Aujourd\'hui le coût par lead est stable à 10 CHF et je vois tout en temps réel dans le back-office. Je recommande les yeux fermés.', n: 'Louis', p: 'Fondateur', c: 'TRADEAUTO.CH', logo: '/tradeauto-logo.png' },
-  { q: 'Avant on jonglait entre WhatsApp, tableurs et relances oubliées. Kairn nous a livré une plateforme two-sided complète : matching intelligent, dispatch auto, paiement Stripe, facturation. Aujourd\'hui on pilote 150+ missions par semaine depuis un seul back-office.', n: 'Manon', p: 'Co-fondatrice', c: 'MADAMELAGOUVERNANTE.COM', logo: '/madame-logo.png' },
+  // Masqué le 20/10/2026 : en attente de l'accord du client. Retirer `hidden` pour le remettre.
+  { hidden: true, q: 'Avant on jonglait entre WhatsApp, tableurs et relances oubliées. Kairn nous a livré une plateforme two-sided complète : matching intelligent, dispatch auto, paiement Stripe, facturation. Aujourd\'hui on pilote 150+ missions par semaine depuis un seul back-office.', n: 'Manon', p: 'Co-fondatrice', c: 'MADAMELAGOUVERNANTE.COM', logo: '/madame-logo.png' },
   { q: 'CPL divisé par 2, conversion doublée. Mais surtout : les leads arrivent avec un dossier complet. Le closing a suivi.', n: 'Samuel', p: 'Fondateur', c: 'RENOVIA.FR', logo: '/renovia-logo.svg' },
 ];
 
@@ -1869,7 +1870,7 @@ function RealisationsTestimonials() {
           <h2 className="h2">Leurs mots, <span className="serif grad-text">pas les nôtres.</span></h2>
         </div>
         <div className="real-quotes-grid">
-          {REALIS_TESTIMONIALS.map((t) => (
+          {REALIS_TESTIMONIALS.filter((t) => !t.hidden).map((t) => (
             <figure key={t.c} className="real-quote">
               <span className="cases2-qmark" aria-hidden="true">“</span>
               <blockquote>« {t.q} »</blockquote>
