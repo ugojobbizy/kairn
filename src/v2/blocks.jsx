@@ -8,6 +8,7 @@ export const EASE = [0.22, 0.8, 0.24, 1];
 // ─ icônes (tracés type Lucide) ─
 export const ICONS = {
   arrow: <path d="M7 17 17 7M8 7h9v9" />,
+  flow: <path d="M5 12h14M13 6l6 6-6 6" />,
   megaphone: <><path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /></>,
   layout: <><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></>,
   filter: <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />,
@@ -72,11 +73,15 @@ export function BentoGrid({ children }) {
   );
 }
 
-export function BentoCard({ title, description, icon, span, dark, children }) {
+// step : numéro de l'étape dans le processus ; next : sens de la flèche vers l'étape suivante
+// (right, left, down, down-start) ; place : classe de placement dans la grille sur ordinateur.
+export function BentoCard({ title, description, icon, span, dark, step, extra, next, place, children }) {
   return (
-    <motion.article variants={cardVariants} className={`bcard${span ? ' span-2' : ''}${dark ? ' is-dark' : ''}`}>
+    <motion.article variants={cardVariants} className={`bcard${span ? ' span-2' : ''}${dark ? ' is-dark' : ''}${place ? ` ${place}` : ''}`}>
       <div className="bcard-visual" aria-hidden="true">{children}</div>
+      {next && <span className={`bcard-next is-${next}`} aria-hidden="true"><Icon name="flow" size={16} stroke={2.4} /></span>}
       <div className="bcard-body">
+        {(step || extra) && <span className="bcard-step">{step ? `Étape ${String(step).padStart(2, '0')}` : extra}</span>}
         <div className="bcard-title">
           <span className="bcard-ico"><Icon name={icon} /></span>
           <h3>{title}</h3>

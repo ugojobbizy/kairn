@@ -132,14 +132,14 @@ export default function KairnHomeV2() {
               </Reveal>
 
               <BentoGrid>
-                <BentoCard span icon="megaphone" title="Campagnes Meta & Google Ads" description="Créas, ciblage et tracking audités avant la moindre dépense. On teste, on coupe ce qui ne marche pas."><AdsVisual /></BentoCard>
-                <BentoCard icon="layout" title="Landing page de conversion" description="Une page par offre, formulaire court, mobile first."><PageVisual /></BentoCard>
-                <BentoCard icon="filter" title="Qualification du lead" description="Vos commerciaux reçoivent un dossier, pas un numéro."><QualVisual /></BentoCard>
-                <BentoCard span icon="chart" title="Tracking et tableau de bord" description="D’où vient chaque lead, ce qu’il a coûté, s’il a signé. En temps réel."><TrackingVisual /></BentoCard>
-                <BentoCard icon="down" title="Optimisation du CPL" description="On baisse le coût, puis on augmente le budget. Dans cet ordre."><CplVisual /></BentoCard>
-                <BentoCard icon="calendar" title="Reporting chaque lundi" description="Leads, coût, signatures. Sans jargon."><ReportVisual /></BentoCard>
-                <BentoCard span dark icon="users" title="Un CRM sur mesure pour l’attribution" description="Chaque lead arrive avec sa source exacte : campagne, créa, mot-clé. Vous voyez quelle pub fait signer, pas seulement celle qui fait cliquer."><CrmVisual /></BentoCard>
-                <BentoCard span icon="code" title="Et si l’outil manque, on le construit" description="Formulaires branchés au CRM, relances automatiques, automatisations n8n et Make : la même équipe développe ce que l’acquisition exige."><BuildVisual /></BentoCard>
+                <BentoCard span step={1} next="right" place="b-01" icon="megaphone" title="Campagnes Meta & Google Ads" description="Créas, ciblage et tracking audités avant la moindre dépense. On teste, on coupe ce qui ne marche pas."><AdsVisual /></BentoCard>
+                <BentoCard step={2} next="right" place="b-02" icon="layout" title="Landing page de conversion" description="Une page par offre, formulaire court, mobile first."><PageVisual /></BentoCard>
+                <BentoCard step={3} next="down" place="b-03" icon="filter" title="Qualification du lead" description="Vos commerciaux reçoivent un dossier, pas un numéro."><QualVisual /></BentoCard>
+                <BentoCard span dark step={4} next="left" place="b-04" icon="users" title="Un CRM sur mesure pour l’attribution" description="Chaque lead arrive avec sa source exacte : campagne, créa, mot-clé. Vous voyez quelle pub fait signer, pas seulement celle qui fait cliquer."><CrmVisual /></BentoCard>
+                <BentoCard span step={5} next="down-start" place="b-05" icon="chart" title="Tracking et tableau de bord" description="D’où vient chaque lead, ce qu’il a coûté, s’il a signé. En temps réel."><TrackingVisual /></BentoCard>
+                <BentoCard step={6} next="right" place="b-06" icon="down" title="Optimisation du CPL" description="On baisse le coût, puis on augmente le budget. Dans cet ordre."><CplVisual /></BentoCard>
+                <BentoCard step={7} next="right" place="b-07" icon="calendar" title="Reporting chaque lundi" description="Leads, coût, signatures. Sans jargon."><ReportVisual /></BentoCard>
+                <BentoCard span extra="Et en plus" place="b-08" icon="code" title="Et si l’outil manque, on le construit" description="Formulaires branchés au CRM, relances automatiques, automatisations n8n et Make : la même équipe développe ce que l’acquisition exige."><BuildVisual /></BentoCard>
               </BentoGrid>
 
               <div className="stats">
