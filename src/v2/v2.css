@@ -1286,3 +1286,5 @@
 .v2 .logo-band-word .mono-line::before, .v2 .logo-band-word .mono-line::after { content: ''; position: absolute; width: 4px; height: 4px; background: currentColor; }
 .v2 .logo-band-word .mono-line::before { top: -2.5px; left: -2.5px; }
 .v2 .logo-band-word .mono-line::after { bottom: -2.5px; right: -2.5px; }
+/* Dans le hero, seul l'en-tête de réservation prend la pleine largeur ; le formulaire garde 1000 px (Ugo, 26/10). */
+.v2 .hero-book .bk { max-width: 1000px; margin-left: auto; margin-right: auto; }
