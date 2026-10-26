@@ -22,11 +22,10 @@ const STATS = [['47+', 'projets livrés'], ['−38 %', 'de CPL en moyenne'], ['1
 
 // ─ page ─
 
-// Titre du hero de la V1, conservé tel quel ; « on la fait tourner » porte l'accent.
+// Titre du hero : ce que fait Kairn, en mots de chef d'entreprise ; « on vous trouve les clients » porte l'accent.
 const headline = [
-  { w: 'On' }, { w: 'construit' }, { w: 'la' }, { w: 'machine.' }, { br: true },
-  { w: 'Puis' }, { w: 'on', serif: true }, { w: 'la', serif: true }, { w: 'fait', serif: true }, { w: 'tourner', serif: true },
-  { w: 'à' }, { w: 'plein' }, { w: 'régime.' },
+  { w: 'Vous' }, { w: 'faites' }, { w: 'votre' }, { w: 'métier.' }, { br: true },
+  { w: 'Nous,' }, { w: 'on', serif: true }, { w: 'vous', serif: true }, { w: 'trouve', serif: true }, { w: 'les', serif: true }, { w: 'clients.', serif: true },
 ];
 
 // VSL du hero (40 s, 16:9) : lecture automatique sans le son et en boucle ; un clic n'importe où sur la vidéo relance depuis le début avec le son.
