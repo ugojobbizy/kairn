@@ -4,27 +4,21 @@ import React from 'react';
 // (fondateur + garanties), inspirés de la landing de Grabb (capture envoyée par Ugo le 26/10/2026).
 // Logos clients passés en blanc sur fond transparent (public/v2/logos/, tirés des logos d'origine du site).
 
+// Rénovia et Decoratherm : monogramme + nom, dans le style des logos de Bienvendu.ch et Wealthbroker (captures d'Ugo, 26/10).
 function RenoviaLogo() {
   return (
     <span className="logo-band-word">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M3 10.5 12 3l9 7.5" /><path d="M5 9.5V21h14V9.5" /><path d="M10 21v-6h4v6" />
-      </svg>
+      <span className="mono mono-fill" aria-hidden="true">R</span>
       <b style={{ fontWeight: 650, letterSpacing: '-0.02em' }}>Rénovia</b>
     </span>
   );
 }
 
-// Reprend le logo du site Decoratherm (~/DECORATHERM/site/src/components/layout/Logo.tsx) : toit, lames de bardage, nom espacé.
 function DecorathermLogo() {
   return (
     <span className="logo-band-word">
-      <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <rect x="1" y="1" width="30" height="30" rx="8" stroke="currentColor" strokeWidth="2" />
-        <path d="M8 14 16 8l8 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M11 15.5v8M16 15.5v8M21 15.5v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-      <b style={{ fontWeight: 600, fontSize: '0.82em', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Decoratherm</b>
+      <span className="mono mono-line" aria-hidden="true"><i>D</i></span>
+      <span style={{ letterSpacing: '-0.01em' }}><b style={{ fontWeight: 650 }}>Decora</b><span style={{ fontWeight: 400 }}>therm</span></span>
     </span>
   );
 }
@@ -45,7 +39,7 @@ export function ClientLogos() {
       <ul className="logo-band-logos">
         {LOGOS.map((l) => (
           <li key={l.name} title={l.name}>
-            {l.node || <img src={l.src} alt={l.name} height={l.h} style={{ height: l.h }} loading="lazy" />}
+            {l.node || <img src={l.src} alt={l.name} height={l.h} style={{ '--h': `${l.h}px` }} loading="lazy" />}
           </li>
         ))}
       </ul>
