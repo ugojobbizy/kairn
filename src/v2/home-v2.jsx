@@ -103,15 +103,20 @@ export default function KairnHomeV2() {
                 <HeroVsl />
               </Reveal>
 
+              <Reveal delay={0.5} y={16}>
+                <ClientLogos />
+              </Reveal>
+
               <Reveal delay={0.55} y={16}>
                 <p className="hero-lead">
                   Kairn est une agence de <strong>génération de leads</strong>. On construit votre site et votre CRM, on lance vos campagnes Meta et Google, et on baisse votre coût par lead. Le tout sous un seul toit, en moins de 30 jours.
                 </p>
               </Reveal>
 
-              <Reveal delay={0.7} y={16} className="hero-cta">
-                <BookCta>Prendre un RDV découverte</BookCta>
-                <span className="hero-meta">30 min · en visio · audit gratuit</span>
+              {/* Réservation directement sous l'accroche (demande d'Ugo du 26/10/2026) ; #reserver est la cible de tous les boutons « Réserver ». */}
+              <Reveal delay={0.7} y={16} className="hero-book">
+                <AuditHeader />
+                <Booking />
               </Reveal>
 
               <motion.div className="stage" initial={{ opacity: 0, y: 60, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 1.1, ease: EASE, delay: 0.85 }}>
@@ -119,9 +124,6 @@ export default function KairnHomeV2() {
                 <HeroDuo />
               </motion.div>
 
-              <Reveal delay={0.2} y={16}>
-                <ClientLogos />
-              </Reveal>
             </div>
 
           </section>
@@ -194,16 +196,6 @@ export default function KairnHomeV2() {
             </div>
           </section>
 
-          {/* ── CTA final ── */}
-          <section id="contact" style={{ paddingBottom: 'var(--band-sm)' }}>
-            <Reveal className="final">
-              <Glow />
-              <div className="final-inner">
-                <AuditHeader />
-                <Booking />
-              </div>
-            </Reveal>
-          </section>
         </main>
 
         <Footer />
