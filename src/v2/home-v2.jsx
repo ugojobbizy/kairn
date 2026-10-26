@@ -25,7 +25,7 @@ const STATS = [['47+', 'projets livrés'], ['−38 %', 'de CPL en moyenne'], ['1
 // Titre du hero : ce que fait Kairn, en mots de chef d'entreprise ; « on vous trouve les clients » porte l'accent.
 const headline = [
   { w: 'Vous' }, { w: 'faites' }, { w: 'votre' }, { w: 'métier.' }, { br: true },
-  { w: 'Nous,' }, { w: 'on', serif: true }, { w: 'vous', serif: true }, { w: 'trouve', serif: true }, { w: 'les', serif: true }, { w: 'clients.', serif: true },
+  { w: 'Nous,' }, { w: 'on', serif: true }, { w: 'vous', serif: true }, { w: 'trouve', serif: true }, { w: 'les\u00a0clients.', serif: true },
 ];
 
 // VSL du hero (40 s, 16:9) : lecture automatique sans le son et en boucle ; un clic n'importe où sur la vidéo relance depuis le début avec le son.
