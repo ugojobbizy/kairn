@@ -111,15 +111,15 @@ export async function fetchBusy(timeMin, timeMax) {
   return cal.busy || [];
 }
 
-export async function createEvent({ start, name, phone }) {
+export async function createEvent({ start, name, phone, company = '', email = '' }) {
   const token = await accessToken();
   const end = new Date(start.getTime() + CONFIG.slotMinutes * 60e3);
   const r = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId())}/events`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      summary: `Appel de découverte — ${name}`,
-      description: `Réservé depuis kairnagency.com\n\nNom : ${name}\nTéléphone : ${phone}`,
+      summary: `Audit découverte : ${name}${company ? ` (${company})` : ''}`,
+      description: `Réservé depuis kairnagency.com\n\nPrénom : ${name}\nSociété : ${company || 'non donnée'}\nTéléphone : ${phone}\nE-mail : ${email || 'non donné'}`,
       start: { dateTime: start.toISOString(), timeZone: CONFIG.timeZone },
       end: { dateTime: end.toISOString(), timeZone: CONFIG.timeZone },
     }),

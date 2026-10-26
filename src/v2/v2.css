@@ -1231,3 +1231,46 @@
 }
 /* Tablette et mobile : cartes dans l'ordre des étapes, les numéros suffisent */
 @media (max-width: 1080px) { .v2 .bcard-next { display: none; } }
+
+/* ── Bande logos clients (sous le hero) ── */
+.v2 .logo-band { margin-top: clamp(40px, 6vw, 72px); padding: 22px clamp(18px, 3vw, 34px) 26px; border-radius: 22px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); text-align: left; }
+.v2 .logo-band-label { font: 500 12px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.55); }
+.v2 .logo-band-logos { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 22px 36px; margin-top: 20px; }
+.v2 .logo-band-logos li { display: flex; align-items: center; color: #fff; opacity: .78; transition: opacity .2s; }
+.v2 .logo-band-logos li:hover { opacity: 1; }
+.v2 .logo-band-logos img { display: block; width: auto; }
+.v2 .logo-band-word { display: inline-flex; align-items: center; gap: 9px; font-size: 21px; line-height: 1; white-space: nowrap; }
+@media (max-width: 640px) {
+  .v2 .logo-band-logos { justify-content: center; gap: 20px 28px; }
+  .v2 .logo-band-logos img { transform: scale(.85); }
+  .v2 .logo-band-word { font-size: 18px; }
+}
+
+/* ── En-tête du module de réservation (fondateur + garanties) ── */
+.v2 .audit-head { display: flex; align-items: center; justify-content: space-between; gap: 28px 40px; text-align: left; }
+.v2 .audit-copy { max-width: 620px; }
+.v2 .audit-eyebrow { font: 600 12.5px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--lav); }
+.v2 .final .audit-head .h2 { margin: 14px 0 0; max-width: none; font-size: clamp(36px, 5vw, 64px); scroll-margin-top: 120px; }
+.v2 .audit-lead { margin-top: 16px; max-width: 46ch; color: rgba(255,255,255,.72); font-size: clamp(16px, 1.4vw, 18.5px); }
+.v2 .founder { flex: 0 0 auto; display: flex; align-items: center; gap: 16px; max-width: 380px; padding: 18px 20px; border-radius: 18px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.v2 .founder img, .v2 .founder-initials { width: 64px; height: 64px; flex: 0 0 64px; border-radius: 14px; object-fit: cover; }
+.v2 .founder img { border-radius: 50%; box-shadow: 0 0 0 2px rgba(255,255,255,.18); }
+.v2 .founder-initials { display: grid; place-items: center; font: 600 20px var(--font); color: #fff; background: linear-gradient(135deg, #4F46E5, #3B82F6); }
+.v2 .founder b { font-size: 18px; letter-spacing: -0.015em; }
+.v2 .founder p { margin-top: 4px; font-size: 14.5px; line-height: 1.45; color: rgba(255,255,255,.65); }
+.v2 .audit-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 36px 0 22px; }
+.v2 .audit-pills li { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; font-size: 14.5px; font-weight: 600; color: #DCE4FF; background: rgba(129,140,248,.16); border: 1px solid rgba(129,140,248,.3); }
+.v2 .audit-pills svg { color: #A5B4FC; }
+@media (max-width: 860px) {
+  .v2 .audit-head { flex-direction: column; align-items: flex-start; }
+  .v2 .founder { max-width: none; width: 100%; }
+}
+
+/* ── Réservation : champs ajoutés (étape 2) ── */
+.v2 .bk-logo { display: inline-flex; margin-bottom: 12px; }
+.v2 .bk-form .bk-intro + .bk-intro { margin-top: 10px; font-size: 14.5px; }
+.v2 .bk-more { animation: bk-in .35s ease both; }
+.v2 .bk-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@keyframes bk-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 420px) { .v2 .bk-row { grid-template-columns: 1fr; gap: 0; } }
+@media (prefers-reduced-motion: reduce) { .v2 .bk-more { animation: none; } }

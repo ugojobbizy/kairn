@@ -1,4 +1,4 @@
-// POST /api/book { start, name, phone, website } → crée l'événement dans Google Agenda.
+// POST /api/book { start, name, company, email, phone, website } → crée l'événement dans Google Agenda.
 import { CONFIG, candidateSlots, removeBusy, fetchBusy, createEvent, zonedDateKey, isDemo, send, readJson } from './_calendar.js';
 
 export default async function handler(req, res) {
@@ -8,6 +8,8 @@ export default async function handler(req, res) {
 
   const name = String(body.name || '').trim();
   const phone = String(body.phone || '').replace(/[^\d+]/g, '');
+  const company = String(body.company || '').trim().slice(0, 120);
+  const email = String(body.email || '').trim().slice(0, 120);
   // Champ piège invisible : un humain le laisse vide.
   if (body.website) return send(res, 200, { ok: true });
   if (name.length < 2 || name.length > 80) return send(res, 400, { error: 'bad_name' });
@@ -24,7 +26,7 @@ export default async function handler(req, res) {
     if (!isDemo()) {
       valid = removeBusy(valid, await fetchBusy(start, new Date(start.getTime() + CONFIG.slotMinutes * 60e3)));
       if (!valid.length) return send(res, 409, { error: 'slot_taken' });
-      await createEvent({ start, name, phone });
+      await createEvent({ start, name, phone, company, email });
     }
     return send(res, 200, { ok: true, start: start.toISOString(), demo: isDemo() });
   } catch (err) {

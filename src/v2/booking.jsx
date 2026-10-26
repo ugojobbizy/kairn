@@ -2,9 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BOOKING_URL, CONTACT_EMAIL } from '../config.js';
 
-// Réservation en deux étapes, à la manière d'iClosed :
-// 1. coordonnées (enregistrées tout de suite comme lead dans le CRM)
-// 2. choix d'un créneau libre dans Google Agenda (via /api/slots et /api/book).
+// Réservation en trois temps, à la manière d'iClosed :
+// 1. le numéro seul, enregistré tout de suite (/api/lead) : on peut rappeler même sans réservation ;
+// 2. prénom, société, e-mail, ajoutés à la même ligne ;
+// 3. choix d'un créneau libre dans Google Agenda (via /api/slots et /api/book).
 
 const TZ = 'Europe/Paris';
 const COUNTRIES = [
@@ -26,6 +27,11 @@ const fmtDay = (key) => {
 };
 const todayParis = () => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date());
 
+const newId = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+  const r = (Math.random() * 16) | 0;
+  return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+}));
+
 function getUtm() {
   try {
     const p = new URLSearchParams(window.location.search);
@@ -43,7 +49,8 @@ function Chevron({ dir }) {
 
 export default function Booking() {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ country: 'FR', phone: '', name: '', website: '' });
+  const [form, setForm] = useState({ country: 'FR', phone: '', firstName: '', company: '', email: '', website: '' });
+  const [leadId] = useState(newId);
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
@@ -102,45 +109,49 @@ export default function Booking() {
     if (errors[k]) setErrors((er) => ({ ...er, [k]: '' }));
   };
 
-  const validate = () => {
-    const er = {};
-    const digits = form.phone.replace(/\D/g, '');
-    if (digits.length < 8 || digits.length > 15) er.phone = 'Entrez un numéro de téléphone valide, par exemple 6 12 34 56 78.';
-    if (form.name.trim().length < 2) er.name = 'Indiquez votre prénom et votre nom.';
-    setErrors(er);
-    return !Object.keys(er).length;
+  const saveLead = async (extra) => {
+    try {
+      const r = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: leadId, phone: fullPhone, website: form.website, page: window.location.pathname, ...getUtm(), ...extra }),
+      });
+      if (!r.ok) throw new Error(String(r.status));
+      return true;
+    } catch (err) {
+      // On laisse quand même avancer : le créneau réservé garde les coordonnées dans Google Agenda.
+      console.error('Prospect non enregistré :', err.message);
+      return false;
+    }
   };
 
-  const submitStep1 = async (e) => {
+  const submitPhone = async (e) => {
     e.preventDefault();
     if (form.website) return; // champ piège rempli par un robot
-    if (!validate()) return;
-    setSaving(true);
-    try {
-      // Supabase n'est chargé qu'au moment d'enregistrer un lead (allège la page d'accueil).
-      const { supabase, isSupabaseConfigured } = await import('../lib/supabase.js');
-      if (isSupabaseConfigured) {
-        const utm = getUtm();
-        const lead = {
-          first_name: form.name.trim(),
-          email: null,
-          phone: fullPhone,
-          utm_source: utm.utm_source || null,
-          utm_campaign: utm.utm_campaign || null,
-          utm_content: utm.utm_content || null,
-          stage: 'new',
-        };
-        // Pas d'email demandé : si la colonne l'exige, on réessaie avec une chaîne vide.
-        const { error } = await supabase.from('leads').insert(lead);
-        if (error) await supabase.from('leads').insert({ ...lead, email: '' });
-      }
-      if (typeof window.fbq === 'function') { try { window.fbq('track', 'Lead'); } catch { /* pixel absent */ } }
-    } catch {
-      // Le lead n'a pas pu être enregistré : on laisse quand même réserver, l'agenda garde les coordonnées.
-    } finally {
-      setSaving(false);
-      setStep(2);
+    const digits = form.phone.replace(/\D/g, '');
+    if (digits.length < 8 || digits.length > 15) {
+      setErrors({ phone: 'Entrez un numéro de téléphone valide, par exemple 6 12 34 56 78.' });
+      return;
     }
+    setSaving(true);
+    const ok = await saveLead({});
+    if (ok && typeof window.fbq === 'function') { try { window.fbq('track', 'Lead'); } catch { /* pixel absent */ } }
+    setSaving(false);
+    setStep(2);
+  };
+
+  const submitDetails = async (e) => {
+    e.preventDefault();
+    const er = {};
+    if (form.firstName.trim().length < 2) er.firstName = 'Indiquez votre prénom.';
+    if (form.company.trim().length < 2) er.company = 'Indiquez le nom de votre société.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) er.email = 'Entrez une adresse e-mail valide.';
+    setErrors(er);
+    if (Object.keys(er).length) return;
+    setSaving(true);
+    await saveLead({ first_name: form.firstName.trim(), company: form.company.trim(), email: form.email.trim() });
+    setSaving(false);
+    setStep(3);
   };
 
   const confirm = async () => {
@@ -151,7 +162,7 @@ export default function Booking() {
       const r = await fetch('/api/book', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ start: slot, name: form.name.trim(), phone: fullPhone, website: form.website }),
+        body: JSON.stringify({ start: slot, name: form.firstName.trim(), company: form.company.trim(), email: form.email.trim(), phone: fullPhone, website: form.website }),
       });
       const j = await r.json().catch(() => ({}));
       if (r.status === 409) {
@@ -162,6 +173,7 @@ export default function Booking() {
       }
       if (!r.ok || !j.ok) throw new Error();
       setDone(slot);
+      saveLead({ first_name: form.firstName.trim(), company: form.company.trim(), email: form.email.trim(), slot });
     } catch {
       setBookError(`La réservation n’a pas abouti. Réessayez, ou écrivez-nous à ${CONTACT_EMAIL}.`);
     } finally {
@@ -177,7 +189,7 @@ export default function Booking() {
         </span>
         <h3>C’est réservé.</h3>
         <p><strong>{fmtLong(done)}</strong> (heure de Paris).</p>
-        <p>On vous appelle au <strong>{fullPhone}</strong>. Un imprévu ? Écrivez-nous à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+        <p>Ugo vous appelle au <strong>{fullPhone}</strong>. Un imprévu ? Écrivez-nous à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
       </div>
     );
   }
@@ -186,54 +198,66 @@ export default function Booking() {
 
   return (
     <div className="bk">
-      <ol className="bk-steps" aria-label="Étapes de la réservation">
-        <li className={step === 1 ? 'is-active' : 'is-done'}><i />Vos coordonnées</li>
-        <li className={step === 2 ? 'is-active' : ''}><i />Choisissez votre créneau</li>
-      </ol>
-
       <div className="bk-body">
-        {/* ── Étape 1 ── */}
-        <form className="bk-form" onSubmit={submitStep1} noValidate>
-          <h3>Appel de découverte avec Kairn</h3>
-          <p className="bk-intro">30 minutes pour parler de votre acquisition : vos chiffres, vos objectifs, et ce qu’on ferait à votre place.</p>
+        {/* ── Étapes 1 et 2 : coordonnées ── */}
+        <form className="bk-form" onSubmit={step === 1 ? submitPhone : submitDetails} noValidate>
+          <span className="bk-logo" aria-hidden="true"><img src="/favicon.svg" alt="" width="26" height="26" /></span>
+          <h3>Audit découverte Kairn</h3>
+          <p className="bk-intro">Un premier échange pour parler de votre entreprise, de la façon dont vous trouvez vos clients aujourd’hui et de ce que vous aimeriez améliorer.</p>
+          <p className="bk-intro">En visio, avec Ugo, fondateur de Kairn.</p>
 
-          <label className="bk-label" htmlFor="bk-phone">Téléphone</label>
+          <label className="bk-label" htmlFor="bk-phone">Votre numéro de téléphone</label>
           <div className={`bk-phone${errors.phone ? ' has-error' : ''}`}>
-            <select aria-label="Indicatif du pays" value={form.country} onChange={update('country')} disabled={step === 2}>
+            <select aria-label="Indicatif du pays" value={form.country} onChange={update('country')} disabled={step > 1}>
               {COUNTRIES.map((c) => <option key={c.code} value={c.code}>{c.code} {c.dial}</option>)}
             </select>
-            <input id="bk-phone" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" value={form.phone} onChange={update('phone')} disabled={step === 2} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'bk-phone-err' : undefined} />
+            <input id="bk-phone" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" value={form.phone} onChange={update('phone')} disabled={step > 1} autoFocus={false} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'bk-phone-err' : undefined} />
           </div>
           {errors.phone && <p className="bk-err" id="bk-phone-err">{errors.phone}</p>}
 
-          <label className="bk-label" htmlFor="bk-name">Prénom et nom</label>
-          <input id="bk-name" className={`bk-input${errors.name ? ' has-error' : ''}`} autoComplete="name" value={form.name} onChange={update('name')} disabled={step === 2} aria-invalid={!!errors.name} aria-describedby={errors.name ? 'bk-name-err' : undefined} />
-          {errors.name && <p className="bk-err" id="bk-name-err">{errors.name}</p>}
-
+          {step > 1 && (
+            <div className="bk-more">
+              <div className="bk-row">
+                <div>
+                  <label className="bk-label" htmlFor="bk-first">Prénom</label>
+                  <input id="bk-first" className={`bk-input${errors.firstName ? ' has-error' : ''}`} autoComplete="given-name" value={form.firstName} onChange={update('firstName')} disabled={step > 2} aria-invalid={!!errors.firstName} />
+                  {errors.firstName && <p className="bk-err">{errors.firstName}</p>}
+                </div>
+                <div>
+                  <label className="bk-label" htmlFor="bk-company">Société</label>
+                  <input id="bk-company" className={`bk-input${errors.company ? ' has-error' : ''}`} autoComplete="organization" value={form.company} onChange={update('company')} disabled={step > 2} aria-invalid={!!errors.company} />
+                  {errors.company && <p className="bk-err">{errors.company}</p>}
+                </div>
+              </div>
+              <label className="bk-label" htmlFor="bk-email">E-mail</label>
+              <input id="bk-email" type="email" inputMode="email" className={`bk-input${errors.email ? ' has-error' : ''}`} autoComplete="email" value={form.email} onChange={update('email')} disabled={step > 2} aria-invalid={!!errors.email} />
+              {errors.email && <p className="bk-err">{errors.email}</p>}
+            </div>
+          )}
 
           <input className="bk-trap" tabIndex={-1} autoComplete="off" aria-hidden="true" value={form.website} onChange={update('website')} name="website" />
 
-          <p className="bk-legal">En envoyant vos informations, vous acceptez qu’elles soient enregistrées conformément à nos <Link to="/cgv">conditions</Link> et à notre <Link to="/confidentialite">politique de confidentialité</Link>.</p>
+          <p className="bk-legal">En saisissant vos informations, vous acceptez qu’elles soient enregistrées conformément à nos <Link to="/cgv">conditions</Link> et à notre <Link to="/confidentialite">politique de confidentialité</Link>.</p>
 
-          {step === 1 ? (
+          {step < 3 ? (
             <button type="submit" className="bk-btn" disabled={saving}>
               {saving ? 'Un instant…' : 'Continuer'}
               <Chevron dir="right" />
             </button>
           ) : (
-            <button type="button" className="bk-btn bk-btn-ghost" onClick={() => { setStep(1); setSlot(null); }}>
+            <button type="button" className="bk-btn bk-btn-ghost" onClick={() => { setStep(2); setSlot(null); }}>
               Modifier mes coordonnées
             </button>
           )}
         </form>
 
-        {/* ── Étape 2 ── */}
-        <div className={`bk-cal${step === 1 ? ' is-locked' : ''}`} aria-disabled={step === 1}>
+        {/* ── Étape 3 : créneau ── */}
+        <div className={`bk-cal${step < 3 ? ' is-locked' : ''}`} aria-disabled={step < 3}>
           <div className="bk-cal-head">
             <span className="bk-month">{monthLabel}</span>
             <div className="bk-nav">
-              <button type="button" onClick={() => shiftMonth(-1)} disabled={!canPrev || step === 1} aria-label="Mois précédent"><Chevron dir="left" /></button>
-              <button type="button" onClick={() => shiftMonth(1)} disabled={step === 1} aria-label="Mois suivant"><Chevron dir="right" /></button>
+              <button type="button" onClick={() => shiftMonth(-1)} disabled={!canPrev || step < 3} aria-label="Mois précédent"><Chevron dir="left" /></button>
+              <button type="button" onClick={() => shiftMonth(1)} disabled={step < 3} aria-label="Mois suivant"><Chevron dir="right" /></button>
             </div>
           </div>
 
@@ -250,7 +274,7 @@ export default function Booking() {
                       key={key}
                       type="button"
                       className={`bk-day${available ? ' is-open' : ''}${key === today ? ' is-today' : ''}`}
-                      disabled={!available || step === 1}
+                      disabled={!available || step < 3}
                       onClick={() => { setDay(key); setSlot(null); setBookError(''); }}
                       aria-label={`${fmtDay(key)}${available ? ', créneaux disponibles' : ', indisponible'}`}
                     >
@@ -280,8 +304,8 @@ export default function Booking() {
             </div>
           )}
 
-          {step === 1 && (
-            <div className="bk-lock" role="note">Remplissez vos coordonnées pour choisir votre créneau.</div>
+          {step < 3 && (
+            <div className="bk-lock" role="note">Merci de remplir le formulaire avant de choisir votre créneau horaire.</div>
           )}
           <p className="bk-tz">Horaires affichés à l’heure de Paris.</p>
         </div>

@@ -5,6 +5,7 @@ import Cases from './cases.jsx';
 import { Nav, Footer, BookCta, useV2Favicon } from './layout.jsx';
 import LivingGradient from './living-gradient.jsx';
 import Booking from './booking.jsx';
+import { ClientLogos, AuditHeader } from './trust.jsx';
 import Method from './method.jsx';
 import HeroDuo from './hero-duo.jsx';
 import { AdsVisual, PageVisual, QualVisual, TrackingVisual, CplVisual, ReportVisual, BuildVisual, CrmVisual } from './bento-visuals.jsx';
@@ -117,6 +118,10 @@ export default function KairnHomeV2() {
                 <div className="stage-glow" aria-hidden="true" />
                 <HeroDuo />
               </motion.div>
+
+              <Reveal delay={0.2} y={16}>
+                <ClientLogos />
+              </Reveal>
             </div>
 
           </section>
@@ -194,10 +199,7 @@ export default function KairnHomeV2() {
             <Reveal className="final">
               <Glow />
               <div className="final-inner">
-                <Pill>Parlons de vos leads</Pill>
-                <h2 className="h2">30 minutes pour savoir si on peut <span className="serif">vous aider.</span></h2>
-                <p className="final-lead">Pas de pitch commercial. On regarde votre offre, vos chiffres actuels, et on vous dit franchement ce qu’on ferait.</p>
-                <p className="final-free" id="reserver">Offert et sans engagement</p>
+                <AuditHeader />
                 <Booking />
               </div>
             </Reveal>
