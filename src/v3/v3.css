@@ -206,3 +206,15 @@
 .v2 .hb-flux path { fill: none; stroke: #2F5BEA; stroke-opacity: .2; stroke-width: 1; vector-effect: non-scaling-stroke; }
 .v2 .hb-flux circle { fill: #2F5BEA; fill-opacity: .7; }
 @media (prefers-reduced-motion: reduce) { .v2 .hb-flux circle { display: none; } }
+
+/* ─ campagnes : bande courbe sur un bloc nuit ─ */
+.v2 .reel { height: clamp(520px, 52vw, 640px); border-radius: 36px; background: var(--night); color: #fff; }
+.v2 .reel-inner { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: clamp(32px, 4vw, 52px) 20px; text-align: center; pointer-events: none; }
+.v2 .reel-head .eyebrow { color: #A9C1FF; }
+.v2 .reel-head .h2 { margin-top: 14px; color: #fff; }
+.v2 .reel-head .grad-text { background-image: linear-gradient(100deg, #67E8F9, #818CF8); }
+.v2 .reel-foot { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.v2 .reel-foot p { max-width: 46ch; color: rgba(255,255,255,.62); font-size: 15px; }
+.v2 .reel-btn { pointer-events: auto; background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.2); }
+.v2 .reel-btn:hover { border-color: #fff; }
+@media (max-width: 640px) { .v2 .reel { border-radius: 24px; height: 520px; } }

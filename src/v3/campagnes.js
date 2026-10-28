@@ -9,5 +9,4 @@ export const CAMPAGNES = [
   { src: '/campagnes/landing-ite.jpg', tag: 'Landing page', titre: 'Formulaire en 2 minutes', secteur: 'Isolation par l’extérieur' },
   { src: '/campagnes/crm-tradeauto.jpg', tag: 'CRM Kairn', titre: 'Chaque lead et sa source', secteur: 'Automobile' },
   { src: '/campagnes/landing-isolation-aquitaine.jpg', tag: 'Landing page', titre: 'Page d’une campagne ITE', secteur: 'Isolation, Gironde' },
-  { src: '/campagnes/tableau-de-bord-tradeauto.jpg', tag: 'Tableau de bord', titre: 'Suivi en temps réel', secteur: 'Automobile' },
 ];

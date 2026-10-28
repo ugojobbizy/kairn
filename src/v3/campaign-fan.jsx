@@ -5,7 +5,7 @@ import { CAMPAGNES } from './campagnes.js';
 // Captures de campagnes en éventail (d'après la section « Preuve brute » envoyée par Ugo, 28/10/2026).
 // Un clic ouvre la capture en grand ; flèches du clavier pour passer de l'une à l'autre, Échap pour fermer.
 
-function Lightbox({ index, onClose, onMove }) {
+export function Lightbox({ index, onClose, onMove }) {
   const c = CAMPAGNES[index];
   useEffect(() => {
     const onKey = (e) => {

@@ -10,7 +10,7 @@ import { CONTACT_EMAIL } from '../config.js';
 import { FAQ } from '../v2/faq-data.js';
 import { EASE, Pill, Reveal, FaqList } from '../v2/blocks.jsx';
 import { OffersCompare, OfferCards } from './offers.jsx';
-import CampaignFan from './campaign-fan.jsx';
+import CampaignReel from './campaign-reel.jsx';
 import HeroBg from './hero-bg.jsx';
 import '../v2/v2.css';
 import './v3.css';
@@ -109,18 +109,12 @@ export default function KairnHomeV3() {
           </section>
 
           {/* ── Vraies campagnes ── */}
-          <section className="band cf-band" id="campagnes">
+          <section className="band" id="campagnes">
             <div className="wrap">
-              <Reveal className="sec-head">
-                <p className="eyebrow">Preuve brute</p>
-                <h2 className="h2">Pas des maquettes. <span className="serif grad-text">De vraies campagnes.</span></h2>
-                <p>Les mêmes captures que celles que nos clients reçoivent. Cliquez sur une capture pour l’agrandir.</p>
-              </Reveal>
-              <CampaignFan />
+              <Reveal><CampaignReel /></Reveal>
             </div>
           </section>
 
-          {/* ── Résultats ── */}
           {/* Les cas clients sont dessinés pour un fond sombre : ils restent dans un bloc nuit arrondi, pas en fond de page. */}
           <section className="band" id="resultats">
             <div className="wrap">
