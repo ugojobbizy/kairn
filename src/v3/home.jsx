@@ -119,8 +119,10 @@ export default function KairnHomeV3() {
           </section>
 
           {/* ── Résultats ── */}
-          <section className="band" id="resultats" style={{ background: 'var(--tint)' }}>
+          {/* Les cas clients sont dessinés pour un fond sombre : ils restent dans un bloc nuit arrondi, pas en fond de page. */}
+          <section className="band" id="resultats">
             <div className="wrap">
+              <div className="dark results-card">
               <Reveal className="sec-head">
                 <Pill>Résultats</Pill>
                 <h2 className="h2">Ce qu’on a livré. <span className="serif grad-text">Et ce que ça a rapporté.</span></h2>
@@ -128,6 +130,7 @@ export default function KairnHomeV3() {
               </Reveal>
               <Cases />
               <div className="cases-more"><Link to="/realisations" className="btn btn-light">Toutes les réalisations</Link></div>
+              </div>
             </div>
           </section>
 
