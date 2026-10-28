@@ -7,6 +7,8 @@ import { GlowCard } from './glow-card.jsx';
 // chiffres Isolation d'Aquitaine relevés dans son CRM (Supabase, tables ad_spend et leads), le 2026-09-23.
 // Sud Ouest Isolation : rapport du CRM (/api/report/weekly, cohorte du 05 au 14/10/2026, relevé le 2026-10-15).
 // Madame la Gouvernante : chiffres plateforme repris du site V1 ; pas de CPL publié tant qu'il n'est pas relevé.
+// sansCout : titre et chiffres sans coût par lead, pour les pages qui vendent des leads (prop sansCout, décision d'Ugo du 28/10/2026 :
+// un installateur qui voit 5,49 € à côté d'un contact vendu 27 € voit la marge).
 
 const ALL_CASES = [
   {
@@ -22,6 +24,13 @@ const ALL_CASES = [
       { v: '323', l: 'leads captés dans le CRM, de mai à septembre 2026' },
       { v: '5,49 €', l: 'coût par lead en août 2026' },
     ],
+    sansCout: {
+      title: '323 leads captés dans le CRM en cinq mois',
+      kpis: [
+        { v: '323', l: 'leads captés dans le CRM, de mai à septembre 2026' },
+        { v: '5', l: 'étapes dans le formulaire de la landing page' },
+      ],
+    },
     deliverables: ['Landing page ITE en 5 étapes', 'Campagne Meta pilotable, créa par créa', 'CRM sur mesure : pipeline, attribution, finance', 'Suivi des dépenses publicitaires synchronisé'],
   },
   {
@@ -37,6 +46,13 @@ const ALL_CASES = [
       { v: '7,73 €', l: 'coût par lead, frais Meta compris' },
       { v: '34 %', l: 'des leads qualifiés : rendez-vous, devis ou signé' },
     ],
+    sansCout: {
+      kpis: [
+        { v: '93', l: 'leads en 10 jours (du 5 au 14 octobre 2026)' },
+        { v: '34 %', l: 'des leads qualifiés : rendez-vous, devis ou signé' },
+        { v: '10', l: 'dossiers signés sur la période' },
+      ],
+    },
     deliverables: ['Trois vidéos publicitaires, une par angle', 'Campagne Meta en formulaire instantané', 'CRM sur mesure : pipeline, attribution par pub, finance', 'Leads qualifiés renvoyés à Meta automatiquement'],
   },
   {
@@ -51,6 +67,13 @@ const ALL_CASES = [
       { v: '86', l: 'leads ultra-qualifiés générés en un mois (avril 2026)' },
       { v: '4 sem.', l: 'du brief au tunnel complet' },
     ],
+    sansCout: {
+      kpis: [
+        { v: '86', l: 'leads générés en un mois (avril 2026)' },
+        { v: '6', l: 'ventes sur le même mois' },
+        { v: '4 sem.', l: 'du brief au tunnel complet' },
+      ],
+    },
     quote: 'Site, CRM, dashboard, Meta + Google Ads : tout livré par la même équipe en 4 semaines. Je recommande les yeux fermés.',
     author: 'Louis · Fondateur, TRADEAUTO.CH',
   },
@@ -83,6 +106,13 @@ const ALL_CASES = [
       { v: '−46 %', l: 'CPL · de 24 € à 13 €' },
       { v: '5×', l: 'plus de data par lead · 3 → 15+ champs' },
     ],
+    sansCout: {
+      title: 'Une conversion passée de 12 % à 31 %, avec des dossiers prêts à closer',
+      kpis: [
+        { v: '+158 %', l: 'taux de conversion · 12 % → 31 %' },
+        { v: '5×', l: 'plus de data par lead · 3 → 15+ champs' },
+      ],
+    },
     quote: 'CPL divisé par 2, conversion doublée. Mais surtout : les leads arrivent avec un dossier complet. Le closing a suivi.',
     author: 'Samuel · Fondateur, RENOVIA.FR',
   },
@@ -100,9 +130,9 @@ function Arrow({ dir }) {
   );
 }
 
-export default function Cases() {
+export default function Cases({ sansCout = false }) {
   const [[index, dir], setState] = useState([0, 1]);
-  const c = CASES[index];
+  const c = sansCout ? { ...CASES[index], ...CASES[index].sansCout } : CASES[index];
   const go = (d) => setState(([i]) => [(i + d + CASES.length) % CASES.length, d]);
 
   return (

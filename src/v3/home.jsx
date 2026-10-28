@@ -128,7 +128,7 @@ export default function KairnHomeV3() {
                 <h2 className="h2">Ce qu’on a livré. <span className="serif grad-text">Et ce que ça a rapporté.</span></h2>
                 <p>Des chiffres relevés chez nos clients, pas des promesses.</p>
               </Reveal>
-              <Cases />
+              <Cases sansCout />
               <div className="cases-more"><Link to="/realisations" className="btn btn-light">Toutes les réalisations</Link></div>
               </div>
             </div>
