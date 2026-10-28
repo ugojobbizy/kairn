@@ -1,11 +1,14 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './styles.js';
-import KairnHomeV2 from './v2/home-v2.jsx';
+import KairnHomeV3 from './v3/home.jsx';
 import SeoManager from './seo-manager.jsx';
 
 // Pages chargées à la demande : la page d'accueil n'embarque pas le code des autres pages.
 const KairnHome = lazy(() => import('./home.jsx'));
+const KairnHomeV2 = lazy(() => import('./v2/home-v2.jsx'));
+const OrderPage = lazy(() => import('./v3/order.jsx'));
+const ClientSpace = lazy(() => import('./espace/espace.jsx'));
 const RealisationsPage = lazy(() => import('./realisations.jsx'));
 const LandingPage = lazy(() => import('./landing.jsx'));
 const LandingPage2 = lazy(() => import('./landing2.jsx'));
@@ -62,7 +65,10 @@ export function Shell() {
       <SeoManager />
       <Suspense fallback={null}>
       <Routes>
-        <Route path="/" element={<KairnHomeV2 />} />
+        <Route path="/" element={<KairnHomeV3 />} />
+        <Route path="/landingpage" element={<KairnHomeV2 />} />
+        <Route path="/commander" element={<OrderPage />} />
+        <Route path="/espace/*" element={<ClientSpace />} />
         <Route path="/v1" element={<KairnHome variant={variant} />} />
         <Route path="/realisations" element={<RealisationsV2 />} />
         <Route path="/generation-de-leads" element={<LeadGenPage />} />
@@ -90,7 +96,7 @@ export function Shell() {
         <Route path="/cgv" element={<CGV />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminCRMPage />} />
-        <Route path="*" element={<KairnHomeV2 />} />
+        <Route path="*" element={<KairnHomeV3 />} />
       </Routes>
       </Suspense>
     </>

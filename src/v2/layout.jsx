@@ -72,6 +72,10 @@ function WhatsAppIcon({ size = 15 }) {
   );
 }
 
+function LockIcon() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 1 1 6 0v3H9z" /></svg>;
+}
+
 function Chevron() {
   return <svg className="nav-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>;
 }
@@ -120,7 +124,7 @@ function ServicesMenu() {
 }
 
 // Panneau plein écran pour téléphone et tablette.
-function MobileMenu({ open, onClose }) {
+function MobileMenu({ open, onClose, shop }) {
   const { pathname } = useLocation();
   useEffect(() => {
     if (!open) return undefined;
@@ -147,6 +151,7 @@ function MobileMenu({ open, onClose }) {
       <ul className="mnav-links">
         {LINKS.map((x) => <li key={x.to}><Link to={x.to} onClick={onClose}>{x.t}</Link></li>)}
         <li><Link to="/agence-bordeaux" onClick={onClose}>Agence à Bordeaux</Link></li>
+        {shop && <li><Link to="/espace" onClick={onClose}><LockIcon /> Connexion à l’espace client</Link></li>}
         {WHATSAPP_NUMBER && (
           <li><a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="nav-wa" onClick={onClose}><WhatsAppIcon size={17} /> Contact WhatsApp</a></li>
         )}
@@ -159,7 +164,8 @@ function MobileMenu({ open, onClose }) {
   );
 }
 
-export function Nav() {
+// light : en-tête sombre sur fond blanc dès le haut de page ; shop : boutons Connexion (espace client) et Commander.
+export function Nav({ light = false, shop = false }) {
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
   const closeMenu = useCallback(() => setMenu(false), []);
@@ -172,7 +178,7 @@ export function Nav() {
     return () => window.removeEventListener('scroll', on);
   }, []);
   return (
-    <header className={`nav${scrolled || menu ? ' is-scrolled' : ''}${menu ? ' is-menu' : ''}`}>
+    <header className={`nav${scrolled || menu ? ' is-scrolled' : ''}${menu ? ' is-menu' : ''}${light ? ' is-light' : ''}`}>
       <div className="wrap">
         <div className="nav-bar">
           <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo />Kairn</Link>
@@ -187,14 +193,21 @@ export function Nav() {
             )}
           </nav>
           <div className="nav-end">
-            <BookCta><span className="long">Réserver un appel</span><span className="short">Réserver</span></BookCta>
+            {shop ? (
+              <>
+                <Link to="/espace" className="nav-login"><LockIcon />Connexion</Link>
+                <Link to="/commander" className="btn nav-order">Commander</Link>
+              </>
+            ) : (
+              <BookCta><span className="long">Réserver un appel</span><span className="short">Réserver</span></BookCta>
+            )}
             <button type="button" className="nav-burger" aria-expanded={menu} aria-controls="mnav" aria-label={menu ? 'Fermer le menu' : 'Ouvrir le menu'} onClick={() => setMenu((m) => !m)}>
               <span /><span />
             </button>
           </div>
         </div>
       </div>
-      <MobileMenu open={menu} onClose={closeMenu} />
+      <MobileMenu open={menu} onClose={closeMenu} shop={shop} />
     </header>
   );
 }

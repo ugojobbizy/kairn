@@ -84,6 +84,9 @@ export const PAGES = {
   // Pages à ne pas référencer : anciennes versions, landing pages publicitaires, espace privé.
   '/v1': { title: 'Kairn (ancienne version)', description: 'Ancienne version du site Kairn.', robots: NOINDEX, canonical: '/' },
   '/v1/realisations': { title: 'Réalisations (ancienne version) · Kairn', description: 'Ancienne version de la page Réalisations.', robots: NOINDEX, canonical: '/realisations' },
+  '/commander': { title: 'Commander des leads · Kairn', description: 'Commandez des contacts exclusifs en pompe à chaleur, isolation par l’extérieur ou photovoltaïque, ou confiez vos campagnes Meta à Kairn.' },
+  '/espace': { title: 'Espace client · Kairn', description: 'Espace client Kairn.', robots: 'noindex, nofollow' },
+  '/landingpage': { title: 'Kairn (accueil sauvegardé)', description: 'Accueil Kairn d’octobre 2026, gardé en sauvegarde.', robots: NOINDEX },
   '/landing': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
   '/landing2': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
   '/landing3': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
@@ -101,6 +104,7 @@ const ONBOARDING = { title: 'Kairn · Votre projet de site', description: 'Quest
 export function pageFor(pathname) {
   const path = pathname !== '/' ? pathname.replace(/\/+$/, '') : '/';
   if (!PAGES[path] && path.startsWith('/onboarding/')) return ONBOARDING; // lien privé d'un client
+  if (!PAGES[path] && path.startsWith('/espace/')) return PAGES['/espace']; // pages de l'espace client
   return PAGES[path] || NOT_FOUND;
 }
 
