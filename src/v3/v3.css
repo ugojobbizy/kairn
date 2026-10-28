@@ -78,8 +78,10 @@
 .v2 .of-card.is-service .of-mark b { background: linear-gradient(100deg, #67E8F9, #818CF8); -webkit-background-clip: text; background-clip: text; }
 .v2 .of-tag { display: inline-block; padding: 7px 13px; border-radius: 99px; font: 700 11.5px/1 var(--font); letter-spacing: .1em; text-transform: uppercase; background: var(--violet); color: #fff; margin-bottom: 22px; }
 .v2 .is-service .of-tag { background: linear-gradient(100deg, #67E8F9, #818CF8); color: var(--night); }
-.v2 .of-card h3 { margin-top: 20px; font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-.v2 .of-card p { margin-top: 12px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+.v2 .of-card h3 { margin-top: 22px; font-size: clamp(28px, 2.7vw, 38px); font-weight: 600; letter-spacing: -0.045em; line-height: 1.05; }
+.v2 .of-card h3 .serif { display: block; font-size: 1.06em; background: linear-gradient(100deg, #0EA5E9, #2F5BEA 55%, #4F46E5); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .05em; }
+.v2 .is-service h3 .serif { background-image: linear-gradient(100deg, #67E8F9, #818CF8); }
+.v2 .of-card p { margin-top: 18px; color: var(--muted); font-size: 16px; line-height: 1.6; }
 .v2 .is-service p { color: rgba(255,255,255,.72); }
 .v2 .of-card strong { color: var(--ink); }
 .v2 .is-service strong { color: #fff; }
@@ -182,3 +184,25 @@
 /* ─ résultats dans un bloc nuit ─ */
 .v2 .results-card { position: relative; border-radius: 40px; padding: clamp(48px, 6vw, 96px) clamp(16px, 4vw, 56px); }
 @media (max-width: 640px) { .v2 .results-card { border-radius: 28px; } }
+
+/* ─ fonds du hero (à départager) ─ */
+.v2 .hb { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+/* topo : courbes de niveau, effacées au centre pour laisser le titre respirer */
+.v2 .hb-topo { -webkit-mask-image: radial-gradient(ellipse 46% 42% at 50% 34%, transparent 35%, #000 80%); mask-image: radial-gradient(ellipse 46% 42% at 50% 34%, transparent 35%, #000 80%); }
+.v2 .hb-topo > * { position: absolute; inset: -3%; width: 106%; height: 106%; transition: transform .6s var(--ease); }
+.v2 .hb-topo-shade { object-fit: cover; filter: blur(1px); transform: translate3d(calc(var(--px, 0) * -10px), calc(var(--py, 0) * -6px), 0); }
+.v2 .hb-topo-lines { transform: translate3d(calc(var(--px, 0) * -26px), calc(var(--py, 0) * -16px), 0); }
+.v2 .hb-topo path { fill: none; stroke: #2F5BEA; stroke-opacity: .26; stroke-width: 1; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.v2 .hb-topo path.is-major { stroke-opacity: .5; stroke-width: 1.4; }
+.v2 .hb-topo-marks text { font: 500 11px var(--mono); fill: #2F5BEA; fill-opacity: .45; letter-spacing: .08em; }
+/* cairn : le symbole en très grand, au trait, coupé à droite ; grain de papier */
+.v2 .hb-cairn { overflow: hidden; }
+.v2 .hb-cairn-mark { position: absolute; right: -14vw; top: -6vw; width: 74vw; max-width: 1250px; height: auto; transform: rotate(-8deg); }
+.v2 .hb-cairn-mark rect { fill: none; stroke: #2F5BEA; stroke-opacity: .18; stroke-width: .12; }
+.v2 .hb-cairn-mark rect.is-full { fill: #2F5BEA; fill-opacity: .05; }
+.v2 .hb-grain { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .07; mix-blend-mode: multiply; }
+/* flux : fils qui convergent vers les boutons, leads qui descendent */
+.v2 .hb-flux { -webkit-mask-image: linear-gradient(#000 0%, rgba(0,0,0,.35) 40%, #000 75%, transparent 100%); mask-image: linear-gradient(#000 0%, rgba(0,0,0,.35) 40%, #000 75%, transparent 100%); }
+.v2 .hb-flux path { fill: none; stroke: #2F5BEA; stroke-opacity: .2; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.v2 .hb-flux circle { fill: #2F5BEA; fill-opacity: .7; }
+@media (prefers-reduced-motion: reduce) { .v2 .hb-flux circle { display: none; } }

@@ -9,7 +9,7 @@ const SUPABASE_KEY = 'sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV';
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const SOUHAITS = { leads: 'Acheter des leads', accompagnement: 'Être accompagné' };
 const THEMATIQUES = ['PAC', 'ITE', 'PPV', 'Autre'];
-const VOLUMES = ['10', '25', '50', '+ de 50'];
+const VOLUMES = ['50', '100', '200', '+ de 200'];
 
 const clean = (v, max) => {
   const s = String(v ?? '').trim();

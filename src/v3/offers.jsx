@@ -53,7 +53,7 @@ export function OfferCards() {
       <Reveal className="of-card is-product">
         <span className="of-tag">Un produit</span>
         <Mark word="Leads" />
-        <h3>On produit. Vous achetez.</h3>
+        <h3>Nous produisons les leads. <span className="serif">Vous payez au contact.</span></h3>
         <p>Nous investissons <strong>notre propre budget publicitaire</strong> sur Meta, sur trois thématiques : pompe à chaleur, isolation par l’extérieur, photovoltaïque. Vous achetez les contacts à l’unité, chacun envoyé à un seul installateur.</p>
         <ul>
           <li><Check />Contacts exclusifs, jamais revendus</li>
@@ -65,7 +65,7 @@ export function OfferCards() {
       <Reveal className="of-card is-service" delay={0.08}>
         <span className="of-tag">Un service</span>
         <Mark word="Pilotage" />
-        <h3>Vous investissez. On pilote.</h3>
+        <h3>Vous investissez. <span className="serif">Nous pilotons chaque euro.</span></h3>
         <p>Votre métier n’est pas dans nos thématiques, ou vous voulez vos propres campagnes ? Nous prenons en main votre acquisition sur Meta : <strong>votre budget</strong>, vos comptes, notre méthode.</p>
         <ul>
           <li><Check />Campagnes Meta montées sur votre offre</li>

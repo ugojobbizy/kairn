@@ -13,7 +13,7 @@ import './v3.css';
 
 const SOUHAITS = [['leads', 'Acheter des leads'], ['accompagnement', 'Être accompagné']];
 const THEMATIQUES = [...PRODUITS.map((p) => [p.code, `${p.nom} (${prixHT(p.prix)} le contact)`]), ['Autre', 'Autre métier']];
-const VOLUMES = ['10', '25', '50', '+ de 50'];
+const VOLUMES = ['50', '100', '200', '+ de 200'];
 
 const STEPS = [
   ['Ugo vous lit', 'Pas de tri automatique : votre demande est lue par celui qui règle les campagnes.'],

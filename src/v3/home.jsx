@@ -11,6 +11,7 @@ import { FAQ } from '../v2/faq-data.js';
 import { EASE, Pill, Reveal, FaqList } from '../v2/blocks.jsx';
 import { OffersCompare, OfferCards } from './offers.jsx';
 import CampaignFan from './campaign-fan.jsx';
+import HeroBg from './hero-bg.jsx';
 import '../v2/v2.css';
 import './v3.css';
 
@@ -49,6 +50,8 @@ function HeroVsl() {
 
 export default function KairnHomeV3() {
   useV2Favicon();
+  // Fond du hero à comparer : ?fond=topo | cairn | flux (choix d'Ugo en attente).
+  const fond = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('fond') || 'topo' : 'topo';
   return (
     <MotionConfig reducedMotion="user">
       <div className="v2 v3">
@@ -58,8 +61,7 @@ export default function KairnHomeV3() {
         <main id="contenu">
           {/* ── Hero ── */}
           <section className="hero is-light">
-            <div className="aurora-grid" aria-hidden="true" />
-            <div className="hero-halo" aria-hidden="true" />
+            <HeroBg variant={fond} />
             <div className="wrap hero-inner">
               <Reveal y={12}><Pill>Leads exclusifs et campagnes Meta</Pill></Reveal>
               <h1>
@@ -80,7 +82,7 @@ export default function KairnHomeV3() {
               </h1>
               <Reveal delay={0.4} y={16}>
                 <p className="hero-lead">
-                  Deux façons de travailler avec Kairn : <strong>acheter des contacts exclusifs</strong> en pompe à chaleur, isolation par l’extérieur ou photovoltaïque, ou <strong>nous confier vos campagnes Meta</strong> sur votre propre budget.
+                  Deux façons de travailler avec Kairn : <strong>acheter des leads au volume</strong> ou <strong>nous confier vos campagnes</strong>.
                 </p>
               </Reveal>
               <Reveal delay={0.5} y={16} className="hero-actions">
