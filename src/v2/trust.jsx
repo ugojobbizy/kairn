@@ -23,15 +23,16 @@ function DecorathermLogo() {
   );
 }
 
+// Ordre : Isolation d'Aquitaine et Sud Ouest Isolation jamais côte à côte (Ugo, 29/10/2026).
 const LOGOS = [
   { name: 'Isolation d’Aquitaine', src: '/v2/logos/isolation-aquitaine.png', h: 30 },
-  { name: 'Sud Ouest Isolation', src: '/v2/logos/sud-ouest-isolation.png', h: 34 },
   { name: 'TradeAuto', src: '/v2/logos/tradeauto.png', h: 34 },
+  { name: 'Sud Ouest Isolation', src: '/v2/logos/sud-ouest-isolation.png', h: 34 },
   { name: 'Rénovia', node: <RenoviaLogo /> },
-  { name: 'Madame la Gouvernante', src: '/v2/logos/mlg.png', h: 26 },
-  { name: 'Decoratherm', node: <DecorathermLogo /> },
   // Ajouté le 29/10/2026 à la demande d'Ugo (logo de la charte ED HABITAT, horizontal marine).
   { name: 'ED HABITAT', src: '/v2/logos/ed-habitat.svg', h: 50 },
+  { name: 'Madame la Gouvernante', src: '/v2/logos/mlg.png', h: 26 },
+  { name: 'Decoratherm', node: <DecorathermLogo /> },
 ];
 
 // marquee : V2 de l'accueil (Ugo, 29/10/2026 : « améliore cette barre de clients, c'est hyper moche comme ça ») :
