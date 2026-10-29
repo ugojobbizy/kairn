@@ -167,7 +167,7 @@ function Home({ client }) {
             <ul className="ec-grid-checks">{['Nom', 'Téléphone', 'E-mail', 'Code postal', 'Date de réception'].map((x) => <li key={x}><Check />{x}</li>)}</ul>
             <div className="ec-qualif">
               <p className="ec-sub">Qualification</p>
-              <ul className="ec-grid-checks">{['Propriétaire ou non', 'Type de logement', 'Délai du projet'].map((x) => <li key={x}><Check />{x}</li>)}</ul>
+              <ul className="ec-grid-checks">{['Propriétaire ou non', 'Type de logement', 'Chauffage et surface'].map((x) => <li key={x}><Check />{x}</li>)}</ul>
             </div>
             <Link to={`/espace/precommande?thematique=${p.code}`} className="ec-btn">Pré-commander</Link>
           </article>

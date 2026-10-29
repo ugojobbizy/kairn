@@ -1,6 +1,6 @@
 // Catalogue Kairn Leads. Prix donnés par Ugo le 28/10/2026 (PAC 28 €, ITE 27 €, PPV 35 €), affichés HT.
 // Ce que contient chaque contact (formulaire de la campagne ITE, à confirmer pour PAC et PPV).
-export const CONTENU_CONTACT = ['Nom, téléphone, e-mail et code postal', 'Type de logement, propriétaire ou non', 'Délai du projet'];
+export const CONTENU_CONTACT = ['Nom, téléphone, e-mail et code postal', 'Propriétaire ou non, type de logement', 'Chauffage et surface'];
 
 export const PRODUITS = [
   {

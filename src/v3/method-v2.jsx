@@ -10,7 +10,7 @@ import { motion, useInView, useScroll, useSpring } from 'framer-motion';
 const STEPS = [
   { t: 'Vous commandez', when: 'En ligne', d: 'Votre métier, vos départements, le volume, à partir de 50 contacts. Sans engagement.' },
   { t: 'Ugo valide avec vous', when: 'Bon de commande', d: 'Il vérifie votre zone, vous montre une campagne qui tourne et émet le bon de commande.' },
-  { t: 'Les contacts arrivent', when: 'Espace client', d: 'Chaque contact est envoyé à vous seul : nom, téléphone, e-mail, code postal, type de logement, propriétaire ou non, délai du projet.' },
+  { t: 'Les contacts arrivent', when: 'Espace client', d: 'Chaque contact est envoyé à vous seul : nom, téléphone, e-mail, code postal, propriétaire ou non, type de logement, chauffage, surface.' },
   { t: 'Vous rappelez', when: 'Dans l’heure, si possible', d: 'Plus le rappel est rapide, plus ça décroche. Un doublon ou un contact hors zone se signale en un clic : il est remplacé.' },
 ];
 
