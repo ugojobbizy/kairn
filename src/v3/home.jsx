@@ -15,6 +15,7 @@ import CampaignReel from './campaign-reel.jsx';
 import HeroBg from './hero-bg.jsx';
 import HeroBgV2 from './hero-bg-v2.jsx';
 import LeadSample from './lead-sample.jsx';
+import PlatformTabs from './platform-tabs.jsx';
 import MethodV2 from './method-v2.jsx';
 import '../v2/v2.css';
 import './v3.css';
@@ -167,6 +168,13 @@ export default function KairnHomeV3({ police }) {
               {!police && <OfferCards />}
             </div>
           </section>
+
+          {/* ── Notre plateforme (V2 seulement, avant la fiche lead : Ugo, 29/10/2026) ── */}
+          {police && <section className="band" id="plateforme">
+            <div className="wrap">
+              <Reveal><PlatformTabs /></Reveal>
+            </div>
+          </section>}
 
           {/* ── Vraies campagnes ; sur la V2, la fiche d'un lead à la place des pubs Meta (Ugo, 29/10/2026) ── */}
           <section className="band" id={police ? 'lead' : 'campagnes'}>

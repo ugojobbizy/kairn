@@ -174,3 +174,24 @@
   .v2 .ls-card { transform: none; max-width: 460px; width: 100%; justify-self: center; }
 }
 @media (max-width: 420px) { .v2 .ls-card { padding: 20px; } }
+
+/* Section « Notre plateforme » à onglets (29/10/2026) */
+.v2 .pt-head { max-width: 760px; margin: 0 auto; text-align: center; }
+.v2 .pt-head .h2 { margin-top: 18px; }
+.v2 .pt-head .h2 .serif { display: block; }
+.v2 .pt-head p:last-child { margin: 20px auto 0; max-width: 54ch; color: var(--muted); font-size: 17px; }
+.v2 .pt-tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 36px auto 0; padding: 6px; width: fit-content; max-width: 100%; border-radius: 999px; background: #F3F5FA; border: 1px solid var(--line); }
+.v2 .pt-tabs button { padding: 10px 18px; border: 0; border-radius: 999px; background: transparent; font: inherit; font-size: 15px; font-weight: 500; color: var(--muted); cursor: pointer; transition: background .2s, color .2s, box-shadow .2s; }
+.v2 .pt-tabs button:hover { color: var(--ink); }
+.v2 .pt-tabs button.is-on { background: #fff; color: var(--ink); box-shadow: 0 2px 10px -4px rgba(30,60,160,.3), 0 0 0 1px var(--line-2); }
+.v2 .pt-panel { margin-top: clamp(32px, 4vw, 52px); }
+.v2 .pt-grid { display: grid; grid-template-columns: 0.75fr 1.25fr; align-items: center; gap: clamp(32px, 5vw, 72px); }
+.v2 .pt-copy h3 { margin: 0; font-size: clamp(26px, 2.6vw, 36px); font-weight: 400; letter-spacing: -0.03em; line-height: 1.1; color: var(--ink); }
+.v2 .pt-copy h3 .serif { display: block; }
+.v2 .pt-copy > p { margin-top: 16px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+.v2 .pt-more { margin-top: clamp(32px, 4vw, 48px); text-align: center; }
+@media (max-width: 900px) {
+  .v2 .pt-grid { grid-template-columns: 1fr; }
+  .v2 .pt-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; border-radius: 16px; scrollbar-width: none; }
+  .v2 .pt-tabs button { flex: none; }
+}
