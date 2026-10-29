@@ -138,7 +138,8 @@ export default function KairnHomeV3({ police }) {
               {/* Note Google donnée par Ugo le 29/10/2026 (« finalement j'ai 5 étoiles par 4,9 sur google »). */}
               {police && <Reveal delay={0.55} y={12}><GoogleRating /></Reveal>}
               <Reveal delay={0.6} y={24}><HeroVsl /></Reveal>
-              <Reveal delay={0.65} y={16}><ClientLogos marquee={Boolean(police)} /></Reveal>
+              {/* Bande de clients retirée de l'accueil (Ugo, 29/10/2026 : « enlève ça finalement ») ; gardée sur /accueil-v1. */}
+              {!police && <Reveal delay={0.65} y={16}><ClientLogos /></Reveal>}
             </div>
           </section>
 
