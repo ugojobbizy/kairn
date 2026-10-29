@@ -123,7 +123,7 @@ export default function KairnHomeV3({ police }) {
               <Reveal delay={0.4} y={16}>
                 {police ? (
                   <p className="hero-lead">
-                    <strong>Nous payons la pub, vous payez au contact</strong>, sans engagement. Vous préférez vos propres campagnes ? <strong>Nous pilotons vos pubs Meta</strong>, sur votre budget.
+                    <strong>Nous payons la pub, vous payez au contact</strong>, sans engagement. Vous préférez vos propres campagnes ? <strong>On alimente vos commerciaux</strong> avec une acquisition sur mesure.
                   </p>
                 ) : (
                   <p className="hero-lead">
