@@ -67,9 +67,11 @@ export function Shell() {
       <SeoManager />
       <Suspense fallback={null}>
       <Routes>
-        <Route path="/" element={<KairnHomeV3 />} />
+        {/* Mise en ligne du 29/10/2026 (Ugo : « déploie en live tout ») : la V2 devient l'accueil ; l'accueil blanc reste sur /accueil-v1,
+            l'ancien accueil sombre sur /landingpage. */}
+        <Route path="/" element={<KairnHomeV3 police="tight" />} />
+        <Route path="/accueil-v1" element={<KairnHomeV3 />} />
         <Route path="/landingpage" element={<KairnHomeV2 />} />
-        <Route path="/v2" element={<KairnHomeV3 police="tight" />} />
         <Route path="/commander" element={<OrderPage />} />
         <Route path="/espace/*" element={<ClientSpace />} />
         <Route path="/gestion/*" element={<Gestion />} />
@@ -101,7 +103,7 @@ export function Shell() {
         <Route path="/cgv" element={<CGV />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/admin" element={<AdminCRMPage />} />
-        <Route path="*" element={<KairnHomeV3 />} />
+        <Route path="*" element={<KairnHomeV3 police="tight" />} />
       </Routes>
       </Suspense>
     </>

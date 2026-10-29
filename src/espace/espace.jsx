@@ -654,6 +654,8 @@ export default function ClientSpace() {
   useV2Favicon();
   const [session, setSession] = useState(undefined);
   const [client, setClient] = useState(undefined);
+  const [admin, setAdmin] = useState(false);
+  const demo = useMemo(() => apercuData(), []);
   useEffect(() => {
     db.auth.getSession().then(({ data }) => setSession(data.session));
     const { data } = db.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -663,6 +665,7 @@ export default function ClientSpace() {
     if (!session) { setClient(undefined); return; }
     db.from('clients').select('societe, prenom, telephone, siret').eq('user_id', session.user.id).maybeSingle()
       .then(({ data }) => setClient(data || null));
+    db.rpc('is_admin').then(({ data }) => setAdmin(Boolean(data)));
   }, [session]);
 
   // Aperçu en développement seulement (/espace?apercu) : faux client et fausses données, rien n'est lu ni écrit en base.
@@ -674,6 +677,8 @@ export default function ClientSpace() {
   let body;
   if (session === undefined || (session && client === undefined)) body = <div className="ec-loading" aria-busy="true" />;
   else if (!session) body = <Login />;
+  // Ugo connecté avec son compte admin (sans fiche client) : il voit l'espace avec les données d'exemple (29/10/2026).
+  else if (!client && admin) body = <Shell session={session} client={{ societe: 'Aperçu admin', prenom: 'Ugo' }} apercu={demo} />;
   else if (!client) {
     body = (
       <div className="ec-login">

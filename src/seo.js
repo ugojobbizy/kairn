@@ -3,7 +3,7 @@
 //  - scripts/seo-prerender.mjs écrit une page HTML par adresse à la compilation (lue par Google
 //    et par les aperçus de partage, qui n'exécutent pas toujours le JavaScript) ;
 //  - <SeoManager /> (App.jsx) remet les mêmes balises à jour pendant la navigation.
-import { FAQ, FAQ_LEADS, FAQ_WEB, FAQ_LP, FAQ_CRM, FAQ_BDX } from './v2/faq-data.js';
+import { FAQ_V2, FAQ_LEADS, FAQ_WEB, FAQ_LP, FAQ_CRM, FAQ_BDX } from './v2/faq-data.js';
 import { POSTS } from './blog/generated/index.js';
 import { BLOG_PATH, CATEGORIES, AUTHOR } from './blog/meta.js';
 
@@ -15,8 +15,8 @@ const NOINDEX = 'noindex, follow';
 
 export const PAGES = {
   '/': {
-    title: 'Kairn · Création web & génération de leads',
-    description: 'Kairn conçoit vos landing pages, lance vos campagnes Meta et Google Ads et construit votre CRM sur mesure pour suivre chaque lead jusqu’à la vente.',
+    title: 'Kairn · Leads exclusifs et campagnes Meta',
+    description: 'Des contacts qualifiés que vous êtes seul à appeler : Kairn paie la pub, vous payez au contact, sans engagement. Ou confiez-nous vos campagnes Meta, sur votre budget.',
   },
   '/realisations': {
     title: 'Réalisations et cas clients · Kairn',
@@ -88,7 +88,7 @@ export const PAGES = {
   '/espace': { title: 'Espace client · Kairn', description: 'Espace client Kairn.', robots: 'noindex, nofollow' },
   '/plateforme': { title: 'La plateforme Kairn · Espace client', description: 'Vos leads, vos commandes et vos règlements au même endroit : Leads Shop, export des prospects, litiges, bons de commande.' },
   '/gestion': { title: 'Kairn Admin', description: 'Gestion Kairn.', robots: 'noindex, nofollow' },
-  '/v2': { title: 'Kairn (test de police)', description: 'Test de police.', robots: NOINDEX },
+  '/accueil-v1': { title: 'Kairn (accueil blanc, sauvegarde)', description: 'Première version de l’accueil refondu, gardée en sauvegarde.', robots: NOINDEX },
   '/landingpage': { title: 'Kairn (accueil sauvegardé)', description: 'Accueil Kairn d’octobre 2026, gardé en sauvegarde.', robots: NOINDEX },
   '/landing': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
   '/landing2': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
@@ -155,7 +155,7 @@ export function structuredData(path) {
         WEBSITE,
         {
           '@type': 'FAQPage',
-          mainEntity: FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+          mainEntity: FAQ_V2.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
         },
       ],
     };
