@@ -61,8 +61,30 @@ function useStats() {
     const enCours = bdc.filter((c) => c.statut === 'ouverte');
     const reste = enCours.reduce((s, c) => s + Math.max(0, (c.plafond || 0) - (livresPar[c.id] || 0)), 0);
     const du = bdc.filter((c) => c.approuve_le && !c.regle_le).reduce((s, c) => s + Number(c.montant_ht || 0), 0);
-    return { livres: actifs.length, reste, du, livresPar, enCours, bdc };
+    // Complétion : leads livrés sur le total commandé (plafonds des bons de commande).
+    const commande = bdc.filter((c) => c.statut !== 'refusee').reduce((t, c) => t + (c.plafond || 0), 0);
+    const livresCmd = bdc.filter((c) => c.statut !== 'refusee').reduce((t, c) => t + Math.min(c.plafond || 0, livresPar[c.id] || 0), 0);
+    return { livres: actifs.length, reste, du, livresPar, enCours, bdc, commande, livresCmd };
   }, [leads, commandes]);
+}
+
+// Barre de complétion des commandes (Ugo, 29/10/2026 : « une petite barre de complétion qui va de 0 à 100 %, un truc sympa »).
+// Elle se remplit à l'arrivée sur la page, un reflet la parcourt, et elle passe au vert à 100 %.
+function Completion({ done, total }) {
+  const pct = total ? Math.min(100, Math.round((done / total) * 100)) : 0;
+  const [shown, setShown] = useState(0);
+  useEffect(() => { const t = requestAnimationFrame(() => setShown(pct)); return () => cancelAnimationFrame(t); }, [pct]);
+  return (
+    <div className={`ec-compl${pct >= 100 ? ' is-full' : ''}`}>
+      <div className="ec-compl-top">
+        <span>{total ? `${done} sur ${total} commandés` : 'Aucune commande en cours'}</span>
+        <b>{pct} %</b>
+      </div>
+      <div className="ec-compl-track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label="Complétion de vos commandes">
+        <span style={{ width: `${shown}%` }}><i /></span>
+      </div>
+    </div>
+  );
 }
 
 function PageHead({ title, sub, children }) {
@@ -119,7 +141,7 @@ function Home({ client }) {
       <PageHead title={`Bienvenue${client?.prenom ? `, ${client.prenom}` : ''}`} sub="Des leads exclusifs, qualifiés et livrés en continu." />
       <p className="ec-label">Tableau de bord</p>
       <div className="ec-kpis">
-        <div className="ec-kpi"><b>Nombre de prospects</b><span>Leads livrés, toutes périodes</span><strong>{s ? s.livres : '·'}</strong></div>
+        <div className="ec-kpi"><b>Nombre de prospects</b><span>Leads livrés, toutes périodes</span><strong>{s ? s.livres : '·'}</strong>{s && <Completion done={s.livresCmd} total={s.commande} />}</div>
         <div className="ec-kpi"><b>Reste à livrer</b><span>Sur vos commandes en cours</span><strong>{s ? s.reste : '·'}</strong></div>
         <div className="ec-kpi"><b>Montant dû</b><span>Bons de commande approuvés à régler, HT</span><strong>{s ? euro(s.du) : '·'}</strong></div>
       </div>

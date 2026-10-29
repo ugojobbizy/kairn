@@ -233,3 +233,16 @@
 .v2 .ec-errlist { margin-top: 10px; font-size: 13.5px; color: #B91C1C; display: grid; gap: 4px; }
 .v2 .ec-form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 16px; max-width: none; align-items: end; }
 @media (max-width: 860px) { .v2 .ec-dl-4, .v2 .ec-form-grid { grid-template-columns: 1fr 1fr; } }
+
+/* barre de complétion des commandes (accueil) */
+.v2 .ec-compl { margin-top: 16px; }
+.v2 .ec-compl-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--muted); }
+.v2 .ec-compl-top b { font-size: 15px; font-weight: 600; color: var(--violet); font-variant-numeric: tabular-nums; }
+.v2 .ec-compl-track { position: relative; margin-top: 8px; height: 10px; border-radius: 99px; background: #EBEEF6; overflow: hidden; box-shadow: inset 0 1px 2px rgba(10,20,80,.06); }
+.v2 .ec-compl-track > span { position: relative; display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #4F46E5, #2F5BEA 50%, #0EA5E9); box-shadow: 0 0 12px rgba(14,165,233,.45); transition: width 1.4s cubic-bezier(.22,.8,.24,1); overflow: hidden; }
+.v2 .ec-compl-track > span::after { content: ''; position: absolute; right: 2px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: #fff; opacity: .9; }
+.v2 .ec-compl-track i { position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%); transform: translateX(-100%); animation: ec-shine 2.6s ease-in-out 1.4s infinite; }
+@keyframes ec-shine { to { transform: translateX(100%); } }
+.v2 .ec-compl.is-full .ec-compl-top b { color: #16A34A; }
+.v2 .ec-compl.is-full .ec-compl-track > span { background: linear-gradient(90deg, #16A34A, #22C55E); box-shadow: 0 0 12px rgba(34,197,94,.45); }
+@media (prefers-reduced-motion: reduce) { .v2 .ec-compl-track > span { transition: none; } .v2 .ec-compl-track i { animation: none; } }
