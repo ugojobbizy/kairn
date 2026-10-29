@@ -4,7 +4,9 @@ import crypto from 'node:crypto';
 
 export const CONFIG = {
   timeZone: 'Europe/Paris',
-  workDays: [1, 2, 3, 4, 5], // lundi → vendredi
+  // Ugo, 29/10/2026 : « un rendez-vous disponible seulement sur les 5 prochains jours en excluant le dimanche ».
+  workDays: [1, 2, 3, 4, 5, 6], // lundi → samedi
+  openDays: 5, // nombre de jours ouverts proposés, à partir d'aujourd'hui
   dayStart: 9 * 60, // 9:00
   dayEnd: 18 * 60, // 18:00 (dernier créneau à 17:30)
   slotMinutes: 30,
@@ -44,10 +46,21 @@ export function candidateSlots(year, month, now = new Date()) {
   const earliest = now.getTime() + CONFIG.minNoticeHours * 3600e3;
   const latest = now.getTime() + CONFIG.horizonDays * 86400e3;
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  // Les openDays prochains jours ouverts (heure de Paris), à partir du premier jour réservable.
+  const open = new Set();
+  const [ty, tm, td] = zonedDateKey(new Date(earliest)).split('-').map(Number);
+  for (let k = 0; open.size < CONFIG.openDays && k < 14; k++) {
+    const day = new Date(Date.UTC(ty, tm - 1, td + k));
+    if (!CONFIG.workDays.includes(day.getUTCDay())) continue;
+    // un jour ne compte que s'il lui reste au moins un créneau après le délai de prévenance
+    const lastStart = zonedToUtc(day.getUTCFullYear(), day.getUTCMonth() + 1, day.getUTCDate(), CONFIG.dayEnd - CONFIG.slotMinutes);
+    if (lastStart.getTime() >= earliest) open.add(day.toISOString().slice(0, 10));
+  }
   const slots = [];
   for (let d = 1; d <= daysInMonth; d++) {
     const weekday = new Date(Date.UTC(year, month - 1, d)).getUTCDay();
     if (!CONFIG.workDays.includes(weekday)) continue;
+    if (!open.has(`${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`)) continue;
     for (let min = CONFIG.dayStart; min + CONFIG.slotMinutes <= CONFIG.dayEnd; min += CONFIG.slotMinutes) {
       const start = zonedToUtc(year, month, d, min);
       if (start.getTime() >= earliest && start.getTime() <= latest) slots.push(start);

@@ -146,7 +146,8 @@ export default function Booking({ title = 'Audit découverte Kairn', intro = ['U
     const er = {};
     if (form.firstName.trim().length < 2) er.firstName = 'Indiquez votre prénom.';
     if (form.company.trim().length < 2) er.company = 'Indiquez le nom de votre société.';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) er.email = 'Entrez une adresse e-mail valide.';
+    // E-mail facultatif (Ugo, 29/10/2026) : vérifié seulement s'il est rempli.
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) er.email = 'Entrez une adresse e-mail valide.';
     setErrors(er);
     if (Object.keys(er).length) return;
     setSaving(true);
@@ -229,7 +230,7 @@ export default function Booking({ title = 'Audit découverte Kairn', intro = ['U
                   {errors.company && <p className="bk-err">{errors.company}</p>}
                 </div>
               </div>
-              <label className="bk-label" htmlFor="bk-email">E-mail</label>
+              <label className="bk-label" htmlFor="bk-email">E-mail <span className="bk-opt">(facultatif)</span></label>
               <input id="bk-email" type="email" inputMode="email" className={`bk-input${errors.email ? ' has-error' : ''}`} autoComplete="email" value={form.email} onChange={update('email')} disabled={step > 2} aria-invalid={!!errors.email} />
               {errors.email && <p className="bk-err">{errors.email}</p>}
             </div>

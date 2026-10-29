@@ -137,3 +137,4 @@
 
 /* Logo du formulaire d'audit centré (Ugo, 29/10/2026) */
 .v2.font-tight .bk-logo { display: flex; justify-content: center; }
+.v2.font-tight .bk-form > h3, .v2.font-tight .bk-form > .bk-intro { text-align: center; }
