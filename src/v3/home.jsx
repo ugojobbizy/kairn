@@ -151,7 +151,7 @@ export default function KairnHomeV3({ police }) {
                 {police ? (
                   <>
                     <p className="eyebrow">Deux offres</p>
-                    <h2 className="h2">Vous payez au contact, <span className="serif grad-text">ou vous payez la pub.</span></h2>
+                    <h2 className="h2">Vous payez au contact, <span className="serif grad-text">ou on crée votre campagne.</span></h2>
                     <p>Vous voulez des contacts dans votre secteur, sans avancer de budget : c’est Kairn Leads. Vous voulez vos propres campagnes, sur votre budget : c’est Kairn Pilotage.</p>
                   </>
                 ) : (
