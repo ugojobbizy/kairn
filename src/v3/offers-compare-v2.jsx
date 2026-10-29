@@ -8,16 +8,17 @@ import { Reveal } from '../v2/blocks.jsx';
 // Chaque case : la réponse courte en gros, le détail en petit. Mêmes informations que ROWS dans offers.jsx.
 // Lignes réécrites (proposition de copy du 29/10/2026) : 6 points qui comptent pour l'acheteur, prix compris.
 // Pilotage : tarif et engagement non fixés au 29/10, donc « sur devis » et « à voir ensemble ».
+// Kairn Leads couvre aussi d'autres secteurs (Ugo, 29/10/2026 : « je ne vends pas que des contacts de PAC, ITE et panneaux solaires »).
 const ROWS = [
-  { k: 'Ce que vous recevez', a: ['Des contacts de particuliers', 'chacun envoyé à un seul installateur'], b: ['Vos campagnes Meta, pilotées', 'avec landing page et CRM, sur vos propres comptes'] },
-  { k: 'Pour quels métiers', a: ['PAC, ITE, solaire', 'pompe à chaleur, isolation par l’extérieur, photovoltaïque'], b: ['Le vôtre', 'votre offre, votre zone'] },
+  { k: 'Ce que vous recevez', a: ['Des contacts de particuliers', 'chacun envoyé à un seul professionnel'], b: ['Vos campagnes Meta, pilotées', 'avec landing page et CRM, sur vos propres comptes'] },
+  { k: 'Pour quels secteurs', a: ['Le vôtre', 'pompe à chaleur, isolation, solaire en continu ; les autres secteurs sur demande'], b: ['Tous', 'votre offre, votre zone, vos pubs'] },
   { k: 'Qui paie la pub', a: ['Kairn', 'vous n’avancez aucun budget publicitaire'], b: ['Vous', 'nous l’investissons et l’optimisons pour vous'] },
-  { k: 'Ce que vous payez', a: ['Le contact, dès 27 € HT', 'PAC 28 €, ITE 27 €, solaire 35 € HT, sur bon de commande'], b: ['Sur devis', 'selon votre métier et votre budget'] },
+  { k: 'Ce que vous payez', a: ['Le contact', 'PAC 28 €, ITE 27 €, solaire 35 € HT ; autres secteurs : prix donné avant commande'], b: ['Sur devis', 'selon votre métier et votre budget'] },
   { k: 'Engagement', a: ['Aucun', 'à partir de 50 contacts, vous arrêtez quand vous voulez'], b: ['À voir ensemble', 'pendant l’appel avec Ugo'] },
   { k: 'Si un contact est mauvais', a: ['Doublon ou hors zone : remplacé', 'signalé depuis votre espace client ; les faux numéros ne sont pas remplacés'], b: ['Vous le voyez', 'le CRM relie chaque contact à sa pub : on coupe celles qui amènent les mauvais'] },
 ];
 const OFFERS = [
-  { key: 'a', word: 'Leads', kicker: 'Le produit', cls: 'is-leads', cta: <Link to="/commander" className="btn btn-order">Commander des contacts</Link> },
+  { key: 'a', word: 'Leads', kicker: 'Le produit', cls: 'is-leads', cta: <Link to="/commander" className="btn btn-order">Commander des leads</Link> },
   { key: 'b', word: 'Pilotage', kicker: 'Le service', cls: 'is-pilot', cta: <a href="#reserver" className="btn oc-btn-light">Réserver un appel</a> },
 ];
 

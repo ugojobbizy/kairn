@@ -12,14 +12,14 @@ export const FAQ = [
 // corrigée selon les décisions d'Ugo du même jour : faux numéros non remplacés, bon de commande réglé par virement,
 // contacts livrés dans l'espace client). FAQ reste celle de l'accueil actuel et des données structurées.
 export const FAQ_V2 = [
-  ['Un contact est-il vendu à plusieurs installateurs ?', 'Non. Chaque contact est envoyé à un seul installateur. Nous ne le revendons à personne d’autre.'],
+  ['Un contact est-il vendu à plusieurs professionnels ?', 'Non. Chaque contact est envoyé à un seul professionnel. Nous ne le revendons à personne d’autre.'],
   ['Et si le contact est un doublon ou hors de ma zone ?', 'Vous le signalez depuis votre espace client : après vérification, il est remplacé. Les faux numéros, eux, ne sont pas remplacés.'],
   ['Ce sont de vrais particuliers ?', 'Oui. Ils ont vu une de nos pubs Meta et rempli une demande pour être rappelés sur leur projet. En visio, Ugo vous montre une campagne qui tourne.'],
-  ['Combien coûte un contact ?', 'Pompe à chaleur 28 €, isolation par l’extérieur 27 €, photovoltaïque 35 €, hors taxes. Kairn paie la pub : vous ne payez que les contacts, sur bon de commande, réglé par virement.'],
+  ['Combien coûte un contact ?', 'Pompe à chaleur 28 €, isolation par l’extérieur 27 €, photovoltaïque 35 €, hors taxes. Pour un autre secteur, le prix vous est donné avant toute commande. Kairn paie la pub : vous ne payez que les contacts, sur bon de commande, réglé par virement.'],
   ['Y a-t-il un engagement ou un abonnement ?', 'Non. Vous commandez le volume qu’il vous faut, à partir de 50 contacts, et vous arrêtez quand vous voulez.'],
   ['Vous garantissez des chantiers ?', 'Non, et méfiez-vous de ceux qui le font. Nous nous engageons sur le contact : dans votre zone, à vous seul. La signature se joue au téléphone : rappelez vite.'],
   ['Comment je reçois les contacts ?', 'Dans votre espace client : nom, téléphone, e-mail, code postal, type de logement, propriétaire ou non, délai du projet. Vous les exportez en un clic.'],
-  ['Mon métier n’est pas dans la liste ?', 'C’est Kairn Pilotage. Nous montons et pilotons vos pubs Meta, sur votre budget et vos comptes, avec landing page et CRM : chaque contact est relié à la pub qui l’a amené.'],
+  ['Quels secteurs couvrez-vous ?', 'Pompe à chaleur, isolation par l’extérieur et photovoltaïque sont ouverts en continu, et nous produisons des contacts dans bien d’autres secteurs : dites à Ugo lequel vous intéresse. Vous préférez vos propres campagnes ? C’est Kairn Pilotage : nous pilotons vos pubs Meta, sur votre budget et vos comptes, avec landing page et CRM.'],
   ['Vous couvrez ma région ?', 'Kairn est basé à Bordeaux et travaille partout en France, en visio. Vous indiquez vos départements à la commande, et Ugo vérifie avec vous que la zone est couverte.'],
 ];
 

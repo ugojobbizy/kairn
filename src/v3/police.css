@@ -110,3 +110,18 @@
   .v2 .oc-card.is-pilot dd .oc-d { color: rgba(255,255,255,.6); }
   .v2 .oc-card .btn { margin-top: 10px; width: 100%; }
 }
+
+/* Bande des clients V2 : sans carte, défilement continu, logos gris de même hauteur */
+.v2 .logo-marquee { margin: clamp(40px, 5vw, 64px) auto 0; max-width: 1040px; }
+.v2 .logo-marquee-label { display: flex; align-items: center; gap: 18px; font: 500 12px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--faint); }
+.v2 .logo-marquee-label::before, .v2 .logo-marquee-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--line-2)); }
+.v2 .logo-marquee-label::after { background: linear-gradient(90deg, var(--line-2), transparent); }
+.v2 .logo-marquee-track { margin-top: 20px; padding: 8px 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.v2 .hero .logo-marquee .logo-band-logos { --k: .9; display: flex; flex-wrap: nowrap; justify-content: flex-start; gap: 0; width: max-content; margin: 0; animation: logo-scroll 34s linear infinite; }
+.v2 .logo-marquee-track:hover .logo-band-logos { animation-play-state: paused; }
+.v2 .hero .logo-marquee .logo-band-logos li { flex: none; padding: 0 clamp(28px, 3.6vw, 48px); color: #5B6070; opacity: .55; transition: opacity .25s, filter .25s; }
+.v2 .hero .logo-marquee .logo-band-logos li:hover { opacity: 1; }
+.v2 .hero .logo-marquee .logo-band-logos img { filter: brightness(0) invert(.38); }
+.v2 .hero .logo-marquee .logo-band-word .mono-fill { background: #5B6070; color: #fff; }
+@keyframes logo-scroll { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .v2 .hero .logo-marquee .logo-band-logos { animation: none; flex-wrap: wrap; justify-content: center; width: auto; } .v2 .hero .logo-marquee .logo-band-logos li[aria-hidden] { display: none; } }

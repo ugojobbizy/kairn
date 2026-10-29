@@ -30,9 +30,28 @@ const LOGOS = [
   { name: 'Rénovia', node: <RenoviaLogo /> },
   { name: 'Madame la Gouvernante', src: '/v2/logos/mlg.png', h: 26 },
   { name: 'Decoratherm', node: <DecorathermLogo /> },
+  // Ajouté le 29/10/2026 à la demande d'Ugo (logo de la charte ED HABITAT, horizontal marine).
+  { name: 'ED HABITAT', src: '/v2/logos/ed-habitat.svg', h: 50 },
 ];
 
-export function ClientLogos() {
+// marquee : V2 de l'accueil (Ugo, 29/10/2026 : « améliore cette barre de clients, c'est hyper moche comme ça ») :
+// sans carte, intitulé entre deux filets, logos gris qui défilent en continu, fondus sur les bords.
+export function ClientLogos({ marquee = false }) {
+  if (marquee) {
+    const row = (dup) => LOGOS.map((l) => (
+      <li key={`${l.name}${dup ? '-2' : ''}`} title={l.name} aria-hidden={dup || undefined}>
+        {l.node || <img src={l.src} alt={dup ? '' : l.name} height={l.h} style={{ '--h': `${l.h}px` }} loading="lazy" />}
+      </li>
+    ));
+    return (
+      <div className="logo-marquee">
+        <p className="logo-marquee-label"><span>Ils travaillent déjà avec Kairn</span></p>
+        <div className="logo-marquee-track">
+          <ul className="logo-band-logos">{row(false)}{row(true)}</ul>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="logo-band">
       <p className="logo-band-label">Ils nous font déjà confiance</p>
@@ -59,7 +78,7 @@ const FOUNDER_PHOTO = '/v2/ugo.jpg';
 // variante « appel » : V2 de l'accueil (proposition de copy du 29/10/2026), un appel avec Ugo pour les deux offres.
 const AUDIT_COPY = {
   audit: { eyebrow: 'Réservation', h: 'Réservez votre', i: 'audit offert.', lead: '30 minutes avec Ugo, fondateur de Kairn. Un court formulaire, puis choisissez votre créneau.', founder: 'Fondateur de Kairn. Il mène tous les appels découverte.', pills: ['Sans engagement', 'Prospects exclusifs', 'Plan d’action offert'] },
-  appel: { eyebrow: 'Appel', h: 'Une question avant de commander\u00a0?', i: 'Parlons-en 30 minutes.', lead: 'En visio avec Ugo, fondateur de Kairn. Votre métier, votre zone, le volume qu’il vous faut : vous saurez si Kairn Leads ou Kairn Pilotage vous convient. Laissez votre numéro, puis choisissez un créneau.', founder: 'Fondateur de Kairn. C’est lui qui règle les pubs, et lui que vous aurez en visio.', pills: ['Sans engagement', 'Le fondateur, pas un commercial', 'Une campagne réelle montrée'] },
+  appel: { eyebrow: 'Audit', h: 'Votre audit offert,', i: 'en 30 minutes avec Ugo.', lead: 'En visio avec Ugo, fondateur de Kairn. Votre métier, votre zone, le volume qu’il vous faut : vous saurez si Kairn Leads ou Kairn Pilotage vous convient. Laissez votre numéro, puis choisissez un créneau.', founder: 'Fondateur de Kairn. C’est lui qui règle les pubs, et lui que vous aurez en visio.', pills: ['Sans engagement', 'Le fondateur, pas un commercial', 'Une campagne réelle montrée'] },
 };
 
 export function AuditHeader({ variant = 'audit' }) {

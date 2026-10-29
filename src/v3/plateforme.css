@@ -1,0 +1,48 @@
+/* Page « Plateforme » (29/10/2026) : inserts de l'espace client dans un cadre de navigateur, étapes en alternance. */
+.v2.pf { background: #fff; }
+.v2 .pf-hero { position: relative; padding: clamp(120px, 13vw, 170px) 0 clamp(40px, 6vw, 80px); text-align: center; overflow: hidden; }
+.v2 .pf-hero::before { content: ''; position: absolute; left: 50%; top: 40%; width: min(1200px, 130vw); height: 700px; transform: translateX(-50%); background: radial-gradient(closest-side, rgba(59,130,246,.14), rgba(14,165,233,.06) 55%, transparent); pointer-events: none; }
+.v2 .pf-hero .wrap { position: relative; }
+.v2 .pf-h1 { margin: 18px auto 0; max-width: 20ch; font-size: clamp(38px, 5vw, 68px); font-weight: 400; letter-spacing: -0.03em; line-height: 1.04; text-wrap: balance; }
+.v2 .pf-h1 .serif { display: block; }
+.v2 .pf-lead { margin: 22px auto 0; max-width: 58ch; color: var(--muted); font-size: clamp(16.5px, 1.4vw, 19px); }
+.v2 .pf-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+.v2 .pf-actions .btn { min-height: 52px; font-weight: 600; }
+.v2 .pf-hero-shot { margin: clamp(44px, 6vw, 72px) auto 0; max-width: 1120px; perspective: 1600px; }
+.v2 .pf-hero-shot .pf-frame { transform: rotateX(8deg); transform-origin: 50% 0; box-shadow: 0 60px 120px -50px rgba(30,60,160,.5), 0 0 0 1px var(--line-2); }
+.v2 .pf-caption { margin-top: 18px; font: 500 12px/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+
+.v2 .pf-frame { margin: 0; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 40px 90px -40px rgba(30,60,160,.4), 0 0 0 1px var(--line-2); }
+.v2 .pf-bar { display: flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px; background: #F3F5FA; border-bottom: 1px solid var(--line); }
+.v2 .pf-bar i { width: 10px; height: 10px; border-radius: 50%; background: #D9DDE7; }
+.v2 .pf-bar i:first-child { background: #FF6159; } .v2 .pf-bar i:nth-child(2) { background: #FFBD2E; } .v2 .pf-bar i:nth-child(3) { background: #28C941; }
+.v2 .pf-bar span { margin: 0 auto; padding: 4px 14px; border-radius: 7px; background: #fff; font: 500 12px var(--mono); color: var(--faint); transform: translateX(-20px); }
+.v2 .pf-frame img { display: block; width: 100%; height: auto; }
+
+.v2 .pf-steps { padding: clamp(40px, 6vw, 80px) 0 var(--band); }
+.v2 .pf-step { display: grid; grid-template-columns: 0.8fr 1.2fr; align-items: center; gap: clamp(32px, 5vw, 80px); }
+.v2 .pf-step + .pf-step { margin-top: clamp(80px, 10vw, 140px); }
+.v2 .pf-step.is-rev { grid-template-columns: 1.2fr 0.8fr; }
+.v2 .pf-step.is-rev .pf-copy { order: 2; }
+.v2 .pf-num { font: 500 12.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--violet); }
+.v2 .pf-copy .h2 { margin-top: 16px; font-size: clamp(30px, 3.4vw, 46px); }
+.v2 .pf-copy .h2 .serif { display: block; }
+.v2 .pf-p { margin-top: 18px; color: var(--muted); font-size: 16.5px; line-height: 1.6; }
+.v2 .pf-points { margin-top: 20px; display: grid; gap: 10px; font-size: 15.5px; color: var(--ink-2); }
+.v2 .pf-points li { display: flex; align-items: flex-start; gap: 10px; }
+.v2 .pf-points svg { flex: none; margin-top: 3px; padding: 3px; width: 21px; height: 21px; border-radius: 50%; background: #EEF3FF; color: var(--violet); }
+.v2 .pf-step .pf-frame { transition: transform .6s var(--ease); }
+.v2 .pf-step:hover .pf-frame { transform: translateY(-4px); }
+
+.v2 .pf-cta { padding: clamp(40px, 6vw, 72px) clamp(24px, 4vw, 56px); border-radius: 36px; background: var(--night); color: #fff; text-align: center; }
+.v2 .pf-cta .h2 { color: #fff; }
+.v2 .pf-cta .grad-text { background-image: linear-gradient(100deg, #67E8F9, #818CF8); }
+.v2 .pf-cta p { margin-top: 14px; color: rgba(255,255,255,.65); }
+.v2 .pf-btn-light { padding: 0 24px; background: #fff; color: var(--ink); }
+
+@media (max-width: 900px) {
+  .v2 .pf-step, .v2 .pf-step.is-rev { grid-template-columns: 1fr; }
+  .v2 .pf-step.is-rev .pf-copy { order: 0; }
+  .v2 .pf-hero-shot .pf-frame { transform: none; }
+  .v2 .pf-bar span { display: none; }
+}

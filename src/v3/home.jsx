@@ -30,10 +30,10 @@ const headline = [
   { w: 'ou', serif: true }, { w: 'confiez-nous', serif: true }, { w: 'votre', serif: true }, { w: 'acquisition.', serif: true },
 ];
 
-// V2 : titre de la proposition de copy du 29/10/2026 (brand/copy-v2-proposition.md), intégrée sur demande d'Ugo (« Oui, intègre-la »).
-// Il nomme le métier du lecteur et l'exclusivité. Variante plus proche du titre d'Ugo : « Achetez vos contacts, / ou confiez-nous vos campagnes. »
+// V2 : titre générique (Ugo, 29/10/2026 : « je ne vends pas que des contacts de PAC, ITE et panneaux solaires [...]
+// la headline doit être générique »). On garde l'exclusivité de la proposition de copy du même jour.
 const headlineV2 = [
-  { w: 'Des' }, { w: 'contacts' }, { w: 'PAC,' }, { w: 'ITE' }, { w: 'et' }, { w: 'solaire' }, { br: true },
+  { w: 'Des' }, { w: 'contacts' }, { w: 'qualifiés' }, { br: true },
   { w: 'que', serif: true }, { w: 'vous', serif: true }, { w: 'êtes', serif: true }, { w: 'seul', serif: true }, { w: 'à', serif: true }, { w: 'appeler.', serif: true },
 ];
 
@@ -123,7 +123,7 @@ export default function KairnHomeV3({ police }) {
               <Reveal delay={0.4} y={16}>
                 {police ? (
                   <p className="hero-lead">
-                    Pour les installateurs RGE. <strong>Nous payons la pub, vous payez au contact</strong>, à partir de 27 € HT, sans engagement. Votre métier n’est pas dans la liste ? <strong>Nous pilotons vos campagnes Meta</strong>, sur votre budget.
+                    <strong>Nous payons la pub, vous payez au contact</strong>, sans engagement. Vous préférez vos propres campagnes ? <strong>Nous pilotons vos pubs Meta</strong>, sur votre budget.
                   </p>
                 ) : (
                   <p className="hero-lead">
@@ -132,13 +132,13 @@ export default function KairnHomeV3({ police }) {
                 )}
               </Reveal>
               <Reveal delay={0.5} y={16} className="hero-actions">
-                <Link to="/commander" className="btn btn-order">{police ? 'Commander des contacts' : 'Commander des leads'}</Link>
-                <a href="#reserver" className="btn btn-light">{police ? 'Parler à Ugo (30 min)' : 'Réserver un appel'}</a>
+                <Link to="/commander" className="btn btn-order">Commander des leads</Link>
+                <a href="#reserver" className="btn btn-light">{police ? 'Faire un audit' : 'Réserver un appel'}</a>
               </Reveal>
               {/* Note Google donnée par Ugo le 29/10/2026 (« finalement j'ai 5 étoiles par 4,9 sur google »). */}
               {police && <Reveal delay={0.55} y={12}><GoogleRating /></Reveal>}
               <Reveal delay={0.6} y={24}><HeroVsl /></Reveal>
-              <Reveal delay={0.65} y={16}><ClientLogos /></Reveal>
+              <Reveal delay={0.65} y={16}><ClientLogos marquee={Boolean(police)} /></Reveal>
             </div>
           </section>
 
@@ -150,7 +150,7 @@ export default function KairnHomeV3({ police }) {
                   <>
                     <p className="eyebrow">Deux offres</p>
                     <h2 className="h2">Vous payez au contact, <span className="serif grad-text">ou vous payez la pub.</span></h2>
-                    <p>Pompe à chaleur, isolation par l’extérieur ou solaire : c’est Kairn Leads. Un autre métier, ou vous voulez vos propres campagnes : c’est Kairn Pilotage.</p>
+                    <p>Vous voulez des contacts dans votre secteur, sans avancer de budget : c’est Kairn Leads. Vous voulez vos propres campagnes, sur votre budget : c’est Kairn Pilotage.</p>
                   </>
                 ) : (
                   <>
@@ -161,7 +161,7 @@ export default function KairnHomeV3({ police }) {
                 )}
               </Reveal>
               {police ? <OffersCompareV2 /> : <OffersCompare />}
-              <p className="of-note">{police ? 'Les deux se combinent : des contacts PAC chez Kairn Leads, et vos campagnes pour vos autres métiers avec Kairn Pilotage.' : 'Et les deux se combinent : un installateur peut acheter des contacts sur nos thématiques et nous confier le reste de son acquisition.'}</p>
+              <p className="of-note">{police ? 'Les deux se combinent : des contacts achetés chez Kairn Leads, et vos propres campagnes pilotées par Kairn Pilotage.' : 'Et les deux se combinent : un installateur peut acheter des contacts sur nos thématiques et nous confier le reste de son acquisition.'}</p>
               {/* V2 : cartes retirées, elles redisaient le tableau (proposition de copy du 29/10/2026). */}
               {!police && <OfferCards />}
             </div>
@@ -224,7 +224,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Appel avec Ugo" intro={['30 minutes pour parler de votre métier, de votre zone et du volume de contacts qu’il vous faut.', 'En visio, avec Ugo, fondateur de Kairn. Sans engagement.']} /> : <Booking />}
+                {police ? <Booking title="Audit avec Ugo" intro={['30 minutes pour parler de votre métier, de votre zone et du volume de contacts qu’il vous faut.', 'En visio, avec Ugo, fondateur de Kairn. Sans engagement.']} /> : <Booking />}
               </div>
             </div>
           </section>
@@ -238,7 +238,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Appel avec Ugo" intro={['30 minutes pour parler de votre métier, de votre zone et du volume de contacts qu’il vous faut.', 'En visio, avec Ugo, fondateur de Kairn. Sans engagement.']} /> : <Booking />}
+                {police ? <Booking title="Audit avec Ugo" intro={['30 minutes pour parler de votre métier, de votre zone et du volume de contacts qu’il vous faut.', 'En visio, avec Ugo, fondateur de Kairn. Sans engagement.']} /> : <Booking />}
               </div>
             </div>
           </section>
@@ -259,7 +259,7 @@ export default function KairnHomeV3({ police }) {
         </main>
 
         <Footer />
-        <div className="mob-cta"><Link to="/commander" className="btn btn-order">{police ? 'Commander des contacts' : 'Commander des leads'}</Link></div>
+        <div className="mob-cta"><Link to="/commander" className="btn btn-order">Commander des leads</Link></div>
       </div>
     </MotionConfig>
   );

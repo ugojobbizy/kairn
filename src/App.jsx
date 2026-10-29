@@ -10,6 +10,7 @@ const KairnHomeV2 = lazy(() => import('./v2/home-v2.jsx'));
 const OrderPage = lazy(() => import('./v3/order.jsx'));
 const ClientSpace = lazy(() => import('./espace/espace.jsx'));
 const Gestion = lazy(() => import('./gestion/gestion.jsx'));
+const Plateforme = lazy(() => import('./v3/plateforme.jsx'));
 const RealisationsPage = lazy(() => import('./realisations.jsx'));
 const LandingPage = lazy(() => import('./landing.jsx'));
 const LandingPage2 = lazy(() => import('./landing2.jsx'));
@@ -72,6 +73,7 @@ export function Shell() {
         <Route path="/commander" element={<OrderPage />} />
         <Route path="/espace/*" element={<ClientSpace />} />
         <Route path="/gestion/*" element={<Gestion />} />
+        <Route path="/plateforme" element={<Plateforme />} />
         <Route path="/v1" element={<KairnHome variant={variant} />} />
         <Route path="/realisations" element={<RealisationsV2 />} />
         <Route path="/generation-de-leads" element={<LeadGenPage />} />

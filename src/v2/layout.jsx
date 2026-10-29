@@ -149,7 +149,7 @@ function MobileMenu({ open, onClose, shop }) {
         ))}
       </ul>
       <ul className="mnav-links">
-        {LINKS.map((x) => <li key={x.to}><Link to={x.to} onClick={onClose}>{x.t}</Link></li>)}
+        {(shop ? LINKS.map((x) => (x.to === '/#methode' ? { to: '/plateforme', t: 'Plateforme' } : x)) : LINKS).map((x) => <li key={x.to}><Link to={x.to} onClick={onClose}>{x.t}</Link></li>)}
         <li><Link to="/agence-bordeaux" onClick={onClose}>Agence à Bordeaux</Link></li>
         {shop && <li><Link to="/espace" onClick={onClose}><LockIcon /> Connexion à l’espace client</Link></li>}
         {WHATSAPP_NUMBER && (
@@ -166,6 +166,8 @@ function MobileMenu({ open, onClose, shop }) {
 
 // light : en-tête sombre sur fond blanc dès le haut de page ; shop : boutons Connexion (espace client) et Commander.
 export function Nav({ light = false, shop = false }) {
+  // Nouvel accueil (shop) : « Plateforme » remplace « Méthode » (Ugo, 29/10/2026).
+  const links = shop ? LINKS.map((x) => (x.to === '/#methode' ? { to: '/plateforme', t: 'Plateforme' } : x)) : LINKS;
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
   const closeMenu = useCallback(() => setMenu(false), []);
@@ -184,7 +186,7 @@ export function Nav({ light = false, shop = false }) {
           <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo />Kairn</Link>
           <nav className="nav-links" aria-label="Navigation principale">
             <ServicesMenu />
-            {LINKS.map((x) => <Link key={x.to} to={x.to} className={pathname === x.to ? 'is-active' : undefined}>{x.t}</Link>)}
+            {links.map((x) => <Link key={x.to} to={x.to} className={pathname === x.to ? 'is-active' : undefined}>{x.t}</Link>)}
             {WHATSAPP_NUMBER && (
               <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="nav-wa" aria-label="Contact sur WhatsApp (nouvel onglet)">
                 <WhatsAppIcon />
