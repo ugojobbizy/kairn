@@ -79,7 +79,7 @@ const FOUNDER_PHOTO = '/v2/ugo.jpg';
 // variante « appel » : V2 de l'accueil (proposition de copy du 29/10/2026), un appel avec Ugo pour les deux offres.
 const AUDIT_COPY = {
   audit: { eyebrow: 'Réservation', h: 'Réservez votre', i: 'audit offert.', lead: '30 minutes avec Ugo, fondateur de Kairn. Un court formulaire, puis choisissez votre créneau.', founder: 'Fondateur de Kairn. Il mène tous les appels découverte.', pills: ['Sans engagement', 'Prospects exclusifs', 'Plan d’action offert'] },
-  appel: { eyebrow: 'Audit', h: 'Votre audit offert,', i: 'en 30 minutes.', lead: 'En visio avec Ugo, fondateur de Kairn. Votre métier, votre zone, le volume qu’il vous faut : vous saurez si Kairn Leads ou Kairn Pilotage vous convient. Laissez votre numéro, puis choisissez un créneau.', founder: 'Fondateur de Kairn. C’est lui qui règle les pubs, et lui que vous aurez en visio.', pills: ['Sans engagement', 'Le fondateur, pas un commercial', 'Une campagne réelle montrée'] },
+  appel: { eyebrow: 'Audit', h: 'Votre audit offert,', i: 'en 30 minutes.', lead: 'En visio avec Ugo, fondateur de Kairn. Votre métier, votre zone, le volume qu’il vous faut : vous saurez si Kairn Leads ou Kairn Pilotage vous convient. Laissez votre numéro, puis choisissez un créneau.', founder: 'Fondateur de Kairn. C’est lui que vous aurez en visio.', pills: ['Sans engagement', 'Le fondateur, pas un commercial', 'Une campagne réelle montrée'] },
 };
 
 export function AuditHeader({ variant = 'audit' }) {
