@@ -27,7 +27,7 @@ export default function LeadSample() {
     <div className="ls">
       <div className="ls-text">
         <p className="eyebrow">Un lead Kairn</p>
-        <h2 className="h2">Voici ce que vous achetez, <span className="serif grad-text">avant de l’acheter.</span></h2>
+        <h2 className="h2">Un lead, <span className="serif grad-text">pas juste un numéro.</span></h2>
         <p className="ls-lead">Chaque contact arrive dans votre espace client. Vous savez qui vous appelez, et pour quel projet, avant de décrocher.</p>
         <ul className="ls-points">
           {POINTS.map((p) => <li key={p}><Check />{p}</li>)}
