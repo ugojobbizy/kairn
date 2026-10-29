@@ -225,7 +225,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Audit stratégique" intro={['30 minutes pour savoir combien de nouveaux clients vous pourrez signer le mois prochain avec notre solution.']} /> : <Booking />}
+                {police ? <Booking title="Audit stratégique" intro={['30 minutes pour savoir combien de nouveaux clients vous pourrez signer le mois prochain avec nos solutions.']} /> : <Booking />}
               </div>
             </div>
           </section>
@@ -239,7 +239,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Audit stratégique" intro={['30 minutes pour savoir combien de nouveaux clients vous pourrez signer le mois prochain avec notre solution.']} /> : <Booking />}
+                {police ? <Booking title="Audit stratégique" intro={['30 minutes pour savoir combien de nouveaux clients vous pourrez signer le mois prochain avec nos solutions.']} /> : <Booking />}
               </div>
             </div>
           </section>
