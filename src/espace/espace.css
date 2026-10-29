@@ -246,3 +246,75 @@
 .v2 .ec-compl.is-full .ec-compl-top b { color: #16A34A; }
 .v2 .ec-compl.is-full .ec-compl-track > span { background: linear-gradient(90deg, #16A34A, #22C55E); box-shadow: 0 0 12px rgba(34,197,94,.45); }
 @media (prefers-reduced-motion: reduce) { .v2 .ec-compl-track > span { transition: none; } .v2 .ec-compl-track i { animation: none; } }
+
+/* étapes de campagne */
+.v2 .ec-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 14px 0 4px; padding: 0; list-style: none; }
+.v2 .ec-steps li { position: relative; padding-top: 14px; font-size: 11.5px; line-height: 1.25; color: var(--faint); }
+.v2 .ec-steps li i { position: absolute; top: 0; left: 0; right: 0; height: 5px; border-radius: 3px; background: #E5E9F2; }
+.v2 .ec-steps li.is-done { color: var(--muted); }
+.v2 .ec-steps li.is-done i { background: #16A34A; }
+.v2 .ec-steps li.is-now { color: var(--ink); font-weight: 600; }
+.v2 .ec-steps li.is-now i { background: linear-gradient(90deg, #4F46E5, #0EA5E9); }
+.v2 .ec-promo { display: block; margin-top: 2px; font-size: 11.5px; font-weight: 600; color: #B45309; white-space: nowrap; }
+
+/* bulle de discussion (tickets) */
+.v2 .tk-fab { position: fixed; z-index: 80; right: 22px; bottom: 22px; width: 58px; height: 58px; border-radius: 50%; border: 0; display: grid; place-items: center; background: linear-gradient(135deg, #4F46E5, #2F5BEA 55%, #0EA5E9); color: #fff; font-size: 30px; line-height: 1; cursor: pointer; box-shadow: 0 16px 40px -12px rgba(47,91,234,.7); transition: transform .2s var(--ease); }
+.v2 .tk-fab:hover { transform: translateY(-2px) scale(1.03); }
+.v2 .tk-fab b { position: absolute; top: -2px; right: -2px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #EF4444; border: 2px solid #fff; font: 700 11.5px/18px var(--font); }
+.v2 .tk-panel { position: fixed; z-index: 80; right: 22px; bottom: 92px; width: min(380px, calc(100vw - 32px)); max-height: min(600px, calc(100vh - 120px)); display: flex; flex-direction: column; border-radius: 18px; background: #fff; border: 1px solid var(--line-2); box-shadow: 0 30px 80px -30px rgba(11,9,24,.45); overflow: hidden; }
+.v2 .tk-head { display: flex; flex-direction: column; gap: 2px; padding: 16px 18px; background: var(--night); color: #fff; }
+.v2 .tk-head b { font-size: 16px; }
+.v2 .tk-head span { font-size: 12.5px; color: rgba(255,255,255,.6); }
+.v2 .tk-back { align-self: flex-start; padding: 0; border: 0; background: none; color: #fff; font: 600 15px var(--font); cursor: pointer; }
+.v2 .tk-body { flex: 1; overflow-y: auto; padding: 16px 18px; }
+.v2 .tk-new { width: 100%; }
+.v2 .tk-empty { margin-top: 14px; font-size: 14px; color: var(--muted); }
+.v2 .tk-list { margin-top: 14px; display: grid; gap: 8px; }
+.v2 .tk-list button { width: 100%; text-align: left; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line-2); background: #fff; cursor: pointer; display: flex; flex-direction: column; gap: 3px; font: 14px var(--font); }
+.v2 .tk-list button:hover { border-color: var(--violet); }
+.v2 .tk-list b, .v2 .tk-subject { font-weight: 600; color: var(--ink); }
+.v2 .tk-list span { font-size: 12.5px; color: var(--muted); }
+.v2 .tk-list em, .v2 .tk-subject em { margin-right: 6px; padding: 2px 6px; border-radius: 5px; background: #FEE2E2; color: #B91C1C; font: 700 10.5px/1.4 var(--font); font-style: normal; text-transform: uppercase; }
+.v2 .tk-form label { display: block; margin-bottom: 12px; }
+.v2 .tk-form label span { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.v2 .tk-form input:not([type=checkbox]), .v2 .tk-form textarea, .v2 .tk-reply textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #DDE2EC; font: 14.5px var(--font); resize: vertical; }
+.v2 .tk-form .tk-urgent { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #B91C1C; }
+.v2 .tk-form .ec-btn { width: 100%; }
+.v2 .tk-thread { display: flex; flex-direction: column; gap: 10px; background: #F7F9FC; }
+.v2 .tk-msg { align-self: flex-end; max-width: 85%; padding: 10px 12px; border-radius: 14px 14px 4px 14px; background: var(--violet); color: #fff; }
+.v2 .tk-msg.is-kairn { align-self: flex-start; border-radius: 14px 14px 14px 4px; background: #fff; color: var(--ink); border: 1px solid var(--line-2); }
+.v2 .tk-msg p { font-size: 14.5px; white-space: pre-wrap; }
+.v2 .tk-msg span { display: block; margin-top: 4px; font-size: 11px; opacity: .7; }
+.v2 .tk-reply { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
+.v2 .tk-reply .ec-btn { align-self: flex-end; }
+.v2 .tk-closed { padding: 14px 18px; font-size: 13.5px; color: var(--muted); border-top: 1px solid var(--line); }
+@media (max-width: 860px) { .v2 .tk-fab { bottom: 16px; right: 16px; } .v2 .tk-panel { right: 16px; bottom: 84px; } }
+
+/* Kairn Admin : campagnes, tickets, shop, Monitor */
+.v2 .gp-monitor { width: 100%; }
+.v2 .gp-clients { display: grid; gap: 16px; }
+.v2 .gp-client > header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.v2 .gp-client > header b { font-size: 18px; }
+.v2 .gp-client > header span { font-size: 13.5px; color: var(--muted); }
+.v2 .gp-camp { padding: 16px 0; border-bottom: 1px solid var(--line); }
+.v2 .gp-camp:last-child { border-bottom: 0; padding-bottom: 0; }
+.v2 .gp-camp-top { display: flex; flex-direction: column; gap: 2px; }
+.v2 .gp-camp-top span { font-size: 13px; color: var(--muted); }
+.v2 .gp-camp .ec-steps { max-width: 560px; }
+.v2 .gp-acts { flex-wrap: wrap; margin-top: 10px; }
+.v2 .gp-tickets { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 16px; margin-top: 18px; align-items: start; }
+.v2 .gp-tlist { margin-top: 0; padding: 8px; display: grid; gap: 4px; max-height: 70vh; overflow-y: auto; }
+.v2 .gp-t { display: flex; flex-direction: column; gap: 3px; padding: 12px; border-radius: 10px; border: 0; background: none; text-align: left; cursor: pointer; font: 14px var(--font); }
+.v2 .gp-t:hover { background: #F5F7FB; }
+.v2 .gp-t.is-on { background: #EEF3FF; }
+.v2 .gp-t span { font-size: 12.5px; color: var(--muted); }
+.v2 .gp-t em, .v2 .gp-tview-head em { margin-right: 6px; padding: 2px 6px; border-radius: 5px; background: #FEE2E2; color: #B91C1C; font: 700 10.5px/1.4 var(--font); font-style: normal; text-transform: uppercase; }
+.v2 .gp-dot { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: #EF4444; vertical-align: 1px; }
+.v2 .gp-tview { margin-top: 0; padding: 0; overflow: hidden; }
+.v2 .gp-tview > .ec-muted { padding: 24px; }
+.v2 .gp-tview-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.v2 .gp-tview-head div { display: flex; flex-direction: column; }
+.v2 .gp-tview-head span { font-size: 13px; color: var(--muted); }
+.v2 .gp-thread { padding: 16px 18px; min-height: 200px; max-height: 50vh; overflow-y: auto; }
+.v2 .gp-price input { width: 80px; }
+@media (max-width: 960px) { .v2 .gp-tickets { grid-template-columns: 1fr; } }

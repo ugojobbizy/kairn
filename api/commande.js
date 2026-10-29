@@ -3,6 +3,7 @@
 // par la fonction SQL site_commande_insert (la table n'est pas lisible avec la clé publique), puis prévient Ugo par e-mail si Zoho est configuré.
 import nodemailer from 'nodemailer';
 import { send, readJson } from './_calendar.js';
+import { telegram } from './_telegram.js';
 
 const SUPABASE_URL = 'https://bmqvlwdbwfnafuovzzhi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV';
@@ -80,6 +81,12 @@ export default async function handler(req, res) {
     ]);
   } catch (err) {
     console.error('[commande] e-mail en échec :', err.message);
+  }
+  // Alerte Telegram (29/10/2026), en plus de l'e-mail.
+  try {
+    await telegram(`📝 Demande depuis le site (/commander)\n${SOUHAITS[souhait]}${thematique ? ` · ${thematique}` : ''}${volume ? ` · ${volume} leads` : ''}\n${societe} · ${nom} · ${telephone}\n${email}${row.zone ? `\nZone : ${row.zone}` : ''}`);
+  } catch (err) {
+    console.error('[commande] Telegram en échec :', err.message);
   }
   return send(res, 200, { ok: true, mailed });
 }

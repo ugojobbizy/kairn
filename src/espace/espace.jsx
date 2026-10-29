@@ -3,7 +3,8 @@ import { Link, Navigate, NavLink, Route, Routes, useNavigate, useSearchParams } 
 import { KairnLogo, useV2Favicon } from '../v2/layout.jsx';
 import { PRODUITS, GARANTIES } from '../v3/produits.js';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
-import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, euro, dateFr, dateHeure, errMsg, downloadCsv } from './db.js';
+import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, ETAPES, euro, dateFr, dateHeure, errMsg, downloadCsv, notifier } from './db.js';
+import Tickets from './tickets.jsx';
 import { apercuData } from './apercu.js';
 import '../v2/v2.css';
 import '../v3/v3.css';
@@ -197,12 +198,13 @@ function Precommande({ session, client, apercu }) {
     if (!zone.trim()) { setError('Indiquez vos départements.'); return; }
     setError(''); setState('sending');
     if (apercu) { setState('sent'); return; }
-    const { error: err } = await db.from('commandes').insert({
+    const { data: created, error: err } = await db.from('commandes').insert({
       user_id: session.user.id, souhait: 'leads', type: 'precommande', thematique: them, volume: String(qte), zone: zone.trim().slice(0, 200),
       societe: client?.societe || null, nom: client?.prenom || null, email: session.user.email, telephone: client?.telephone || null, siret: client?.siret || null,
       page: '/espace/precommande',
-    });
+    }).select('id').single();
     if (err) { setState('idle'); setError(errMsg(err)); return; }
+    notifier('commande', created.id);
     setState('sent');
     reload();
     setTimeout(() => navigate('/espace/commandes'), 1600);
@@ -383,16 +385,17 @@ function Shop({ apercu }) {
     if (!window.confirm(`Acheter ${chosen.length} lead${chosen.length > 1 ? 's' : ''} pour ${euro(total)} HT (${euro(total * (1 + TVA))} TTC) ? Un bon de commande sera créé, à régler par virement.`)) return;
     setBusy(true); setError('');
     if (apercu) { setBusy(false); setSel(new Set()); return; }
-    const { error: err } = await db.rpc('shop_acheter', { p_ids: chosen.map((r) => r.id) });
+    const { data: cmdId, error: err } = await db.rpc('shop_acheter', { p_ids: chosen.map((r) => r.id) });
     setBusy(false);
     if (err) { setError(errMsg(err)); load(); return; }
+    notifier('commande', cmdId);
     setSel(new Set());
     await reload();
     navigate('/espace/prospects');
   }
   return (
     <>
-      <PageHead title="Leads Shop" sub="Leads disponibles à l’achat. Les coordonnées ne sont visibles qu’après l’achat." />
+      <PageHead title="Leads Shop" sub="Leads disponibles à l’achat. Les coordonnées ne sont visibles qu’après l’achat. Les leads marqués « déjà transmis » étaient hors zone pour un premier professionnel : ils sont 5 € moins chers." />
       {f.bar(false, 'Reçu')}
       <div className="ec-filters ec-filters-2">
         <label><span>Prix min (€)</span><input inputMode="decimal" value={pmin} onChange={(e) => setPmin(e.target.value)} placeholder="Min" /></label>
@@ -411,7 +414,7 @@ function Shop({ apercu }) {
               {shown.map((r) => (
                 <tr key={r.id} className={sel.has(r.id) ? 'is-sel' : ''} onClick={() => toggle(r.id)}>
                   <td className="ec-cb"><input type="checkbox" aria-label="Sélectionner ce lead" checked={sel.has(r.id)} onChange={() => toggle(r.id)} onClick={(e) => e.stopPropagation()} /></td>
-                  <td>{dateFr(r.consentement_jusqu)}</td><td>{dateHeure(r.recu_le)}</td><td>{THEMES[r.thematique]}</td><td className="ec-num"><b>{euro(r.prix_ht)}</b></td>
+                  <td>{dateFr(r.consentement_jusqu)}</td><td>{dateHeure(r.recu_le)}</td><td>{THEMES[r.thematique]}</td><td className="ec-num"><b>{euro(r.prix_ht)}</b>{r.deja_transmis && <small className="ec-promo" title="Lead hors zone pour un premier professionnel, remis en vente à prix réduit">Déjà transmis · prix réduit</small>}</td>
                   <td>{r.code_postal || '·'}</td><td>{r.statut_occupation || '·'}</td><td>{r.type_logement || '·'}</td><td>{r.chauffage || '·'}</td><td>{r.surface || '·'}</td>
                 </tr>
               ))}
@@ -485,6 +488,16 @@ function Litiges() {
   );
 }
 
+// ─ Étapes de campagne ─
+export function Etapes({ etape = 'recue' }) {
+  const k = Math.max(0, ETAPES.findIndex(([e]) => e === etape));
+  return (
+    <ol className="ec-steps" aria-label={`Étape : ${ETAPES[k][1]}`}>
+      {ETAPES.map(([e, t], i) => <li key={e} className={i < k ? 'is-done' : i === k ? 'is-now' : ''}><i />{t}</li>)}
+    </ol>
+  );
+}
+
 // ─ Mes commandes ─
 const CMD_STATUTS = { nouvelle: 'En validation', en_cours: 'En validation', ouverte: 'Ouverte', terminee: 'Terminée', refusee: 'Refusée' };
 function Commandes() {
@@ -505,6 +518,7 @@ function Commandes() {
             return (
               <div className="ec-progress-card" key={c.id}>
                 <div className="ec-progress-top"><b>{THEMES[c.thematique] || c.thematique}</b><span className="ec-chip">{c.type === 'shop' ? 'Shop' : 'Pré-commande'}</span></div>
+                {c.type !== 'shop' && <Etapes etape={c.etape} />}
                 <p>Livré <strong>{n}</strong> / Plafond <strong>{c.plafond}</strong></p>
                 <p className="ec-small-l">Restant : <b>{Math.max(0, c.plafond - n)}</b></p>
                 <div className="ec-bar"><span style={{ width: `${pct}%` }} /></div>
@@ -513,10 +527,21 @@ function Commandes() {
           })}
         </div>
       )}
+      {tab === 'pre' && rows.length > 0 && (
+        <div className="ec-progress-grid">
+          {rows.map((c) => (
+            <div className="ec-progress-card" key={c.id}>
+              <div className="ec-progress-top"><b>{THEMES[c.thematique] || c.thematique}</b><span className="ec-chip">{c.volume} leads</span></div>
+              <Etapes etape={c.etape} />
+              <p className="ec-small-l">Zone : {c.zone || '·'}</p>
+            </div>
+          ))}
+        </div>
+      )}
       {commandes && rows.length === 0 ? <Empty><p>{tab === 'pre' ? 'Aucune pré-commande en attente de validation.' : 'Aucune commande ici pour l’instant.'}</p><Link to="/espace/precommande" className="ec-btn">Pré-commander</Link></Empty> : (
         <div className="ec-card ec-table-wrap">
           <table className="ec-table">
-            <thead><tr><th>Date</th><th>N° du BDC</th><th>Thématique</th><th>Quantité</th><th>Avancement</th><th className="ec-num">Montant HT</th><th>Statut</th></tr></thead>
+            <thead><tr><th>Date</th><th>N° du BDC</th><th>Thématique</th><th>Quantité</th><th>Avancement</th><th className="ec-num">Montant HT</th><th>Étape</th><th>Statut</th></tr></thead>
             <tbody>
               {rows.map((c) => {
                 const n = s?.livresPar[c.id] || 0;
@@ -528,6 +553,7 @@ function Commandes() {
                     <td>{c.plafond || c.volume || '·'} leads</td>
                     <td>{c.plafond ? <span className="ec-mini-bar"><i><em style={{ width: `${Math.min(100, (n / c.plafond) * 100)}%` }} /></i>{n} / {c.plafond}</span> : '·'}</td>
                     <td className="ec-num">{c.montant_ht != null ? <><b>{euro(c.montant_ht)}</b><small>{euro(c.montant_ht * (1 + TVA))} TTC</small></> : '·'}</td>
+                    <td>{c.type === 'shop' ? '·' : (ETAPES.find(([e]) => e === c.etape) || ETAPES[0])[1]}</td>
                     <td><span className={`ec-status is-${c.statut}`}>{CMD_STATUTS[c.statut] || c.statut}</span></td>
                   </tr>
                 );
@@ -630,6 +656,7 @@ function Shell({ session, client, apercu }) {
             <button type="button" className="ec-logout" onClick={() => db.auth.signOut()}>Se déconnecter</button>
           </div>
         </aside>
+        {!apercu && <Tickets session={session} />}
         <main className="ec-main">
           {data.error && <p className="ec-err">{data.error}</p>}
           <Routes>

@@ -12,7 +12,7 @@ export const FAQ = [
 // corrigée selon les décisions d'Ugo du même jour : faux numéros non remplacés, bon de commande réglé par virement,
 // contacts livrés dans l'espace client). FAQ reste celle de l'accueil actuel et des données structurées.
 export const FAQ_V2 = [
-  ['Un contact est-il vendu à plusieurs professionnels ?', 'Non. Chaque contact est envoyé à un seul professionnel. Nous ne le revendons à personne d’autre.'],
+  ['Un contact est-il vendu à plusieurs professionnels ?', 'Non. Chaque contact est envoyé à un seul professionnel. Seule exception, annoncée : un contact hors zone pour un premier professionnel peut être proposé dans le Leads Shop, moins cher et marqué « déjà transmis ».'],
   ['Et si le contact est un doublon ou hors de ma zone ?', 'Vous le signalez depuis votre espace client : après vérification, il est remplacé. Les faux numéros, eux, ne sont pas remplacés.'],
   ['Ce sont de vrais particuliers ?', 'Oui. Ils ont vu une de nos pubs Meta et rempli une demande pour être rappelés sur leur projet. En visio, Ugo vous montre une campagne qui tourne.'],
   ['Combien coûte un contact ?', 'Pompe à chaleur 28 €, isolation par l’extérieur 27 €, photovoltaïque 35 €, hors taxes. Pour un autre secteur, le prix vous est donné avant toute commande. Kairn paie la pub : vous ne payez que les contacts, sur bon de commande, réglé par virement.'],

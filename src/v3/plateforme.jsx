@@ -16,8 +16,8 @@ import './plateforme.css';
 const ETAPES = [
   {
     img: 'shop', tag: 'Leads Shop', h: 'Des leads disponibles,', i: 'tout de suite.',
-    p: 'Le stock du jour, filtré par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
-    points: ['Coordonnées visibles seulement après l’achat', 'Chaque lead vendu à un seul professionnel', 'Consentement du particulier encore valable'],
+    p: 'Des leads disponibles tout de suite, filtrés par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
+    points: ['Coordonnées visibles seulement après l’achat', 'Hors zone d’un autre client : marqué « déjà transmis », 5 € moins cher', 'Consentement du particulier encore valable'],
   },
   {
     img: 'prospects', tag: 'Mes prospects', h: 'Vos contacts,', i: 'prêts à appeler.',

@@ -11,6 +11,19 @@ export const MOTIFS = { doublon: 'Doublon', hors_zone: 'Hors zone' };
 export const LITIGE_STATUTS = { en_attente: 'En attente', accepte: 'Accepté', refuse: 'Refusé' };
 export const TVA = 0.2;
 
+// Étapes de campagne (décision d'Ugo du 29/10/2026) : le client les voit dans Mes commandes, Ugo les change dans Kairn Admin.
+export const ETAPES = [['recue', 'Demande reçue'], ['preparation', 'En préparation'], ['lancee', 'Campagne lancée'], ['terminee', 'Terminée']];
+
+// Alerte Telegram d'Ugo (api/notif.js). Sans effet bloquant : une alerte ratée ne casse jamais l'action du client.
+export async function notifier(type, id) {
+  try {
+    const { data } = await db.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token || !id) return;
+    await fetch('/api/notif', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ type, id }) });
+  } catch { /* alerte facultative */ }
+}
+
 export const euro = (n) => `${Number(n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 export const dateFr = (d) => (d ? new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '·');
 export const dateHeure = (d) => (d ? new Date(d).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '·');

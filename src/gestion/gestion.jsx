@@ -4,6 +4,10 @@ import { KairnLogo, useV2Favicon } from '../v2/layout.jsx';
 import { PRODUITS } from '../v3/produits.js';
 import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, euro, dateFr, dateHeure, errMsg } from '../espace/db.js';
 import { apercuData } from '../espace/apercu.js';
+import { Campagnes, TicketsAdmin, ShopAdmin, Bientot } from './gestion-plus.jsx';
+
+// Kairn Monitor (suivi des campagnes Meta), ouvert depuis le menu (Ugo, 29/10/2026).
+const MONITOR_URL = 'https://kairn-monitor.vercel.app';
 import '../v2/v2.css';
 import '../v3/v3.css';
 import '../espace/espace.css';
@@ -54,8 +58,9 @@ function Head({ title, sub, children }) {
 }
 
 // ─ Tableau de bord ─
-function Dashboard({ data }) {
+function Dashboard({ data, tickets }) {
   const { leads, commandes, litiges } = data;
+  const aLancer = (commandes || []).filter((c) => c.user_id && c.type !== 'shop' && c.statut !== 'refusee' && ['recue', 'preparation'].includes(c.etape)).length;
   const attente = (litiges || []).filter((g) => g.statut === 'en_attente').length;
   const aValider = (commandes || []).filter((c) => c.user_id && !c.bdc_numero && ['nouvelle', 'en_cours'].includes(c.statut)).length;
   const stock = (leads || []).filter((l) => !l.client_id && !l.annule);
@@ -64,11 +69,16 @@ function Dashboard({ data }) {
     <>
       <Head title="Kairn Admin" sub="Ce qui attend une décision de votre part." />
       <div className="ec-kpis">
+        <Link to="/gestion/campagnes" className={`ec-kpi${aLancer ? ' is-alert' : ''}`}><b>Campagnes à lancer</b><span>Demandes reçues ou en préparation</span><strong>{aLancer}</strong></Link>
+        <Link to="/gestion/tickets" className={`ec-kpi${tickets ? ' is-alert' : ''}`}><b>Messages clients</b><span>Tickets non lus</span><strong>{tickets}</strong></Link>
         <Link to="/gestion/litiges" className={`ec-kpi${attente ? ' is-alert' : ''}`}><b>Litiges en attente</b><span>À arbitrer</span><strong>{attente}</strong></Link>
-        <Link to="/gestion/commandes" className={`ec-kpi${aValider ? ' is-alert' : ''}`}><b>Pré-commandes à valider</b><span>Bon de commande à émettre</span><strong>{aValider}</strong></Link>
-        <Link to="/gestion/commandes" className="ec-kpi"><b>À encaisser</b><span>BDC approuvés non réglés, HT</span><strong>{euro(du)}</strong></Link>
       </div>
-      <p className="ec-label">Stock disponible (Leads Shop)</p>
+      <div className="ec-kpis">
+        <Link to="/gestion/commandes" className={`ec-kpi${aValider ? ' is-alert' : ''}`}><b>Bons de commande à émettre</b><span>Pré-commandes sans BDC</span><strong>{aValider}</strong></Link>
+        <Link to="/gestion/commandes" className="ec-kpi"><b>À encaisser</b><span>BDC approuvés non réglés, HT</span><strong>{euro(du)}</strong></Link>
+        <Link to="/gestion/shop" className="ec-kpi"><b>Leads Shop</b><span>En vente maintenant</span><strong>{stock.filter((l) => l.en_vente !== false).length}</strong></Link>
+      </div>
+      <p className="ec-label">Stock disponible par thématique</p>
       <div className="ec-kpis">
         {Object.entries(THEMES).map(([k, t]) => <Link to="/gestion/leads" key={k} className="ec-kpi"><b>{t}</b><span>Leads en stock</span><strong>{stock.filter((l) => l.thematique === k).length}</strong></Link>)}
       </div>
@@ -354,13 +364,29 @@ function Shell({ session, apercu }) {
   const [open, setOpen] = useState(false);
   const attente = (data.litiges || []).filter((g) => g.statut === 'en_attente').length;
   const aValider = (data.commandes || []).filter((c) => c.user_id && !c.bdc_numero && ['nouvelle', 'en_cours'].includes(c.statut)).length;
-  useEffect(() => { document.title = attente ? `(${attente}) Litiges · Kairn Admin` : 'Kairn Admin'; }, [attente]);
+  const [nTickets, setNTickets] = useState(0);
+  useEffect(() => {
+    if (apercu) return undefined;
+    const count = () => db.from('tickets').select('statut, dernier_client_le, vu_admin_le').eq('statut', 'ouvert')
+      .then(({ data: t }) => setNTickets((t || []).filter((x) => x.dernier_client_le && (!x.vu_admin_le || x.dernier_client_le > x.vu_admin_le)).length));
+    count();
+    const i = setInterval(() => { if (!document.hidden) count(); }, 60000);
+    return () => clearInterval(i);
+  }, [apercu]);
+  const aLancer = (data.commandes || []).filter((c) => c.user_id && c.type !== 'shop' && c.statut !== 'refusee' && ['recue', 'preparation'].includes(c.etape)).length;
+  const alertes = attente + nTickets + aLancer;
+  useEffect(() => { document.title = alertes ? `(${alertes}) Kairn Admin` : 'Kairn Admin'; }, [alertes]);
   const MENU = [
     { to: '/gestion', end: true, t: 'Tableau de bord', ico: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
+    { to: '/gestion/campagnes', t: 'Campagnes', n: aLancer, ico: <><path d="M3 11l18-8-8 18-2-8z" /></> },
+    { to: '/gestion/tickets', t: 'Tickets', n: nTickets, ico: <><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></> },
     { to: '/gestion/litiges', t: 'Litiges', n: attente, ico: <><path d="M12 3v18M5 21h14M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0zM5 8h14" /></> },
     { to: '/gestion/commandes', t: 'Commandes', n: aValider, ico: <><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8h8M8 12h8M8 16h5" /></> },
     { to: '/gestion/leads', t: 'Leads', ico: <><circle cx="9" cy="8" r="4" /><path d="M2 21v-1a6 6 0 0 1 12 0v1M16 4a4 4 0 0 1 0 8M22 21v-1a6 6 0 0 0-4-5.6" /></> },
+    { to: '/gestion/shop', t: 'Leads Shop', ico: <><path d="M6 6h15l-2 9H7z" /><circle cx="9" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" /><path d="M6 6 5 2H2" /></> },
     { to: '/gestion/clients', t: 'Clients', ico: <><path d="M3 21V7l9-4 9 4v14" /><path d="M9 21v-6h6v6" /></> },
+    { to: '/gestion/contrats', t: 'Contrats', ico: <><path d="M6 2h9l5 5v15H6z" /><path d="M14 2v6h6M9 13h6M9 17h6" /></> },
+    { to: '/gestion/factures', t: 'Factures', ico: <><rect x="4" y="2" width="16" height="20" rx="2" /><path d="M8 7h8M8 11h8M8 15h5" /></> },
   ];
   return (
     <div className={`ec${open ? ' is-open' : ''}`}>
@@ -383,19 +409,24 @@ function Shell({ session, apercu }) {
           ))}
         </nav>
         <div className="ec-side-foot">
-          <Link to="/espace" className="ec-help">Voir l’espace client</Link>
+          <a href={MONITOR_URL} target="_blank" rel="noopener noreferrer" className="ec-btn gp-monitor">Ouvrir Kairn Monitor ↗</a>
           <button type="button" className="ec-logout" onClick={() => db.auth.signOut()}>Se déconnecter</button>
         </div>
       </aside>
       <main className="ec-main">
         {data.error && <p className="ec-err">{data.error}</p>}
         <Routes>
-          <Route index element={<Dashboard data={data} />} />
+          <Route path="tickets" element={<TicketsAdmin data={data} apercu={apercu} onCount={setNTickets} />} />
+          <Route index element={<Dashboard data={data} tickets={nTickets} />} />
+          <Route path="campagnes" element={<Campagnes data={data} apercu={apercu} />} />
+          <Route path="shop" element={<ShopAdmin data={data} apercu={apercu} />} />
+          <Route path="contrats" element={<Bientot titre="Contrats" texte="Signature en ligne de chaque nouveau client, à venir. Le format (une fois par client ou à chaque campagne) est à valider avec votre avocat." />} />
+          <Route path="factures" element={<Bientot titre="Factures" texte="Factures conformes générées par Pennylane, à brancher quand votre compte sera créé. En attendant, les bons de commande et leur règlement sont dans Commandes." />} />
           <Route path="litiges" element={<Litiges data={data} apercu={apercu} />} />
           <Route path="commandes" element={<Commandes data={data} apercu={apercu} />} />
           <Route path="leads" element={<Leads data={data} apercu={apercu} />} />
           <Route path="clients" element={<Clients data={data} apercu={apercu} />} />
-          <Route path="*" element={<Dashboard data={data} />} />
+          <Route path="*" element={<Dashboard data={data} tickets={nTickets} />} />
         </Routes>
       </main>
     </div>

@@ -23,11 +23,11 @@ function lead(i, them, daysAgo, extra = {}) {
 export function apercuData() {
   const cmd = {
     id: 'apercu-cmd-1', created_at: new Date(Date.now() - 7 * 86400000).toISOString(), type: 'precommande', thematique: 'ITE', volume: '100',
-    statut: 'ouverte', bdc_numero: 'BDC-2026-00001', plafond: 100, prix_unitaire: 27, montant_ht: 2700, approuve_le: new Date(Date.now() - 7 * 86400000).toISOString(), regle_le: null,
+    statut: 'ouverte', etape: 'lancee', bdc_numero: 'BDC-2026-00001', plafond: 100, prix_unitaire: 27, montant_ht: 2700, approuve_le: new Date(Date.now() - 7 * 86400000).toISOString(), regle_le: null,
     societe: 'Exemple Chauffage', zone: '33, 24, 47',
   };
-  const pre = { id: 'apercu-cmd-2', created_at: new Date(Date.now() - 86400000).toISOString(), type: 'precommande', thematique: 'PAC', volume: '50', statut: 'nouvelle', societe: 'Exemple Chauffage', zone: '33' };
-  const shopCmd = { id: 'apercu-cmd-3', created_at: new Date(Date.now() - 20 * 86400000).toISOString(), type: 'shop', thematique: 'PPV', volume: '4', statut: 'terminee', bdc_numero: 'BDC-2026-00000', plafond: 4, prix_unitaire: 35, montant_ht: 140, approuve_le: new Date(Date.now() - 20 * 86400000).toISOString(), regle_le: new Date(Date.now() - 15 * 86400000).toISOString(), societe: 'Exemple Chauffage' };
+  const pre = { id: 'apercu-cmd-2', created_at: new Date(Date.now() - 86400000).toISOString(), type: 'precommande', thematique: 'PAC', volume: '50', statut: 'nouvelle', etape: 'recue', societe: 'Exemple Chauffage', zone: '33' };
+  const shopCmd = { id: 'apercu-cmd-3', created_at: new Date(Date.now() - 20 * 86400000).toISOString(), type: 'shop', thematique: 'PPV', volume: '4', statut: 'terminee', etape: 'terminee', bdc_numero: 'BDC-2026-00000', plafond: 4, prix_unitaire: 35, montant_ht: 140, approuve_le: new Date(Date.now() - 20 * 86400000).toISOString(), regle_le: new Date(Date.now() - 15 * 86400000).toISOString(), societe: 'Exemple Chauffage' };
   const mine = [
     ...Array.from({ length: 73 }, (_, i) => lead(i, 'ITE', Math.floor(i / 10), { client_id: 'apercu', commande_id: cmd.id, livre_le: new Date(Date.now() - Math.floor(i / 10) * 86400000 - i * 3600000).toISOString(), exporte_le: i > 8 ? new Date().toISOString() : null })),
     ...Array.from({ length: 4 }, (_, i) => lead(200 + i, 'PPV', 20, { client_id: 'apercu', commande_id: shopCmd.id, livre_le: shopCmd.created_at, exporte_le: new Date().toISOString() })),
@@ -40,6 +40,6 @@ export function apercuData() {
     ...Array.from({ length: 40 }, (_, i) => lead(300 + i, 'ITE', Math.floor(i / 12))),
     ...Array.from({ length: 22 }, (_, i) => lead(400 + i, 'PAC', Math.floor(i / 8))),
     ...Array.from({ length: 9 }, (_, i) => lead(500 + i, 'PPV', Math.floor(i / 4))),
-  ].map(({ prenom, nom, telephone, email, ville, ...rest }) => rest);
+  ].map(({ prenom, nom, telephone, email, ville, ...rest }, i) => ({ ...rest, en_vente: true, deja_transmis: i % 9 === 4, prix_ht: i % 9 === 4 ? rest.prix_ht - 5 : rest.prix_ht }));
   return { leads: mine, commandes: [pre, cmd, shopCmd], litiges, stock };
 }
