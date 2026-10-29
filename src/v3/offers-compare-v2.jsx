@@ -26,7 +26,7 @@ function Head({ o }) {
   return (
     <div className="oc-head">
       <span className="oc-kicker">{o.kicker}</span>
-      <span className="oc-mark"><KairnLogo size={26} /><span>Kairn <b>{o.word}</b></span></span>
+      <span className="oc-mark"><KairnLogo size={26} /><span><b>{o.word}</b></span></span>
     </div>
   );
 }
