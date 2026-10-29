@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Link, NavLink, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, NavLink, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import { KairnLogo, useV2Favicon } from '../v2/layout.jsx';
 import { PRODUITS, GARANTIES } from '../v3/produits.js';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
@@ -655,7 +655,6 @@ export default function ClientSpace() {
   const [session, setSession] = useState(undefined);
   const [client, setClient] = useState(undefined);
   const [admin, setAdmin] = useState(false);
-  const demo = useMemo(() => apercuData(), []);
   useEffect(() => {
     db.auth.getSession().then(({ data }) => setSession(data.session));
     const { data } = db.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -677,8 +676,9 @@ export default function ClientSpace() {
   let body;
   if (session === undefined || (session && client === undefined)) body = <div className="ec-loading" aria-busy="true" />;
   else if (!session) body = <Login />;
-  // Ugo connecté avec son compte admin (sans fiche client) : il voit l'espace avec les données d'exemple (29/10/2026).
-  else if (!client && admin) body = <Shell session={session} client={{ societe: 'Aperçu admin', prenom: 'Ugo' }} apercu={demo} />;
+  // Compte admin : il vend des leads, il n'en achète pas. Il part sur Kairn Admin (/gestion), pas sur une vue client
+  // (Ugo, 29/10/2026 : « en tant qu'admin je n'ai pas besoin de voir combien coûtent les leads »).
+  else if (!client && admin) body = <Navigate to="/gestion" replace />;
   else if (!client) {
     body = (
       <div className="ec-login">
