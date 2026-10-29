@@ -40,7 +40,7 @@ export default function MethodV2() {
       <div className="m2-aside">
         <p className="eyebrow">Comment ça se passe</p>
         <h2 className="h2">De la commande <span className="serif grad-text">au premier contact.</span></h2>
-        <p className="m2-lead">Ce qui se passe quand vous commandez des contacts. Pour Kairn Pilotage, le déroulé se cale avec Ugo pendant l’appel.</p>
+        <p className="m2-lead">Ce qui se passe quand vous commandez des contacts. Pour le Pilotage, on vous explique tout lors de l’audit stratégique.</p>
         <Link to="/commander" className="btn btn-order">Commander des leads</Link>
       </div>
       <div className="m2-list" ref={list}>
