@@ -58,7 +58,7 @@ export function OfferCards() {
         <ul>
           <li><Check />Contacts exclusifs, jamais revendus</li>
           <li><Check />Aucun budget publicitaire à avancer, sans engagement</li>
-          <li><Check />Faux numéro, doublon, hors zone : remplacé</li>
+          <li><Check />Doublon ou hors zone : remplacé</li>
         </ul>
         <Link to="/commander" className="btn of-btn">Commander des leads <span className="btn-ico"><ArrowUpRight /></span></Link>
       </Reveal>

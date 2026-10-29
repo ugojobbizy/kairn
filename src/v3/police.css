@@ -1,0 +1,112 @@
+/* Test du 28/10/2026, servi sur /v2 : la V1 avec une seule différence, la police.
+   Demande d'Ugo : « en changeant uniquement la police, utilise la police du screenshot » (référence NexSTUDIO : Inter Tight, italique vraie).
+   Les italiques passent de Playfair Display à Inter Tight italique. */
+.v2.font-tight { --font: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; --serif: 'Inter Tight', -apple-system, sans-serif; }
+.v2.font-tight .serif { font-style: italic; letter-spacing: -0.04em; }
+/* Inter Tight est déjà serrée : on desserre l'interlettrage prévu pour Geist, sinon les lettres se touchent. */
+.v2.font-tight, .v2.font-tight .btn, .v2.font-tight .nav-links a { letter-spacing: 0; }
+.v2.font-tight .hero.is-light h1, .v2.font-tight .h2 { letter-spacing: -0.015em; }
+.v2.font-tight .hero h1 .serif, .v2.font-tight .h2 .serif { letter-spacing: -0.01em; }
+.v2.font-tight h3 { letter-spacing: -0.015em; }
+.v2.font-tight .serif { letter-spacing: -0.02em; }
+/* Titres plus fins, comme sur la référence (Ugo, 28/10/2026 : « Oui, plus fins »). */
+.v2.font-tight .hero.is-light h1, .v2.font-tight .h2, .v2.font-tight h3 { font-weight: 400; }
+.v2.font-tight .hero h1 .serif, .v2.font-tight .h2 .serif, .v2.font-tight h3 .serif { font-weight: 400; }
+.v2.font-tight .hero.is-light h1, .v2.font-tight .h2 { letter-spacing: -0.03em; }
+/* Titre élargi pour tenir sur deux lignes (Ugo, 28/10/2026 : « la section là où il y a le texte doit être allongée »). */
+.v2.font-tight .hero.is-light h1 { max-width: 30ch; }
+
+/* Note Google sous les boutons du hero */
+.v2 .g-rating { display: inline-flex; align-items: center; gap: 10px; margin-top: 22px; padding: 8px 16px 8px 10px; border-radius: 999px; background: rgba(255,255,255,.8); border: 1px solid var(--line); box-shadow: var(--shadow-card); font-size: 15px; color: var(--muted); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.v2 .g-rating-logo { width: 20px; height: 20px; }
+.v2 .g-rating-stars { color: #FBBC04; letter-spacing: 1px; font-size: 16px; }
+.v2 .g-rating b { color: var(--ink); font-weight: 600; }
+.v2 .hb-v2 { -webkit-mask-image: linear-gradient(#000 70%, transparent); mask-image: linear-gradient(#000 70%, transparent); }
+
+/* Section « nos créas » : couloir d’images sur le fond de la page, sans bloc sombre (Ugo, 28/10/2026) */
+.v2 .ads-stream { height: clamp(520px, 50vw, 660px); margin-inline: clamp(16px, 5vw, 80px); -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+/* marge sur les côtés et fondu : les pubs ne touchent plus le bord de l'écran (Ugo, 28/10/2026) */
+.v2 .ads-stream-inner { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: clamp(36px, 4.5vw, 60px) 20px; text-align: center; pointer-events: none; }
+.v2 .ads-stream .h2 { margin-top: 14px; }
+.v2 .ads-stream .h2 .serif { display: block; }
+.v2 .ads-stream-foot { max-width: 44ch; color: var(--muted, #5B5870); font-size: 15px; text-wrap: balance; }
+@media (max-width: 640px) { .v2 .ads-stream { height: 520px; } }
+
+/* Méthode V2 : éditoriale, titre à gauche, étapes en lignes */
+.v2 .m2 { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(40px, 7vw, 120px); align-items: start; }
+.v2 .m2-aside { position: sticky; top: 120px; }
+.v2 .m2-aside .h2 { margin-top: 18px; }
+.v2 .m2-aside .h2 .serif { display: block; }
+.v2 .m2-lead { margin: 22px 0 30px; max-width: 38ch; color: var(--muted); font-size: 17px; }
+.v2 .m2-list { position: relative; padding-left: 34px; }
+.v2 .m2-rail { position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: var(--line-2); }
+.v2 .m2-rail span { position: absolute; inset: 0; background: linear-gradient(#4F46E5, #0EA5E9); transform-origin: top; }
+.v2 .m2-list ol { list-style: none; margin: 0; padding: 0; }
+.v2 .m2-step { display: grid; grid-template-columns: auto 1fr; gap: clamp(20px, 3vw, 40px); padding: clamp(28px, 3.4vw, 44px) 0; border-top: 1px solid var(--line-2); }
+.v2 .m2-step:last-child { border-bottom: 1px solid var(--line-2); }
+.v2 .m2-num { font-size: clamp(44px, 5vw, 72px); font-weight: 300; line-height: .9; letter-spacing: -0.04em; color: #C9CFDE; font-variant-numeric: tabular-nums; transition: color .5s var(--ease); min-width: 1.5em; }
+.v2 .m2-step.is-on .m2-num { background: linear-gradient(100deg, #4F46E5, #2F5BEA 45%, #0EA5E9); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.v2 .m2-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.v2 .m2-top h3 { font-size: clamp(24px, 2.4vw, 32px); font-weight: 400; letter-spacing: -0.02em; line-height: 1.1; }
+.v2 .m2-when { font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--faint); transition: color .5s var(--ease); }
+.v2 .m2-step.is-on .m2-when { color: var(--violet); }
+.v2 .m2-body p { margin-top: 12px; max-width: 46ch; color: var(--muted); font-size: 16.5px; line-height: 1.55; transition: color .5s var(--ease); }
+.v2 .m2-step.is-on .m2-body p { color: var(--ink-2); }
+@media (max-width: 900px) {
+  .v2 .m2 { grid-template-columns: 1fr; }
+  .v2 .m2-aside { position: static; }
+  .v2 .m2-list { padding-left: 22px; }
+}
+
+/* Bande courbe des pubs : bloc plus haut que celui des captures, les pubs sont carrées */
+.v2 .reel.reel-ads { height: clamp(660px, 60vw, 800px); }
+@media (max-width: 640px) { .v2 .reel.reel-ads { height: 680px; } }
+
+/* Tableau des deux offres V2 : deux piliers (clair, nuit), réponse courte en gros, détail en petit */
+.v2 .oc { position: relative; display: grid; grid-template-columns: minmax(150px, .8fr) 1fr 1fr; column-gap: 14px; margin-top: 48px; }
+.v2 .oc-row { display: contents; }
+.v2 .oc-c.is-leads { background: #F1F5FF; box-shadow: inset 1px 0 rgba(47,91,234,.1), inset -1px 0 rgba(47,91,234,.1); }
+.v2 .oc-c.is-pilot { background: var(--night); }
+.v2 .oc-row:first-of-type .oc-c { border-radius: 28px 28px 0 0; }
+.v2 .oc-row:first-of-type .oc-c.is-leads { box-shadow: inset 1px 0 rgba(47,91,234,.1), inset -1px 0 rgba(47,91,234,.1), inset 0 1px rgba(47,91,234,.1); }
+.v2 .oc-foot .oc-c { border-radius: 0 0 28px 28px; }
+.v2 .oc-foot .oc-c.is-leads { box-shadow: inset 1px 0 rgba(47,91,234,.1), inset -1px 0 rgba(47,91,234,.1), inset 0 -1px rgba(47,91,234,.1); }
+.v2 .oc > .oc-row > div { position: relative; z-index: 1; }
+.v2 .oc-k { padding: 22px 0; border-top: 1px solid var(--line-2); font: 500 11.5px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--faint); }
+.v2 .oc-row:first-of-type .oc-k, .v2 .oc-foot .oc-k { border-top: 0; }
+.v2 .oc-c { padding: 22px 28px; display: flex; flex-direction: column; gap: 4px; }
+.v2 .oc-row:not(:first-of-type):not(.oc-foot) .oc-c::before { content: ''; position: absolute; top: 0; left: 28px; right: 28px; height: 1px; background: rgba(47,91,234,.12); }
+.v2 .oc-row:not(:first-of-type):not(.oc-foot) .oc-c.is-pilot::before { background: rgba(255,255,255,.1); }
+.v2 .oc-c strong { font-size: clamp(19px, 1.7vw, 23px); font-weight: 500; letter-spacing: -0.02em; line-height: 1.2; color: var(--ink); }
+.v2 .oc-c .oc-d { font-size: 15px; line-height: 1.5; color: var(--muted); }
+.v2 .oc-c.is-pilot strong { color: #fff; }
+.v2 .oc-c.is-pilot .oc-d { color: rgba(255,255,255,.6); }
+.v2 .oc-head { display: flex; flex-direction: column; gap: 14px; padding-top: 10px; }
+.v2 .oc-kicker { font: 500 11.5px/1 var(--mono) !important; letter-spacing: .14em; text-transform: uppercase; color: var(--violet) !important; }
+.v2 .is-pilot .oc-kicker { color: #A9C1FF !important; }
+.v2 .oc-mark { display: inline-flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 500; letter-spacing: -0.03em; color: var(--ink) !important; line-height: 1 !important; }
+.v2 .is-pilot .oc-mark { color: #fff !important; }
+.v2 .oc-mark b { font-weight: 500; background: linear-gradient(100deg, #0EA5E9, #2F5BEA 55%, #4F46E5); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.v2 .is-pilot .oc-mark b { background-image: linear-gradient(100deg, #67E8F9, #818CF8); }
+.v2 .oc-foot .oc-c { padding-top: 10px; padding-bottom: 30px; align-items: flex-start; }
+.v2 .oc-btn-light { padding: 0 24px; background: #fff; color: var(--ink); font-weight: 600; }
+.v2 .oc-btn-light:hover { transform: translateY(-1px); }
+.v2 .oc-cards { display: none; }
+@media (max-width: 860px) {
+  .v2 .oc { display: none; }
+  .v2 .oc-cards { display: grid; gap: 16px; margin-top: 36px; }
+  .v2 .oc-card { border-radius: 24px; padding: 26px 22px; }
+  .v2 .oc-card.is-leads { background: linear-gradient(180deg, #EEF3FF, #F7F9FF); border: 1px solid rgba(47,91,234,.12); }
+  .v2 .oc-card.is-pilot { background: var(--night); }
+  .v2 .oc-card .oc-head { padding: 0 0 6px; }
+  .v2 .oc-card dl { margin: 0; }
+  .v2 .oc-card dl > div { padding: 16px 0; border-top: 1px solid rgba(47,91,234,.12); }
+  .v2 .oc-card.is-pilot dl > div { border-color: rgba(255,255,255,.1); }
+  .v2 .oc-card dt { font: 500 11px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--faint); }
+  .v2 .oc-card dd { margin: 6px 0 0; display: flex; flex-direction: column; gap: 2px; }
+  .v2 .oc-card dd strong { font-size: 19px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink); }
+  .v2 .oc-card dd .oc-d { font-size: 14.5px; color: var(--muted); }
+  .v2 .oc-card.is-pilot dd strong { color: #fff; }
+  .v2 .oc-card.is-pilot dd .oc-d { color: rgba(255,255,255,.6); }
+  .v2 .oc-card .btn { margin-top: 10px; width: 100%; }
+}

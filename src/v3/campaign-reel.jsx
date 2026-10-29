@@ -21,7 +21,7 @@ export default function CampaignReel() {
             <h2 className="h2">Pas des maquettes. <span className="serif grad-text">De vraies campagnes.</span></h2>
           </div>
           <div className="reel-foot">
-            <p>Pubs, landing pages, CRM : les mêmes captures que celles que nos clients reçoivent.</p>
+            <p>Captures du Gestionnaire de publicités Meta de nos clients : seuls le budget et les résultats sont visibles.</p>
             <button type="button" className="btn btn-light reel-btn" onClick={() => setOpen(0)}>Voir les captures en grand</button>
           </div>
         </div>

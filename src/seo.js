@@ -86,6 +86,8 @@ export const PAGES = {
   '/v1/realisations': { title: 'Réalisations (ancienne version) · Kairn', description: 'Ancienne version de la page Réalisations.', robots: NOINDEX, canonical: '/realisations' },
   '/commander': { title: 'Commander des leads · Kairn', description: 'Commandez des contacts exclusifs en pompe à chaleur, isolation par l’extérieur ou photovoltaïque, ou confiez vos campagnes Meta à Kairn.' },
   '/espace': { title: 'Espace client · Kairn', description: 'Espace client Kairn.', robots: 'noindex, nofollow' },
+  '/gestion': { title: 'Kairn Admin', description: 'Gestion Kairn.', robots: 'noindex, nofollow' },
+  '/v2': { title: 'Kairn (test de police)', description: 'Test de police.', robots: NOINDEX },
   '/landingpage': { title: 'Kairn (accueil sauvegardé)', description: 'Accueil Kairn d’octobre 2026, gardé en sauvegarde.', robots: NOINDEX },
   '/landing': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
   '/landing2': { title: 'Kairn', description: 'Page de campagne Kairn.', robots: NOINDEX },
@@ -105,6 +107,7 @@ export function pageFor(pathname) {
   const path = pathname !== '/' ? pathname.replace(/\/+$/, '') : '/';
   if (!PAGES[path] && path.startsWith('/onboarding/')) return ONBOARDING; // lien privé d'un client
   if (!PAGES[path] && path.startsWith('/espace/')) return PAGES['/espace']; // pages de l'espace client
+  if (!PAGES[path] && path.startsWith('/gestion/')) return PAGES['/gestion']; // pages de Kairn Admin
   return PAGES[path] || NOT_FOUND;
 }
 

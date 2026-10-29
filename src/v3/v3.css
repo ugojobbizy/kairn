@@ -133,7 +133,7 @@
   .lb-prev, .lb-next { top: auto; bottom: 18px; transform: none; }
   .lb-prev { left: calc(50% - 64px); } .lb-next { right: calc(50% - 64px); }
 }
-.v2 .hero.is-light h1 { max-width: 22ch; font-size: clamp(42px, 6vw, 86px); }
+.v2 .hero.is-light h1 { max-width: 22ch; font-size: clamp(36px, 4.6vw, 66px); }
 .lb .cf-tag { display: inline-block; padding: 5px 10px; border-radius: 99px; font: 600 12px/1 'Geist', sans-serif; background: rgba(255,255,255,.16); color: #fff; }
 
 /* ─ page Commander ─ */

@@ -2,11 +2,10 @@
 // Pour en ajouter une : déposer l'image dans public/campagnes/ puis ajouter une ligne ci-dessous.
 // tag = plateforme ou outil ; titre = ce qu'on voit (un chiffre seulement s'il vient d'un relevé) ; secteur = le métier du client.
 // Jamais de nom de prospect ni de coût par lead client lisible sur une capture.
+// Ugo, 28/10/2026 : « mets des vraies images de campagne Meta Ads, cache les informations sauf le budget et le résultat ».
+// Captures du Gestionnaire de publicités relevées le 29/10/2026 (période 1 jan 2025 - 27 oct 2026), noms, coûts par résultat et autres colonnes floutés.
 export const CAMPAGNES = [
-  { src: '/campagnes/volume-leads-tradeauto.jpg', tag: 'CRM Kairn', titre: '86 leads, 6 ventes', secteur: 'Automobile · avril 2026' },
-  { src: '/campagnes/meta-pubs-actives.jpg', tag: 'Meta Ads', titre: 'Trois pubs actives', secteur: 'Isolation par l’extérieur' },
-  { src: '/campagnes/crm-pipeline.jpg', tag: 'CRM Kairn', titre: 'Le pipeline du client', secteur: 'Rénovation énergétique' },
-  { src: '/campagnes/landing-ite.jpg', tag: 'Landing page', titre: 'Formulaire en 2 minutes', secteur: 'Isolation par l’extérieur' },
-  { src: '/campagnes/crm-tradeauto.jpg', tag: 'CRM Kairn', titre: 'Chaque lead et sa source', secteur: 'Automobile' },
-  { src: '/campagnes/landing-isolation-aquitaine.jpg', tag: 'Landing page', titre: 'Page d’une campagne ITE', secteur: 'Isolation, Gironde' },
+  { src: '/campagnes/meta-ite-campagne.jpg', tag: 'Meta Ads', titre: '392 prospects, 4 075 € dépensés', secteur: 'Isolation par l’extérieur' },
+  { src: '/campagnes/meta-ite-publicites.jpg', tag: 'Meta Ads', titre: 'Les pubs de la campagne', secteur: 'Isolation par l’extérieur' },
+  { src: '/campagnes/meta-combles-campagnes.jpg', tag: 'Meta Ads', titre: '122 prospects sur une campagne', secteur: 'Isolation des combles' },
 ];

@@ -26,7 +26,8 @@ export const PRODUITS = [
 // Ce qui vaut pour tous les produits (bible de copy Kairn, 27/10/2026).
 export const GARANTIES = [
   'Chaque contact est envoyé à un seul installateur',
-  'Faux numéro, doublon, hors zone : remplacé',
+  // Ugo, 29/10/2026 : « je ne remplace pas les faux numéros, je remplace que les doublons et les hors zone ».
+  'Doublon ou hors zone : remplacé',
   'Sans engagement : vous arrêtez quand vous voulez',
 ];
 
