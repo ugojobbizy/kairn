@@ -229,7 +229,7 @@ export default function KairnHomeV3({ police }) {
             </div>
           </section>
           {/* ── Réservation ── */}
-          <section className="band" style={{ paddingTop: 0 }}>
+          <section className="band band-book" style={{ paddingTop: 0 }}>
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
@@ -243,7 +243,7 @@ export default function KairnHomeV3({ police }) {
           {!police && (
             <>
           {/* ── Réservation ── */}
-          <section className="band" style={{ paddingTop: 0 }}>
+          <section className="band band-book" style={{ paddingTop: 0 }}>
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
