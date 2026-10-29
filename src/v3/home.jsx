@@ -14,7 +14,7 @@ import OffersCompareV2 from './offers-compare-v2.jsx';
 import CampaignReel from './campaign-reel.jsx';
 import HeroBg from './hero-bg.jsx';
 import HeroBgV2 from './hero-bg-v2.jsx';
-import AdsReel from './ads-reel.jsx';
+import LeadSample from './lead-sample.jsx';
 import MethodV2 from './method-v2.jsx';
 import '../v2/v2.css';
 import './v3.css';
@@ -168,10 +168,10 @@ export default function KairnHomeV3({ police }) {
             </div>
           </section>
 
-          {/* ── Vraies campagnes (sur la V2 : les pubs Meta ; le couloir « Nos créas » a été retiré, doublon, Ugo 29/10/2026) ── */}
-          <section className="band" id="campagnes">
+          {/* ── Vraies campagnes ; sur la V2, la fiche d'un lead à la place des pubs Meta (Ugo, 29/10/2026) ── */}
+          <section className="band" id={police ? 'lead' : 'campagnes'}>
             <div className="wrap">
-              <Reveal>{police ? <AdsReel /> : <CampaignReel />}</Reveal>
+              <Reveal>{police ? <LeadSample /> : <CampaignReel />}</Reveal>
             </div>
           </section>
 
