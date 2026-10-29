@@ -224,7 +224,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Audit avec Ugo" intro={['30 minutes pour parler de votre métier, de votre zone et du volume de contacts qu’il vous faut.', 'En visio, avec Ugo, fondateur de Kairn. Sans engagement.']} /> : <Booking />}
+                {police ? <Booking title="Audit stratégique" intro={['30 minutes pour parler de votre métier, de votre zone et du volume de contacts qu’il vous faut.', 'En visio, avec Ugo, fondateur de Kairn. Sans engagement.']} /> : <Booking />}
               </div>
             </div>
           </section>
@@ -238,7 +238,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Audit avec Ugo" intro={['30 minutes pour parler de votre métier, de votre zone et du volume de contacts qu’il vous faut.', 'En visio, avec Ugo, fondateur de Kairn. Sans engagement.']} /> : <Booking />}
+                {police ? <Booking title="Audit stratégique" intro={['30 minutes pour parler de votre métier, de votre zone et du volume de contacts qu’il vous faut.', 'En visio, avec Ugo, fondateur de Kairn. Sans engagement.']} /> : <Booking />}
               </div>
             </div>
           </section>

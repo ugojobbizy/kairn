@@ -134,3 +134,6 @@
 .v2 .reel.reel-ads .reel-foot p { color: var(--muted); }
 .v2 .reel.reel-ads .reel-btn { background: #fff; color: var(--ink); border-color: var(--line-2); box-shadow: var(--shadow-card); }
 .v2 .reel.reel-ads .reel-btn:hover { border-color: var(--ink); }
+
+/* Logo du formulaire d'audit centré (Ugo, 29/10/2026) */
+.v2.font-tight .bk-logo { display: flex; justify-content: center; }
