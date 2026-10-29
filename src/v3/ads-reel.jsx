@@ -25,11 +25,11 @@ export default function AdsReel() {
       <TiltedGridHero images={IMAGES} className="reel reel-ads" tileHeight={small ? 25 : 34} aspectRatio={4 / 5} gap={5} axis={52} speed={3.2}>
         <div className="reel-inner">
           <div className="reel-head">
-            <p className="eyebrow">Nos pubs</p>
-            <h2 className="h2">Pas des modèles. <span className="serif grad-text">Nos propres pubs.</span></h2>
+            <p className="eyebrow">Nos pubs Meta</p>
+            <h2 className="h2">Ce que voient les particuliers <span className="serif grad-text">avant de demander un devis.</span></h2>
           </div>
           <div className="reel-foot">
-            <p>Des créas Meta écrites et dessinées par Kairn pour nos clients installateurs : isolation des murs, des combles.</p>
+            <p>18 pubs écrites et dessinées par Kairn pour des installateurs clients : murs par l’extérieur, combles. En visio, Ugo vous montre une campagne qui tourne.</p>
             <button type="button" className="btn btn-light reel-btn" onClick={() => setOpen(0)}>Voir les pubs en grand</button>
           </div>
         </div>

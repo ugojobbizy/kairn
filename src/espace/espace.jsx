@@ -141,10 +141,10 @@ function Home({ client }) {
             <p className="ec-offer-price"><b>{p.prix} €</b> HT / lead</p>
             <span className="ec-chip">Minimum 50 leads</span>
             <p className="ec-sub">Ce que vous recevez</p>
-            <ul className="ec-grid-checks">{['Prénom et nom', 'Téléphone', 'E-mail', 'Code postal', 'Ville', 'Date de réception'].map((x) => <li key={x}><Check />{x}</li>)}</ul>
+            <ul className="ec-grid-checks">{['Nom', 'Téléphone', 'E-mail', 'Code postal', 'Date de réception'].map((x) => <li key={x}><Check />{x}</li>)}</ul>
             <div className="ec-qualif">
               <p className="ec-sub">Qualification</p>
-              <ul className="ec-grid-checks">{['Statut d’occupation', 'Type de logement', 'Chauffage actuel', 'Surface habitable'].map((x) => <li key={x}><Check />{x}</li>)}</ul>
+              <ul className="ec-grid-checks">{['Propriétaire ou non', 'Type de logement', 'Délai du projet'].map((x) => <li key={x}><Check />{x}</li>)}</ul>
             </div>
             <Link to={`/espace/precommande?thematique=${p.code}`} className="ec-btn">Pré-commander</Link>
           </article>

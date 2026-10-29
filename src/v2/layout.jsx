@@ -55,7 +55,7 @@ export function BookCta({ children, className = 'btn btn-dark' }) {
 
 // Pages de services, partagées par le menu déroulant (ordinateur) et le panneau (téléphone).
 const SERVICES = [
-  { to: '/generation-de-leads', icon: 'megaphone', t: 'Génération de leads', d: 'Campagnes Meta et Google Ads, suivies jusqu’à la vente' },
+  { to: '/generation-de-leads', icon: 'megaphone', t: 'Génération de leads', d: 'Campagnes Meta, suivies jusqu’au devis signé' },
   { to: '/creation-site-internet', icon: 'code', t: 'Création de site internet', d: 'Sites, tunnels et plateformes sur mesure' },
   { to: '/creation-landing-page', icon: 'layout', t: 'Création de landing page', d: 'Une page par offre, pensée pour vos campagnes' },
   { to: '/crm-sur-mesure', icon: 'users', t: 'CRM sur mesure', d: 'Pipeline, attribution des leads, relances' },

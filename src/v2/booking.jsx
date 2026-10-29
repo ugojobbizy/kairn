@@ -47,7 +47,8 @@ function Chevron({ dir }) {
   );
 }
 
-export default function Booking() {
+// title / intro : textes de l'en-tête du formulaire (la V2 de l'accueil passe ceux de l'appel avec Ugo, 29/10/2026).
+export default function Booking({ title = 'Audit découverte Kairn', intro = ['Un premier échange pour parler de votre entreprise, de la façon dont vous trouvez vos clients aujourd’hui et de ce que vous aimeriez améliorer.', 'En visio, avec Ugo, fondateur de Kairn.'] }) {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ country: 'FR', phone: '', firstName: '', company: '', email: '', website: '' });
   const [leadId] = useState(newId);
@@ -202,9 +203,8 @@ export default function Booking() {
         {/* ── Étapes 1 et 2 : coordonnées ── */}
         <form className="bk-form" onSubmit={step === 1 ? submitPhone : submitDetails} noValidate>
           <span className="bk-logo" aria-hidden="true"><img src="/favicon.svg" alt="" width="26" height="26" /></span>
-          <h3>Audit découverte Kairn</h3>
-          <p className="bk-intro">Un premier échange pour parler de votre entreprise, de la façon dont vous trouvez vos clients aujourd’hui et de ce que vous aimeriez améliorer.</p>
-          <p className="bk-intro">En visio, avec Ugo, fondateur de Kairn.</p>
+          <h3>{title}</h3>
+          {intro.map((t) => <p className="bk-intro" key={t}>{t}</p>)}
 
           <label className="bk-label" htmlFor="bk-phone">Votre numéro de téléphone</label>
           <div className={`bk-phone${errors.phone ? ' has-error' : ''}`}>

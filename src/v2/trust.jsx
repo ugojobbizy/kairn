@@ -56,14 +56,21 @@ function Check() {
 // Photo d'Ugo (envoyée le 26/10/2026, disque recadré) ; sans photo, ses initiales.
 const FOUNDER_PHOTO = '/v2/ugo.jpg';
 
-export function AuditHeader() {
+// variante « appel » : V2 de l'accueil (proposition de copy du 29/10/2026), un appel avec Ugo pour les deux offres.
+const AUDIT_COPY = {
+  audit: { eyebrow: 'Réservation', h: 'Réservez votre', i: 'audit offert.', lead: '30 minutes avec Ugo, fondateur de Kairn. Un court formulaire, puis choisissez votre créneau.', founder: 'Fondateur de Kairn. Il mène tous les appels découverte.', pills: ['Sans engagement', 'Prospects exclusifs', 'Plan d’action offert'] },
+  appel: { eyebrow: 'Appel', h: 'Une question avant de commander\u00a0?', i: 'Parlons-en 30 minutes.', lead: 'En visio avec Ugo, fondateur de Kairn. Votre métier, votre zone, le volume qu’il vous faut : vous saurez si Kairn Leads ou Kairn Pilotage vous convient. Laissez votre numéro, puis choisissez un créneau.', founder: 'Fondateur de Kairn. C’est lui qui règle les pubs, et lui que vous aurez en visio.', pills: ['Sans engagement', 'Le fondateur, pas un commercial', 'Une campagne réelle montrée'] },
+};
+
+export function AuditHeader({ variant = 'audit' }) {
+  const c = AUDIT_COPY[variant];
   return (
     <>
       <div className="audit-head">
         <div className="audit-copy">
-          <p className="audit-eyebrow">Réservation</p>
-          <h2 className="h2" id="reserver">Réservez votre <span className="serif">audit offert.</span></h2>
-          <p className="audit-lead">30 minutes avec Ugo, fondateur de Kairn. Un court formulaire, puis choisissez votre créneau.</p>
+          <p className="audit-eyebrow">{c.eyebrow}</p>
+          <h2 className="h2" id="reserver">{c.h} <span className="serif">{c.i}</span></h2>
+          <p className="audit-lead">{c.lead}</p>
         </div>
         <div className="founder">
           {FOUNDER_PHOTO
@@ -71,14 +78,12 @@ export function AuditHeader() {
             : <span className="founder-initials" aria-hidden="true">UG</span>}
           <div>
             <b>Ugo Gianeselli</b>
-            <p>Fondateur de Kairn. Il mène tous les appels découverte.</p>
+            <p>{c.founder}</p>
           </div>
         </div>
       </div>
       <ul className="audit-pills">
-        <li><Check />Sans engagement</li>
-        <li><Check />Prospects exclusifs</li>
-        <li><Check />Plan d’action offert</li>
+        {c.pills.map((p) => <li key={p}><Check />{p}</li>)}
       </ul>
     </>
   );
