@@ -127,7 +127,7 @@ export default function KairnHomeV3({ police }) {
               <Reveal delay={0.4} y={16}>
                 {police ? (
                   <p className="hero-lead">
-                    Des particuliers qui viennent de demander à être rappelés, <strong>envoyés dans votre espace dès qu’ils remplissent le formulaire</strong>. Propriétaire, logement, chauffage : vous savez qui vous appelez. <strong>Nous payons la pub, vous payez au contact.</strong>
+                    Des particuliers qui viennent de demander à être rappelés, <strong>envoyés dans votre espace dès qu’ils remplissent nos formulaires</strong>. Propriétaire, logement, chauffage : vous savez qui vous appelez. <strong>Nous payons la pub, vous payez au contact.</strong>
                   </p>
                 ) : (
                   <p className="hero-lead">
