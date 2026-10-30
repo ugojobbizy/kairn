@@ -1,5 +1,6 @@
 // Données fictives de l'aperçu de développement (/espace?apercu et /gestion?apercu). Aucune personne réelle :
 // prénoms et noms génériques numérotés, téléphones en 06 00 00 xx xx.
+// Les trois derniers contacts livrés datent de quelques minutes : l'accueil « Aujourd'hui » montre leur fraîcheur.
 const CP = ['33000', '33600', '24100', '47000', '40100', '64000', '17000', '16000', '87000', '19100', '81000', '31000'];
 const STATUTS = ['Propriétaire', 'Propriétaire', 'Propriétaire', 'Locataire'];
 const LOGEMENTS = ['Maison', 'Maison', 'Appartement'];
@@ -29,7 +30,7 @@ export function apercuData() {
   const pre = { id: 'apercu-cmd-2', created_at: new Date(Date.now() - 86400000).toISOString(), type: 'precommande', thematique: 'PAC', volume: '50', statut: 'nouvelle', etape: 'recue', societe: 'Exemple Chauffage', zone: '33' };
   const shopCmd = { id: 'apercu-cmd-3', created_at: new Date(Date.now() - 20 * 86400000).toISOString(), type: 'shop', thematique: 'PPV', volume: '4', statut: 'terminee', etape: 'terminee', bdc_numero: 'BDC-2026-00000', plafond: 4, prix_unitaire: 35, montant_ht: 140, approuve_le: new Date(Date.now() - 20 * 86400000).toISOString(), regle_le: new Date(Date.now() - 15 * 86400000).toISOString(), societe: 'Exemple Chauffage' };
   const mine = [
-    ...Array.from({ length: 73 }, (_, i) => lead(i, 'ITE', Math.floor(i / 10), { client_id: 'apercu', commande_id: cmd.id, livre_le: new Date(Date.now() - Math.floor(i / 10) * 86400000 - i * 3600000).toISOString(), exporte_le: i > 8 ? new Date().toISOString() : null })),
+    ...Array.from({ length: 73 }, (_, i) => lead(i, 'ITE', Math.floor(i / 10), { client_id: 'apercu', commande_id: cmd.id, livre_le: new Date(i < 3 ? Date.now() - [6, 22, 48][i] * 60000 : Date.now() - Math.floor(i / 10) * 86400000 - i * 3600000).toISOString(), exporte_le: i > 8 ? new Date().toISOString() : null })),
     ...Array.from({ length: 4 }, (_, i) => lead(200 + i, 'PPV', 20, { client_id: 'apercu', commande_id: shopCmd.id, livre_le: shopCmd.created_at, exporte_le: new Date().toISOString() })),
   ];
   const litiges = [

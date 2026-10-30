@@ -14,12 +14,15 @@ import './espace.css';
 // Accueil (tableau de bord, raccourcis, catalogue), Mes prospects, Leads Shop, Mes litiges, Mes commandes, Comptabilité, Mes contrats.
 // Paiement par bon de commande (Stripe plus tard). Litiges : doublon ou hors zone seulement, Ugo tranche dans Kairn Admin (/gestion).
 
+// Refonte du 30/10/2026 (Ugo : « repenser l'espace client [...] beaucoup plus ergonomique ») : l'outil sert d'abord à appeler.
+// Accueil « Aujourd'hui » (contacts frais à appeler), fiches contact avec Appeler et SMS, export Excel, CSV ou Google Sheets,
+// commandes reconductibles ; sur mobile, barre d'onglets en bas (champ « tab »). Plan : ~/.claude/plans/staged-wondering-peach.md.
 const MENU = [
-  { to: '/espace', end: true, t: 'Accueil', ico: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
-  { to: '/espace/prospects', t: 'Mes prospects', ico: <><circle cx="9" cy="8" r="4" /><path d="M2 21v-1a6 6 0 0 1 12 0v1M16 4a4 4 0 0 1 0 8M22 21v-1a6 6 0 0 0-4-5.6" /></> },
-  { to: '/espace/shop', t: 'Leads Shop', ico: <><path d="M6 6h15l-2 9H7z" /><circle cx="9" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" /><path d="M6 6 5 2H2" /></> },
+  { to: '/espace', end: true, t: 'Aujourd’hui', tab: 'Aujourd’hui', ico: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
+  { to: '/espace/prospects', t: 'Mes contacts', tab: 'Contacts', ico: <><circle cx="9" cy="8" r="4" /><path d="M2 21v-1a6 6 0 0 1 12 0v1M16 4a4 4 0 0 1 0 8M22 21v-1a6 6 0 0 0-4-5.6" /></> },
+  { to: '/espace/commandes', t: 'Mes commandes', tab: 'Commandes', ico: <><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8h8M8 12h8M8 16h5" /></> },
+  { to: '/espace/shop', t: 'Leads Shop', tab: 'Shop', ico: <><path d="M6 6h15l-2 9H7z" /><circle cx="9" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" /><path d="M6 6 5 2H2" /></> },
   { to: '/espace/litiges', t: 'Mes litiges', ico: <><path d="M12 3v18M5 21h14M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0zM5 8h14" /></> },
-  { to: '/espace/commandes', t: 'Mes commandes', ico: <><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8h8M8 12h8M8 16h5" /></> },
   { to: '/espace/comptabilite', t: 'Comptabilité', ico: <><rect x="4" y="2" width="16" height="20" rx="2" /><path d="M8 6h8M8 10h2M14 10h2M8 14h2M14 14h2M8 18h2M14 18h2" /></> },
   { to: '/espace/contrats', t: 'Mes contrats', ico: <><path d="M6 2h9l5 5v15H6z" /><path d="M14 2v6h6M9 13h6M9 17h6" /></> },
 ];
@@ -134,48 +137,122 @@ function Login() {
   );
 }
 
-// ─ Accueil ─
-function Home({ client }) {
+// ─ Fiche contact (accueil et Mes contacts) ─
+// Âge du contact : la fraîcheur se lit d'un coup d'œil (pilier « frais » de l'accueil du site).
+function ilYa(d) {
+  if (!d) return '';
+  const min = Math.max(0, Math.round((Date.now() - new Date(d).getTime()) / 60000));
+  if (min < 1) return 'à l’instant';
+  if (min < 60) return `il y a ${min} min`;
+  const h = Math.round(min / 60);
+  if (h < 24) return `il y a ${h} h`;
+  const j = Math.round(h / 24);
+  return j === 1 ? 'hier' : `il y a ${j} jours`;
+}
+const isFrais = (d) => d && Date.now() - new Date(d).getTime() < 3600000;
+const nomComplet = (l) => [l.prenom, l.nom].filter(Boolean).join(' ') || 'Contact';
+const initiales = (l) => nomComplet(l).split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+// SMS prêt à envoyer depuis le téléphone du commercial ; il le relit et le modifie avant l'envoi.
+function smsHref(l, client) {
+  const t = (THEMES[l.thematique] || 'votre projet').toLowerCase();
+  const corps = `Bonjour ${l.prenom || ''}, vous avez demandé à être rappelé pour votre projet (${t}). Je vous appelle dans quelques minutes.${client?.societe ? ` ${client.societe}` : ''}`;
+  return `sms:${(l.telephone || '').replace(/\s/g, '')}?&body=${encodeURIComponent(corps.replace(/\s+/g, ' ').trim())}`;
+}
+
+function ContactCard({ lead: l, client, litige, onSignal, compact }) {
+  const qualif = [l.statut_occupation, l.type_logement, l.chauffage, l.surface].filter(Boolean);
+  return (
+    <article className={`ec-contact${isFrais(l.livre_le) ? ' is-fresh' : ''}${compact ? ' is-compact' : ''}`}>
+      <header className="ec-contact-top">
+        <span className="ec-contact-av" aria-hidden="true">{initiales(l)}</span>
+        <div className="ec-contact-who">
+          <b>{nomComplet(l)}</b>
+          <span>{[l.code_postal, l.ville].filter(Boolean).join(' ')}</span>
+        </div>
+        <span className="ec-contact-age">{isFrais(l.livre_le) && <i aria-hidden="true" />}{ilYa(l.livre_le)}</span>
+      </header>
+      <p className="ec-contact-theme">{THEMES[l.thematique] || l.thematique}</p>
+      {qualif.length > 0 && <ul className="ec-contact-q">{qualif.map((q) => <li key={q}>{q}</li>)}</ul>}
+      {!compact && (
+        <>
+          <div className="ec-contact-actions">
+            <a className="ec-call" href={`tel:${(l.telephone || '').replace(/\s/g, '')}`}><Ico size={18}><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></Ico>Appeler</a>
+            <a className="ec-sms" href={smsHref(l, client)}><Ico size={18}><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></Ico>SMS</a>
+          </div>
+          <dl className="ec-contact-coord">
+            <div><dt>Téléphone</dt><dd>{l.telephone || '·'}</dd></div>
+            <div><dt>E-mail</dt><dd>{l.email ? <a href={`mailto:${l.email}`}>{l.email}</a> : '·'}</dd></div>
+          </dl>
+          <footer className="ec-contact-foot">
+            <span>Reçu le {dateHeure(l.livre_le)}</span>
+            {litige ? <span className={`ec-status is-${litige.statut}`}>Litige {LITIGE_STATUTS[litige.statut].toLowerCase()}</span>
+              : <button type="button" className="ec-link-btn" onClick={() => onSignal(l)}>Signaler un doublon ou un hors zone</button>}
+          </footer>
+        </>
+      )}
+    </article>
+  );
+}
+
+// Plus de 80 % livrés : la commande touche à sa fin, on propose de la reconduire (seuil à valider par Ugo).
+const SEUIL_RECONDUIRE = 0.8;
+function reconduireHref(c) {
+  const q = new URLSearchParams({ thematique: c.thematique || 'PAC', quantite: String(c.plafond || c.volume || 100), zone: c.zone || '' });
+  return `/espace/precommande?${q}`;
+}
+
+function CommandeCard({ c, n }) {
+  const pct = c.plafond ? n / c.plafond : 0;
+  return (
+    <div className={`ec-order${pct >= SEUIL_RECONDUIRE ? ' is-ending' : ''}`}>
+      <div className="ec-order-top"><b>{THEMES[c.thematique] || c.thematique}</b><span>{c.zone ? `Dép. ${c.zone}` : c.bdc_numero}</span></div>
+      <Completion done={n} total={c.plafond || 0} />
+      {pct >= SEUIL_RECONDUIRE ? (
+        <div className="ec-order-end"><span>Bientôt terminée : plus que {Math.max(0, c.plafond - n)} contacts.</span><Link to={reconduireHref(c)} className="ec-btn">Reconduire</Link></div>
+      ) : <p className="ec-order-sub">Encore {Math.max(0, c.plafond - n)} contacts à recevoir.</p>}
+    </div>
+  );
+}
+
+// ─ Aujourd'hui (accueil) ─
+function Home({ client, apercu }) {
   const s = useStats();
+  const { leads, litiges, reload } = useData();
+  const [litigeFor, setLitigeFor] = useState(null);
+  const enLitige = useMemo(() => new Map((litiges || []).map((g) => [g.lead_id, g])), [litiges]);
+  // « À appeler » : les contacts livrés depuis 48 h, du plus frais au plus ancien.
+  const recents = useMemo(() => (leads || []).filter((l) => !l.annule && l.livre_le && Date.now() - new Date(l.livre_le).getTime() < 48 * 3600000)
+    .sort((a, b) => new Date(b.livre_le) - new Date(a.livre_le)), [leads]);
+  const auj = recents.filter((l) => new Date(l.livre_le).toDateString() === new Date().toDateString()).length;
   return (
     <>
-      <PageHead title={`Bienvenue${client?.prenom ? `, ${client.prenom}` : ''}`} sub="Des leads exclusifs, qualifiés et livrés en continu." />
-      <p className="ec-label">Tableau de bord</p>
-      <div className="ec-kpis">
-        <div className="ec-kpi"><b>Nombre de prospects</b><span>Leads livrés, toutes périodes</span><strong>{s ? s.livres : '·'}</strong>{s && <Completion done={s.livresCmd} total={s.commande} />}</div>
-        <div className="ec-kpi"><b>Reste à livrer</b><span>Sur vos commandes en cours</span><strong>{s ? s.reste : '·'}</strong></div>
-        <div className="ec-kpi"><b>Montant dû</b><span>Bons de commande approuvés à régler, HT</span><strong>{s ? euro(s.du) : '·'}</strong></div>
+      <header className="ec-today">
+        <p className="ec-today-hi">Bonjour{client?.prenom ? ` ${client.prenom}` : ''}</p>
+        <h1>{leads ? <><strong>{recents.length}</strong> contact{recents.length > 1 ? 's' : ''} à appeler</> : 'Chargement…'}</h1>
+        <p>{auj} reçu{auj > 1 ? 's' : ''} aujourd’hui. Plus vous rappelez vite, plus ça décroche.</p>
+      </header>
+      {leads && recents.length === 0 ? (
+        <Empty><p><b>Aucun nouveau contact pour le moment.</b></p><p>Ils arrivent ici dès qu’ils vous sont livrés.</p><Link to="/espace/prospects" className="ec-link-btn">Voir tous mes contacts</Link></Empty>
+      ) : (
+        <div className="ec-contacts">
+          {recents.slice(0, 12).map((l) => <ContactCard key={l.id} lead={l} client={client} litige={enLitige.get(l.id)} onSignal={setLitigeFor} />)}
+        </div>
+      )}
+      {recents.length > 12 && <Link to="/espace/prospects" className="ec-more">Voir les {recents.length - 12} autres contacts</Link>}
+
+      {s && s.enCours.length > 0 && (
+        <>
+          <p className="ec-label">Mes commandes en cours</p>
+          <div className="ec-orders">{s.enCours.map((c) => <CommandeCard key={c.id} c={c} n={s.livresPar[c.id] || 0} />)}</div>
+        </>
+      )}
+      <div className="ec-mini-kpis">
+        <div><span>Contacts reçus</span><b>{s ? s.livres : '·'}</b></div>
+        <div><span>Reste à livrer</span><b>{s ? s.reste : '·'}</b></div>
+        <Link to="/espace/comptabilite"><span>Montant dû HT</span><b>{s ? euro(s.du) : '·'}</b></Link>
       </div>
-      <p className="ec-label">Raccourcis</p>
-      <div className="ec-shortcuts">
-        <Link to="/espace/prospects"><b>Mes prospects</b><span>Consulter les leads livrés</span><Arrow /></Link>
-        <Link to="/espace/commandes"><b>Mes commandes</b><span>Suivre vos commandes et vos plafonds</span><Arrow /></Link>
-        <Link to="/espace/shop"><b>Leads Shop</b><span>Acheter des leads disponibles tout de suite</span><Arrow /></Link>
-      </div>
-      <p className="ec-label">Catalogue de campagnes</p>
-      <p className="ec-label-sub">Choisissez votre thématique et passez votre pré-commande.</p>
-      <div className="ec-cat">
-        {PRODUITS.map((p) => (
-          <article className={`ec-offer is-${p.code.toLowerCase()}`} key={p.code}>
-            <div className="ec-offer-top">
-              <span className="ec-offer-ico">{p.code}</span>
-              <div><h2>Leads {p.code}</h2><p>{p.nom}</p></div>
-            </div>
-            <p className="ec-offer-price"><b>{p.prix} €</b> HT / lead</p>
-            <span className="ec-chip">Minimum 50 leads</span>
-            <p className="ec-sub">Ce que vous recevez</p>
-            <ul className="ec-grid-checks">{['Nom', 'Téléphone', 'E-mail', 'Code postal', 'Date de réception'].map((x) => <li key={x}><Check />{x}</li>)}</ul>
-            <div className="ec-qualif">
-              <p className="ec-sub">Qualification</p>
-              <ul className="ec-grid-checks">{['Propriétaire ou non', 'Type de logement', 'Chauffage et surface'].map((x) => <li key={x}><Check />{x}</li>)}</ul>
-            </div>
-            <Link to={`/espace/precommande?thematique=${p.code}`} className="ec-btn">Pré-commander</Link>
-          </article>
-        ))}
-      </div>
-      <div className="ec-panel">
-        <ul className="ec-checks">{GARANTIES.map((g) => <li key={g}>{g}</li>)}</ul>
-      </div>
+      <Link to="/espace/precommande" className="ec-btn ec-btn-block">Commander des contacts</Link>
+      {litigeFor && <LitigeModal lead={litigeFor} apercu={apercu} onClose={() => setLitigeFor(null)} onDone={() => { setLitigeFor(null); reload(); }} />}
     </>
   );
 }
@@ -188,8 +265,9 @@ function Precommande({ session, client, apercu }) {
   const { reload } = useData();
   const first = PRODUITS.some((p) => p.code === params.get('thematique')) ? params.get('thematique') : 'PAC';
   const [them, setThem] = useState(first);
-  const [qte, setQte] = useState(100);
-  const [zone, setZone] = useState('');
+  // Reconduire une commande : thématique, quantité et zone préremplies (lien de CommandeCard).
+  const [qte, setQte] = useState(() => (QUANTITES.includes(Number(params.get('quantite'))) ? Number(params.get('quantite')) : 100));
+  const [zone, setZone] = useState(params.get('zone') || '');
   const [state, setState] = useState('idle');
   const [error, setError] = useState('');
   const prod = PRODUITS.find((p) => p.code === them);
@@ -211,7 +289,7 @@ function Precommande({ session, client, apercu }) {
   }
   return (
     <>
-      <PageHead title="Pré-commande" sub="Ugo valide votre zone et votre volume, puis ouvre le flux : vous recevez le bon de commande dans Mes commandes." />
+      <PageHead title="Commander des contacts" sub="Nous validons votre zone et votre volume, puis ouvrons le flux : le bon de commande arrive dans Mes commandes." />
       <form className="ec-card ec-form" onSubmit={submit}>
         <p className="ec-sub">Thématique</p>
         <div className="ec-seg">{PRODUITS.map((p) => <button type="button" key={p.code} className={them === p.code ? 'is-on' : ''} onClick={() => setThem(p.code)}><b>{p.code}</b><span>{p.nom} · {p.prix} € HT</span></button>)}</div>
@@ -220,8 +298,8 @@ function Precommande({ session, client, apercu }) {
         <label className="ec-field"><span>Départements couverts</span><input value={zone} onChange={(e) => setZone(e.target.value)} placeholder="Ex. 33, 24, 47" maxLength={200} /></label>
         <div className="ec-total"><span>Montant estimé</span><b>{euro(qte * prod.prix)} HT</b><em>{euro(qte * prod.prix * (1 + TVA))} TTC</em></div>
         {error && <p className="ec-err" role="alert">{error}</p>}
-        {state === 'sent' ? <p className="ec-ok">Pré-commande envoyée. Ugo revient vers vous pour valider la zone.</p>
-          : <button type="submit" className="ec-btn" disabled={state === 'sending'}>{state === 'sending' ? 'Envoi…' : 'Envoyer la pré-commande'}</button>}
+        {state === 'sent' ? <p className="ec-ok">Demande envoyée. Nous revenons vers vous pour valider la zone.</p>
+          : <button type="submit" className="ec-btn" disabled={state === 'sending'}>{state === 'sending' ? 'Envoi…' : 'Envoyer la demande'}</button>}
       </form>
     </>
   );
@@ -270,29 +348,82 @@ function useFilters(rows, dateKey) {
   return { rows: out, bar };
 }
 
-function Prospects({ apercu }) {
+// Écran large : liste à gauche, fiche ouverte à droite. Mobile : fiches complètes les unes sous les autres.
+function useWide(px = 1100) {
+  const q = `(min-width: ${px}px)`;
+  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia(q).matches);
+  useEffect(() => { const m = window.matchMedia(q); const on = () => setWide(m.matches); m.addEventListener('change', on); return () => m.removeEventListener('change', on); }, [q]);
+  return wide;
+}
+
+// Export : Excel (point-virgule), CSV standard (virgule : Google Sheets, la plupart des CRM), ou copie à coller dans un tableur.
+function ExportMenu({ rows, onExported }) {
+  const [copied, setCopied] = useState(false);
+  const cols = COLS_PROSPECTS.map(([k, t]) => [k === 'livre_le' ? (r) => dateHeure(r.livre_le) : k, t]);
+  const name = (ext) => `kairn-contacts-${new Date().toISOString().slice(0, 10)}.${ext}`;
+  async function copier() {
+    const val = (c, r) => String((typeof c[0] === 'function' ? c[0](r) : r[c[0]]) ?? '').replace(/[\t\n]/g, ' ');
+    const tsv = [cols.map((c) => c[1]).join('\t'), ...rows.map((r) => cols.map((c) => val(c, r)).join('\t'))].join('\n');
+    try { await navigator.clipboard.writeText(tsv); setCopied(true); setTimeout(() => setCopied(false), 2500); onExported(); } catch { /* presse-papiers refusé */ }
+  }
+  return (
+    <details className="ec-export">
+      <summary className="ec-btn-ghost"><Ico size={16}><path d="M12 3v12M7 10l5 5 5-5M4 21h16" /></Ico>Exporter ({rows.length})</summary>
+      <div className="ec-export-menu">
+        <button type="button" disabled={!rows.length} onClick={() => { downloadCsv(name('csv'), cols, rows); onExported(); }}><b>Excel</b><span>Fichier CSV pour Excel</span></button>
+        <button type="button" disabled={!rows.length} onClick={() => { downloadCsv(name('csv'), cols, rows, ','); onExported(); }}><b>CRM ou Google Sheets</b><span>Fichier CSV standard, à importer</span></button>
+        <button type="button" disabled={!rows.length} onClick={copier}><b>{copied ? 'Copié' : 'Copier le tableau'}</b><span>À coller dans Google Sheets ou Excel</span></button>
+      </div>
+    </details>
+  );
+}
+
+function Prospects({ apercu, client }) {
   const { leads, litiges, reload } = useData();
-  const [tab, setTab] = useState('a_exporter');
+  const [tab, setTab] = useState('tous');
+  const [vue, setVue] = useState('fiches');
+  const [sel, setSel] = useState(null);
+  const [showF, setShowF] = useState(false);
+  const wide = useWide();
   const [litigeFor, setLitigeFor] = useState(null);
   const enLitige = useMemo(() => new Map((litiges || []).map((g) => [g.lead_id, g])), [litiges]);
   const base = useMemo(() => (leads || []).filter((l) => !l.annule && (tab === 'tous' || (tab === 'exportes' ? l.exporte_le : !l.exporte_le))), [leads, tab]);
   const f = useFilters(base, 'livre_le');
-  async function exporter() {
-    downloadCsv(`kairn-prospects-${new Date().toISOString().slice(0, 10)}.csv`, COLS_PROSPECTS.map(([k, t]) => [k === 'livre_le' ? (r) => dateHeure(r.livre_le) : k, t]), f.rows);
+  async function marquer() {
     const ids = f.rows.filter((r) => !r.exporte_le).map((r) => r.id);
     if (ids.length && !apercu) { await db.rpc('leads_marquer_exportes', { p_ids: ids }); reload(); }
   }
   return (
     <>
-      <PageHead title="Mes prospects">
-        <button type="button" className="ec-btn-ghost" onClick={exporter} disabled={!f.rows.length}><Ico size={16}><path d="M12 3v12M7 10l5 5 5-5M4 21h16" /></Ico>Exporter ({f.rows.length})</button>
+      <PageHead title="Mes contacts">
+        <div className="ec-head-tools">
+          <div className="ec-switch" role="group" aria-label="Affichage">
+            <button type="button" className={vue === 'fiches' ? 'is-on' : ''} onClick={() => setVue('fiches')}>Fiches</button>
+            <button type="button" className={vue === 'tableau' ? 'is-on' : ''} onClick={() => setVue('tableau')}>Tableau</button>
+          </div>
+          <ExportMenu rows={f.rows} onExported={marquer} />
+        </div>
       </PageHead>
-      <div className="ec-tabs">{[['a_exporter', 'À exporter'], ['tous', 'Tous les leads'], ['exportes', 'Exportés']].map(([k, t]) => <button type="button" key={k} className={tab === k ? 'is-on' : ''} onClick={() => setTab(k)}>{t}</button>)}</div>
-      {f.bar(true, 'Livré')}
-      <div className="ec-count"><b>{f.rows.length}</b> leads livrés · {tab === 'a_exporter' ? 'à exporter' : tab === 'exportes' ? 'déjà exportés' : 'toutes périodes confondues'}</div>
+      <div className="ec-tabs">{[['tous', 'Tous'], ['a_exporter', 'À exporter'], ['exportes', 'Exportés']].map(([k, t]) => <button type="button" key={k} className={tab === k ? 'is-on' : ''} onClick={() => setTab(k)}>{t}</button>)}</div>
+      <button type="button" className="ec-filters-toggle" aria-expanded={showF} onClick={() => setShowF((o) => !o)}>{showF ? 'Masquer les filtres' : 'Filtrer et rechercher'}</button>
+      <div className={`ec-filters-box${showF ? ' is-open' : ''}`}>{f.bar(true, 'Livré')}</div>
+      <div className="ec-count"><b>{f.rows.length}</b> contact{f.rows.length > 1 ? 's' : ''} · {tab === 'a_exporter' ? 'à exporter' : tab === 'exportes' ? 'déjà exportés' : 'du plus récent au plus ancien'}</div>
+      {leads && f.rows.length > 0 && vue === 'fiches' && (wide ? (
+        <div className="ec-md">
+          <ul className="ec-md-list">
+            {f.rows.map((l) => {
+              const cur = (sel && sel.id === l.id) || (!sel && l === f.rows[0]);
+              return <li key={l.id} role="button" tabIndex={0} className={cur ? 'is-on' : ''} onClick={() => setSel(l)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSel(l); } }}><ContactCard lead={l} compact /></li>;
+            })}
+          </ul>
+          <div className="ec-md-detail"><ContactCard lead={f.rows.find((l) => sel && l.id === sel.id) || f.rows[0]} client={client} litige={enLitige.get((sel || f.rows[0]).id)} onSignal={setLitigeFor} /></div>
+        </div>
+      ) : (
+        <div className="ec-contacts">{f.rows.slice(0, 60).map((l) => <ContactCard key={l.id} lead={l} client={client} litige={enLitige.get(l.id)} onSignal={setLitigeFor} />)}</div>
+      ))}
       {leads && f.rows.length === 0 ? (
         <Empty>{tab === 'a_exporter' ? <><p><b>Aucun lead à exporter : vous êtes à jour.</b></p><button type="button" className="ec-link-btn" onClick={() => setTab('tous')}>Voir tous les leads</button></> : <p>Aucun lead pour ces filtres.</p>}</Empty>
-      ) : (
+      ) : vue === 'tableau' && (
         <div className="ec-card ec-table-wrap">
           <table className="ec-table">
             <thead><tr><th>Livré le</th><th>Thématique</th><th>Prospect</th><th>Téléphone</th><th>E-mail</th><th>Code postal</th><th>Statut</th><th>Logement</th><th>Chauffage</th><th>Surface</th><th /></tr></thead>
@@ -508,7 +639,7 @@ function Commandes() {
   const rows = tab === 'en_cours' ? all.filter((c) => c.statut === 'ouverte') : tab === 'pre' ? all.filter((c) => c.type === 'precommande' && !c.bdc_numero) : tab === 'shop' ? all.filter((c) => c.type === 'shop') : all;
   return (
     <>
-      <PageHead title="Mes commandes"><Link to="/espace/precommande" className="ec-btn">Demander une commande</Link></PageHead>
+      <PageHead title="Mes commandes"><Link to="/espace/precommande" className="ec-btn">Commander des contacts</Link></PageHead>
       <div className="ec-tabs">{[['en_cours', 'Commandes en cours'], ['toutes', 'Toutes les commandes'], ['pre', 'Pré-commandes'], ['shop', 'Commandes Shop']].map(([k, t]) => <button type="button" key={k} className={tab === k ? 'is-on' : ''} onClick={() => setTab(k)}>{t}</button>)}</div>
       {tab === 'en_cours' && s && s.enCours.length > 0 && (
         <div className="ec-progress-grid">
@@ -522,6 +653,7 @@ function Commandes() {
                 <p>Livré <strong>{n}</strong> / Plafond <strong>{c.plafond}</strong></p>
                 <p className="ec-small-l">Restant : <b>{Math.max(0, c.plafond - n)}</b></p>
                 <div className="ec-bar"><span style={{ width: `${pct}%` }} /></div>
+                {c.type !== 'shop' && pct >= SEUIL_RECONDUIRE * 100 && <Link to={reconduireHref(c)} className="ec-btn ec-btn-sm">Reconduire cette commande</Link>}
               </div>
             );
           })}
@@ -605,7 +737,7 @@ function Contrats() {
   return (
     <>
       <PageHead title="Mes contrats" sub="Vos conditions de vente et vos contrats signés." />
-      <Empty><p>Aucun contrat pour l’instant. Ugo les dépose ici dès qu’ils sont signés.</p></Empty>
+      <Empty><p>Aucun contrat pour l’instant. Nous les déposons ici dès qu’ils sont signés.</p></Empty>
     </>
   );
 }
@@ -652,16 +784,26 @@ function Shell({ session, client, apercu }) {
             ))}
           </nav>
           <div className="ec-side-foot">
-            {WHATSAPP_NUMBER && <a href={whatsappUrl('Bonjour Ugo, une question depuis mon espace client.')} target="_blank" rel="noopener noreferrer" className="ec-help">Une question ? <b>Écrire à Ugo</b></a>}
+            {WHATSAPP_NUMBER && <a href={whatsappUrl('Bonjour Ugo, une question depuis mon espace client.')} target="_blank" rel="noopener noreferrer" className="ec-help">Une question ? <b>Nous écrire sur WhatsApp</b></a>}
             <button type="button" className="ec-logout" onClick={() => db.auth.signOut()}>Se déconnecter</button>
           </div>
         </aside>
         {!apercu && <Tickets session={session} />}
+        <nav className="ec-tabbar" aria-label="Navigation rapide">
+          {MENU.filter((m) => m.tab).map((m) => (
+            <NavLink key={m.to} to={m.to} end={m.end} className={({ isActive }) => (isActive ? 'is-active' : undefined)} onClick={() => setOpen(false)}>
+              <Ico size={21}>{m.ico}</Ico><span>{m.tab}</span>
+            </NavLink>
+          ))}
+          <button type="button" className={open ? 'is-active' : undefined} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+            <Ico size={21}><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></Ico><span>Plus</span>
+          </button>
+        </nav>
         <main className="ec-main">
           {data.error && <p className="ec-err">{data.error}</p>}
           <Routes>
-            <Route index element={<Home client={client} />} />
-            <Route path="prospects" element={<Prospects apercu={apercu} />} />
+            <Route index element={<Home client={client} apercu={apercu} />} />
+            <Route path="prospects" element={<Prospects apercu={apercu} client={client} />} />
             <Route path="shop" element={<Shop apercu={apercu} />} />
             <Route path="litiges" element={<Litiges />} />
             <Route path="commandes" element={<Commandes />} />
@@ -669,7 +811,7 @@ function Shell({ session, client, apercu }) {
             <Route path="comptabilite" element={<Compta />} />
             <Route path="contrats" element={<Contrats />} />
             <Route path="compte" element={<Account session={session} client={client} />} />
-            <Route path="*" element={<Home client={client} />} />
+            <Route path="*" element={<Home client={client} apercu={apercu} />} />
           </Routes>
         </main>
       </div>
@@ -712,7 +854,7 @@ export default function ClientSpace() {
         <div className="ec-login-card">
           <Link to="/" className="brand"><KairnLogo />Kairn</Link>
           <h1>Accès en préparation</h1>
-          <p>Votre compte existe, mais votre espace n’est pas encore ouvert. Ugo l’active après votre premier échange.</p>
+          <p>Votre compte existe, mais votre espace n’est pas encore ouvert. Nous l’activons après votre premier échange.</p>
           <button type="button" className="ec-btn" onClick={() => db.auth.signOut()}>Se déconnecter</button>
         </div>
       </div>

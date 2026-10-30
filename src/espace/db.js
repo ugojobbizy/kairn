@@ -40,10 +40,10 @@ export function errMsg(e) {
   return 'L’opération n’a pas abouti. Réessayez dans un instant.';
 }
 
-// Export CSV (séparateur point-virgule, lu tel quel par Excel en français).
-export function downloadCsv(name, cols, rows) {
+// Export CSV : point-virgule par défaut (lu tel quel par Excel en français), virgule pour Google Sheets et les CRM.
+export function downloadCsv(name, cols, rows, sep = ';') {
   const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-  const csv = [cols.map((c) => esc(c[1])).join(';'), ...rows.map((r) => cols.map((c) => esc(typeof c[0] === 'function' ? c[0](r) : r[c[0]])).join(';'))].join('\r\n');
+  const csv = [cols.map((c) => esc(c[1])).join(sep), ...rows.map((r) => cols.map((c) => esc(typeof c[0] === 'function' ? c[0](r) : r[c[0]])).join(sep))].join('\r\n');
   const url = URL_.createObjectURL(new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' }));
   const a = document.createElement('a');
   a.href = url; a.download = name; a.click();

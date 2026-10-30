@@ -82,13 +82,13 @@ export default function Tickets({ session }) {
         <div className="tk-panel" role="dialog" aria-label="Contacter Kairn">
           <header className="tk-head">
             {cur ? <button type="button" className="tk-back" onClick={() => { setCur(null); load(); }}>‹ Mes demandes</button> : <b>Contacter Kairn</b>}
-            <span>Réponse d’Ugo dans la journée</span>
+            <span>Réponse dans la journée</span>
           </header>
 
           {!cur && (
             <div className="tk-body">
               <button type="button" className="ec-btn tk-new" onClick={() => { setCur('new'); setError(''); }}>Nouvelle demande</button>
-              {tickets.length === 0 ? <p className="tk-empty">Une question, un problème sur un lead, une urgence ? Écrivez ici : Ugo est prévenu tout de suite.</p> : (
+              {tickets.length === 0 ? <p className="tk-empty">Une question, un problème sur un lead, une urgence ? Écrivez ici : nous sommes prévenus tout de suite.</p> : (
                 <ul className="tk-list">
                   {tickets.map((t) => (
                     <li key={t.id}><button type="button" onClick={() => ouvrir(t)}>
@@ -118,7 +118,7 @@ export default function Tickets({ session }) {
                 {msgs.map((m) => (
                   <div key={m.id} className={`tk-msg${m.de_kairn ? ' is-kairn' : ''}`}>
                     <p>{m.texte}</p>
-                    <span>{m.de_kairn ? 'Ugo · Kairn' : 'Vous'} · {dateHeure(m.created_at)}</span>
+                    <span>{m.de_kairn ? 'Kairn' : 'Vous'} · {dateHeure(m.created_at)}</span>
                   </div>
                 ))}
                 <div ref={end} />
