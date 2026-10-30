@@ -4,33 +4,85 @@ import './styles.js';
 import KairnHomeV3 from './v3/home.jsx';
 import SeoManager from './seo-manager.jsx';
 
+// Une page chargée à la demande dont le fichier a disparu (onglet ouvert avant une mise en ligne : les noms de fichiers
+// changent à chaque version) recharge le site une fois, au lieu de rester blanche (Ugo, 30/10/2026 : « parfois je clique
+// sur des pages et c'est super long à charger »). Le drapeau évite une boucle si le fichier manque vraiment.
+const RELOAD_KEY = 'kairn-page-reload';
+function lazyPage(load) {
+  return lazy(() => load().catch((err) => {
+    let deja = false;
+    try { deja = sessionStorage.getItem(RELOAD_KEY) === '1'; sessionStorage.setItem(RELOAD_KEY, '1'); } catch { /* stockage bloqué */ }
+    if (!deja) { window.location.reload(); return new Promise(() => {}); }
+    throw err;
+  }));
+}
+
+// Préchargement : le code d'une page part dès que la souris passe sur son lien (ou que le doigt le touche),
+// pour qu'elle s'affiche sans attente au clic. Mêmes fichiers que les lazyPage ci-dessous (Vite ne les charge qu'une fois).
+const PRECHARGE = [
+  ['/commander', () => import('./v3/order.jsx')],
+  ['/espace', () => import('./espace/espace.jsx')],
+  ['/gestion', () => import('./gestion/gestion.jsx')],
+  ['/plateforme', () => import('./v3/plateforme.jsx')],
+  ['/realisations', () => import('./v2/realisations-v2.jsx')],
+  ['/generation-de-leads', () => import('./v2/lead-gen.jsx')],
+  ['/creation-site-internet', () => import('./v2/web-creation.jsx')],
+  ['/creation-landing-page', () => import('./v2/landing-creation.jsx')],
+  ['/crm-sur-mesure', () => import('./v2/crm-page.jsx')],
+  ['/agence-bordeaux', () => import('./v2/bordeaux-page.jsx')],
+  ['/blog', () => import('./v2/blog-index.jsx')],
+];
+function usePrechargement() {
+  useEffect(() => {
+    const fait = new Set();
+    const viser = (e) => {
+      const a = e.target.closest && e.target.closest('a[href^="/"]');
+      if (!a) return;
+      const path = a.getAttribute('href').split(/[?#]/)[0];
+      const p = PRECHARGE.find(([k]) => path === k || path.startsWith(`${k}/`));
+      if (p && !fait.has(p[0])) { fait.add(p[0]); p[1]().catch(() => fait.delete(p[0])); }
+    };
+    document.addEventListener('pointerover', viser, { passive: true });
+    document.addEventListener('touchstart', viser, { passive: true });
+    document.addEventListener('focusin', viser);
+    // La page a bien démarré : un futur fichier manquant pourra de nouveau provoquer un rechargement.
+    const t = setTimeout(() => { try { sessionStorage.removeItem(RELOAD_KEY); } catch { /* stockage bloqué */ } }, 5000);
+    return () => { document.removeEventListener('pointerover', viser); document.removeEventListener('touchstart', viser); document.removeEventListener('focusin', viser); clearTimeout(t); };
+  }, []);
+}
+
+// Barre de chargement fine en haut de l'écran pendant qu'une page arrive (au lieu d'un écran blanc).
+function Chargement() {
+  return <div className="page-loading" role="progressbar" aria-label="Chargement de la page"><span /></div>;
+}
+
 // Pages chargées à la demande : la page d'accueil n'embarque pas le code des autres pages.
-const KairnHome = lazy(() => import('./home.jsx'));
-const KairnHomeV2 = lazy(() => import('./v2/home-v2.jsx'));
-const OrderPage = lazy(() => import('./v3/order.jsx'));
-const ClientSpace = lazy(() => import('./espace/espace.jsx'));
-const Gestion = lazy(() => import('./gestion/gestion.jsx'));
-const Plateforme = lazy(() => import('./v3/plateforme.jsx'));
-const RealisationsPage = lazy(() => import('./realisations.jsx'));
-const LandingPage = lazy(() => import('./landing.jsx'));
-const LandingPage2 = lazy(() => import('./landing2.jsx'));
-const LandingPage3 = lazy(() => import('./landing3.jsx'));
-const RealisationsV2 = lazy(() => import('./v2/realisations-v2.jsx'));
-const LeadGenPage = lazy(() => import('./v2/lead-gen.jsx'));
-const WebCreationPage = lazy(() => import('./v2/web-creation.jsx'));
-const LandingCreationPage = lazy(() => import('./v2/landing-creation.jsx'));
-const CrmPage = lazy(() => import('./v2/crm-page.jsx'));
-const BordeauxPage = lazy(() => import('./v2/bordeaux-page.jsx'));
-const BlogIndex = lazy(() => import('./v2/blog-index.jsx'));
-const PresentationPac = lazy(() => import('./v2/presentation-pac.jsx'));
-const Onboarding = lazy(() => import('./onboarding/onboarding.jsx'));
-const OnboardingAdmin = lazy(() => import('./onboarding/admin.jsx'));
-const ArticlePage = lazy(() => import('./v2/article.jsx'));
-const MentionsLegales = lazy(() => import('./legal.jsx').then((m) => ({ default: m.MentionsLegales })));
-const Confidentialite = lazy(() => import('./legal.jsx').then((m) => ({ default: m.Confidentialite })));
-const CGV = lazy(() => import('./legal.jsx').then((m) => ({ default: m.CGV })));
-const AdminLoginPage = lazy(() => import('./admin/admin-pages.jsx').then((m) => ({ default: m.AdminLoginPage })));
-const AdminCRMPage = lazy(() => import('./admin/admin-pages.jsx').then((m) => ({ default: m.AdminCRMPage })));
+const KairnHome = lazyPage(() => import('./home.jsx'));
+const KairnHomeV2 = lazyPage(() => import('./v2/home-v2.jsx'));
+const OrderPage = lazyPage(() => import('./v3/order.jsx'));
+const ClientSpace = lazyPage(() => import('./espace/espace.jsx'));
+const Gestion = lazyPage(() => import('./gestion/gestion.jsx'));
+const Plateforme = lazyPage(() => import('./v3/plateforme.jsx'));
+const RealisationsPage = lazyPage(() => import('./realisations.jsx'));
+const LandingPage = lazyPage(() => import('./landing.jsx'));
+const LandingPage2 = lazyPage(() => import('./landing2.jsx'));
+const LandingPage3 = lazyPage(() => import('./landing3.jsx'));
+const RealisationsV2 = lazyPage(() => import('./v2/realisations-v2.jsx'));
+const LeadGenPage = lazyPage(() => import('./v2/lead-gen.jsx'));
+const WebCreationPage = lazyPage(() => import('./v2/web-creation.jsx'));
+const LandingCreationPage = lazyPage(() => import('./v2/landing-creation.jsx'));
+const CrmPage = lazyPage(() => import('./v2/crm-page.jsx'));
+const BordeauxPage = lazyPage(() => import('./v2/bordeaux-page.jsx'));
+const BlogIndex = lazyPage(() => import('./v2/blog-index.jsx'));
+const PresentationPac = lazyPage(() => import('./v2/presentation-pac.jsx'));
+const Onboarding = lazyPage(() => import('./onboarding/onboarding.jsx'));
+const OnboardingAdmin = lazyPage(() => import('./onboarding/admin.jsx'));
+const ArticlePage = lazyPage(() => import('./v2/article.jsx'));
+const MentionsLegales = lazyPage(() => import('./legal.jsx').then((m) => ({ default: m.MentionsLegales })));
+const Confidentialite = lazyPage(() => import('./legal.jsx').then((m) => ({ default: m.Confidentialite })));
+const CGV = lazyPage(() => import('./legal.jsx').then((m) => ({ default: m.CGV })));
+const AdminLoginPage = lazyPage(() => import('./admin/admin-pages.jsx').then((m) => ({ default: m.AdminLoginPage })));
+const AdminCRMPage = lazyPage(() => import('./admin/admin-pages.jsx').then((m) => ({ default: m.AdminCRMPage })));
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -59,13 +111,14 @@ function useIsMobile() {
 }
 
 export function Shell() {
+  usePrechargement();
   const isMobile = useIsMobile();
   const variant = isMobile ? 'mobile' : 'desktop';
   return (
     <>
       <ScrollToTop />
       <SeoManager />
-      <Suspense fallback={null}>
+      <Suspense fallback={<Chargement />}>
       <Routes>
         {/* Mise en ligne du 29/10/2026 (Ugo : « déploie en live tout ») : la V2 devient l'accueil ; l'accueil blanc reste sur /accueil-v1,
             l'ancien accueil sombre sur /landingpage. */}

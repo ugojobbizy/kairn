@@ -14,4 +14,14 @@ function Reveal() {
   return null;
 }
 
+// Fichier d'une ancienne version introuvable au préchargement (après une mise en ligne) : on recharge une fois.
+window.addEventListener('vite:preloadError', (e) => {
+  try {
+    if (sessionStorage.getItem('kairn-page-reload') === '1') return;
+    sessionStorage.setItem('kairn-page-reload', '1');
+  } catch { return; }
+  e.preventDefault();
+  window.location.reload();
+});
+
 ReactDOM.createRoot(root).render(<><Reveal /><App /></>);
