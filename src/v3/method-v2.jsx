@@ -10,8 +10,8 @@ import { motion, useInView, useScroll, useSpring } from 'framer-motion';
 const STEPS = [
   { t: 'Vous commandez', when: 'En ligne', d: 'Votre métier, vos départements, le volume, à partir de 50 contacts. Sans engagement.' },
   { t: 'On valide ensemble', when: 'Bon de commande', d: 'On vérifie votre zone, on émet le bon de commande et on lance en moins de 24 h.' },
-  { t: 'Les contacts arrivent', when: 'Espace client', d: 'Chaque contact est envoyé à vous seul : nom, téléphone, e-mail, code postal, propriétaire ou non, type de logement, chauffage, surface.' },
-  { t: 'Vous rappelez', when: 'Dans l’heure, si possible', d: 'Plus le rappel est rapide, plus ça décroche. Un doublon ou un contact hors zone se signale en un clic : il est remplacé.' },
+  { t: 'Les contacts arrivent', when: 'Espace client', d: 'Chaque jour, des contacts envoyés à vous seul : nom, téléphone, e-mail, code postal, propriétaire ou non, type de logement, chauffage, surface.' },
+  { t: 'Vous rappelez', when: 'Rappelez vite', d: 'Le contact vient de faire sa demande : c’est maintenant qu’il décroche. Un doublon ou un contact hors zone se signale en un clic : il est remplacé.' },
 ];
 
 function Step({ s, i }) {
@@ -41,7 +41,7 @@ export default function MethodV2() {
         <p className="eyebrow">Comment ça se passe</p>
         <h2 className="h2">De la commande <span className="serif grad-text">au premier contact.</span></h2>
         <p className="m2-lead">Ce qui se passe quand vous commandez des contacts. Pour le Pilotage, on vous explique tout lors de l’audit stratégique.</p>
-        <Link to="/commander" className="btn btn-order">Commander des leads</Link>
+        <Link to="/commander" className="btn btn-order">Commander des contacts</Link>
       </div>
       <div className="m2-list" ref={list}>
         <span className="m2-rail" aria-hidden="true"><motion.span style={{ scaleY: fill }} /></span>

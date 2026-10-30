@@ -2,8 +2,9 @@
 // Captures de l'espace client en aperçu (données d'exemple) dans public/plateforme/.
 export const ETAPES = [
   {
-    img: 'shop', tag: 'Leads Shop', h: 'Des leads disponibles,', i: 'tout de suite.',
-    p: 'Des leads disponibles tout de suite, filtrés par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
+    // Ugo, 30/10/2026 : le Leads Shop est un espace à part, il regroupe les leads produits en surplus sur les autres campagnes, à prix réduit.
+    img: 'shop', tag: 'Leads Shop', h: 'Le surplus de nos campagnes,', i: 'à prix réduit.',
+    p: 'Un espace à part, en plus de vos commandes : les contacts produits en surplus sur nos campagnes, disponibles tout de suite et moins chers. Filtrés par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
     points: ['Coordonnées visibles seulement après l’achat', 'Hors zone d’un autre client : marqué « déjà transmis », 5 € moins cher', 'Consentement du particulier encore valable'],
   },
   {

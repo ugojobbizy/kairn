@@ -17,6 +17,7 @@ import HeroBgV2 from './hero-bg-v2.jsx';
 import LeadSample from './lead-sample.jsx';
 import PlatformTabs from './platform-tabs.jsx';
 import MethodV2 from './method-v2.jsx';
+import Piliers from './piliers.jsx';
 import '../v2/v2.css';
 import './v3.css';
 import './police.css';
@@ -33,8 +34,10 @@ const headline = [
 
 // V2 : titre générique (Ugo, 29/10/2026 : « je ne vends pas que des contacts de PAC, ITE et panneaux solaires [...]
 // la headline doit être générique »). On garde l'exclusivité de la proposition de copy du même jour.
+// 30/10/2026 : titre, chapô, boutons et piliers repris de brand/copy-v3-proposition.md (validée par Ugo) :
+// marché déjà acheteur de leads, page bas de tunnel sur fraîcheur, qualification, flux journalier, exclusivité.
 const headlineV2 = [
-  { w: 'Des' }, { w: 'contacts' }, { w: 'qualifiés' }, { br: true },
+  { w: 'Chaque' }, { w: 'jour,' }, { w: 'des' }, { w: 'contacts' }, { w: 'frais' }, { br: true },
   { w: 'que', serif: true }, { w: 'vous', serif: true }, { w: 'êtes', serif: true }, { w: 'seul', serif: true }, { w: 'à', serif: true }, { w: 'appeler.', serif: true },
 ];
 
@@ -124,7 +127,7 @@ export default function KairnHomeV3({ police }) {
               <Reveal delay={0.4} y={16}>
                 {police ? (
                   <p className="hero-lead">
-                    <strong>Nous payons la pub, vous payez au contact</strong>, sans engagement. Vous préférez vos propres campagnes ? <strong>On alimente vos commerciaux</strong> avec une acquisition sur mesure.
+                    Des particuliers qui viennent de demander à être rappelés, <strong>envoyés dans votre espace dès qu’ils remplissent le formulaire</strong>. Propriétaire, logement, chauffage : vous savez qui vous appelez. <strong>Nous payons la pub, vous payez au contact.</strong>
                   </p>
                 ) : (
                   <p className="hero-lead">
@@ -133,8 +136,8 @@ export default function KairnHomeV3({ police }) {
                 )}
               </Reveal>
               <Reveal delay={0.5} y={16} className="hero-actions">
-                <Link to="/commander" className="btn btn-order">Commander des leads</Link>
-                <a href="#reserver" className="btn btn-light">{police ? 'Lancer ma campagne' : 'Réserver un appel'}</a>
+                <Link to="/commander" className="btn btn-order">{police ? 'Commander des contacts' : 'Commander des leads'}</Link>
+                <a href="#reserver" className="btn btn-light">{police ? 'Parler à Ugo' : 'Réserver un appel'}</a>
               </Reveal>
               {/* Note Google donnée par Ugo le 29/10/2026 (« finalement j'ai 5 étoiles par 4,9 sur google »). */}
               {police && <Reveal delay={0.55} y={12}><GoogleRating /></Reveal>}
@@ -144,6 +147,12 @@ export default function KairnHomeV3({ police }) {
             </div>
           </section>
 
+          {/* ── Les quatre piliers de Kairn Leads (V2 seulement) ── */}
+          {police && <section className="band" id="piliers" style={{ paddingTop: 'var(--band-sm)' }}>
+            <div className="wrap">
+              <Piliers />
+            </div>
+          </section>}
           {/* ── Les deux offres ── */}
           <section className="band" id="offres" style={{ paddingTop: 'var(--band-sm)' }}>
             <div className="wrap">
@@ -233,7 +242,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Audit stratégique" intro={['30 minutes pour savoir combien de nouveaux clients vous pourrez signer le mois prochain avec nos solutions.']} /> : <Booking />}
+                {police ? <Booking title="Audit stratégique" intro={['30 minutes avec Ugo : votre métier, vos départements, le nombre de contacts par jour qu’il vous faut. Vous repartez avec un prix et une date de démarrage.']} /> : <Booking />}
               </div>
             </div>
           </section>
@@ -247,7 +256,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Audit stratégique" intro={['30 minutes pour savoir combien de nouveaux clients vous pourrez signer le mois prochain avec nos solutions.']} /> : <Booking />}
+                {police ? <Booking title="Audit stratégique" intro={['30 minutes avec Ugo : votre métier, vos départements, le nombre de contacts par jour qu’il vous faut. Vous repartez avec un prix et une date de démarrage.']} /> : <Booking />}
               </div>
             </div>
           </section>
@@ -268,7 +277,7 @@ export default function KairnHomeV3({ police }) {
         </main>
 
         <Footer />
-        <div className="mob-cta"><Link to="/commander" className="btn btn-order">Commander des leads</Link></div>
+        <div className="mob-cta"><Link to="/commander" className="btn btn-order">{police ? 'Commander des contacts' : 'Commander des leads'}</Link></div>
       </div>
     </MotionConfig>
   );
