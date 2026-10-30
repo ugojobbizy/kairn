@@ -2,6 +2,7 @@
 // Variable Vercel : SUPABASE_SERVICE_ROLE_KEY (clé secrète du projet, Settings, API keys). Elle ne quitte jamais le serveur.
 // Accepte une clé secrète récente (sb_secret_…, en-tête apikey seul) ou l'ancienne clé service_role (JWT, aussi en Bearer).
 import nodemailer from 'nodemailer';
+import { LOGO_EMAIL_PNG } from './_logo-email.js';
 
 export const SUPABASE_URL = 'https://bmqvlwdbwfnafuovzzhi.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV';
@@ -42,6 +43,6 @@ export async function envoyerEmail(to, subject, texte, html) {
   const pass = process.env.ZOHO_SMTP_PASS;
   if (!user || !pass) return false;
   const transport = nodemailer.createTransport({ host: process.env.ZOHO_SMTP_HOST || 'smtp.zoho.eu', port: 465, secure: true, auth: { user, pass } });
-  await transport.sendMail({ from: `Kairn <${user}>`, to, subject, text: Array.isArray(texte) ? texte.join('\n') : texte, ...(html ? { html } : {}) });
+  await transport.sendMail({ from: `Kairn <${user}>`, to, subject, text: Array.isArray(texte) ? texte.join('\n') : texte, ...(html ? { html, attachments: [{ filename: 'kairn.png', content: Buffer.from(LOGO_EMAIL_PNG, 'base64'), contentType: 'image/png', cid: 'logo-kairn' }] } : {}) });
   return true;
 }

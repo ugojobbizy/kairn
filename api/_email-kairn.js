@@ -1,6 +1,6 @@
 // Gabarit des e-mails d'accès à l'espace client (Ugo, 30/10/2026 : « un joli mail brandé de première connexion »).
 // HTML en tableaux et styles en ligne (Gmail, Outlook, Apple Mail), DA Kairn : bandeau nuit, logo cairn, bouton bleu.
-// Toujours accompagné d'une version texte. Le logo est servi par le site (public/logo-192.png).
+// Toujours accompagné d'une version texte. Le logo est joint à l'e-mail (cid:logo-kairn, api/_logo-email.js), pas chargé depuis le site.
 import { SITE } from './_auth-admin.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -32,7 +32,7 @@ export function emailAcces({ mode, prenom, societe, lien }) {
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#FFFFFF;border-radius:20px;overflow:hidden;border:1px solid #E1E6F0;">
     <tr><td style="background:#0B0918;background-image:linear-gradient(135deg,#0B0918 0%,#1B1A4A 100%);padding:28px 36px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-        <td style="vertical-align:middle;"><img src="${SITE}/logo-192.png" width="44" height="44" alt="" style="display:block;border:0;border-radius:12px;"></td>
+        <td style="vertical-align:middle;"><img src="cid:logo-kairn" width="44" height="44" alt="" style="display:block;border:0;border-radius:12px;"></td>
         <td style="vertical-align:middle;padding-left:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:22px;font-weight:600;letter-spacing:-0.5px;color:#FFFFFF;">Kairn</td>
       </tr></table>
     </td></tr>
