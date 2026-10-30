@@ -12,7 +12,7 @@ export const FAQ = [
 // corrigée selon les décisions d'Ugo du même jour : faux numéros non remplacés, bon de commande réglé par virement,
 // contacts livrés dans l'espace client). FAQ reste celle de l'accueil actuel et des données structurées.
 export const FAQ_V2 = [
-  ['Un contact est-il vendu à plusieurs professionnels ?', 'Non. Chaque contact est envoyé à un seul professionnel. Le Leads Shop est un espace à part : il regroupe, à prix réduit, les contacts produits en surplus sur nos campagnes, et marque « déjà transmis » ceux qui ont été envoyés à un autre professionnel.'],
+  ['Un contact est-il vendu à plusieurs professionnels ?', 'Non. Chaque contact est envoyé à un seul professionnel. Nous déployons une campagne adaptée à votre produit, secteur et attentes à chaque fois.'],
   ['Quand est-ce que je reçois les contacts ?', 'Chaque jour, au fil des demandes. Un contact arrive dans votre espace client dès que le particulier remplit le formulaire.'],
   ['Combien de contacts par jour ?', 'Ça dépend de vos départements et du volume commandé. Nous vous donnons le rythme avant la commande.'],
   ['Ce sont de vrais particuliers ?', 'Oui. Chaque contact a rempli lui-même une demande pour être rappelé sur son projet.'],
