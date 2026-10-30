@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ETAPES } from './plateforme-data.js';
@@ -13,7 +13,29 @@ function Check() {
 
 export default function PlatformTabs() {
   const [k, setK] = useState(0);
+  const [fade, setFade] = useState('fin');
+  const bar = useRef(null);
   const e = ETAPES[k];
+
+  // Sur téléphone la barre défile : fondu du côté où il reste des onglets à voir.
+  function majFade() {
+    const el = bar.current;
+    if (!el) return;
+    const f = [];
+    if (el.scrollLeft > 4) f.push('debut');
+    if (el.scrollLeft + el.clientWidth < el.scrollWidth - 4) f.push('fin');
+    setFade(f.join(' '));
+  }
+  useEffect(() => {
+    majFade();
+    window.addEventListener('resize', majFade);
+    return () => window.removeEventListener('resize', majFade);
+  }, []);
+  function choisir(i, btn) {
+    setK(i);
+    const el = bar.current;
+    if (el && el.scrollWidth > el.clientWidth) el.scrollTo({ left: btn.offsetLeft - (el.clientWidth - btn.offsetWidth) / 2, behavior: 'smooth' });
+  }
   return (
     <div className="pt">
       <div className="pt-head">
@@ -22,10 +44,10 @@ export default function PlatformTabs() {
         <p>Acheter, recevoir, exporter, signaler, régler : une seule plateforme, ouverte dès votre première commande validée.</p>
       </div>
 
-      <div className="pt-tabs" role="tablist" aria-label="Fonctions de la plateforme">
+      <div className="pt-tabs" ref={bar} data-fade={fade || undefined} onScroll={majFade} role="tablist" aria-label="Fonctions de la plateforme">
         {ETAPES.map((x, i) => (
           <button key={x.img} type="button" role="tab" id={`pt-tab-${x.img}`} aria-selected={i === k} aria-controls="pt-panel"
-            className={i === k ? 'is-on' : undefined} onClick={() => setK(i)}>{x.tag}</button>
+            className={i === k ? 'is-on' : undefined} onClick={(ev) => choisir(i, ev.currentTarget)}>{x.tag}</button>
         ))}
       </div>
 
