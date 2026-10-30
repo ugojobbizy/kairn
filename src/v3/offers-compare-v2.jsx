@@ -15,7 +15,7 @@ const ROWS = [
   { k: 'Qui paie la pub', a: ['Kairn', 'vous n’avancez aucun budget publicitaire'], b: ['Vous', 'nous l’investissons et l’optimisons pour vous'] },
   { k: 'Ce que vous payez', a: ['Le contact', 'PAC 28 €, ITE 27 €, solaire 35 € HT ; autres secteurs : prix donné avant commande'], b: ['Sur devis', 'selon votre métier et votre budget'] },
   { k: 'Engagement', a: ['Aucun', 'à partir de 50 contacts, vous arrêtez quand vous voulez'], b: ['À voir ensemble', 'pendant l’appel avec Ugo'] },
-  { k: 'Si un contact est mauvais', a: ['Doublon ou hors zone : remplacé', 'signalé depuis votre espace client ; les faux numéros ne sont pas remplacés'], b: ['Vous le voyez', 'le CRM relie chaque contact à sa pub : on coupe celles qui amènent les mauvais'] },
+  { k: 'Si un contact est mauvais', a: ['Doublon ou hors zone : remplacé', 'signalé depuis votre espace client'], b: ['Vous le voyez', 'le CRM relie chaque contact à sa pub : on coupe celles qui amènent les mauvais'] },
 ];
 const OFFERS = [
   { key: 'a', word: 'Leads', kicker: 'Le produit', cls: 'is-leads', cta: <Link to="/commander" className="btn btn-order">Commander des leads</Link> },
