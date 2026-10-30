@@ -492,3 +492,4 @@
 .v2 .ec-fiche-chiffres .ec-kpi strong { font-size: 26px; }
 @media (max-width: 1150px) { .v2 .ec-kpis-4 { grid-template-columns: 1fr 1fr; } .v2 .ec-fiche { grid-template-columns: 1fr; } }
 @media (max-width: 860px) { .v2 .ec-kpis-4 { grid-template-columns: 1fr 1fr; } }
+.v2 .ec-form.ec-form-zone { max-width: 1080px; }

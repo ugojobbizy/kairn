@@ -5,6 +5,7 @@ import { Nav, Footer, useV2Favicon } from '../v2/layout.jsx';
 import { Reveal } from '../v2/blocks.jsx';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
 import { PRODUITS, prixHT } from './produits.js';
+import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from './zone-picker.jsx';
 import '../v2/v2.css';
 import './v3.css';
 
@@ -26,6 +27,8 @@ export function OrderForm({ initial = {}, onDone, compact = false, send }) {
   const [f, setF] = useState({ souhait: 'leads', societe: '', nom: '', email: '', telephone: '', thematique: '', volume: '', zone: '', siret: '', website: '', ...initial });
   const [state, setState] = useState('idle');
   const [error, setError] = useState('');
+  // Zone choisie sur la carte (30/10/2026) ; son libellé part dans le champ zone de la demande.
+  const [zone, setZone] = useState(() => zoneDepuisTexte(initial.zone));
   const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
   const pick = (k, v) => setF((x) => ({ ...x, [k]: v }));
   const leads = f.souhait === 'leads';
@@ -34,10 +37,12 @@ export function OrderForm({ initial = {}, onDone, compact = false, send }) {
     e.preventDefault();
     setError('');
     if (leads && !f.thematique) { setError('Choisissez une thématique.'); return; }
+    if (!zone.valide) { setError(zone.mode === 'departements' ? `Choisissez ${MIN_DEPARTEMENTS} départements au moins.` : 'Choisissez au moins une zone sur la carte.'); return; }
+    const demande = { ...f, zone: zone.libelle };
     setState('sending');
     try {
       if (send) {
-        await send(f);
+        await send(demande);
         setState('sent');
         onDone?.();
         return;
@@ -45,7 +50,7 @@ export function OrderForm({ initial = {}, onDone, compact = false, send }) {
       const r = await fetch('/api/commande', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...f, page: window.location.pathname }),
+        body: JSON.stringify({ ...demande, page: window.location.pathname }),
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) {
@@ -109,7 +114,7 @@ export function OrderForm({ initial = {}, onDone, compact = false, send }) {
           </div>
         </fieldset>
       )}
-      <label className="od-field"><span>Zone d’intervention (départements)</span><input value={f.zone} onChange={set('zone')} placeholder="Ex. : 33, 40, 47, ou France entière" /></label>
+      <fieldset className="od-field od-zone"><legend>Zone d’intervention</legend><ZonePicker value={zone} onChange={setZone} /></fieldset>
       <label className="od-field"><span>SIRET (facultatif)</span><input value={f.siret} onChange={set('siret')} inputMode="numeric" placeholder="14 chiffres" /></label>
       <input className="bk-trap" tabIndex={-1} autoComplete="off" value={f.website} onChange={set('website')} aria-hidden="true" />
       {error && <p className="od-err" role="alert">{error}</p>}

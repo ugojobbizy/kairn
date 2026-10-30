@@ -6,6 +6,7 @@ import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
 import { db, THEMES, MOTIFS, SUIVI, LITIGE_STATUTS, TVA, ETAPES, euro, dateFr, dateHeure, errMsg, downloadCsv, notifier } from './db.js';
 import Tickets from './tickets.jsx';
 import { apercuData } from './apercu.js';
+import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from '../v3/zone-picker.jsx';
 import '../v2/v2.css';
 import '../v3/v3.css';
 import './espace.css';
@@ -258,7 +259,7 @@ function CommandeCard({ c, n }) {
   const pct = c.plafond ? n / c.plafond : 0;
   return (
     <div className={`ec-order${pct >= SEUIL_RECONDUIRE ? ' is-ending' : ''}`}>
-      <div className="ec-order-top"><b>{THEMES[c.thematique] || c.thematique}</b><span>{c.zone ? `Dép. ${c.zone}` : c.bdc_numero}</span></div>
+      <div className="ec-order-top"><b>{THEMES[c.thematique] || c.thematique}</b><span>{c.zone || c.bdc_numero}</span></div>
       <Completion done={n} total={c.plafond || 0} />
       {pct >= SEUIL_RECONDUIRE ? (
         <div className="ec-order-end"><span>Bientôt terminée : plus que {Math.max(0, c.plafond - n)} contacts.</span><Link to={reconduireHref(c)} className="ec-btn">Reconduire</Link></div>
@@ -335,17 +336,17 @@ function Precommande({ session, client, apercu }) {
   const [them, setThem] = useState(first);
   // Reconduire une commande : thématique, quantité et zone préremplies (lien de CommandeCard).
   const [qte, setQte] = useState(() => (QUANTITES.includes(Number(params.get('quantite'))) ? Number(params.get('quantite')) : 100));
-  const [zone, setZone] = useState(params.get('zone') || '');
+  const [zone, setZone] = useState(() => zoneDepuisTexte(params.get('zone')));
   const [state, setState] = useState('idle');
   const [error, setError] = useState('');
   const prod = PRODUITS.find((p) => p.code === them);
   async function submit(e) {
     e.preventDefault();
-    if (!zone.trim()) { setError('Indiquez vos départements.'); return; }
+    if (!zone.valide) { setError(zone.mode === 'departements' ? `Choisissez ${MIN_DEPARTEMENTS} départements au moins.` : 'Choisissez au moins une zone sur la carte.'); return; }
     setError(''); setState('sending');
     if (apercu) { setState('sent'); return; }
     const { data: created, error: err } = await db.from('commandes').insert({
-      user_id: session.user.id, souhait: 'leads', type: 'precommande', thematique: them, volume: String(qte), zone: zone.trim().slice(0, 200),
+      user_id: session.user.id, souhait: 'leads', type: 'precommande', thematique: them, volume: String(qte), zone: zone.libelle.slice(0, 1000),
       societe: client?.societe || null, nom: client?.prenom || null, email: session.user.email, telephone: client?.telephone || null, siret: client?.siret || null,
       page: '/espace/precommande',
     }).select('id').single();
@@ -358,12 +359,13 @@ function Precommande({ session, client, apercu }) {
   return (
     <>
       <PageHead title="Commander des contacts" sub="Nous validons votre zone et votre volume, puis ouvrons le flux : le bon de commande arrive dans Mes commandes." />
-      <form className="ec-card ec-form" onSubmit={submit}>
+      <form className="ec-card ec-form ec-form-zone" onSubmit={submit}>
         <p className="ec-sub">Thématique</p>
         <div className="ec-seg">{PRODUITS.map((p) => <button type="button" key={p.code} className={them === p.code ? 'is-on' : ''} onClick={() => setThem(p.code)}><b>{p.code}</b><span>{p.nom} · {p.prix} € HT</span></button>)}</div>
         <p className="ec-sub">Nombre de leads</p>
         <div className="ec-seg ec-seg-sm">{QUANTITES.map((q) => <button type="button" key={q} className={qte === q ? 'is-on' : ''} onClick={() => setQte(q)}><b>{q}</b></button>)}</div>
-        <label className="ec-field"><span>Départements couverts</span><input value={zone} onChange={(e) => setZone(e.target.value)} placeholder="Ex. 33, 24, 47" maxLength={200} /></label>
+        <p className="ec-sub">Zone</p>
+        <ZonePicker value={zone} onChange={setZone} />
         <div className="ec-total"><span>Montant estimé</span><b>{euro(qte * prod.prix)} HT</b><em>{euro(qte * prod.prix * (1 + TVA))} TTC</em></div>
         {error && <p className="ec-err" role="alert">{error}</p>}
         {state === 'sent' ? <p className="ec-ok">Demande envoyée. Nous revenons vers vous pour valider la zone.</p>
