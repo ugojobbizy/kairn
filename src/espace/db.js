@@ -26,6 +26,19 @@ export async function notifier(type, id) {
   } catch { /* alerte facultative */ }
 }
 
+// Alertes du client après une livraison (api/livraison.js : e-mail, notification mobile, webhook selon ses préférences).
+// « depuis » prend deux minutes de marge : l'horloge du navigateur peut avancer sur celle de la base.
+// Sans effet bloquant, comme notifier : une alerte ratée ne casse jamais la livraison.
+export async function alerterLivraison(commande, depart) {
+  try {
+    const { data } = await db.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token || !commande) return null;
+    const r = await fetch('/api/livraison', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ commande, depuis: new Date(depart - 120000).toISOString() }) });
+    return r.ok ? r.json() : null;
+  } catch { return null; }
+}
+
 export const euro = (n) => `${Number(n || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 export const dateFr = (d) => (d ? new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '·');
 export const dateHeure = (d) => (d ? new Date(d).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '·');

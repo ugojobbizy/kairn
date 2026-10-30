@@ -25,6 +25,7 @@ const MENU = [
   { to: '/espace/litiges', t: 'Mes litiges', ico: <><path d="M12 3v18M5 21h14M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0zM5 8h14" /></> },
   { to: '/espace/comptabilite', t: 'Comptabilité', ico: <><rect x="4" y="2" width="16" height="20" rx="2" /><path d="M8 6h8M8 10h2M14 10h2M8 14h2M14 14h2M8 18h2M14 18h2" /></> },
   { to: '/espace/contrats', t: 'Mes contrats', ico: <><path d="M6 2h9l5 5v15H6z" /><path d="M14 2v6h6M9 13h6M9 17h6" /></> },
+  { to: '/espace/compte', t: 'Compte et alertes', ico: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></> },
 ];
 
 function Ico({ children, size = 19 }) {
@@ -822,10 +823,107 @@ function Contrats() {
   );
 }
 
-function Account({ session, client }) {
+// ─ Alertes : e-mail, notification mobile, webhook vers le CRM du client (lot 3, 30/10/2026) ─
+const pushOk = () => typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const b64ToBytes = (b64) => { const p = '='.repeat((4 - (b64.length % 4)) % 4); const raw = atob((b64 + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(raw, (c) => c.charCodeAt(0)); };
+const appareil = () => { const ua = navigator.userAgent; return /iPhone|iPad/.test(ua) ? 'iPhone ou iPad' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Navigateur'; };
+const isIos = () => typeof navigator !== 'undefined' && /iPhone|iPad/.test(navigator.userAgent);
+const standalone = () => typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true);
+
+async function abonnerAppareil(userId) {
+  const cle = await fetch('/api/livraison').then((r) => r.json()).catch(() => ({}));
+  if (!cle.vapid) throw new Error('push_non_configure');
+  if ((await Notification.requestPermission()) !== 'granted') throw new Error('permission_refusee');
+  const reg = await navigator.serviceWorker.register('/sw-espace.js', { scope: '/espace' });
+  await navigator.serviceWorker.ready;
+  const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(cle.vapid) });
+  const j = sub.toJSON();
+  const { error } = await db.from('push_abonnements').insert({ user_id: userId, endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, appareil: appareil() });
+  if (error && !String(error.message).includes('duplicate')) throw error;
+}
+
+function Alertes({ session, apercu }) {
+  const [p, setP] = useState(null);
+  const [busy, setBusy] = useState('');
+  const [msg, setMsg] = useState('');
+  const [err, setErr] = useState('');
+  useEffect(() => {
+    if (apercu) { setP({ alerte_email: true, email: session.user.email, alerte_push: false, webhook_url: '' }); return; }
+    db.from('client_prefs').select('*').eq('user_id', session.user.id).maybeSingle()
+      .then(({ data }) => setP(data ? { ...data, webhook_url: data.webhook_url || '' } : { alerte_email: true, email: session.user.email, alerte_push: false, webhook_url: '' }));
+  }, [session, apercu]);
+  if (!p) return <div className="ec-card"><p className="ec-muted">Chargement…</p></div>;
+  const set = (k, v) => setP((x) => ({ ...x, [k]: v }));
+  async function save(next = p) {
+    setErr(''); setMsg('');
+    const url = (next.webhook_url || '').trim();
+    if (url && !/^https:\/\/\S+$/i.test(url)) { setErr('L’adresse du webhook doit commencer par https://'); return false; }
+    if (next.alerte_email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(next.email || '')) { setErr('Indiquez une adresse e-mail valide pour les alertes.'); return false; }
+    if (apercu) { setMsg('Enregistré (aperçu : rien n’est écrit).'); return true; }
+    const { error } = await db.from('client_prefs').upsert({ user_id: session.user.id, alerte_email: next.alerte_email, email: next.email || null, alerte_push: next.alerte_push, webhook_url: url || null, maj_le: new Date().toISOString() });
+    if (error) { setErr('L’enregistrement n’a pas abouti. Réessayez.'); return false; }
+    setMsg('Préférences enregistrées.');
+    return true;
+  }
+  async function activerPush(on) {
+    setErr(''); setMsg('');
+    if (!on) { const n = { ...p, alerte_push: false }; setP(n); await save(n); return; }
+    if (!pushOk()) { setErr(isIos() && !standalone() ? 'Sur iPhone : touchez Partager, puis « Sur l’écran d’accueil », ouvrez Kairn depuis l’icône et réactivez ici.' : 'Ce navigateur ne gère pas les notifications. Essayez Chrome, Safari ou Edge à jour.'); return; }
+    setBusy('push');
+    try {
+      if (!apercu) await abonnerAppareil(session.user.id);
+      const n = { ...p, alerte_push: true }; setP(n); await save(n);
+      setMsg('Notifications activées sur cet appareil.');
+    } catch (e) {
+      setErr(e.message === 'permission_refusee' ? 'Notifications refusées : autorisez-les dans les réglages du navigateur pour ce site.'
+        : e.message === 'push_non_configure' ? 'Les notifications mobiles ne sont pas encore disponibles. Utilisez l’e-mail en attendant.'
+          : 'Activation impossible pour le moment. Réessayez.');
+    }
+    setBusy('');
+  }
+  async function tester() {
+    setErr(''); setMsg('');
+    if (!(await save())) return;
+    if (apercu) return;
+    setBusy('test');
+    const { data } = await db.auth.getSession();
+    const r = await fetch('/api/livraison', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session?.access_token}` }, body: JSON.stringify({ test: true }) }).then((x) => x.json()).catch(() => null);
+    setBusy('');
+    if (!r?.ok) { setErr('Le test n’a pas pu partir. Réessayez.'); return; }
+    const lu = { envoye: 'envoyé', desactive: 'désactivé', aucun: 'aucun', non_configure: 'pas encore disponible', aucun_appareil: 'aucun appareil abonné', echec: 'échec' };
+    const f = (v) => lu[v] || (String(v).startsWith('envoye_') ? `envoyé (${String(v).slice(7)} appareil)` : String(v).startsWith('refuse_') ? `refusé (code ${String(v).slice(7)})` : v);
+    setMsg(`Test envoyé. E-mail : ${f(r.email)}. Mobile : ${f(r.push)}. Webhook : ${f(r.webhook)}.`);
+  }
+  return (
+    <div className="ec-card ec-alertes">
+      <h2>Être prévenu d’un nouveau contact</h2>
+      <p className="ec-muted">Choisissez comment vous êtes alerté dès qu’un contact vous est livré. Rappeler vite, c’est ce qui fait décrocher.</p>
+      <div className="ec-alerte">
+        <label className="ec-toggle"><input type="checkbox" checked={p.alerte_email} onChange={(e) => set('alerte_email', e.target.checked)} /><span><b>Par e-mail</b><small>Un e-mail avec les contacts livrés.</small></span></label>
+        {p.alerte_email && <label className="ec-field"><span>Adresse des alertes</span><input type="email" value={p.email || ''} onChange={(e) => set('email', e.target.value)} placeholder="commercial@votre-societe.fr" /></label>}
+      </div>
+      <div className="ec-alerte">
+        <label className="ec-toggle"><input type="checkbox" checked={p.alerte_push} disabled={busy === 'push'} onChange={(e) => activerPush(e.target.checked)} /><span><b>Notification sur ce téléphone</b><small>{isIos() && !standalone() ? 'Sur iPhone, ajoutez d’abord l’espace à l’écran d’accueil (Partager, puis « Sur l’écran d’accueil »).' : 'Une notification sur cet appareil, comme un SMS. À activer sur chaque téléphone.'}</small></span></label>
+      </div>
+      <div className="ec-alerte">
+        <label className="ec-field"><span>Envoyer vers mon CRM (webhook, facultatif)</span><input type="url" value={p.webhook_url} onChange={(e) => set('webhook_url', e.target.value)} placeholder="https://hooks.zapier.com/…" /></label>
+        <small className="ec-muted">Chaque contact livré part aussitôt vers cette adresse. Avec Zapier ou Make, il arrive dans votre CRM, votre Google Sheet ou votre Excel en ligne.</small>
+      </div>
+      {err && <p className="ec-err" role="alert">{err}</p>}
+      {msg && <p className="ec-ok">{msg}</p>}
+      <div className="ec-alertes-actions">
+        <button type="button" className="ec-btn" onClick={() => save()}>Enregistrer</button>
+        <button type="button" className="ec-btn-ghost" onClick={tester} disabled={busy === 'test'}>{busy === 'test' ? 'Envoi…' : 'Envoyer un test'}</button>
+      </div>
+    </div>
+  );
+}
+
+function Account({ session, client, apercu }) {
   return (
     <>
       <PageHead title="Mon compte" />
+      <Alertes session={session} apercu={apercu} />
       <div className="ec-card">
         <dl className="ec-dl">
           <div><dt>Société</dt><dd>{client?.societe || '·'}</dd></div>
@@ -890,7 +988,7 @@ function Shell({ session, client, apercu }) {
             <Route path="precommande" element={<Precommande session={session} client={client} apercu={apercu} />} />
             <Route path="comptabilite" element={<Compta />} />
             <Route path="contrats" element={<Contrats />} />
-            <Route path="compte" element={<Account session={session} client={client} />} />
+            <Route path="compte" element={<Account session={session} client={client} apercu={apercu} />} />
             <Route path="*" element={<Home client={client} apercu={apercu} />} />
           </Routes>
         </main>
@@ -901,6 +999,14 @@ function Shell({ session, client, apercu }) {
 
 export default function ClientSpace() {
   useV2Favicon();
+  // Manifeste propre à l'espace : installé sur l'écran d'accueil, il s'ouvre sur /espace (notifications sur iPhone).
+  useEffect(() => {
+    const link = document.querySelector('link[rel="manifest"]');
+    if (!link) return undefined;
+    const prev = link.getAttribute('href');
+    link.setAttribute('href', '/espace.webmanifest');
+    return () => link.setAttribute('href', prev);
+  }, []);
   const [session, setSession] = useState(undefined);
   const [client, setClient] = useState(undefined);
   const [admin, setAdmin] = useState(false);

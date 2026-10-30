@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, Route, Routes } from 'react-router-dom';
 import { KairnLogo, useV2Favicon } from '../v2/layout.jsx';
 import { PRODUITS } from '../v3/produits.js';
-import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, euro, dateFr, dateHeure, errMsg } from '../espace/db.js';
+import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, euro, dateFr, dateHeure, errMsg, alerterLivraison } from '../espace/db.js';
 import { apercuData } from '../espace/apercu.js';
 import { Campagnes, TicketsAdmin, ShopAdmin, Bientot } from './gestion-plus.jsx';
 
@@ -183,7 +183,15 @@ function Commandes({ data, apercu }) {
     reload();
   }
   const valider = (c) => run(() => db.rpc('admin_approuver_commande', { p_commande: c.id, p_plafond: +val(c, 'plafond', parseInt(c.volume, 10) || 50), p_prix: +val(c, 'prix', PRIX[c.thematique] ?? 30) }), (n) => `Bon de commande ${n} émis : la commande est ouverte.`);
-  const livrer = (c) => run(() => db.rpc('admin_livrer', { p_commande: c.id, p_n: +val(c, 'n', Math.max(0, (c.plafond || 0) - (livresPar[c.id] || 0))) }), (n) => `${n} lead(s) livré(s).`);
+  // Après la livraison, le client est alerté selon ses préférences (lot 3 de la refonte de l'espace, 30/10/2026).
+  const livrer = async (c) => {
+    const depart = Date.now();
+    await run(() => db.rpc('admin_livrer', { p_commande: c.id, p_n: +val(c, 'n', Math.max(0, (c.plafond || 0) - (livresPar[c.id] || 0))) }), (n) => `${n} lead(s) livré(s).`);
+    if (apercu) return;
+    const a = await alerterLivraison(c.id, depart);
+    const lu = (v) => ({ envoye: 'envoyé', non_configure: 'non configuré', desactive: 'désactivé', aucun: 'aucun', aucun_appareil: 'aucun appareil', echec: 'échec' }[v] || String(v).replace('envoye_', 'envoyé ×').replace('refuse_', 'refusé '));
+    if (a && a.leads) setMsg((m) => `${m} Alertes du client : e-mail ${lu(a.email)}, mobile ${lu(a.push)}, webhook ${lu(a.webhook)}.`);
+  };
   const regler = (c) => run(() => db.from('commandes').update({ regle_le: new Date().toISOString() }).eq('id', c.id), 'Règlement enregistré.');
   const refuser = (c) => window.confirm('Refuser cette pré-commande ?') && run(() => db.from('commandes').update({ statut: 'refusee' }).eq('id', c.id), 'Pré-commande refusée.');
   return (
