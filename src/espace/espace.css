@@ -476,3 +476,19 @@
 .v2 .ec-lien { grid-column: 1 / -1; }
 .v2 .ec-lien > div { display: flex; gap: 8px; }
 .v2 .ec-lien input { flex: 1; font-family: var(--mono); font-size: 12.5px; }
+
+/* ─ Kairn Admin : liste et fiche client (30/10/2026) ─ */
+.v2 .ec-kpis-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.v2 .ec-table-click tbody tr { cursor: pointer; transition: background .15s; }
+.v2 .ec-table-click tbody tr:hover { background: #F5F8FF; }
+.v2 .ec-back { display: inline-block; margin-bottom: 14px; font-size: 14px; font-weight: 600; color: var(--muted); }
+.v2 .ec-back:hover { color: var(--ink); }
+.v2 .ec-fiche { display: grid; grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); gap: 18px; align-items: start; }
+.v2 .ec-fiche-id h2 { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+.v2 .ec-fiche-id .ec-form { max-width: none; }
+.v2 .ec-dl-1 { grid-template-columns: 1fr; gap: 12px; }
+.v2 .ec-dl-1 dd a { color: var(--violet); font-weight: 500; }
+.v2 .ec-fiche-chiffres .ec-kpis:first-child { margin-top: 18px; }
+.v2 .ec-fiche-chiffres .ec-kpi strong { font-size: 26px; }
+@media (max-width: 1150px) { .v2 .ec-kpis-4 { grid-template-columns: 1fr 1fr; } .v2 .ec-fiche { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .v2 .ec-kpis-4 { grid-template-columns: 1fr 1fr; } }

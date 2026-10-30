@@ -5,6 +5,7 @@ import { PRODUITS } from '../v3/produits.js';
 import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, euro, dateFr, dateHeure, errMsg, alerterLivraison } from '../espace/db.js';
 import { apercuData } from '../espace/apercu.js';
 import { Campagnes, TicketsAdmin, ShopAdmin, Bientot } from './gestion-plus.jsx';
+import { Clients, FicheClient } from './clients.jsx';
 
 // Kairn Monitor (suivi des campagnes Meta), ouvert depuis le menu (Ugo, 29/10/2026).
 const MONITOR_URL = 'https://kairn-monitor.vercel.app';
@@ -327,70 +328,6 @@ function Leads({ data, apercu }) {
 }
 
 // ─ Clients ─
-function Clients({ data, apercu }) {
-  const { clients, reload } = data;
-  const [f, setF] = useState({ email: '', societe: '', prenom: '', telephone: '', siret: '' });
-  const [msg, setMsg] = useState('');
-  const [err, setErr] = useState('');
-  const [lien, setLien] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [copie, setCopie] = useState(false);
-  const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
-  // Onboarding en un clic (Ugo, 30/10/2026 : « je veux onboarder un client en deux clics ») : api/client-ouvrir.js crée le compte,
-  // ouvre l'espace, active les alertes e-mail et envoie l'invitation ; le lien reste affiché pour l'envoyer aussi par WhatsApp.
-  async function ouvrir(e) {
-    e.preventDefault();
-    setMsg(''); setErr(''); setLien(''); setCopie(false);
-    if (apercu) { setMsg(`Aperçu : rien n’est créé. En vrai, ${f.email || 'le client'} reçoit son invitation.`); return; }
-    setBusy(true);
-    const { data: sd } = await db.auth.getSession();
-    const r = await fetch('/api/client-ouvrir', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sd.session?.access_token}` }, body: JSON.stringify(f) })
-      .then(async (x) => ({ status: x.status, body: await x.json().catch(() => ({})) })).catch(() => null);
-    setBusy(false);
-    if (!r || r.status !== 200) {
-      const code = r?.body?.error;
-      setErr(code === 'service_non_configure' ? 'La clé de service Supabase n’est pas posée dans Vercel (SUPABASE_SERVICE_ROLE_KEY).'
-        : code === 'bad_params' ? 'E-mail valide et société obligatoires.'
-          : code === 'forbidden' ? 'Accès réservé à l’administration Kairn.'
-            : 'L’ouverture n’a pas abouti. Réessayez dans un instant.');
-      return;
-    }
-    const b = r.body;
-    setMsg(`${b.nouveau ? 'Compte créé' : 'Compte existant relié'} et espace ouvert pour ${f.societe}. ${b.email_envoye ? `Invitation envoyée à ${f.email}.` : 'L’e-mail n’est pas parti : envoyez-lui le lien ci-dessous.'}`);
-    setLien(b.lien);
-    setF({ email: '', societe: '', prenom: '', telephone: '', siret: '' });
-    reload();
-  }
-  return (
-    <>
-      <Head title="Clients" sub="Remplissez la fiche et cliquez sur Créer le client : le compte est créé, l’espace ouvert, et le client reçoit par e-mail un lien pour choisir son mot de passe." />
-      <form className="ec-card ec-form ec-form-grid" onSubmit={ouvrir}>
-        <label className="ec-field"><span>E-mail du compte</span><input type="email" required value={f.email} onChange={set('email')} /></label>
-        <label className="ec-field"><span>Société</span><input required value={f.societe} onChange={set('societe')} /></label>
-        <label className="ec-field"><span>Prénom du contact</span><input value={f.prenom} onChange={set('prenom')} /></label>
-        <label className="ec-field"><span>Téléphone</span><input value={f.telephone} onChange={set('telephone')} /></label>
-        <label className="ec-field"><span>SIRET</span><input value={f.siret} onChange={set('siret')} /></label>
-        <div className="ec-field"><button type="submit" className="ec-btn" disabled={busy}>{busy ? 'Création…' : 'Créer le client'}</button></div>
-        {err && <p className="ec-err">{err}</p>}{msg && <p className="ec-ok">{msg}</p>}
-        {lien && (
-          <div className="ec-field ec-lien">
-            <span>Lien d’accès du client (à usage unique)</span>
-            <div><input readOnly value={lien} onFocus={(e) => e.target.select()} /><button type="button" className="ec-btn-ghost" onClick={() => navigator.clipboard.writeText(lien).then(() => setCopie(true))}>{copie ? 'Copié' : 'Copier'}</button></div>
-          </div>
-        )}
-      </form>
-      {clients && clients.length > 0 && (
-        <div className="ec-card ec-table-wrap">
-          <table className="ec-table">
-            <thead><tr><th>Société</th><th>Contact</th><th>Téléphone</th><th>SIRET</th><th>Ouvert le</th></tr></thead>
-            <tbody>{clients.map((c) => <tr key={c.user_id}><td><b>{c.societe}</b></td><td>{c.prenom || '·'}</td><td>{c.telephone || '·'}</td><td>{c.siret || '·'}</td><td>{dateFr(c.created_at)}</td></tr>)}</tbody>
-          </table>
-        </div>
-      )}
-    </>
-  );
-}
-
 function Shell({ session, apercu }) {
   const data = useAdminData(apercu);
   const [open, setOpen] = useState(false);
@@ -458,6 +395,7 @@ function Shell({ session, apercu }) {
           <Route path="commandes" element={<Commandes data={data} apercu={apercu} />} />
           <Route path="leads" element={<Leads data={data} apercu={apercu} />} />
           <Route path="clients" element={<Clients data={data} apercu={apercu} />} />
+          <Route path="clients/:id" element={<FicheClient data={data} apercu={apercu} />} />
           <Route path="*" element={<Dashboard data={data} tickets={nTickets} />} />
         </Routes>
       </main>
