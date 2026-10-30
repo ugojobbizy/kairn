@@ -11,7 +11,7 @@
   --grad: linear-gradient(100deg, #67E8F9 0%, #38BDF8 45%, #818CF8 100%);
   position: fixed; inset: 0; overflow: hidden;
   background: var(--night); color: #fff;
-  font-family: 'Geist', -apple-system, system-ui, sans-serif; letter-spacing: -0.011em;
+  font-family: 'Inter Tight', -apple-system, system-ui, sans-serif; letter-spacing: 0;
   -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
   touch-action: pan-y; user-select: none; -webkit-user-select: none;
 }

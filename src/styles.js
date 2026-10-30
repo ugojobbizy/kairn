@@ -21,7 +21,7 @@
       --lav-pale: #F5F3FF;
       color: var(--ink);
       background: var(--bg);
-      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       font-feature-settings: 'ss01', 'cv11';
       letter-spacing: -0.011em;
       line-height: 1.5;

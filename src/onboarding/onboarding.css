@@ -16,7 +16,7 @@
   --err: #C62828;
   --grad: linear-gradient(100deg, #67E8F9 0%, #38BDF8 45%, #818CF8 100%);
   min-height: 100vh; background: var(--canvas); color: var(--ink);
-  font-family: 'Geist', -apple-system, system-ui, sans-serif; letter-spacing: -0.011em;
+  font-family: 'Inter Tight', -apple-system, system-ui, sans-serif; letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
 }
 .ob *, .ob *::before, .ob *::after { box-sizing: border-box; }
@@ -62,7 +62,7 @@
 .ob-steps button.is-on { background: rgba(255,255,255,.1); color: #fff; font-weight: 600; }
 .ob-num { flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; border: 1px solid rgba(255,255,255,.18); font: 500 11px 'Geist Mono', monospace; color: rgba(255,255,255,.6); }
 .ob-steps .is-on .ob-num { border-color: #67E8F9; color: #67E8F9; }
-.ob-steps .is-full .ob-num { background: var(--grad); border: 0; color: var(--night); font: 700 13px 'Geist', sans-serif; }
+.ob-steps .is-full .ob-num { background: var(--grad); border: 0; color: var(--night); font: 700 13px 'Inter Tight', sans-serif; }
 .ob-step-t { flex: 1; min-width: 0; }
 .ob-step-c { font: 500 11px 'Geist Mono', monospace; color: rgba(255,255,255,.45); }
 .ob-side-foot { margin-top: auto; padding-top: 24px; display: grid; gap: 6px; font-size: 13px; }
@@ -74,7 +74,7 @@
 .ob-welcome { margin-bottom: 40px; padding: 18px 20px; border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 12px; background: var(--surface); font-size: 15.5px; line-height: 1.55; color: var(--muted); }
 .ob-welcome b { display: block; color: var(--ink); margin-bottom: 4px; }
 .ob-head { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: start; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
-.ob-bignum { font: 600 64px/0.9 'Geist', sans-serif; letter-spacing: -0.06em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ob-bignum { font: 600 64px/0.9 'Inter Tight', sans-serif; letter-spacing: -0.06em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .ob-head h2 { margin-top: 8px; font-size: clamp(30px, 3.4vw, 40px); line-height: 1.05; letter-spacing: -0.04em; }
 .ob-intro { margin-top: 12px; color: var(--muted); font-size: 16.5px; line-height: 1.55; max-width: 58ch; }
 
@@ -198,7 +198,7 @@
 .oba-detail dd { margin: 0; white-space: pre-wrap; }
 .oba-detail .is-empty { color: #B3B6C6; }
 @media (max-width: 700px) { .oba-detail dl { grid-template-columns: 1fr; } .oba-detail dd { margin-bottom: 8px; } }
-.oba-live { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; vertical-align: middle; padding: 3px 10px; border-radius: 999px; background: var(--soft); color: var(--muted); font: 600 12px 'Geist', system-ui, sans-serif; letter-spacing: 0; }
+.oba-live { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; vertical-align: middle; padding: 3px 10px; border-radius: 999px; background: var(--soft); color: var(--muted); font: 600 12px 'Inter Tight', system-ui, sans-serif; letter-spacing: 0; }
 .oba-live::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: #B3B6C6; }
 .oba-live.is-on { background: #E6F6EC; color: var(--ok); }
 .oba-live.is-on::before { background: var(--ok); animation: oba-pulse 1.6s ease-in-out infinite; }
