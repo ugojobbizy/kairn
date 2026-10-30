@@ -36,12 +36,12 @@ export async function lienAcces(email, type) {
   return { ok: true, userId: user.id, lien: `${SITE}/espace/bienvenue?${q}` };
 }
 
-// E-mail envoyé par Zoho (variables ZOHO_SMTP_USER, ZOHO_SMTP_PASS). Rend false si Zoho n'est pas configuré.
-export async function envoyerEmail(to, subject, lignes) {
+// E-mail envoyé par Zoho (variables ZOHO_SMTP_USER, ZOHO_SMTP_PASS), en texte et en HTML si fourni. Rend false si Zoho n'est pas configuré.
+export async function envoyerEmail(to, subject, texte, html) {
   const user = process.env.ZOHO_SMTP_USER;
   const pass = process.env.ZOHO_SMTP_PASS;
   if (!user || !pass) return false;
   const transport = nodemailer.createTransport({ host: process.env.ZOHO_SMTP_HOST || 'smtp.zoho.eu', port: 465, secure: true, auth: { user, pass } });
-  await transport.sendMail({ from: `Kairn <${user}>`, to, subject, text: lignes.join('\n') });
+  await transport.sendMail({ from: `Kairn <${user}>`, to, subject, text: Array.isArray(texte) ? texte.join('\n') : texte, ...(html ? { html } : {}) });
   return true;
 }

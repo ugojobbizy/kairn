@@ -5,6 +5,7 @@
 // (client_prefs) et envoie l'invitation, où le client choisit son mot de passe. Rend aussi le lien, à copier si l'e-mail ne part pas.
 import { send, readJson } from './_calendar.js';
 import { SUPABASE_URL, SUPABASE_KEY, serviceKey, adminFetch, lienAcces, envoyerEmail } from './_auth-admin.js';
+import { emailAcces } from './_email-kairn.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const clean = (v, max) => { const s = String(v ?? '').trim(); return s ? s.slice(0, max) : null; };
@@ -39,18 +40,9 @@ export default async function handler(req, res) {
 
     let envoye = false;
     try {
-      envoye = await envoyerEmail(email, 'Votre espace Kairn est prêt', [
-        `Bonjour${fiche.prenom ? ` ${fiche.prenom}` : ''},`,
-        '',
-        `L'espace client de ${societe} est ouvert. Vous y recevez vos contacts dès qu'ils sont livrés, vous les appelez, vous suivez chaque dossier et vous gérez vos commandes.`,
-        '',
-        'Choisissez votre mot de passe ici (lien personnel, à usage unique) :',
-        l.lien,
-        '',
-        'Ensuite, vous vous connecterez sur https://www.kairnagency.com/espace avec cette adresse e-mail.',
-        '',
-        'Kairn',
-      ]);
+      // Toujours une invitation « première connexion », même pour un compte qui existait déjà.
+      const m = emailAcces({ mode: 'invite', prenom: fiche.prenom, societe, lien: l.lien });
+      envoye = await envoyerEmail(email, m.sujet, m.texte, m.html);
     } catch (err) { console.error('[client-ouvrir] e-mail :', err.message); }
     return send(res, 200, { ok: true, nouveau, email_envoye: envoye, lien: l.lien });
   } catch (err) {

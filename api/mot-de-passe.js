@@ -3,6 +3,7 @@
 // seulement si l'adresse correspond à un compte client. La réponse est toujours la même : on ne révèle pas qui est client.
 import { send, readJson } from './_calendar.js';
 import { serviceKey, adminFetch, lienAcces, envoyerEmail } from './_auth-admin.js';
+import { emailAcces } from './_email-kairn.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -20,16 +21,8 @@ export default async function handler(req, res) {
       const c = await adminFetch(`/rest/v1/clients?select=prenom&user_id=eq.${l.userId}`);
       const fiche = Array.isArray(c.body) ? c.body[0] : null;
       if (fiche) {
-        await envoyerEmail(email, 'Votre nouveau mot de passe Kairn', [
-          `Bonjour${fiche.prenom ? ` ${fiche.prenom}` : ''},`,
-          '',
-          'Choisissez un nouveau mot de passe pour votre espace Kairn (lien personnel, à usage unique) :',
-          l.lien,
-          '',
-          'Si vous n’avez rien demandé, ignorez cet e-mail : votre mot de passe actuel reste valable.',
-          '',
-          'Kairn',
-        ]);
+        const m = emailAcces({ mode: 'recovery', prenom: fiche.prenom, lien: l.lien });
+        await envoyerEmail(email, m.sujet, m.texte, m.html);
       }
     }
   } catch (err) { console.error('[mot-de-passe]', err.message); }
