@@ -15,7 +15,7 @@ export const ETAPES = [
   {
     img: 'litige', tag: 'Litiges', h: 'Un doublon ?', i: 'Un clic.',
     p: 'Un lead en doublon ou hors de votre zone se signale directement depuis la liste. Nous le vérifions : accepté, il est remplacé par un lead neuf. Vous suivez la réponse dans Mes litiges.',
-    points: ['Motifs : doublon ou hors zone', 'Remplacé après vérification', 'Les faux numéros ne sont pas remplacés'],
+    points: ['Motifs : doublon ou hors zone', 'Remplacé après vérification', 'Réponse suivie dans Mes litiges'],
   },
   {
     img: 'commandes', tag: 'Mes commandes', h: 'Chaque commande,', i: 'lead par lead.',
