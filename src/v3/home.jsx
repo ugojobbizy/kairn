@@ -137,7 +137,7 @@ export default function KairnHomeV3({ police }) {
               </Reveal>
               <Reveal delay={0.5} y={16} className="hero-actions">
                 <Link to="/commander" className="btn btn-order">{police ? 'Commander des contacts' : 'Commander des leads'}</Link>
-                <a href="#reserver" className="btn btn-light">{police ? 'Parler à Ugo' : 'Réserver un appel'}</a>
+                <a href="#reserver" className="btn btn-light">'Réserver un appel'</a>
               </Reveal>
               {/* Note Google donnée par Ugo le 29/10/2026 (« finalement j'ai 5 étoiles par 4,9 sur google »). */}
               {police && <Reveal delay={0.55} y={12}><GoogleRating /></Reveal>}
@@ -232,7 +232,7 @@ export default function KairnHomeV3({ police }) {
               <Reveal className="faq-aside">
                 <Pill>Questions</Pill>
                 <h2 className="h2">Les questions <span className="serif grad-text">{police ? 'avant de commander.' : 'qu’on nous pose.'}</span></h2>
-                <p>Une question qui n’est pas ici ? Écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>{police ? ', ou posez-la à Ugo en réservant un appel juste en dessous.' : '.'}</p>
+                <p>Une question qui n’est pas ici ? Écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>{police ? ', ou posez-la-nous en réservant un appel juste en dessous.' : '.'}</p>
               </Reveal>
               <FaqList items={police ? FAQ_V2 : FAQ} />
             </div>
@@ -242,7 +242,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Audit stratégique" intro={['30 minutes avec Ugo : votre métier, vos départements, le nombre de contacts par jour qu’il vous faut. Vous repartez avec un prix et une date de démarrage.']} /> : <Booking />}
+                {police ? <Booking title="Audit stratégique" intro={['30 minutes en visio : votre métier, vos départements, le nombre de contacts par jour qu’il vous faut. Vous repartez avec un prix et une date de démarrage.']} /> : <Booking />}
               </div>
             </div>
           </section>
@@ -256,7 +256,7 @@ export default function KairnHomeV3({ police }) {
             <div className="wrap">
               <div className="book-card">
                 <AuditHeader variant={police ? 'appel' : 'audit'} />
-                {police ? <Booking title="Audit stratégique" intro={['30 minutes avec Ugo : votre métier, vos départements, le nombre de contacts par jour qu’il vous faut. Vous repartez avec un prix et une date de démarrage.']} /> : <Booking />}
+                {police ? <Booking title="Audit stratégique" intro={['30 minutes en visio : votre métier, vos départements, le nombre de contacts par jour qu’il vous faut. Vous repartez avec un prix et une date de démarrage.']} /> : <Booking />}
               </div>
             </div>
           </section>
@@ -267,7 +267,7 @@ export default function KairnHomeV3({ police }) {
               <Reveal className="faq-aside">
                 <Pill>Questions</Pill>
                 <h2 className="h2">Les questions <span className="serif grad-text">{police ? 'avant de commander.' : 'qu’on nous pose.'}</span></h2>
-                <p>Une question qui n’est pas ici ? Écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>{police ? ', ou posez-la à Ugo en réservant un appel juste en dessous.' : '.'}</p>
+                <p>Une question qui n’est pas ici ? Écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>{police ? ', ou posez-la-nous en réservant un appel juste en dessous.' : '.'}</p>
               </Reveal>
               <FaqList items={police ? FAQ_V2 : FAQ} />
             </div>

@@ -14,12 +14,12 @@ export const ETAPES = [
   },
   {
     img: 'litige', tag: 'Litiges', h: 'Un doublon ?', i: 'Un clic.',
-    p: 'Un lead en doublon ou hors de votre zone se signale directement depuis la liste. Ugo le vérifie : accepté, il est remplacé par un lead neuf. Vous suivez la réponse dans Mes litiges.',
+    p: 'Un lead en doublon ou hors de votre zone se signale directement depuis la liste. Nous le vérifions : accepté, il est remplacé par un lead neuf. Vous suivez la réponse dans Mes litiges.',
     points: ['Motifs : doublon ou hors zone', 'Remplacé après vérification', 'Les faux numéros ne sont pas remplacés'],
   },
   {
     img: 'commandes', tag: 'Mes commandes', h: 'Chaque commande,', i: 'lead par lead.',
-    p: 'Vous pré-commandez depuis le catalogue ; Ugo valide votre zone et émet le bon de commande. Ensuite, vous voyez la livraison avancer : livrés, plafond, restant.',
+    p: 'Vous pré-commandez depuis le catalogue ; nous validons votre zone et émettons le bon de commande. Ensuite, vous voyez la livraison avancer : livrés, plafond, restant.',
     points: ['Pré-commande en ligne, à partir de 50 leads', 'Bon de commande numéroté, HT et TTC', 'Avancement en direct'],
   },
   {

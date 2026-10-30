@@ -14,15 +14,15 @@ export const FAQ = [
 export const FAQ_V2 = [
   ['Un contact est-il vendu à plusieurs professionnels ?', 'Non. Chaque contact est envoyé à un seul professionnel. Le Leads Shop est un espace à part : il regroupe, à prix réduit, les contacts produits en surplus sur nos campagnes, et marque « déjà transmis » ceux qui ont été envoyés à un autre professionnel.'],
   ['Quand est-ce que je reçois les contacts ?', 'Chaque jour, au fil des demandes. Un contact arrive dans votre espace client dès que le particulier remplit le formulaire.'],
-  ['Combien de contacts par jour ?', 'Ça dépend de vos départements et du volume commandé. Ugo vous donne le rythme avant la commande.'],
+  ['Combien de contacts par jour ?', 'Ça dépend de vos départements et du volume commandé. Nous vous donnons le rythme avant la commande.'],
   ['Ce sont de vrais particuliers ?', 'Oui. Chaque contact a rempli lui-même une demande pour être rappelé sur son projet.'],
   ['Comment je reçois les contacts ?', 'Dans votre espace client : nom, téléphone, e-mail, code postal, propriétaire ou non, type de logement, chauffage, surface. Vous les exportez en un clic.'],
   ['Combien coûte un contact ?', 'Pompe à chaleur 28 €, isolation par l’extérieur 27 €, photovoltaïque 35 €, hors taxes. Pour un autre secteur, le prix vous est donné avant toute commande. Kairn paie la pub : vous ne payez que les contacts, sur bon de commande, réglé par virement.'],
   ['Y a-t-il un engagement ou un abonnement ?', 'Non. Vous commandez à partir de 50 contacts, et vous arrêtez quand vous voulez.'],
   ['Et si le contact est un doublon ou hors de ma zone ?', 'Vous le signalez depuis votre espace client : après vérification, il est remplacé. Les faux numéros, eux, ne sont pas remplacés.'],
   ['Vous garantissez des chantiers ?', 'Non, et méfiez-vous de ceux qui le font. Nous nous engageons sur le contact : frais, qualifié, dans votre zone, à vous seul. La signature se joue au téléphone.'],
-  ['Quels secteurs couvrez-vous ?', 'Pompe à chaleur, isolation par l’extérieur et photovoltaïque sont ouverts en continu, et nous produisons des contacts dans bien d’autres secteurs : dites à Ugo lequel vous intéresse. Vous préférez vos propres campagnes ? C’est Kairn Pilotage : nous pilotons vos pubs Meta, sur votre budget et vos comptes, avec landing page et CRM.'],
-  ['Vous couvrez ma région ?', 'Kairn est basé à Bordeaux et travaille partout en France, en visio. Vous indiquez vos départements à la commande, et Ugo vérifie avec vous que la zone est couverte.'],
+  ['Quels secteurs couvrez-vous ?', 'Pompe à chaleur, isolation par l’extérieur et photovoltaïque sont ouverts en continu, et nous produisons des contacts dans bien d’autres secteurs : dites-nous lequel vous intéresse. Vous préférez vos propres campagnes ? C’est Kairn Pilotage : nous pilotons vos pubs Meta, sur votre budget et vos comptes, avec landing page et CRM.'],
+  ['Vous couvrez ma région ?', 'Kairn est basé à Bordeaux et travaille partout en France, en visio. Vous indiquez vos départements à la commande, et nous vérifions avec vous que la zone est couverte.'],
 ];
 
 // Questions de la page « Génération de leads » (même usage : affichage et données structurées).

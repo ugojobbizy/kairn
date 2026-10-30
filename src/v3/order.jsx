@@ -16,8 +16,8 @@ const THEMATIQUES = [...PRODUITS.map((p) => [p.code, `${p.nom} (${prixHT(p.prix)
 const VOLUMES = ['50', '100', '200', '+ de 200'];
 
 const STEPS = [
-  ['Ugo vous lit', 'Pas de tri automatique : votre demande est lue par celui qui règle les campagnes.'],
-  ['Ugo vous rappelle', 'Pour comprendre votre métier, votre zone et le rythme qu’il vous faut, et vous dire franchement si c’est Kairn Leads ou Kairn Pilotage.'],
+  ['Votre demande est lue', 'Pas de tri automatique : votre demande est lue par celui qui règle les campagnes.'],
+  ['On vous rappelle', 'Pour comprendre votre métier, votre zone et le rythme qu’il vous faut, et vous dire franchement si c’est Kairn Leads ou Kairn Pilotage.'],
   ['Le flux s’ouvre', 'Accès à votre espace client, puis vos premiers contacts. Sur une thématique déjà ouverte, ça peut aller vite.'],
 ];
 
@@ -70,7 +70,7 @@ export function OrderForm({ initial = {}, onDone, compact = false, send }) {
       <div className="od-sent" role="status">
         <span className="od-sent-ico" aria-hidden="true">✓</span>
         <h3>Demande reçue.</h3>
-        <p>Ugo l’a dans sa boîte. Il vous rappelle au {f.telephone} pour faire le point.</p>
+        <p>Votre demande est bien arrivée. Nous vous rappelons au {f.telephone} pour faire le point.</p>
       </div>
     );
   }
@@ -139,7 +139,7 @@ export default function OrderPage() {
             <div className="od-cols">
               <Reveal className="od-aside">
                 <h2>Vos premiers contacts peuvent <span className="serif grad-text">arriver vite.</span></h2>
-                <p>Dites-nous la thématique, la zone et le volume qu’il vous faut : Ugo lit votre demande et vous rappelle. Pas d’accusé de réception automatique.</p>
+                <p>Dites-nous la thématique, la zone et le volume qu’il vous faut : nous lisons votre demande et vous rappelons. Pas d’accusé de réception automatique.</p>
                 <p>Votre métier n’est pas dans la liste ? Choisissez « Être accompagné » : c’est Kairn Pilotage, sur votre propre budget.</p>
                 <ul className="od-prices">
                   {PRODUITS.map((p) => <li key={p.code}><b>{p.nom}</b><span>{prixHT(p.prix)} le contact</span></li>)}

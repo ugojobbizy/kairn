@@ -29,7 +29,7 @@ export default function AdsReel() {
             <h2 className="h2">Ce que voient les particuliers <span className="serif grad-text">avant de demander un devis.</span></h2>
           </div>
           <div className="reel-foot">
-            <p>18 pubs écrites et dessinées par Kairn pour des installateurs clients : murs par l’extérieur, combles. En visio, Ugo vous montre une campagne qui tourne.</p>
+            <p>18 pubs écrites et dessinées par Kairn pour des installateurs clients : murs par l’extérieur, combles. En visio, nous vous montrons une campagne qui tourne.</p>
             <button type="button" className="btn btn-light reel-btn" onClick={() => setOpen(0)}>Voir les pubs en grand</button>
           </div>
         </div>

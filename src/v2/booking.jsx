@@ -191,7 +191,7 @@ export default function Booking({ title = 'Audit découverte Kairn', intro = ['U
         </span>
         <h3>C’est réservé.</h3>
         <p><strong>{fmtLong(done)}</strong> (heure de Paris).</p>
-        <p>Ugo vous appelle au <strong>{fullPhone}</strong>. Un imprévu ? Écrivez-nous à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+        <p>Nous vous appelons au <strong>{fullPhone}</strong>. Un imprévu ? Écrivez-nous à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
       </div>
     );
   }
