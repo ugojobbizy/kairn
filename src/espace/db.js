@@ -8,8 +8,11 @@ export const db = createClient(URL, KEY, { auth: { storageKey: 'kairn-espace-aut
 
 export const THEMES = { PAC: 'Pompe à chaleur', ITE: 'Isolation extérieure', PPV: 'Photovoltaïque' };
 export const MOTIFS = { doublon: 'Doublon', hors_zone: 'Hors zone' };
-// Suivi des contacts (table lead_suivi, 30/10/2026). Pas de ligne = « à appeler ».
-export const SUIVI = { a_appeler: 'À appeler', nrp: 'NRP', rdv: 'RDV', devis: 'Devis envoyé', signe: 'Signé', perdu: 'Perdu' };
+// Étapes du CRM client (table lead_suivi), sur le modèle des CRM ETXE et Isolation d'Aquitaine (30/10/2026).
+// Pas de ligne = « nouveau ». L'ordre est celui des colonnes du pipeline.
+export const SUIVI = { a_appeler: 'Nouveau', nrp: 'NRP', a_rappeler: 'À rappeler', rdv: 'RDV pris', devis: 'Devis envoyé', signe: 'Signé', perdu: 'Perdu' };
+// Motifs de perte (choix de Claude du 30/10/2026, à valider par Ugo), adaptés de la liste ETXE validée le 12/10.
+export const MOTIFS_PERTE = { injoignable: 'Injoignable', plus_interesse: 'Plus intéressé', hors_conditions: 'Hors conditions ou non finançable', deja_equipe: 'Déjà équipé ou travaux faits', trop_cher: 'Trop cher', concurrent: 'Parti chez un concurrent', mefiance: 'Méfiance', locataire: 'Locataire sans accord', autre: 'Autre' };
 export const LITIGE_STATUTS = { en_attente: 'En attente', accepte: 'Accepté', refuse: 'Refusé' };
 export const TVA = 0.2;
 

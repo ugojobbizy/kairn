@@ -5,11 +5,14 @@ import { PRODUITS, GARANTIES } from '../v3/produits.js';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
 import { db, THEMES, MOTIFS, SUIVI, LITIGE_STATUTS, TVA, ETAPES, euro, dateFr, dateHeure, errMsg, downloadCsv, notifier } from './db.js';
 import Tickets from './tickets.jsx';
+import { Data, useData } from './data.js';
+import Contacts, { useFilters, ETAPES_CRM, age } from './crm.jsx';
 import { apercuData } from './apercu.js';
 import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from '../v3/zone-picker.jsx';
 import '../v2/v2.css';
 import '../v3/v3.css';
 import './espace.css';
+import './crm.css';
 
 // Espace client Kairn (29/10/2026), sur le modèle de Flow d'AKA Médias (captures d'Ugo) avec la DA Kairn :
 // Accueil (tableau de bord, raccourcis, catalogue), Mes prospects, Leads Shop, Mes litiges, Mes commandes, Comptabilité, Mes contrats.
@@ -19,7 +22,7 @@ import './espace.css';
 // Accueil « Aujourd'hui » (contacts frais à appeler), fiches contact avec Appeler et SMS, export Excel, CSV ou Google Sheets,
 // commandes reconductibles ; sur mobile, barre d'onglets en bas (champ « tab »). Plan : ~/.claude/plans/staged-wondering-peach.md.
 const MENU = [
-  { to: '/espace', end: true, t: 'Aujourd’hui', tab: 'Aujourd’hui', ico: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
+  { to: '/espace', end: true, t: 'Tableau de bord', tab: 'Accueil', ico: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
   { to: '/espace/prospects', t: 'Mes contacts', tab: 'Contacts', ico: <><circle cx="9" cy="8" r="4" /><path d="M2 21v-1a6 6 0 0 1 12 0v1M16 4a4 4 0 0 1 0 8M22 21v-1a6 6 0 0 0-4-5.6" /></> },
   { to: '/espace/commandes', t: 'Mes commandes', tab: 'Commandes', ico: <><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8h8M8 12h8M8 16h5" /></> },
   { to: '/espace/shop', t: 'Leads Shop', tab: 'Shop', ico: <><path d="M6 6h15l-2 9H7z" /><circle cx="9" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" /><path d="M6 6 5 2H2" /></> },
@@ -36,36 +39,50 @@ const Arrow = () => <Ico size={16}><path d="M5 12h14M13 6l6 6-6 6" /></Ico>;
 const Check = () => <Ico size={15}><path d="M20 6 9 17l-5-5" /></Ico>;
 
 // ─ données : base réelle, ou jeu fictif pour l'aperçu de développement ─
-const Data = createContext(null);
-const useData = () => useContext(Data);
 
 function useClientData(session, apercu) {
-  const [state, setState] = useState({ leads: null, commandes: null, litiges: null, suivi: null, error: '' });
+  const [state, setState] = useState({ leads: null, commandes: null, litiges: null, suivi: null, journal: null, error: '' });
   const load = useCallback(async () => {
-    if (apercu) { setState((st) => ({ ...apercu, suivi: st.suivi || apercu.suivi, error: '' })); return; }
+    if (apercu) { setState((st) => ({ ...apercu, suivi: st.suivi || apercu.suivi, journal: st.journal || apercu.journal, error: '' })); return; }
     const uid = session.user.id;
-    const [l, c, g, sv] = await Promise.all([
+    const [l, c, g, sv, jo] = await Promise.all([
       db.from('leads').select('*').eq('client_id', uid).order('livre_le', { ascending: false }),
       db.from('commandes').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
       db.from('litiges').select('*').eq('client_id', uid).order('created_at', { ascending: false }),
       db.from('lead_suivi').select('*').eq('client_id', uid),
+      db.from('lead_suivi_journal').select('*').eq('client_id', uid).order('cree_le', { ascending: true }).limit(10000),
     ]);
-    setState({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], suivi: sv.data || [], error: l.error || c.error || g.error || sv.error ? 'Une partie de vos données n’a pas pu être chargée.' : '' });
+    setState({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], suivi: sv.data || [], journal: jo.data || [], error: l.error || c.error || g.error || sv.error || jo.error ? 'Une partie de vos données n’a pas pu être chargée.' : '' });
   }, [session.user.id, apercu]);
   useEffect(() => { load(); }, [load]);
   const suiviPar = useMemo(() => new Map((state.suivi || []).map((x) => [x.lead_id, x])), [state.suivi]);
-  // Enregistre statut, note et rappel d'un contact (fonction suivi_maj). Affichage immédiat, retour arrière si l'écriture échoue.
+  const journalPar = useMemo(() => { const m = new Map(); for (const j of state.journal || []) { if (!m.has(j.lead_id)) m.set(j.lead_id, []); m.get(j.lead_id).push(j); } return m; }, [state.journal]);
+  // Enregistre l'étape, le rappel, le rendez-vous et le motif de perte d'un contact (fonction suivi_enregistrer).
+  // Affichage immédiat ; retour arrière si l'écriture échoue. Un vrai changement d'étape entre au fil d'activité.
   const majSuivi = useCallback(async (leadId, patch) => {
-    const avant = state.suivi || [];
-    const cur = avant.find((x) => x.lead_id === leadId) || { lead_id: leadId, statut: 'a_appeler', note: null, rappel_le: null };
+    const avant = state;
+    const cur = (state.suivi || []).find((x) => x.lead_id === leadId) || { lead_id: leadId, statut: 'a_appeler', rappel_le: null, rdv_le: null, motif_perte: null };
     const next = { ...cur, ...patch, maj_le: new Date().toISOString() };
-    setState((st) => ({ ...st, suivi: [...(st.suivi || []).filter((x) => x.lead_id !== leadId), next] }));
+    if (next.statut !== 'perdu') next.motif_perte = null;
+    const change = next.statut !== cur.statut;
+    setState((st) => ({ ...st, suivi: [...(st.suivi || []).filter((x) => x.lead_id !== leadId), next],
+      journal: change ? [...(st.journal || []), { id: `local-${Date.now()}`, lead_id: leadId, type: 'statut', statut: next.statut, cree_le: new Date().toISOString() }] : st.journal }));
     if (apercu) return true;
-    const { error } = await db.rpc('suivi_maj', { p_lead: leadId, p_statut: next.statut, p_note: next.note || null, p_rappel: next.rappel_le || null });
-    if (error) { setState((st) => ({ ...st, suivi: avant, error: 'Le suivi n’a pas pu être enregistré. Réessayez.' })); return false; }
+    const { error } = await db.rpc('suivi_enregistrer', { p_lead: leadId, p_statut: next.statut, p_rappel: next.rappel_le || null, p_rdv: next.rdv_le || null, p_motif: next.motif_perte || null });
+    if (error) { setState({ ...avant, error: 'Le suivi n’a pas pu être enregistré. Réessayez.' }); return false; }
     return true;
-  }, [state.suivi, apercu]);
-  return { ...state, suiviPar, majSuivi, reload: load };
+  }, [state, apercu]);
+  // Ajoute une note datée au fil d'activité (fonction suivi_noter).
+  const noter = useCallback(async (leadId, texte) => {
+    const entree = { id: `local-${Date.now()}`, lead_id: leadId, type: 'note', texte, cree_le: new Date().toISOString() };
+    if (!apercu) {
+      const { error } = await db.rpc('suivi_noter', { p_lead: leadId, p_texte: texte });
+      if (error) { setState((st) => ({ ...st, error: 'La note n’a pas pu être enregistrée. Réessayez.' })); return false; }
+    }
+    setState((st) => ({ ...st, journal: [...(st.journal || []), entree] }));
+    return true;
+  }, [apercu]);
+  return { ...state, suiviPar, journalPar, majSuivi, noter, reload: load };
 }
 
 // Chiffres dérivés : livrés par commande (hors leads annulés après litige), montant dû.
@@ -162,92 +179,6 @@ function Login() {
   );
 }
 
-// ─ Fiche contact (accueil et Mes contacts) ─
-// Âge du contact : la fraîcheur se lit d'un coup d'œil (pilier « frais » de l'accueil du site).
-function ilYa(d) {
-  if (!d) return '';
-  const min = Math.max(0, Math.round((Date.now() - new Date(d).getTime()) / 60000));
-  if (min < 1) return 'à l’instant';
-  if (min < 60) return `il y a ${min} min`;
-  const h = Math.round(min / 60);
-  if (h < 24) return `il y a ${h} h`;
-  const j = Math.round(h / 24);
-  return j === 1 ? 'hier' : `il y a ${j} jours`;
-}
-const isFrais = (d) => d && Date.now() - new Date(d).getTime() < 3600000;
-const nomComplet = (l) => [l.prenom, l.nom].filter(Boolean).join(' ') || 'Contact';
-const initiales = (l) => nomComplet(l).split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
-// SMS prêt à envoyer depuis le téléphone du commercial ; il le relit et le modifie avant l'envoi.
-function smsHref(l, client) {
-  const t = (THEMES[l.thematique] || 'votre projet').toLowerCase();
-  const corps = `Bonjour ${l.prenom || ''}, vous avez demandé à être rappelé pour votre projet (${t}). Je vous appelle dans quelques minutes.${client?.societe ? ` ${client.societe}` : ''}`;
-  return `sms:${(l.telephone || '').replace(/\s/g, '')}?&body=${encodeURIComponent(corps.replace(/\s+/g, ' ').trim())}`;
-}
-
-// Suivi d'un contact : statut en un tap, note, date de rappel (lot 2 de la refonte, table lead_suivi).
-const toLocalInput = (d) => { if (!d) return ''; const x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0, 16); };
-function SuiviBar({ lead: l }) {
-  const { suiviPar, majSuivi } = useData();
-  const cur = suiviPar.get(l.id) || { statut: 'a_appeler', note: null, rappel_le: null };
-  const [note, setNote] = useState(cur.note || '');
-  const [openNote, setOpenNote] = useState(Boolean(cur.note) || Boolean(cur.rappel_le));
-  useEffect(() => { setNote(cur.note || ''); }, [l.id, cur.note]);
-  return (
-    <div className="ec-suivi">
-      <div className="ec-suivi-st" role="group" aria-label="Statut du contact">
-        {Object.entries(SUIVI).map(([k, t]) => (
-          <button type="button" key={k} className={`is-${k}${cur.statut === k ? ' is-on' : ''}`} aria-pressed={cur.statut === k} onClick={() => majSuivi(l.id, { statut: k })}>{t}</button>
-        ))}
-      </div>
-      {openNote ? (
-        <div className="ec-suivi-more">
-          <label><span>Note</span><textarea rows={2} maxLength={2000} value={note} onChange={(e) => setNote(e.target.value)} onBlur={() => { if (note !== (cur.note || '')) majSuivi(l.id, { note }); }} placeholder="Ce qu’il vous a dit, son projet, son budget…" /></label>
-          <label><span>Me rappeler le</span><input type="datetime-local" value={toLocalInput(cur.rappel_le)} onChange={(e) => majSuivi(l.id, { rappel_le: e.target.value ? new Date(e.target.value).toISOString() : null })} /></label>
-        </div>
-      ) : <button type="button" className="ec-link-btn ec-suivi-add" onClick={() => setOpenNote(true)}>Ajouter une note ou un rappel</button>}
-    </div>
-  );
-}
-
-function ContactCard({ lead: l, client, litige, onSignal, compact }) {
-  const { suiviPar } = useData();
-  const sv = suiviPar.get(l.id);
-  const qualif = [l.statut_occupation, l.type_logement, l.chauffage, l.surface].filter(Boolean);
-  return (
-    <article className={`ec-contact${isFrais(l.livre_le) ? ' is-fresh' : ''}${compact ? ' is-compact' : ''}`}>
-      <header className="ec-contact-top">
-        <span className="ec-contact-av" aria-hidden="true">{initiales(l)}</span>
-        <div className="ec-contact-who">
-          <b>{nomComplet(l)}</b>
-          <span>{[l.code_postal, l.ville].filter(Boolean).join(' ')}</span>
-        </div>
-        <span className="ec-contact-age">{isFrais(l.livre_le) && <i aria-hidden="true" />}{ilYa(l.livre_le)}</span>
-      </header>
-      {compact && sv && sv.statut !== 'a_appeler' && <span className={`ec-st is-${sv.statut}`}>{SUIVI[sv.statut]}</span>}
-      <p className="ec-contact-theme">{THEMES[l.thematique] || l.thematique}</p>
-      {qualif.length > 0 && <ul className="ec-contact-q">{qualif.map((q) => <li key={q}>{q}</li>)}</ul>}
-      {!compact && (
-        <>
-          <div className="ec-contact-actions">
-            <a className="ec-call" href={`tel:${(l.telephone || '').replace(/\s/g, '')}`}><Ico size={18}><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></Ico>Appeler</a>
-            <a className="ec-sms" href={smsHref(l, client)}><Ico size={18}><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></Ico>SMS</a>
-          </div>
-          <SuiviBar lead={l} />
-          <dl className="ec-contact-coord">
-            <div><dt>Téléphone</dt><dd>{l.telephone || '·'}</dd></div>
-            <div><dt>E-mail</dt><dd>{l.email ? <a href={`mailto:${l.email}`}>{l.email}</a> : '·'}</dd></div>
-          </dl>
-          <footer className="ec-contact-foot">
-            <span>Reçu le {dateHeure(l.livre_le)}</span>
-            {litige ? <span className={`ec-status is-${litige.statut}`}>Litige {LITIGE_STATUTS[litige.statut].toLowerCase()}</span>
-              : <button type="button" className="ec-link-btn" onClick={() => onSignal(l)}>Signaler un doublon ou un hors zone</button>}
-          </footer>
-        </>
-      )}
-    </article>
-  );
-}
-
 // Plus de 80 % livrés : la commande touche à sa fin, on propose de la reconduire (seuil à valider par Ugo).
 const SEUIL_RECONDUIRE = 0.8;
 function reconduireHref(c) {
@@ -268,60 +199,119 @@ function CommandeCard({ c, n }) {
   );
 }
 
-// ─ Aujourd'hui (accueil) ─
-function Home({ client, apercu }) {
+// ─ Tableau de bord (accueil) ─
+// Refait le 30/10/2026 (Ugo : « ce dashboard n'a strictement aucun intérêt [...] les leads doivent être dans Mes contacts ») :
+// plus aucune fiche ici. Ce qu'il y a à faire maintenant (liens vers Mes contacts), puis les chiffres qui comptent pour
+// signer : contacts reçus, traités, RDV, signés, coût par signature, entonnoir, contacts reçus par jour, commandes.
+// « Traité » = étape changée par le client dans son suivi : ça mesure son traitement, pas la qualité des contacts.
+const PERIODES = [[7, '7 jours'], [30, '30 jours'], [0, 'Depuis le début']];
+const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+function duree(min) {
+  if (min == null) return '·';
+  if (min < 60) return `${Math.round(min)} min`;
+  if (min < 1440) return `${(min / 60).toFixed(min < 600 ? 1 : 0).replace('.', ',')} h`;
+  return `${Math.round(min / 1440)} j`;
+}
+
+function Home({ client }) {
   const s = useStats();
-  const { leads, litiges, suiviPar, reload } = useData();
-  const [litigeFor, setLitigeFor] = useState(null);
-  const enLitige = useMemo(() => new Map((litiges || []).map((g) => [g.lead_id, g])), [litiges]);
-  // « À appeler » : les contacts livrés depuis 48 h et pas encore joints (sans statut, ou NRP), du plus frais au plus ancien.
-  const recents = useMemo(() => (leads || []).filter((l) => !l.annule && l.livre_le && Date.now() - new Date(l.livre_le).getTime() < 48 * 3600000
-    && ['a_appeler', 'nrp'].includes((suiviPar.get(l.id) || {}).statut || 'a_appeler'))
-    .sort((a, b) => new Date(b.livre_le) - new Date(a.livre_le)), [leads, suiviPar]);
-  // « À rappeler » : rappel prévu d'ici ce soir, le plus proche d'abord.
-  const rappels = useMemo(() => {
-    const fin = new Date(); fin.setHours(23, 59, 59, 999);
-    const byId = new Map((leads || []).map((l) => [l.id, l]));
-    return [...suiviPar.values()].filter((x) => x.rappel_le && new Date(x.rappel_le) <= fin && byId.has(x.lead_id) && !['signe', 'perdu'].includes(x.statut))
-      .sort((a, b) => new Date(a.rappel_le) - new Date(b.rappel_le)).map((x) => ({ ...byId.get(x.lead_id), _rappel: x.rappel_le }));
-  }, [leads, suiviPar]);
-  const auj = recents.filter((l) => new Date(l.livre_le).toDateString() === new Date().toDateString()).length;
+  const { leads, suiviPar, journalPar } = useData();
+  const [jours, setJours] = useState(30);
+  const st = (l) => (suiviPar.get(l.id) || {}).statut || 'a_appeler';
+  const d = useMemo(() => {
+    if (!leads) return null;
+    const actifs = leads.filter((l) => !l.annule && l.livre_le);
+    const depuis = jours ? Date.now() - jours * 86400000 : 0;
+    const periode = actifs.filter((l) => new Date(l.livre_le).getTime() >= depuis);
+    const finJour = new Date(); finJour.setHours(23, 59, 59, 999);
+    const debutJour = new Date(); debutJour.setHours(0, 0, 0, 0);
+    const suivis = actifs.map((l) => suiviPar.get(l.id)).filter(Boolean);
+    const traites = periode.filter((l) => st(l) !== 'a_appeler');
+    const joints = periode.filter((l) => !['a_appeler', 'nrp'].includes(st(l)));
+    const rdv = periode.filter((l) => ['rdv', 'devis', 'signe'].includes(st(l)) || suiviPar.get(l.id)?.rdv_le);
+    const devis = periode.filter((l) => ['devis', 'signe'].includes(st(l)));
+    const signes = periode.filter((l) => st(l) === 'signe');
+    // Délai entre la livraison et le premier changement d'étape (médiane).
+    const delais = periode.map((l) => { const j = (journalPar.get(l.id) || []).find((x) => x.type === 'statut'); return j ? (new Date(j.cree_le) - new Date(l.livre_le)) / 60000 : null; })
+      .filter((x) => x != null && x >= 0).sort((a, b) => a - b);
+    const mediane = delais.length ? delais[Math.floor(delais.length / 2)] : null;
+    const depense = periode.reduce((t, l) => t + Number(l.prix_ht || 0), 0);
+    // Contacts reçus par jour sur la période (14 jours au plus pour rester lisible).
+    const nJours = Math.min(jours || 14, 14);
+    const barres = Array.from({ length: nJours }, (_, k) => {
+      const a = new Date(debutJour); a.setDate(a.getDate() - (nJours - 1 - k));
+      const b = new Date(a); b.setDate(b.getDate() + 1);
+      const du = actifs.filter((l) => { const t = new Date(l.livre_le); return t >= a && t < b; });
+      return { jour: a, n: du.length, signes: du.filter((l) => st(l) === 'signe').length };
+    });
+    return {
+      periode: periode.length, traites: traites.length, joints: joints.length, rdv: rdv.length, devis: devis.length, signes: signes.length,
+      mediane, depense, coutSignature: signes.length ? depense / signes.length : null, barres,
+      nouveaux: actifs.filter((l) => st(l) === 'a_appeler').length,
+      nouveauxHeure: actifs.filter((l) => st(l) === 'a_appeler' && Date.now() - new Date(l.livre_le).getTime() < 3600000).length,
+      rappels: suivis.filter((x) => x.rappel_le && new Date(x.rappel_le) <= finJour && !['signe', 'perdu'].includes(x.statut)).length,
+      rappelsRetard: suivis.filter((x) => x.rappel_le && new Date(x.rappel_le) < new Date() && !['signe', 'perdu'].includes(x.statut)).length,
+      rdvJour: suivis.filter((x) => x.rdv_le && new Date(x.rdv_le) >= debutJour && new Date(x.rdv_le) <= finJour).length,
+      rdvAVenir: suivis.filter((x) => x.rdv_le && new Date(x.rdv_le) > new Date()).length,
+    };
+  }, [leads, suiviPar, journalPar, jours]);
+  const max = d ? Math.max(1, ...d.barres.map((b) => b.n)) : 1;
+  const etapes = d ? [['Reçus', d.periode], ['Traités', d.traites], ['Joints', d.joints], ['RDV', d.rdv], ['Devis', d.devis], ['Signés', d.signes]] : [];
   return (
     <>
-      <header className="ec-today">
-        <p className="ec-today-hi">Bonjour{client?.prenom ? ` ${client.prenom}` : ''}</p>
-        <h1>{leads ? <><strong>{recents.length}</strong> contact{recents.length > 1 ? 's' : ''} à appeler</> : 'Chargement…'}</h1>
-        <p>{auj} reçu{auj > 1 ? 's' : ''} aujourd’hui. Plus vous rappelez vite, plus ça décroche.</p>
+      <header className="db-head">
+        <div><p className="ec-today-hi">Bonjour{client?.prenom ? ` ${client.prenom}` : ''}</p><h1>Tableau de bord</h1></div>
+        <div className="ec-switch db-period" role="group" aria-label="Période">{PERIODES.map(([k, t]) => <button type="button" key={k} className={jours === k ? 'is-on' : ''} onClick={() => setJours(k)}>{t}</button>)}</div>
       </header>
-      {leads && recents.length === 0 ? (
-        <Empty><p><b>Aucun nouveau contact pour le moment.</b></p><p>Ils arrivent ici dès qu’ils vous sont livrés.</p><Link to="/espace/prospects" className="ec-link-btn">Voir tous mes contacts</Link></Empty>
-      ) : (
-        <div className="ec-contacts">
-          {recents.slice(0, 12).map((l) => <ContactCard key={l.id} lead={l} client={client} litige={enLitige.get(l.id)} onSignal={setLitigeFor} />)}
-        </div>
-      )}
-      {recents.length > 12 && <Link to="/espace/prospects" className="ec-more">Voir les {recents.length - 12} autres contacts</Link>}
 
-      {rappels.length > 0 && (
-        <>
-          <p className="ec-label">À rappeler aujourd’hui</p>
-          <div className="ec-contacts">{rappels.map((l) => <ContactCard key={l.id} lead={l} client={client} litige={enLitige.get(l.id)} onSignal={setLitigeFor} />)}</div>
-        </>
-      )}
-
-      {s && s.enCours.length > 0 && (
-        <>
-          <p className="ec-label">Mes commandes en cours</p>
-          <div className="ec-orders">{s.enCours.map((c) => <CommandeCard key={c.id} c={c} n={s.livresPar[c.id] || 0} />)}</div>
-        </>
-      )}
-      <div className="ec-mini-kpis">
-        <div><span>Contacts reçus</span><b>{s ? s.livres : '·'}</b></div>
-        <div><span>Reste à livrer</span><b>{s ? s.reste : '·'}</b></div>
-        <Link to="/espace/comptabilite"><span>Montant dû HT</span><b>{s ? euro(s.du) : '·'}</b></Link>
+      <p className="ec-label">À faire maintenant</p>
+      <div className="db-todo">
+        <Link to="/espace/prospects?vue=pipeline" className={d?.nouveaux ? 'is-hot' : ''}><span>Nouveaux contacts à appeler</span><b>{d ? d.nouveaux : '·'}</b><small>{d?.nouveauxHeure ? `dont ${d.nouveauxHeure} reçu${d.nouveauxHeure > 1 ? 's' : ''} dans l’heure` : 'Ouvrir le pipeline'}</small></Link>
+        <Link to="/espace/prospects?vue=rappels" className={d?.rappelsRetard ? 'is-warn' : ''}><span>Rappels aujourd’hui</span><b>{d ? d.rappels : '·'}</b><small>{d?.rappelsRetard ? `dont ${d.rappelsRetard} en retard` : 'Voir mes rappels'}</small></Link>
+        <Link to="/espace/prospects?vue=agenda"><span>Rendez-vous aujourd’hui</span><b>{d ? d.rdvJour : '·'}</b><small>{d ? `${d.rdvAVenir} à venir au total` : ''}</small></Link>
       </div>
-      <Link to="/espace/precommande" className="ec-btn ec-btn-block">Commander des contacts</Link>
-      {litigeFor && <LitigeModal lead={litigeFor} apercu={apercu} onClose={() => setLitigeFor(null)} onDone={() => { setLitigeFor(null); reload(); }} />}
+
+      <p className="ec-label">Vos résultats · {PERIODES.find(([k]) => k === jours)[1].toLowerCase()}</p>
+      <div className="db-kpis">
+        <div><span>Contacts reçus</span><b>{d ? d.periode : '·'}</b><small>{d ? `${euro(d.depense)} HT` : ''}</small></div>
+        <div><span>Traités</span><b>{d ? `${pct(d.traites, d.periode)} %` : '·'}</b><small>{d ? `${d.traites} sur ${d.periode}` : ''}</small></div>
+        <div><span>Premier suivi en</span><b>{d ? duree(d.mediane) : '·'}</b><small>médiane après réception</small></div>
+        <div><span>RDV pris</span><b>{d ? d.rdv : '·'}</b><small>{d ? `${pct(d.rdv, d.periode)} % des contacts` : ''}</small></div>
+        <div className="is-ok"><span>Signés</span><b>{d ? d.signes : '·'}</b><small>{d ? `${pct(d.signes, d.periode)} % des contacts` : ''}</small></div>
+        <div><span>Coût par signature</span><b>{d?.coutSignature != null ? euro(d.coutSignature) : '·'}</b><small>HT, contacts de la période</small></div>
+      </div>
+
+      <div className="db-grid">
+        <section className="ec-card db-card">
+          <h2>Du contact à la signature</h2>
+          <ol className="db-funnel">
+            {etapes.map(([t, n]) => (
+              <li key={t}><span>{t}</span><div><i style={{ width: `${d?.periode ? Math.max(2, (n / d.periode) * 100) : 0}%` }} /></div><b>{n}</b><em>{d?.periode ? `${pct(n, d.periode)} %` : ''}</em></li>
+            ))}
+          </ol>
+          <p className="ec-note">Selon les étapes que vous donnez à vos contacts dans Mes contacts.</p>
+        </section>
+        <section className="ec-card db-card">
+          <h2>Contacts reçus par jour</h2>
+          <div className="db-bars" role="img" aria-label="Contacts reçus par jour">
+            {d?.barres.map((b) => (
+              <div key={b.jour.toISOString()} title={`${b.jour.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} : ${b.n} reçu${b.n > 1 ? 's' : ''}, ${b.signes} signé${b.signes > 1 ? 's' : ''}`}>
+                <span className="db-bar"><i style={{ height: `${(b.n / max) * 100}%` }} />{b.signes > 0 && <em style={{ height: `${(b.signes / max) * 100}%` }} />}</span>
+                <small>{b.jour.toLocaleDateString('fr-FR', { weekday: 'narrow' })}</small>
+              </div>
+            ))}
+          </div>
+          <p className="db-legend"><span><i />Reçus</span><span><i className="is-ok" />Signés</span></p>
+        </section>
+      </div>
+
+      <div className="db-row">
+        <p className="ec-label">Mes commandes en cours</p>
+        <Link to="/espace/precommande" className="ec-btn">Commander des contacts</Link>
+      </div>
+      {s && s.enCours.length > 0 ? <div className="ec-orders">{s.enCours.map((c) => <CommandeCard key={c.id} c={c} n={s.livresPar[c.id] || 0} />)}</div>
+        : <div className="ec-card ec-empty"><p>Aucune commande en cours.</p></div>}
+      {s && s.du > 0 && <p className="ec-note">Montant à régler : <Link to="/espace/comptabilite">{euro(s.du)} HT</Link>.</p>}
     </>
   );
 }
@@ -372,208 +362,6 @@ function Precommande({ session, client, apercu }) {
           : <button type="submit" className="ec-btn" disabled={state === 'sending'}>{state === 'sending' ? 'Envoi…' : 'Envoyer la demande'}</button>}
       </form>
     </>
-  );
-}
-
-// ─ Mes prospects ─
-const COLS_PROSPECTS = [['livre_le', 'Livré le'], ['thematique', 'Thématique'], ['prenom', 'Prénom'], ['nom', 'Nom'], ['telephone', 'Téléphone'], ['email', 'E-mail'], ['code_postal', 'Code postal'], ['ville', 'Ville'], ['statut_occupation', 'Statut d’occupation'], ['type_logement', 'Type de logement'], ['chauffage', 'Chauffage'], ['surface', 'Surface'], ['suivi_statut', 'Statut de suivi'], ['suivi_note', 'Note']];
-
-function useFilters(rows, dateKey) {
-  const [q, setQ] = useState('');
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
-  const [them, setThem] = useState('');
-  const [dep, setDep] = useState('');
-  const quick = (days) => {
-    const d = new Date(); d.setHours(0, 0, 0, 0);
-    if (days === 'mois') d.setDate(1); else if (days === 'semaine') d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); else d.setDate(d.getDate() - days);
-    setFrom(d.toISOString().slice(0, 10));
-    const e = new Date(); if (days === 1) { e.setDate(e.getDate() - 1); } setTo(e.toISOString().slice(0, 10));
-  };
-  const out = useMemo(() => (rows || []).filter((r) => {
-    const d = r[dateKey] ? r[dateKey].slice(0, 10) : '';
-    if (from && d < from) return false;
-    if (to && d > to) return false;
-    if (them && r.thematique !== them) return false;
-    if (dep && !(r.departement || '').startsWith(dep.trim())) return false;
-    if (q) {
-      const s = `${r.prenom || ''} ${r.nom || ''} ${r.telephone || ''} ${r.email || ''}`.toLowerCase();
-      if (!s.includes(q.toLowerCase())) return false;
-    }
-    return true;
-  }), [rows, dateKey, q, from, to, them, dep]);
-  const bar = (search, dateLabel) => (
-    <div className="ec-filters">
-      {search && <label className="is-wide"><span>Recherche</span><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Nom, téléphone ou e-mail" /></label>}
-      <label><span>{dateLabel} du</span><input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
-      <label><span>{dateLabel} au</span><input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></label>
-      <label><span>Thématique</span><select value={them} onChange={(e) => setThem(e.target.value)}><option value="">Toutes</option>{Object.entries(THEMES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
-      <label><span>Département</span><input value={dep} onChange={(e) => setDep(e.target.value)} placeholder="Ex. 33" maxLength={3} /></label>
-      <div className="ec-quick">
-        {[[0, 'Aujourd’hui'], [1, 'Hier'], [3, '3 derniers jours'], ['semaine', 'Cette semaine'], ['mois', 'Ce mois-ci']].map(([k, t]) => <button type="button" key={t} onClick={() => quick(k)}>{t}</button>)}
-        {(from || to || them || dep || q) && <button type="button" className="is-reset" onClick={() => { setQ(''); setFrom(''); setTo(''); setThem(''); setDep(''); }}>Effacer</button>}
-      </div>
-    </div>
-  );
-  return { rows: out, bar };
-}
-
-// Écran large : liste à gauche, fiche ouverte à droite. Mobile : fiches complètes les unes sous les autres.
-function useWide(px = 1100) {
-  const q = `(min-width: ${px}px)`;
-  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia(q).matches);
-  useEffect(() => { const m = window.matchMedia(q); const on = () => setWide(m.matches); m.addEventListener('change', on); return () => m.removeEventListener('change', on); }, [q]);
-  return wide;
-}
-
-// Export : Excel (point-virgule), CSV standard (virgule : Google Sheets, la plupart des CRM), ou copie à coller dans un tableur.
-function ExportMenu({ rows, onExported }) {
-  const [copied, setCopied] = useState(false);
-  const cols = COLS_PROSPECTS.map(([k, t]) => [k === 'livre_le' ? (r) => dateHeure(r.livre_le) : k, t]);
-  const name = (ext) => `kairn-contacts-${new Date().toISOString().slice(0, 10)}.${ext}`;
-  async function copier() {
-    const val = (c, r) => String((typeof c[0] === 'function' ? c[0](r) : r[c[0]]) ?? '').replace(/[\t\n]/g, ' ');
-    const tsv = [cols.map((c) => c[1]).join('\t'), ...rows.map((r) => cols.map((c) => val(c, r)).join('\t'))].join('\n');
-    try { await navigator.clipboard.writeText(tsv); setCopied(true); setTimeout(() => setCopied(false), 2500); onExported(); } catch { /* presse-papiers refusé */ }
-  }
-  return (
-    <details className="ec-export">
-      <summary className="ec-btn-ghost"><Ico size={16}><path d="M12 3v12M7 10l5 5 5-5M4 21h16" /></Ico>Exporter ({rows.length})</summary>
-      <div className="ec-export-menu">
-        <button type="button" disabled={!rows.length} onClick={() => { downloadCsv(name('csv'), cols, rows); onExported(); }}><b>Excel</b><span>Fichier CSV pour Excel</span></button>
-        <button type="button" disabled={!rows.length} onClick={() => { downloadCsv(name('csv'), cols, rows, ','); onExported(); }}><b>CRM ou Google Sheets</b><span>Fichier CSV standard, à importer</span></button>
-        <button type="button" disabled={!rows.length} onClick={copier}><b>{copied ? 'Copié' : 'Copier le tableau'}</b><span>À coller dans Google Sheets ou Excel</span></button>
-      </div>
-    </details>
-  );
-}
-
-function Prospects({ apercu, client }) {
-  const { leads, litiges, suiviPar, reload } = useData();
-  const [statut, setStatut] = useState('');
-  const [tab, setTab] = useState('tous');
-  const [vue, setVue] = useState('fiches');
-  const [sel, setSel] = useState(null);
-  const [showF, setShowF] = useState(false);
-  const wide = useWide();
-  const [litigeFor, setLitigeFor] = useState(null);
-  const enLitige = useMemo(() => new Map((litiges || []).map((g) => [g.lead_id, g])), [litiges]);
-  const base = useMemo(() => (leads || []).filter((l) => !l.annule && (tab === 'tous' || (tab === 'exportes' ? l.exporte_le : !l.exporte_le))), [leads, tab]);
-  const st = (l) => (suiviPar.get(l.id) || {}).statut || 'a_appeler';
-  const f0 = useFilters(base, 'livre_le');
-  const f = { ...f0, rows: statut ? f0.rows.filter((l) => st(l) === statut) : f0.rows };
-  const parStatut = useMemo(() => { const m = {}; for (const l of f0.rows) m[st(l)] = (m[st(l)] || 0) + 1; return m; }, [f0.rows, suiviPar]);
-  const exportRows = f.rows.map((l) => ({ ...l, suivi_statut: SUIVI[st(l)], suivi_note: (suiviPar.get(l.id) || {}).note || '' }));
-  async function marquer() {
-    const ids = f.rows.filter((r) => !r.exporte_le).map((r) => r.id);
-    if (ids.length && !apercu) { await db.rpc('leads_marquer_exportes', { p_ids: ids }); reload(); }
-  }
-  return (
-    <>
-      <PageHead title="Mes contacts">
-        <div className="ec-head-tools">
-          <div className="ec-switch" role="group" aria-label="Affichage">
-            <button type="button" className={vue === 'fiches' ? 'is-on' : ''} onClick={() => setVue('fiches')}>Fiches</button>
-            <button type="button" className={vue === 'pipeline' ? 'is-on' : ''} onClick={() => setVue('pipeline')}>Pipeline</button>
-            <button type="button" className={vue === 'tableau' ? 'is-on' : ''} onClick={() => setVue('tableau')}>Tableau</button>
-          </div>
-          <ExportMenu rows={exportRows} onExported={marquer} />
-        </div>
-      </PageHead>
-      <div className="ec-tabs">{[['tous', 'Tous'], ['a_exporter', 'À exporter'], ['exportes', 'Exportés']].map(([k, t]) => <button type="button" key={k} className={tab === k ? 'is-on' : ''} onClick={() => setTab(k)}>{t}</button>)}</div>
-      <button type="button" className="ec-filters-toggle" aria-expanded={showF} onClick={() => setShowF((o) => !o)}>{showF ? 'Masquer les filtres' : 'Filtrer et rechercher'}</button>
-      <div className={`ec-filters-box${showF ? ' is-open' : ''}`}>{f.bar(true, 'Livré')}</div>
-      <div className="ec-stfilter" role="group" aria-label="Filtrer par statut">
-        <button type="button" className={!statut ? 'is-on' : ''} onClick={() => setStatut('')}>Tous <b>{f0.rows.length}</b></button>
-        {Object.entries(SUIVI).map(([k, t]) => <button type="button" key={k} className={statut === k ? 'is-on' : ''} onClick={() => setStatut(k)}>{t} <b>{parStatut[k] || 0}</b></button>)}
-      </div>
-      {vue === 'pipeline' && wide && leads && (
-        <div className="ec-pipe">
-          {Object.entries(SUIVI).map(([k, t]) => {
-            const col = f0.rows.filter((l) => st(l) === k);
-            return (
-              <section key={k} className={`ec-pipe-col is-${k}`}>
-                <h3>{t}<b>{col.length}</b></h3>
-                <div>{col.slice(0, 40).map((l) => <div key={l.id} role="button" tabIndex={0} className="ec-pipe-card" onClick={() => { setSel(l); setVue('fiches'); }} onKeyDown={(e) => { if (e.key === 'Enter') { setSel(l); setVue('fiches'); } }}><ContactCard lead={l} compact /></div>)}</div>
-              </section>
-            );
-          })}
-        </div>
-      )}
-      <div className="ec-count"><b>{f.rows.length}</b> contact{f.rows.length > 1 ? 's' : ''} · {tab === 'a_exporter' ? 'à exporter' : tab === 'exportes' ? 'déjà exportés' : 'du plus récent au plus ancien'}</div>
-      {leads && f.rows.length > 0 && (vue === 'fiches' || (vue === 'pipeline' && !wide)) && (wide ? (
-        <div className="ec-md">
-          <ul className="ec-md-list">
-            {f.rows.map((l) => {
-              const cur = (sel && sel.id === l.id) || (!sel && l === f.rows[0]);
-              return <li key={l.id} role="button" tabIndex={0} className={cur ? 'is-on' : ''} onClick={() => setSel(l)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSel(l); } }}><ContactCard lead={l} compact /></li>;
-            })}
-          </ul>
-          <div className="ec-md-detail"><ContactCard lead={f.rows.find((l) => sel && l.id === sel.id) || f.rows[0]} client={client} litige={enLitige.get((sel || f.rows[0]).id)} onSignal={setLitigeFor} /></div>
-        </div>
-      ) : (
-        <div className="ec-contacts">{f.rows.slice(0, 60).map((l) => <ContactCard key={l.id} lead={l} client={client} litige={enLitige.get(l.id)} onSignal={setLitigeFor} />)}</div>
-      ))}
-      {leads && f.rows.length === 0 ? (
-        <Empty>{tab === 'a_exporter' ? <><p><b>Aucun lead à exporter : vous êtes à jour.</b></p><button type="button" className="ec-link-btn" onClick={() => setTab('tous')}>Voir tous les leads</button></> : <p>Aucun lead pour ces filtres.</p>}</Empty>
-      ) : vue === 'tableau' && (
-        <div className="ec-card ec-table-wrap">
-          <table className="ec-table">
-            <thead><tr><th>Livré le</th><th>Thématique</th><th>Prospect</th><th>Téléphone</th><th>E-mail</th><th>Code postal</th><th>Statut</th><th>Logement</th><th>Chauffage</th><th>Surface</th><th /></tr></thead>
-            <tbody>
-              {f.rows.map((l) => {
-                const g = enLitige.get(l.id);
-                return (
-                  <tr key={l.id}>
-                    <td>{dateHeure(l.livre_le)}</td>
-                    <td>{THEMES[l.thematique] || l.thematique}</td>
-                    <td><b>{[l.prenom, l.nom].filter(Boolean).join(' ') || '·'}</b></td>
-                    <td><a href={`tel:${l.telephone}`}>{l.telephone || '·'}</a></td>
-                    <td>{l.email || '·'}</td>
-                    <td>{l.code_postal || '·'}{l.ville ? ` ${l.ville}` : ''}</td>
-                    <td>{l.statut_occupation || '·'}</td>
-                    <td>{l.type_logement || '·'}</td>
-                    <td>{l.chauffage || '·'}</td>
-                    <td>{l.surface || '·'}</td>
-                    <td>{g ? <span className={`ec-status is-${g.statut}`}>Litige {LITIGE_STATUTS[g.statut].toLowerCase()}</span> : <button type="button" className="ec-link-btn" onClick={() => setLitigeFor(l)}>Signaler</button>}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-      {litigeFor && <LitigeModal lead={litigeFor} apercu={apercu} onClose={() => setLitigeFor(null)} onDone={() => { setLitigeFor(null); reload(); }} />}
-    </>
-  );
-}
-
-function LitigeModal({ lead, apercu, onClose, onDone }) {
-  const [motif, setMotif] = useState('doublon');
-  const [message, setMessage] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  async function submit(e) {
-    e.preventDefault();
-    setBusy(true); setError('');
-    if (apercu) { onDone(); return; }
-    const { error: err } = await db.from('litiges').insert({ lead_id: lead.id, motif, message: message.trim() || null });
-    setBusy(false);
-    if (err) setError(errMsg(err)); else onDone();
-  }
-  return (
-    <div className="ec-modal" role="dialog" aria-modal="true" aria-label="Signaler un lead" onClick={onClose}>
-      <form className="ec-modal-card" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
-        <h2>Signaler un lead</h2>
-        <p className="ec-modal-lead">{[lead.prenom, lead.nom].filter(Boolean).join(' ')} · {lead.code_postal} · livré le {dateFr(lead.livre_le)}</p>
-        <p className="ec-sub">Motif</p>
-        <div className="ec-seg ec-seg-sm">{Object.entries(MOTIFS).map(([k, t]) => <button type="button" key={k} className={motif === k ? 'is-on' : ''} onClick={() => setMotif(k)}><b>{t}</b></button>)}</div>
-        <label className="ec-field"><span>Précision (facultatif)</span><textarea rows={3} value={message} onChange={(e) => setMessage(e.target.value)} maxLength={1000} placeholder={motif === 'doublon' ? 'Ex. déjà reçu le 12/10 sous un autre nom' : 'Ex. habite dans le 64, hors de ma zone'} /></label>
-        <p className="ec-note">Un doublon ou un contact hors zone est remplacé après vérification. Les faux numéros ne sont pas remplacés.</p>
-        {error && <p className="ec-err" role="alert">{error}</p>}
-        <div className="ec-modal-actions"><button type="button" className="ec-btn-ghost" onClick={onClose}>Annuler</button><button type="submit" className="ec-btn" disabled={busy}>{busy ? 'Envoi…' : 'Envoyer le litige'}</button></div>
-      </form>
-    </div>
   );
 }
 
@@ -992,8 +780,8 @@ function Shell({ session, client, apercu }) {
         <main className="ec-main">
           {data.error && <p className="ec-err">{data.error}</p>}
           <Routes>
-            <Route index element={<Home client={client} apercu={apercu} />} />
-            <Route path="prospects" element={<Prospects apercu={apercu} client={client} />} />
+            <Route index element={<Home client={client} />} />
+            <Route path="prospects" element={<Contacts apercu={apercu} client={client} />} />
             <Route path="shop" element={<Shop apercu={apercu} />} />
             <Route path="litiges" element={<Litiges />} />
             <Route path="commandes" element={<Commandes />} />
@@ -1001,7 +789,7 @@ function Shell({ session, client, apercu }) {
             <Route path="comptabilite" element={<Compta />} />
             <Route path="contrats" element={<Contrats />} />
             <Route path="compte" element={<Account session={session} client={client} apercu={apercu} />} />
-            <Route path="*" element={<Home client={client} apercu={apercu} />} />
+            <Route path="*" element={<Home client={client} />} />
           </Routes>
         </main>
       </div>

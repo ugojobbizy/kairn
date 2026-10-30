@@ -42,8 +42,22 @@ export function apercuData() {
     ...Array.from({ length: 22 }, (_, i) => lead(400 + i, 'PAC', Math.floor(i / 8))),
     ...Array.from({ length: 9 }, (_, i) => lead(500 + i, 'PPV', Math.floor(i / 4))),
   ].map(({ prenom, nom, telephone, email, ville, ...rest }, i) => ({ ...rest, en_vente: true, deja_transmis: true, prix_origine: rest.prix_ht, prix_ht: rest.prix_ht - 4 }));
-  // Suivi fictif : quelques contacts déjà traités, un rappel prévu aujourd'hui.
-  const st = ['nrp', 'rdv', 'devis', 'nrp', 'signe', 'perdu'];
-  const suivi = mine.slice(3, 15).map((l, i) => ({ lead_id: l.id, client_id: 'apercu', statut: st[i % st.length], note: i === 1 ? 'RDV mardi 14 h, maison des années 70.' : null, rappel_le: i === 0 ? new Date(Date.now() + 2 * 3600000).toISOString() : null, maj_le: new Date().toISOString() }));
-  return { leads: mine, commandes: [pre, cmd, shopCmd], litiges, stock, suivi };
+  // Suivi fictif : contacts traités à différentes étapes, rendez-vous, rappels et notes, pour juger le CRM et le tableau de bord.
+  const st = ['nrp', 'a_rappeler', 'rdv', 'devis', 'signe', 'perdu', 'rdv', 'nrp', 'signe', 'a_rappeler', 'devis', 'perdu'];
+  const h = (n) => new Date(Date.now() + n * 3600000).toISOString();
+  const suivi = mine.slice(3, 27).map((l, i) => {
+    const statut = st[i % st.length];
+    return { lead_id: l.id, client_id: 'apercu', statut, maj_le: new Date().toISOString(),
+      rdv_le: statut === 'rdv' ? h(4 + i * 7) : statut === 'devis' ? h(-48 - i) : null,
+      rappel_le: statut === 'a_rappeler' ? h(i % 3 === 0 ? -2 : 3 + i) : null,
+      motif_perte: statut === 'perdu' ? (i % 2 ? 'plus_interesse' : 'injoignable') : null };
+  });
+  const journal = suivi.flatMap((x, i) => {
+    const l = mine.find((m) => m.id === x.lead_id);
+    const t = (min) => new Date(new Date(l.livre_le).getTime() + min * 60000).toISOString();
+    const out = [{ id: `j-${i}-1`, lead_id: x.lead_id, client_id: 'apercu', type: 'statut', statut: x.statut, cree_le: t(12 + i * 9) }];
+    if (i % 3 === 0) out.push({ id: `j-${i}-2`, lead_id: x.lead_id, client_id: 'apercu', type: 'note', texte: 'Appelé, intéressé. Souhaite un devis avant fin du mois.', cree_le: t(20 + i * 9) });
+    return out;
+  });
+  return { leads: mine, commandes: [pre, cmd, shopCmd], litiges, stock, suivi, journal };
 }
