@@ -147,7 +147,7 @@ function Login() {
       <div className="aurora-grid" aria-hidden="true" />
       <div className="hero-halo" aria-hidden="true" />
       <form className="ec-login-card" onSubmit={submit}>
-        <Link to="/" className="brand"><KairnLogo />Kairn</Link>
+        <Link to="/" className="brand"><KairnLogo /><span className="brand-word">Kairn</span></Link>
         <h1>Espace client</h1>
         <p>Vos prospects, vos commandes et vos factures, au même endroit.</p>
         <label><span>E-mail</span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" /></label>
@@ -959,7 +959,7 @@ function Shell({ session, client, apercu }) {
     <Data.Provider value={data}>
       <div className={`ec${open ? ' is-open' : ''}`}>
         <header className="ec-top">
-          <Link to="/" className="brand"><KairnLogo />Kairn</Link>
+          <Link to="/" className="brand"><KairnLogo /><span className="brand-word">Kairn</span></Link>
           <span className="ec-company">{client?.societe || session.user.email}</span>
           <Link to="/espace/compte" className="ec-avatar" aria-label="Mon compte">{initials}</Link>
           <button type="button" className="ec-burger" aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'} aria-expanded={open} onClick={() => setOpen((o) => !o)}><span /><span /></button>
@@ -1036,7 +1036,7 @@ function Bienvenue({ tokenHash, type, onDone }) {
     <div className="ec-login">
       <div className="aurora-grid" aria-hidden="true" />
       <form className="ec-login-card" onSubmit={submit}>
-        <Link to="/" className="brand"><KairnLogo />Kairn</Link>
+        <Link to="/" className="brand"><KairnLogo /><span className="brand-word">Kairn</span></Link>
         {etat === 'verif' && <><h1>Un instant…</h1><p>Nous vérifions votre lien.</p></>}
         {etat === 'expire' && (
           <>
@@ -1103,7 +1103,7 @@ export default function ClientSpace() {
     body = (
       <div className="ec-login">
         <div className="ec-login-card">
-          <Link to="/" className="brand"><KairnLogo />Kairn</Link>
+          <Link to="/" className="brand"><KairnLogo /><span className="brand-word">Kairn</span></Link>
           <h1>Accès en préparation</h1>
           <p>Votre compte existe, mais votre espace n’est pas encore ouvert. Nous l’activons après votre premier échange.</p>
           <button type="button" className="ec-btn" onClick={() => db.auth.signOut()}>Se déconnecter</button>

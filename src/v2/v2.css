@@ -1353,3 +1353,6 @@
   .v2 .cm-ops i { grid-column: 1 / -1; justify-self: start; }
 }
 @media (max-width: 480px) { .v2 .cm-main { padding: 16px; } .v2 .cm-kpis b { font-size: 16px; } }
+
+/* Essai du 30/10/2026 (Ugo : « mettre Kairn de la même couleur que le logo pour voir ») : même dégradé que le pictogramme. */
+.v2 .brand-word { background: linear-gradient(90deg, #67E8F9, #818CF8); -webkit-background-clip: text; background-clip: text; color: transparent; }

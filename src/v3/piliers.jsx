@@ -61,7 +61,7 @@ function VisSeul() {
 }
 
 const PILIERS = [
-  { tag: 'Frais', Vis: VisFrais, h: 'Il vient de remplir le formulaire.', p: 'Le contact arrive dans votre espace client dès que le particulier valide sa demande, pas trois jours après dans un fichier. Vous l’appelez pendant qu’il attend votre appel.' },
+  { tag: 'Frais', Vis: VisFrais, h: 'Il vient de remplir le formulaire.', p: 'Le contact arrive dans votre espace client quelques secondes après sa demande, pas trois jours après dans un fichier. Vous l’appelez pendant qu’il attend votre appel.' },
   { tag: 'Qualifié', Vis: VisQualifie, h: 'Vous savez qui vous appelez.', p: 'Propriétaire ou locataire, maison ou appartement, chauffage actuel, surface, code postal. Vos commerciaux décrochent avec le projet sous les yeux.' },
   { tag: 'Tous les jours', Vis: VisFlux, h: 'Un flux, pas un lot.', p: 'Les contacts tombent chaque jour, pas 50 d’un coup puis plus rien. Vos commerciaux ont des appels à passer tous les matins, et vous ne connaissez plus le mois plein suivi du mois vide.' },
   { tag: 'À vous seul', Vis: VisSeul, h: 'Aucun autre installateur ne l’appelle.', p: 'Chaque contact est envoyé à un seul professionnel, dans vos départements. Quand vous appelez, vous n’êtes pas le cinquième de la journée.' },

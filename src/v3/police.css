@@ -211,6 +211,8 @@
 .v2.font-tight #faq > .wrap { max-width: 1040px; }
 .v2.font-tight .band-book > .wrap { max-width: none; padding: 0 clamp(12px, 1.6vw, 24px); }
 .v2.font-tight .band-book .book-card { border-radius: clamp(28px, 3vw, 44px); padding: clamp(28px, 5vw, 80px) clamp(20px, 7vw, 120px); }
+/* Le fond sombre va presque bord à bord, mais le contenu garde sa largeur d'avant (Ugo, 30/10/2026 : « le formulaire [...] là il est énorme »). */
+.v2.font-tight .band-book .book-card > * { max-width: 1000px; margin-inline: auto; }
 @media (min-width: 861px) { .v2.font-tight #lead .ls { grid-template-columns: 1fr minmax(0, 420px); gap: clamp(36px, 5vw, 72px); } }
 /* Fiche lead : titre en tête de section sur toute la largeur, texte et fiche dessous (Ugo, 30/10/2026 :
    « sur ordinateur il faut changer la disposition de ça », le titre tombait sur quatre lignes). */

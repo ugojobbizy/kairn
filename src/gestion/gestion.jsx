@@ -360,7 +360,7 @@ function Shell({ session, apercu }) {
   return (
     <div className={`ec${open ? ' is-open' : ''}`}>
       <header className="ec-top">
-        <Link to="/gestion" className="brand"><KairnLogo />Kairn</Link>
+        <Link to="/gestion" className="brand"><KairnLogo /><span className="brand-word">Kairn</span></Link>
         <span className="ec-company">Kairn Admin</span>
         <Link to="/gestion/litiges" className="ec-bell" style={{ marginLeft: 'auto' }} aria-label={`${attente} litige(s) en attente`}>
           <Ico><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></Ico>{attente > 0 && <b>{attente}</b>}
@@ -417,7 +417,7 @@ function Login({ denied }) {
     <div className="ec-login">
       <div className="aurora-grid" aria-hidden="true" />
       <form className="ec-login-card" onSubmit={submit}>
-        <span className="brand"><KairnLogo />Kairn</span>
+        <span className="brand"><KairnLogo /><span className="brand-word">Kairn</span></span>
         <h1>Kairn Admin</h1>
         {denied ? (
           <><p>Ce compte n’a pas accès à l’administration.</p><button type="button" className="ec-btn" onClick={() => db.auth.signOut()}>Changer de compte</button></>

@@ -183,7 +183,7 @@ export function Nav({ light = false, shop = false }) {
     <header className={`nav${scrolled || menu ? ' is-scrolled' : ''}${menu ? ' is-menu' : ''}${light ? ' is-light' : ''}`}>
       <div className="wrap">
         <div className="nav-bar">
-          <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo />Kairn</Link>
+          <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo /><span className="brand-word">Kairn</span></Link>
           <nav className="nav-links" aria-label="Navigation principale">
             <ServicesMenu />
             {links.map((x) => <Link key={x.to} to={x.to} className={pathname === x.to ? 'is-active' : undefined}>{x.t}</Link>)}
@@ -220,7 +220,7 @@ export function Footer() {
       <div className="wrap">
         <div className="footer-grid">
           <div>
-            <Link to="/" className="brand"><KairnLogo />Kairn</Link>
+            <Link to="/" className="brand"><KairnLogo /><span className="brand-word">Kairn</span></Link>
             <p style={{ marginTop: 12, maxWidth: '34ch', fontSize: 15, color: 'var(--muted)' }}>
               Agence de génération de leads. Campagnes, landing pages et CRM sur mesure, par une seule équipe.
             </p>
