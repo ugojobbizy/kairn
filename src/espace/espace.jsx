@@ -132,6 +132,15 @@ function Login() {
     setBusy(false);
     if (err) setError(err.message === 'Invalid login credentials' ? 'E-mail ou mot de passe incorrect.' : 'Connexion impossible pour le moment. Réessayez dans un instant.');
   }
+  // Lien pour choisir un nouveau mot de passe, envoyé par e-mail (api/mot-de-passe.js). Même réponse que l'adresse soit cliente ou non.
+  const [oubli, setOubli] = useState('');
+  async function oublie() {
+    setError(''); setOubli('');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())) { setError('Indiquez d’abord votre adresse e-mail ci-dessus.'); return; }
+    const r = await fetch('/api/mot-de-passe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email.trim() }) }).catch(() => null);
+    if (!r || !r.ok) { setError(`Envoi impossible pour le moment. Écrivez à ${CONTACT_EMAIL}.`); return; }
+    setOubli('Si cette adresse a un espace Kairn, un lien pour choisir un nouveau mot de passe vient de lui être envoyé.');
+  }
   return (
     <div className="ec-login">
       <div className="aurora-grid" aria-hidden="true" />
@@ -144,7 +153,8 @@ function Login() {
         <label><span>Mot de passe</span><input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" /></label>
         {error && <p className="ec-err" role="alert">{error}</p>}
         <button type="submit" className="ec-btn" disabled={busy}>{busy ? 'Connexion…' : 'Se connecter'}</button>
-        <p className="ec-small">Mot de passe oublié ? Écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+        <p className="ec-small"><button type="button" className="ec-link-btn" onClick={oublie}>Mot de passe oublié ?</button></p>
+        {oubli && <p className="ec-ok">{oubli}</p>}
         <p className="ec-small">Pas encore client ? <Link to="/commander">Commander des leads</Link></p>
       </form>
     </div>
@@ -997,6 +1007,57 @@ function Shell({ session, client, apercu }) {
   );
 }
 
+// ─ Bienvenue : lien d'invitation ou de mot de passe oublié (api/client-ouvrir.js, api/mot-de-passe.js) ─
+// Le lien porte un jeton à usage unique : on l'échange contre une session, puis le client choisit son mot de passe.
+function Bienvenue({ tokenHash, type, onDone }) {
+  const navigate = useNavigate();
+  const [etat, setEtat] = useState('verif');
+  const [pw, setPw] = useState('');
+  const [pw2, setPw2] = useState('');
+  const [error, setError] = useState('');
+  useEffect(() => {
+    db.auth.verifyOtp({ token_hash: tokenHash, type: type === 'recovery' ? 'recovery' : 'invite' })
+      .then(({ error: err }) => setEtat(err ? 'expire' : 'choix'));
+  }, [tokenHash, type]);
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    if (pw.length < 8) { setError('8 caractères au moins.'); return; }
+    if (pw !== pw2) { setError('Les deux mots de passe ne sont pas identiques.'); return; }
+    setEtat('envoi');
+    const { error: err } = await db.auth.updateUser({ password: pw });
+    if (err) { setEtat('choix'); setError(/different|same/i.test(err.message) ? 'Choisissez un mot de passe différent de l’ancien.' : 'Enregistrement impossible. Réessayez.'); return; }
+    navigate('/espace', { replace: true });
+    onDone();
+  }
+  return (
+    <div className="ec-login">
+      <div className="aurora-grid" aria-hidden="true" />
+      <form className="ec-login-card" onSubmit={submit}>
+        <Link to="/" className="brand"><KairnLogo />Kairn</Link>
+        {etat === 'verif' && <><h1>Un instant…</h1><p>Nous vérifions votre lien.</p></>}
+        {etat === 'expire' && (
+          <>
+            <h1>Lien expiré</h1>
+            <p>Ce lien a déjà servi ou n’est plus valable. Demandez-en un nouveau depuis la page de connexion, avec « Mot de passe oublié ».</p>
+            <Link to="/espace" className="ec-btn" onClick={onDone}>Aller à la connexion</Link>
+          </>
+        )}
+        {(etat === 'choix' || etat === 'envoi') && (
+          <>
+            <h1>{type === 'recovery' ? 'Nouveau mot de passe' : 'Bienvenue sur Kairn'}</h1>
+            <p>Choisissez votre mot de passe : vous vous connecterez ensuite avec votre adresse e-mail.</p>
+            <label><span>Mot de passe</span><input type="password" required minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="new-password" /></label>
+            <label><span>Encore une fois</span><input type="password" required minLength={8} value={pw2} onChange={(e) => setPw2(e.target.value)} autoComplete="new-password" /></label>
+            {error && <p className="ec-err" role="alert">{error}</p>}
+            <button type="submit" className="ec-btn" disabled={etat === 'envoi'}>{etat === 'envoi' ? 'Enregistrement…' : 'Ouvrir mon espace'}</button>
+          </>
+        )}
+      </form>
+    </div>
+  );
+}
+
 export default function ClientSpace() {
   useV2Favicon();
   // Manifeste propre à l'espace : installé sur l'écran d'accueil, il s'ouvre sur /espace (notifications sur iPhone).
@@ -1024,6 +1085,8 @@ export default function ClientSpace() {
 
   // Aperçu en développement seulement (/espace?apercu) : faux client et fausses données, rien n'est lu ni écrit en base.
   const apercu = useMemo(() => (import.meta.env.DEV && new URLSearchParams(window.location.search).has('apercu') ? apercuData() : null), []);
+  const [lien, setLien] = useState(() => { const q = new URLSearchParams(window.location.search); return window.location.pathname.startsWith('/espace/bienvenue') && q.get('token_hash') ? { tokenHash: q.get('token_hash'), type: q.get('type') } : null; });
+  if (lien) return <div className="v2 v3 ec-root"><Bienvenue tokenHash={lien.tokenHash} type={lien.type} onDone={() => setLien(null)} /></div>;
   if (apercu) {
     return <div className="v2 v3 ec-root"><Shell session={{ user: { id: 'apercu', email: 'client@exemple.fr' } }} client={{ societe: 'Exemple Chauffage', prenom: 'Julien' }} apercu={apercu} /></div>;
   }

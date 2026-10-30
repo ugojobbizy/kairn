@@ -471,3 +471,8 @@
 .v2 .ec-toggle small { display: block; margin-top: 3px; font-size: 13.5px; color: var(--muted); }
 .v2 .ec-alerte .ec-field { margin-top: 12px; }
 .v2 .ec-alertes-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+/* ─ Kairn Admin : lien d'accès d'un client créé (30/10/2026) ─ */
+.v2 .ec-lien { grid-column: 1 / -1; }
+.v2 .ec-lien > div { display: flex; gap: 8px; }
+.v2 .ec-lien input { flex: 1; font-family: var(--mono); font-size: 12.5px; }
