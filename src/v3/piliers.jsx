@@ -16,7 +16,7 @@ export default function Piliers() {
     <div className="pil">
       <Reveal className="sec-head sec-head-left">
         <p className="eyebrow">Kairn Leads</p>
-        <h2 className="h2">Ce qui fait qu’un contact se signe, <span className="serif grad-text">on s’en occupe avant qu’il arrive.</span></h2>
+        <h2 className="h2">Quatre raisons <span className="serif grad-text">de signer plus.</span></h2>
         <p>Le reste se joue au téléphone. Et ça, vos commerciaux savent faire.</p>
       </Reveal>
       <ol className="pil-grid">
