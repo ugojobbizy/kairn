@@ -192,8 +192,8 @@
 .v2 .pt-more { margin-top: clamp(32px, 4vw, 48px); text-align: center; }
 @media (max-width: 900px) {
   .v2 .pt-grid { grid-template-columns: 1fr; }
-  .v2 .pt-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; border-radius: 16px; scrollbar-width: none; }
-  .v2 .pt-tabs button { flex: none; }
+  .v2 .pt-tabs { border-radius: 18px; }
+  .v2 .pt-tabs button { padding: 9px 14px; font-size: 14.5px; }
 }
 
 /* Rythme des largeurs (Ugo, 29/10/2026 : « toutes les sections sont pile poil alignées pareilles, ça fait des monoblocs ») :
@@ -204,4 +204,4 @@
 .v2.font-tight #faq > .wrap { max-width: 1040px; }
 .v2.font-tight .band-book > .wrap { max-width: none; padding: 0 clamp(12px, 1.6vw, 24px); }
 .v2.font-tight .band-book .book-card { border-radius: clamp(28px, 3vw, 44px); padding: clamp(28px, 5vw, 80px) clamp(20px, 7vw, 120px); }
-.v2.font-tight #lead .ls { grid-template-columns: 1fr minmax(0, 420px); gap: clamp(36px, 5vw, 72px); }
+@media (min-width: 861px) { .v2.font-tight #lead .ls { grid-template-columns: 1fr minmax(0, 420px); gap: clamp(36px, 5vw, 72px); } }
