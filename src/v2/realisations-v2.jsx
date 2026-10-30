@@ -4,6 +4,7 @@ import { Nav, Footer, BookCta, useV2Favicon } from './layout.jsx';
 import LivingGradient from './living-gradient.jsx';
 import Booking from './booking.jsx';
 import FeaturedIsolation from './featured-isolation.jsx';
+import FeaturedClients from './featured-clients.jsx';
 import './v2.css';
 
 // Page Réalisations de la V2 : reprise de la page Réalisations de la V1 (mêmes contenus),
@@ -1908,6 +1909,7 @@ export default function RealisationsV2() {
         <main id="contenu">
           <RealisationsHero />
           <FeaturedIsolation />
+          <FeaturedClients />
           {/* Sections de la V1, recolorées ; les classes .kairn gardent leur mise en forme d'origine */}
           <div className="kairn kairn-v2">
             <FeaturedTradeauto isMobile={isMobile} />

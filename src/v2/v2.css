@@ -1298,3 +1298,58 @@
 .v2 h3 { letter-spacing: -0.015em; }
 .v2 .h2, .v2 .hero.is-light h1 { font-weight: 400; letter-spacing: -0.03em; }
 .v2 .h2 .serif, .v2 .hero h1 .serif { font-weight: 400; letter-spacing: -0.01em; }
+
+/* Cas clients de la page Réalisations (featured-clients.jsx, 30/10/2026), sur le modèle du cas Isolation d'Aquitaine. */
+.v2 .fc { padding-top: 0; }
+.v2 .fc-name { margin-top: 24px; font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
+.v2 .fc-logo { border-radius: 0; }
+.v2 .fc-shot { margin-top: 48px; }
+.v2 .fc-shot img { display: block; height: auto; }
+.v2 .fc-shot figcaption { padding: 10px 16px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--faint); }
+
+/* Maquette de la trésorerie Decoratherm (featured-clients.jsx), chiffres fictifs. */
+.v2 .cm { --cm-navy: #0F2233; --cm-or: #EA580C; }
+.v2 .cm-app { display: grid; grid-template-columns: 190px minmax(0, 1fr); background: #F5F7FA; color: var(--cm-navy); font-size: 13px; }
+.v2 .cm-side { display: flex; flex-direction: column; gap: 4px; padding: 22px 14px; background: var(--cm-navy); }
+.v2 .cm-brand { margin: 0 8px 18px; font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: #fff; }
+.v2 .cm-brand span { color: var(--cm-or); }
+.v2 .cm-side > span { padding: 9px 10px; border-radius: 8px; color: rgba(255,255,255,.62); font-weight: 500; }
+.v2 .cm-side > span.is-on { background: rgba(255,255,255,.1); color: #fff; }
+.v2 .cm-main { display: grid; gap: 14px; padding: 22px 24px 24px; min-width: 0; }
+.v2 .cm-head { display: flex; justify-content: space-between; align-items: center; }
+.v2 .cm-head small, .v2 .cm-card > small, .v2 .cm-kpis small { display: block; font-size: 11.5px; font-weight: 500; color: #6B7A8C; }
+.v2 .cm-head b { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+.v2 .cm-sync { padding: 6px 11px; border-radius: 999px; background: #E8F7EE; color: #15803D; font-size: 12px; font-weight: 600; }
+.v2 .cm-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.v2 .cm-kpis > div, .v2 .cm-card { padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid #E4E9F0; }
+.v2 .cm-kpis b { display: block; margin-top: 6px; font-size: 19px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.v2 .cm-kpis em { display: block; margin-top: 4px; font-style: normal; font-size: 11.5px; color: #6B7A8C; }
+.v2 .cm em.up, .v2 .cm b.up { color: #15803D; }
+.v2 .cm-row { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 12px; }
+.v2 .cm-chart svg { display: block; width: 100%; height: 150px; margin-top: 12px; }
+.v2 .cm-banks > div { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #EEF1F5; }
+.v2 .cm-banks > small + div { margin-top: 8px; border-top: 0; }
+.v2 .cm-bank { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 8px; background: #FFF1E8; color: var(--cm-or); font-weight: 700; }
+.v2 .cm-banks p { flex: 1; margin: 0; min-width: 0; }
+.v2 .cm-banks p b { display: block; font-weight: 600; }
+.v2 .cm-banks p i { font-style: normal; font-size: 11.5px; color: #6B7A8C; }
+.v2 .cm-banks strong { font-weight: 600; font-variant-numeric: tabular-nums; }
+.v2 .cm-ops > div { display: grid; grid-template-columns: 46px minmax(0, 1fr) 96px 110px 150px; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #EEF1F5; }
+.v2 .cm-ops > small + div { margin-top: 8px; border-top: 0; }
+.v2 .cm-ops span { color: #6B7A8C; font-variant-numeric: tabular-nums; }
+.v2 .cm-ops p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.v2 .cm-ops em { font-style: normal; justify-self: start; padding: 3px 8px; border-radius: 6px; background: #F1F4F8; font-size: 11.5px; color: #44546A; }
+.v2 .cm-ops b { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.v2 .cm-ops i { justify-self: end; font-style: normal; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.v2 .cm-ops i.ok { background: #E8F7EE; color: #15803D; }
+.v2 .cm-ops i.ko { background: #FFF1E8; color: var(--cm-or); }
+@media (max-width: 900px) {
+  .v2 .cm-app { grid-template-columns: 1fr; }
+  .v2 .cm-side { display: none; }
+  .v2 .cm-kpis { grid-template-columns: 1fr 1fr; }
+  .v2 .cm-row { grid-template-columns: 1fr; }
+  .v2 .cm-ops > div { grid-template-columns: minmax(0, 1fr) auto; }
+  .v2 .cm-ops span, .v2 .cm-ops em { display: none; }
+  .v2 .cm-ops i { grid-column: 1 / -1; justify-self: start; }
+}
+@media (max-width: 480px) { .v2 .cm-main { padding: 16px; } .v2 .cm-kpis b { font-size: 16px; } }
