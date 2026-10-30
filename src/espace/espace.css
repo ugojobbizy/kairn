@@ -420,3 +420,38 @@
   .v2 .ec-filters-box { display: none; }
   .v2 .ec-filters-box.is-open { display: block; }
 }
+
+/* ─ Suivi des contacts (lot 2, 30/10/2026) ─ */
+.v2 .ec-suivi { margin-top: 14px; }
+.v2 .ec-suivi-st { display: flex; flex-wrap: wrap; gap: 6px; }
+.v2 .ec-suivi-st button { min-height: 36px; padding: 0 12px; border: 1px solid var(--line-2); border-radius: 999px; background: #fff; font: 500 13.5px var(--font); color: var(--ink-2); cursor: pointer; }
+.v2 .ec-suivi-st button:hover { border-color: var(--ink); }
+.v2 .ec-suivi-st button.is-on { color: #fff; border-color: transparent; font-weight: 600; }
+.v2 .ec-suivi-st .is-a_appeler.is-on { background: #64748B; }
+.v2 .ec-suivi-st .is-nrp.is-on { background: #D97706; }
+.v2 .ec-suivi-st .is-rdv.is-on { background: var(--violet); }
+.v2 .ec-suivi-st .is-devis.is-on { background: #7C3AED; }
+.v2 .ec-suivi-st .is-signe.is-on { background: #059669; }
+.v2 .ec-suivi-st .is-perdu.is-on { background: #9CA3AF; }
+.v2 .ec-suivi-add { margin-top: 10px; font-size: 13.5px; }
+.v2 .ec-suivi-more { display: grid; gap: 10px; margin-top: 12px; }
+.v2 .ec-suivi-more label span { display: block; margin-bottom: 6px; font-size: 12.5px; color: var(--muted); }
+.v2 .ec-suivi-more textarea, .v2 .ec-suivi-more input { width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 12px; border: 1px solid #DDE2EC; background: #F7F9FC; font: 15px var(--font); color: var(--ink); resize: vertical; }
+.v2 .ec-suivi-more textarea:focus, .v2 .ec-suivi-more input:focus { outline: none; border-color: #3B82F6; background: #fff; box-shadow: 0 0 0 4px rgba(59,130,246,.15); }
+.v2 .ec-st { align-self: flex-start; margin-top: 8px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #fff; background: #64748B; }
+.v2 .ec-st.is-nrp { background: #D97706; } .v2 .ec-st.is-rdv { background: var(--violet); } .v2 .ec-st.is-devis { background: #7C3AED; }
+.v2 .ec-st.is-signe { background: #059669; } .v2 .ec-st.is-perdu { background: #9CA3AF; }
+.v2 .ec-stfilter { display: flex; gap: 6px; margin-top: 14px; overflow-x: auto; padding-bottom: 2px; }
+.v2 .ec-stfilter button { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-2); border-radius: 999px; background: #fff; font: 500 13.5px var(--font); color: var(--ink-2); cursor: pointer; }
+.v2 .ec-stfilter button b { font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.v2 .ec-stfilter button.is-on { border-color: var(--ink); background: var(--ink); color: #fff; }
+.v2 .ec-stfilter button.is-on b { color: rgba(255,255,255,.7); }
+.v2 .ec-pipe { display: grid; grid-template-columns: repeat(6, minmax(200px, 1fr)); gap: 12px; margin-top: 16px; overflow-x: auto; padding-bottom: 8px; }
+.v2 .ec-pipe-col { min-width: 0; padding: 10px; border-radius: 16px; background: #EDF0F6; }
+.v2 .ec-pipe-col h3 { display: flex; justify-content: space-between; align-items: center; padding: 4px 6px 10px; font-size: 14px; font-weight: 600; }
+.v2 .ec-pipe-col h3 b { font-size: 12.5px; color: var(--muted); }
+.v2 .ec-pipe-col > div { display: grid; gap: 8px; max-height: 70vh; overflow-y: auto; }
+.v2 .ec-pipe-card { cursor: pointer; border-radius: 14px; outline: none; }
+.v2 .ec-pipe-card:hover .ec-contact, .v2 .ec-pipe-card:focus-visible .ec-contact { border-color: rgba(47,91,234,.4); }
+.v2 .ec-pipe-col .ec-contact-av { width: 34px; height: 34px; font-size: 12px; }
+.v2 .ec-pipe-col .ec-contact-age { display: none; }

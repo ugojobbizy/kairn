@@ -3,7 +3,7 @@ import { Link, Navigate, NavLink, Route, Routes, useNavigate, useSearchParams } 
 import { KairnLogo, useV2Favicon } from '../v2/layout.jsx';
 import { PRODUITS, GARANTIES } from '../v3/produits.js';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
-import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, ETAPES, euro, dateFr, dateHeure, errMsg, downloadCsv, notifier } from './db.js';
+import { db, THEMES, MOTIFS, SUIVI, LITIGE_STATUTS, TVA, ETAPES, euro, dateFr, dateHeure, errMsg, downloadCsv, notifier } from './db.js';
 import Tickets from './tickets.jsx';
 import { apercuData } from './apercu.js';
 import '../v2/v2.css';
@@ -38,19 +38,32 @@ const Data = createContext(null);
 const useData = () => useContext(Data);
 
 function useClientData(session, apercu) {
-  const [state, setState] = useState({ leads: null, commandes: null, litiges: null, error: '' });
+  const [state, setState] = useState({ leads: null, commandes: null, litiges: null, suivi: null, error: '' });
   const load = useCallback(async () => {
-    if (apercu) { setState({ ...apercu, error: '' }); return; }
+    if (apercu) { setState((st) => ({ ...apercu, suivi: st.suivi || apercu.suivi, error: '' })); return; }
     const uid = session.user.id;
-    const [l, c, g] = await Promise.all([
+    const [l, c, g, sv] = await Promise.all([
       db.from('leads').select('*').eq('client_id', uid).order('livre_le', { ascending: false }),
       db.from('commandes').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
       db.from('litiges').select('*').eq('client_id', uid).order('created_at', { ascending: false }),
+      db.from('lead_suivi').select('*').eq('client_id', uid),
     ]);
-    setState({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], error: l.error || c.error || g.error ? 'Une partie de vos données n’a pas pu être chargée.' : '' });
+    setState({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], suivi: sv.data || [], error: l.error || c.error || g.error || sv.error ? 'Une partie de vos données n’a pas pu être chargée.' : '' });
   }, [session.user.id, apercu]);
   useEffect(() => { load(); }, [load]);
-  return { ...state, reload: load };
+  const suiviPar = useMemo(() => new Map((state.suivi || []).map((x) => [x.lead_id, x])), [state.suivi]);
+  // Enregistre statut, note et rappel d'un contact (fonction suivi_maj). Affichage immédiat, retour arrière si l'écriture échoue.
+  const majSuivi = useCallback(async (leadId, patch) => {
+    const avant = state.suivi || [];
+    const cur = avant.find((x) => x.lead_id === leadId) || { lead_id: leadId, statut: 'a_appeler', note: null, rappel_le: null };
+    const next = { ...cur, ...patch, maj_le: new Date().toISOString() };
+    setState((st) => ({ ...st, suivi: [...(st.suivi || []).filter((x) => x.lead_id !== leadId), next] }));
+    if (apercu) return true;
+    const { error } = await db.rpc('suivi_maj', { p_lead: leadId, p_statut: next.statut, p_note: next.note || null, p_rappel: next.rappel_le || null });
+    if (error) { setState((st) => ({ ...st, suivi: avant, error: 'Le suivi n’a pas pu être enregistré. Réessayez.' })); return false; }
+    return true;
+  }, [state.suivi, apercu]);
+  return { ...state, suiviPar, majSuivi, reload: load };
 }
 
 // Chiffres dérivés : livrés par commande (hors leads annulés après litige), montant dû.
@@ -159,7 +172,34 @@ function smsHref(l, client) {
   return `sms:${(l.telephone || '').replace(/\s/g, '')}?&body=${encodeURIComponent(corps.replace(/\s+/g, ' ').trim())}`;
 }
 
+// Suivi d'un contact : statut en un tap, note, date de rappel (lot 2 de la refonte, table lead_suivi).
+const toLocalInput = (d) => { if (!d) return ''; const x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0, 16); };
+function SuiviBar({ lead: l }) {
+  const { suiviPar, majSuivi } = useData();
+  const cur = suiviPar.get(l.id) || { statut: 'a_appeler', note: null, rappel_le: null };
+  const [note, setNote] = useState(cur.note || '');
+  const [openNote, setOpenNote] = useState(Boolean(cur.note) || Boolean(cur.rappel_le));
+  useEffect(() => { setNote(cur.note || ''); }, [l.id, cur.note]);
+  return (
+    <div className="ec-suivi">
+      <div className="ec-suivi-st" role="group" aria-label="Statut du contact">
+        {Object.entries(SUIVI).map(([k, t]) => (
+          <button type="button" key={k} className={`is-${k}${cur.statut === k ? ' is-on' : ''}`} aria-pressed={cur.statut === k} onClick={() => majSuivi(l.id, { statut: k })}>{t}</button>
+        ))}
+      </div>
+      {openNote ? (
+        <div className="ec-suivi-more">
+          <label><span>Note</span><textarea rows={2} maxLength={2000} value={note} onChange={(e) => setNote(e.target.value)} onBlur={() => { if (note !== (cur.note || '')) majSuivi(l.id, { note }); }} placeholder="Ce qu’il vous a dit, son projet, son budget…" /></label>
+          <label><span>Me rappeler le</span><input type="datetime-local" value={toLocalInput(cur.rappel_le)} onChange={(e) => majSuivi(l.id, { rappel_le: e.target.value ? new Date(e.target.value).toISOString() : null })} /></label>
+        </div>
+      ) : <button type="button" className="ec-link-btn ec-suivi-add" onClick={() => setOpenNote(true)}>Ajouter une note ou un rappel</button>}
+    </div>
+  );
+}
+
 function ContactCard({ lead: l, client, litige, onSignal, compact }) {
+  const { suiviPar } = useData();
+  const sv = suiviPar.get(l.id);
   const qualif = [l.statut_occupation, l.type_logement, l.chauffage, l.surface].filter(Boolean);
   return (
     <article className={`ec-contact${isFrais(l.livre_le) ? ' is-fresh' : ''}${compact ? ' is-compact' : ''}`}>
@@ -171,6 +211,7 @@ function ContactCard({ lead: l, client, litige, onSignal, compact }) {
         </div>
         <span className="ec-contact-age">{isFrais(l.livre_le) && <i aria-hidden="true" />}{ilYa(l.livre_le)}</span>
       </header>
+      {compact && sv && sv.statut !== 'a_appeler' && <span className={`ec-st is-${sv.statut}`}>{SUIVI[sv.statut]}</span>}
       <p className="ec-contact-theme">{THEMES[l.thematique] || l.thematique}</p>
       {qualif.length > 0 && <ul className="ec-contact-q">{qualif.map((q) => <li key={q}>{q}</li>)}</ul>}
       {!compact && (
@@ -179,6 +220,7 @@ function ContactCard({ lead: l, client, litige, onSignal, compact }) {
             <a className="ec-call" href={`tel:${(l.telephone || '').replace(/\s/g, '')}`}><Ico size={18}><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></Ico>Appeler</a>
             <a className="ec-sms" href={smsHref(l, client)}><Ico size={18}><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></Ico>SMS</a>
           </div>
+          <SuiviBar lead={l} />
           <dl className="ec-contact-coord">
             <div><dt>Téléphone</dt><dd>{l.telephone || '·'}</dd></div>
             <div><dt>E-mail</dt><dd>{l.email ? <a href={`mailto:${l.email}`}>{l.email}</a> : '·'}</dd></div>
@@ -217,12 +259,20 @@ function CommandeCard({ c, n }) {
 // ─ Aujourd'hui (accueil) ─
 function Home({ client, apercu }) {
   const s = useStats();
-  const { leads, litiges, reload } = useData();
+  const { leads, litiges, suiviPar, reload } = useData();
   const [litigeFor, setLitigeFor] = useState(null);
   const enLitige = useMemo(() => new Map((litiges || []).map((g) => [g.lead_id, g])), [litiges]);
-  // « À appeler » : les contacts livrés depuis 48 h, du plus frais au plus ancien.
-  const recents = useMemo(() => (leads || []).filter((l) => !l.annule && l.livre_le && Date.now() - new Date(l.livre_le).getTime() < 48 * 3600000)
-    .sort((a, b) => new Date(b.livre_le) - new Date(a.livre_le)), [leads]);
+  // « À appeler » : les contacts livrés depuis 48 h et pas encore joints (sans statut, ou NRP), du plus frais au plus ancien.
+  const recents = useMemo(() => (leads || []).filter((l) => !l.annule && l.livre_le && Date.now() - new Date(l.livre_le).getTime() < 48 * 3600000
+    && ['a_appeler', 'nrp'].includes((suiviPar.get(l.id) || {}).statut || 'a_appeler'))
+    .sort((a, b) => new Date(b.livre_le) - new Date(a.livre_le)), [leads, suiviPar]);
+  // « À rappeler » : rappel prévu d'ici ce soir, le plus proche d'abord.
+  const rappels = useMemo(() => {
+    const fin = new Date(); fin.setHours(23, 59, 59, 999);
+    const byId = new Map((leads || []).map((l) => [l.id, l]));
+    return [...suiviPar.values()].filter((x) => x.rappel_le && new Date(x.rappel_le) <= fin && byId.has(x.lead_id) && !['signe', 'perdu'].includes(x.statut))
+      .sort((a, b) => new Date(a.rappel_le) - new Date(b.rappel_le)).map((x) => ({ ...byId.get(x.lead_id), _rappel: x.rappel_le }));
+  }, [leads, suiviPar]);
   const auj = recents.filter((l) => new Date(l.livre_le).toDateString() === new Date().toDateString()).length;
   return (
     <>
@@ -239,6 +289,13 @@ function Home({ client, apercu }) {
         </div>
       )}
       {recents.length > 12 && <Link to="/espace/prospects" className="ec-more">Voir les {recents.length - 12} autres contacts</Link>}
+
+      {rappels.length > 0 && (
+        <>
+          <p className="ec-label">À rappeler aujourd’hui</p>
+          <div className="ec-contacts">{rappels.map((l) => <ContactCard key={l.id} lead={l} client={client} litige={enLitige.get(l.id)} onSignal={setLitigeFor} />)}</div>
+        </>
+      )}
 
       {s && s.enCours.length > 0 && (
         <>
@@ -306,7 +363,7 @@ function Precommande({ session, client, apercu }) {
 }
 
 // ─ Mes prospects ─
-const COLS_PROSPECTS = [['livre_le', 'Livré le'], ['thematique', 'Thématique'], ['prenom', 'Prénom'], ['nom', 'Nom'], ['telephone', 'Téléphone'], ['email', 'E-mail'], ['code_postal', 'Code postal'], ['ville', 'Ville'], ['statut_occupation', 'Statut d’occupation'], ['type_logement', 'Type de logement'], ['chauffage', 'Chauffage'], ['surface', 'Surface']];
+const COLS_PROSPECTS = [['livre_le', 'Livré le'], ['thematique', 'Thématique'], ['prenom', 'Prénom'], ['nom', 'Nom'], ['telephone', 'Téléphone'], ['email', 'E-mail'], ['code_postal', 'Code postal'], ['ville', 'Ville'], ['statut_occupation', 'Statut d’occupation'], ['type_logement', 'Type de logement'], ['chauffage', 'Chauffage'], ['surface', 'Surface'], ['suivi_statut', 'Statut de suivi'], ['suivi_note', 'Note']];
 
 function useFilters(rows, dateKey) {
   const [q, setQ] = useState('');
@@ -379,7 +436,8 @@ function ExportMenu({ rows, onExported }) {
 }
 
 function Prospects({ apercu, client }) {
-  const { leads, litiges, reload } = useData();
+  const { leads, litiges, suiviPar, reload } = useData();
+  const [statut, setStatut] = useState('');
   const [tab, setTab] = useState('tous');
   const [vue, setVue] = useState('fiches');
   const [sel, setSel] = useState(null);
@@ -388,7 +446,11 @@ function Prospects({ apercu, client }) {
   const [litigeFor, setLitigeFor] = useState(null);
   const enLitige = useMemo(() => new Map((litiges || []).map((g) => [g.lead_id, g])), [litiges]);
   const base = useMemo(() => (leads || []).filter((l) => !l.annule && (tab === 'tous' || (tab === 'exportes' ? l.exporte_le : !l.exporte_le))), [leads, tab]);
-  const f = useFilters(base, 'livre_le');
+  const st = (l) => (suiviPar.get(l.id) || {}).statut || 'a_appeler';
+  const f0 = useFilters(base, 'livre_le');
+  const f = { ...f0, rows: statut ? f0.rows.filter((l) => st(l) === statut) : f0.rows };
+  const parStatut = useMemo(() => { const m = {}; for (const l of f0.rows) m[st(l)] = (m[st(l)] || 0) + 1; return m; }, [f0.rows, suiviPar]);
+  const exportRows = f.rows.map((l) => ({ ...l, suivi_statut: SUIVI[st(l)], suivi_note: (suiviPar.get(l.id) || {}).note || '' }));
   async function marquer() {
     const ids = f.rows.filter((r) => !r.exporte_le).map((r) => r.id);
     if (ids.length && !apercu) { await db.rpc('leads_marquer_exportes', { p_ids: ids }); reload(); }
@@ -399,16 +461,34 @@ function Prospects({ apercu, client }) {
         <div className="ec-head-tools">
           <div className="ec-switch" role="group" aria-label="Affichage">
             <button type="button" className={vue === 'fiches' ? 'is-on' : ''} onClick={() => setVue('fiches')}>Fiches</button>
+            <button type="button" className={vue === 'pipeline' ? 'is-on' : ''} onClick={() => setVue('pipeline')}>Pipeline</button>
             <button type="button" className={vue === 'tableau' ? 'is-on' : ''} onClick={() => setVue('tableau')}>Tableau</button>
           </div>
-          <ExportMenu rows={f.rows} onExported={marquer} />
+          <ExportMenu rows={exportRows} onExported={marquer} />
         </div>
       </PageHead>
       <div className="ec-tabs">{[['tous', 'Tous'], ['a_exporter', 'À exporter'], ['exportes', 'Exportés']].map(([k, t]) => <button type="button" key={k} className={tab === k ? 'is-on' : ''} onClick={() => setTab(k)}>{t}</button>)}</div>
       <button type="button" className="ec-filters-toggle" aria-expanded={showF} onClick={() => setShowF((o) => !o)}>{showF ? 'Masquer les filtres' : 'Filtrer et rechercher'}</button>
       <div className={`ec-filters-box${showF ? ' is-open' : ''}`}>{f.bar(true, 'Livré')}</div>
+      <div className="ec-stfilter" role="group" aria-label="Filtrer par statut">
+        <button type="button" className={!statut ? 'is-on' : ''} onClick={() => setStatut('')}>Tous <b>{f0.rows.length}</b></button>
+        {Object.entries(SUIVI).map(([k, t]) => <button type="button" key={k} className={statut === k ? 'is-on' : ''} onClick={() => setStatut(k)}>{t} <b>{parStatut[k] || 0}</b></button>)}
+      </div>
+      {vue === 'pipeline' && wide && leads && (
+        <div className="ec-pipe">
+          {Object.entries(SUIVI).map(([k, t]) => {
+            const col = f0.rows.filter((l) => st(l) === k);
+            return (
+              <section key={k} className={`ec-pipe-col is-${k}`}>
+                <h3>{t}<b>{col.length}</b></h3>
+                <div>{col.slice(0, 40).map((l) => <div key={l.id} role="button" tabIndex={0} className="ec-pipe-card" onClick={() => { setSel(l); setVue('fiches'); }} onKeyDown={(e) => { if (e.key === 'Enter') { setSel(l); setVue('fiches'); } }}><ContactCard lead={l} compact /></div>)}</div>
+              </section>
+            );
+          })}
+        </div>
+      )}
       <div className="ec-count"><b>{f.rows.length}</b> contact{f.rows.length > 1 ? 's' : ''} · {tab === 'a_exporter' ? 'à exporter' : tab === 'exportes' ? 'déjà exportés' : 'du plus récent au plus ancien'}</div>
-      {leads && f.rows.length > 0 && vue === 'fiches' && (wide ? (
+      {leads && f.rows.length > 0 && (vue === 'fiches' || (vue === 'pipeline' && !wide)) && (wide ? (
         <div className="ec-md">
           <ul className="ec-md-list">
             {f.rows.map((l) => {

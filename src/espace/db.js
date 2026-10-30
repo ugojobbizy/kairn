@@ -8,6 +8,8 @@ export const db = createClient(URL, KEY, { auth: { storageKey: 'kairn-espace-aut
 
 export const THEMES = { PAC: 'Pompe à chaleur', ITE: 'Isolation extérieure', PPV: 'Photovoltaïque' };
 export const MOTIFS = { doublon: 'Doublon', hors_zone: 'Hors zone' };
+// Suivi des contacts (table lead_suivi, 30/10/2026). Pas de ligne = « à appeler ».
+export const SUIVI = { a_appeler: 'À appeler', nrp: 'NRP', rdv: 'RDV', devis: 'Devis envoyé', signe: 'Signé', perdu: 'Perdu' };
 export const LITIGE_STATUTS = { en_attente: 'En attente', accepte: 'Accepté', refuse: 'Refusé' };
 export const TVA = 0.2;
 
