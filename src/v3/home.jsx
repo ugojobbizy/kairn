@@ -137,7 +137,7 @@ export default function KairnHomeV3({ police }) {
               </Reveal>
               <Reveal delay={0.5} y={16} className="hero-actions">
                 <Link to="/commander" className="btn btn-order">{police ? 'Commander des contacts' : 'Commander des leads'}</Link>
-                <a href="#reserver" className="btn btn-light">Réserver un appel</a>
+                <a href="#reserver" className="btn btn-light">Lancer ma campagne</a>
               </Reveal>
               {/* Note Google donnée par Ugo le 29/10/2026 (« finalement j'ai 5 étoiles par 4,9 sur google »). */}
               {police && <Reveal delay={0.55} y={12}><GoogleRating /></Reveal>}
