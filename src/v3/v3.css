@@ -219,12 +219,59 @@
 .v2 .reel-btn:hover { border-color: #fff; }
 @media (max-width: 640px) { .v2 .reel { border-radius: 24px; height: 520px; } }
 
-/* ── Les quatre piliers de Kairn Leads (accueil V2, 30/10/2026) ── */
+/* ── Les quatre piliers de Kairn Leads (accueil V2, 30/10/2026) ──
+   Chaque carte : un visuel produit en haut (données fictives), le texte dessous. */
 .v2 .pil-grid { list-style: none; margin: 44px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.v2 .pil-card { display: flex; flex-direction: column; padding: 26px 24px 28px; border: 1px solid var(--line-2); border-radius: 22px; background: #fff; box-shadow: var(--shadow-card); }
+.v2 .pil-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line-2); border-radius: 24px; background: #fff; transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .35s; }
+.v2 .pil-card:hover { transform: translateY(-4px); border-color: rgba(47,91,234,.35); }
+.v2 .pil-vis { position: relative; height: 176px; display: grid; place-items: center; padding: 20px; background:
+  radial-gradient(120% 90% at 50% 0%, rgba(14,165,233,.10), transparent 60%),
+  linear-gradient(180deg, #F5F8FF, #EEF2FB); border-bottom: 1px solid var(--line); }
+.v2 .pil-vis::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(47,91,234,.16) 1px, transparent 1.2px); background-size: 14px 14px; mask-image: linear-gradient(180deg, #000, transparent 85%); pointer-events: none; }
+.v2 .pil-txt { padding: 22px 24px 28px; }
 .v2 .pil-tag { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: .02em; color: var(--violet); }
 .v2 .pil-tag b { font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 500; color: var(--muted); }
-.v2 .pil-card h3 { margin: 18px 0 0; font-size: clamp(19px, 1.6vw, 22px); line-height: 1.25; color: var(--ink); }
+.v2 .pil-card h3 { margin: 14px 0 0; font-size: clamp(19px, 1.6vw, 22px); line-height: 1.25; color: var(--ink); }
 .v2 .pil-card p { margin: 12px 0 0; color: var(--muted); font-size: 15.5px; line-height: 1.6; }
-@media (max-width: 1080px) { .v2 .pil-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) { .v2 .pil-grid { grid-template-columns: 1fr; gap: 12px; } .v2 .pil-card { padding: 22px 20px 24px; } }
+
+/* Visuels */
+.v2 .pv { position: relative; width: 100%; max-width: 240px; font-size: 12.5px; }
+.v2 .pv-toast { position: relative; display: grid; grid-template-columns: auto 1fr auto; column-gap: 9px; align-items: center; padding: 11px 13px; border-radius: 14px; background: #fff; border: 1px solid var(--line-2); box-shadow: 0 14px 30px -18px rgba(30,60,160,.35); }
+.v2 .pv-toast b { color: var(--ink); font-weight: 600; }
+.v2 .pv-toast span:not(.pv-dot) { grid-column: 2 / 4; color: var(--muted); }
+.v2 .pv-toast em { grid-row: 1; grid-column: 3; font-style: normal; font-size: 11.5px; font-weight: 600; color: #0E9F6E; }
+.v2 .pv-toast.is-back { position: absolute; inset: auto 14px 100% 14px; transform: translateY(14px) scale(.94); opacity: .55; }
+.v2 .pv-frais { margin-top: 22px; }
+.v2 .pv-dot { grid-row: 1 / 3; width: 9px; height: 9px; border-radius: 50%; background: #CBD3E6; }
+.v2 .pv-dot.is-live { background: #10B981; box-shadow: 0 0 0 0 rgba(16,185,129,.5); animation: pv-pulse 1.8s infinite; }
+@keyframes pv-pulse { 70% { box-shadow: 0 0 0 9px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+
+.v2 .pv-qualif { display: grid; gap: 6px; padding: 10px; border-radius: 14px; background: #fff; border: 1px solid var(--line-2); box-shadow: 0 14px 30px -18px rgba(30,60,160,.35); }
+.v2 .pv-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; border-radius: 8px; }
+.v2 .pv-row:nth-child(odd) { background: #F5F7FC; }
+.v2 .pv-row span { color: var(--muted); }
+.v2 .pv-row b { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); font-weight: 600; }
+.v2 .pv-row svg { width: 13px; height: 13px; color: var(--violet); }
+
+.v2 .pv-flux { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; height: 128px; }
+.v2 .pv-col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 8px; }
+.v2 .pv-bar { width: 100%; border-radius: 7px 7px 3px 3px; background: linear-gradient(180deg, #0EA5E9, #4F46E5); transform-origin: bottom; animation: pv-grow .9s cubic-bezier(.2,.7,.2,1) both; }
+.v2 .pv-day { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted); }
+@keyframes pv-grow { from { transform: scaleY(0); } }
+
+.v2 .pv-seul { display: grid; justify-items: center; }
+.v2 .pv-lead { padding: 7px 14px; border-radius: 999px; background: var(--ink); color: #fff; font-weight: 600; }
+.v2 .pv-lines { width: 100%; height: 62px; }
+.v2 .pv-lines path { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
+.v2 .pv-lines .is-off { stroke: #CBD3E6; stroke-dasharray: 4 5; }
+.v2 .pv-lines .is-on { stroke: var(--violet); stroke-width: 2.5; }
+.v2 .pv-targets { width: 100%; display: flex; justify-content: space-between; }
+.v2 .pv-targets span { min-width: 58px; text-align: center; padding: 7px 10px; border-radius: 12px; border: 1px solid var(--line-2); background: #fff; color: var(--muted); }
+.v2 .pv-targets .is-off { opacity: .55; text-decoration: line-through; }
+.v2 .pv-targets .is-on { border-color: var(--violet); color: var(--violet); font-weight: 700; box-shadow: 0 10px 24px -12px rgba(47,91,234,.6); }
+
+@media (prefers-reduced-motion: reduce) { .v2 .pv-bar, .v2 .pv-dot.is-live { animation: none; } }
+@media (max-width: 1080px) {
+  .v2 .pil-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) { .v2 .pil-grid { grid-template-columns: 1fr; gap: 12px; } .v2 .pil-txt { padding: 20px 20px 24px; } }

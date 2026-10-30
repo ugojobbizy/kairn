@@ -25,9 +25,11 @@ function Check() {
 export default function LeadSample() {
   return (
     <div className="ls">
-      <div className="ls-text">
+      <div className="ls-head">
         <p className="eyebrow">Un lead Kairn</p>
         <h2 className="h2">Voilà ce que <span className="serif grad-text">vos commerciaux reçoivent.</span></h2>
+      </div>
+      <div className="ls-text">
         <p className="ls-lead">Le contact arrive à l’heure où le particulier remplit sa demande, avec ses réponses. Vos commerciaux savent qui ils appellent et pour quel projet avant de décrocher.</p>
         <ul className="ls-points">
           {POINTS.map((p) => <li key={p}><Check />{p}</li>)}

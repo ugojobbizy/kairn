@@ -141,8 +141,7 @@
 
 /* Fiche lead d'exemple (remplace la bande des pubs, 29/10/2026) */
 .v2 .ls { display: grid; grid-template-columns: 1fr minmax(0, 460px); gap: clamp(40px, 7vw, 110px); align-items: center; }
-.v2 .ls-text .h2 { margin-top: 18px; }
-.v2 .ls-text .h2 .serif { display: block; }
+.v2 .ls-head .h2 .serif { display: block; }
 .v2 .ls-lead { margin: 22px 0 26px; max-width: 42ch; color: var(--muted); font-size: 17px; }
 .v2 .ls-points { list-style: none; margin: 0 0 32px; padding: 0; display: grid; gap: 14px; }
 .v2 .ls-points li { display: flex; gap: 12px; align-items: flex-start; font-size: 16px; color: var(--ink-2); line-height: 1.5; }
@@ -213,3 +212,12 @@
 .v2.font-tight .band-book > .wrap { max-width: none; padding: 0 clamp(12px, 1.6vw, 24px); }
 .v2.font-tight .band-book .book-card { border-radius: clamp(28px, 3vw, 44px); padding: clamp(28px, 5vw, 80px) clamp(20px, 7vw, 120px); }
 @media (min-width: 861px) { .v2.font-tight #lead .ls { grid-template-columns: 1fr minmax(0, 420px); gap: clamp(36px, 5vw, 72px); } }
+/* Fiche lead : titre en tête de section sur toute la largeur, texte et fiche dessous (Ugo, 30/10/2026 :
+   « sur ordinateur il faut changer la disposition de ça », le titre tombait sur quatre lignes). */
+.v2 .ls-head { grid-column: 1 / -1; }
+.v2 .ls-head .h2 { margin-top: 18px; }
+@media (min-width: 861px) {
+  .v2 .ls { row-gap: 44px; align-items: start; }
+  .v2 .ls-head .h2 .serif { display: inline; }
+  .v2 .ls-text { align-self: center; }
+}
