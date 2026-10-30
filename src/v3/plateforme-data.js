@@ -2,10 +2,10 @@
 // Captures de l'espace client en aperçu (données d'exemple) dans public/plateforme/.
 export const ETAPES = [
   {
-    // Ugo, 30/10/2026 : le Leads Shop est un espace à part, il regroupe les leads produits en surplus sur les autres campagnes, à prix réduit.
-    img: 'shop', tag: 'Leads Shop', h: 'Le surplus de nos campagnes,', i: 'à prix réduit.',
-    p: 'Un espace à part, en plus de vos commandes : les contacts produits en surplus sur nos campagnes, disponibles tout de suite et moins chers. Filtrés par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
-    points: ['Coordonnées visibles seulement après l’achat', 'Hors zone d’un autre client : marqué « déjà transmis », 5 € moins cher', 'Consentement du particulier encore valable'],
+    // Ugo, 30/10/2026 : le Leads Shop ne contient que les hors zone et les doublons, tous 4 € moins chers, réduction affichée.
+    img: 'shop', tag: 'Leads Shop', h: 'Des contacts disponibles,', i: '4 € moins chers.',
+    p: 'Un espace à part, en plus de vos commandes : les contacts qu’un autre installateur a signalés hors de sa zone ou en doublon, remis en vente 4 € moins chers. Filtrés par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
+    points: ['Coordonnées visibles seulement après l’achat', 'Hors zone ou doublon d’un autre installateur, 4 € de moins', 'Consentement du particulier encore valable'],
   },
   {
     img: 'prospects', tag: 'Mes prospects', h: 'Vos contacts,', i: 'prêts à appeler.',

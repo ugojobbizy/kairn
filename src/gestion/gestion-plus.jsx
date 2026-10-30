@@ -170,7 +170,8 @@ export function ShopAdmin({ data, apercu }) {
   const [msg, setMsg] = useState('');
   const clientOf = (uid) => (clients || []).find((c) => c.user_id === uid)?.societe || '·';
   const shopCmd = new Set((commandes || []).filter((c) => c.type === 'shop').map((c) => c.id));
-  const enStock = (leads || []).filter((l) => !l.client_id && !l.annule);
+  // Shop : seulement les copies remises en vente après un litige accepté (hors zone ou doublon, 4 € de moins ; Ugo, 30/10/2026).
+  const enStock = (leads || []).filter((l) => !l.client_id && !l.annule && l.deja_transmis);
   const rows = tab === 'vente' ? enStock.filter((l) => l.en_vente) : tab === 'retires' ? enStock.filter((l) => !l.en_vente) : (leads || []).filter((l) => shopCmd.has(l.commande_id));
   async function maj(l, patch, ok) {
     setMsg('');
@@ -182,10 +183,10 @@ export function ShopAdmin({ data, apercu }) {
   const ventes = (leads || []).filter((l) => shopCmd.has(l.commande_id));
   return (
     <>
-      <header className="ec-head ec-head-row"><div><h1>Leads Shop</h1><p>Les leads hors zone acceptés en litige y reviennent seuls, 5 € moins chers, jamais proposés au client qui les a signalés. Vous pouvez changer un prix ou retirer un lead.</p></div></header>
+      <header className="ec-head ec-head-row"><div><h1>Leads Shop</h1><p>Les leads hors zone ou en doublon acceptés en litige y reviennent seuls, 4 € moins chers, jamais proposés au client qui les a signalés. Vous pouvez changer un prix ou retirer un lead.</p></div></header>
       <div className="ec-kpis">
         <div className="ec-kpi"><b>En vente</b><span>Visibles par les clients</span><strong>{enStock.filter((l) => l.en_vente).length}</strong></div>
-        <div className="ec-kpi"><b>Remis en vente</b><span>Hors zone, déjà transmis</span><strong>{enStock.filter((l) => l.en_vente && l.deja_transmis).length}</strong></div>
+        <div className="ec-kpi"><b>Retirés</b><span>Masqués aux clients</span><strong>{enStock.filter((l) => !l.en_vente).length}</strong></div>
         <div className="ec-kpi"><b>Vendus au Shop</b><span>Toutes périodes, HT</span><strong>{euro(ventes.reduce((s, l) => s + Number(l.prix_ht), 0))}</strong></div>
       </div>
       <div className="ec-tabs">{[['vente', 'En vente'], ['retires', 'Retirés'], ['vendus', 'Vendus']].map(([k, t]) => <button type="button" key={k} className={tab === k ? 'is-on' : ''} onClick={() => setTab(k)}>{t}</button>)}</div>
@@ -197,7 +198,7 @@ export function ShopAdmin({ data, apercu }) {
             <tbody>{rows.slice(0, 300).map((l) => (
               <tr key={l.id}>
                 <td>{dateHeure(l.recu_le)}</td><td>{THEMES[l.thematique]}</td><td>{l.code_postal || '·'}</td>
-                <td>{l.deja_transmis ? <span className="ec-status is-en_attente">Hors zone, déjà transmis</span> : <span className="ec-status">Neuf</span>}</td>
+                <td>{l.source === 'shop_doublon' ? 'Doublon' : 'Hors zone'}</td>
                 <td className="ec-num">{tab === 'vendus' ? euro(l.prix_ht) : (
                   <span className="ec-actions gp-price"><input type="number" min="0" step="0.5" value={prix[l.id] ?? l.prix_ht} onChange={(e) => setPrix((p) => ({ ...p, [l.id]: e.target.value }))} />
                     {prix[l.id] != null && +prix[l.id] !== +l.prix_ht && <button type="button" className="ec-link-btn" onClick={() => maj(l, { prix_ht: +prix[l.id] }, 'Prix mis à jour.')}>OK</button>}</span>

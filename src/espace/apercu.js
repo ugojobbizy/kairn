@@ -41,7 +41,7 @@ export function apercuData() {
     ...Array.from({ length: 40 }, (_, i) => lead(300 + i, 'ITE', Math.floor(i / 12))),
     ...Array.from({ length: 22 }, (_, i) => lead(400 + i, 'PAC', Math.floor(i / 8))),
     ...Array.from({ length: 9 }, (_, i) => lead(500 + i, 'PPV', Math.floor(i / 4))),
-  ].map(({ prenom, nom, telephone, email, ville, ...rest }, i) => ({ ...rest, en_vente: true, deja_transmis: i % 9 === 4, prix_ht: i % 9 === 4 ? rest.prix_ht - 5 : rest.prix_ht }));
+  ].map(({ prenom, nom, telephone, email, ville, ...rest }, i) => ({ ...rest, en_vente: true, deja_transmis: true, prix_origine: rest.prix_ht, prix_ht: rest.prix_ht - 4 }));
   // Suivi fictif : quelques contacts déjà traités, un rappel prévu aujourd'hui.
   const st = ['nrp', 'rdv', 'devis', 'nrp', 'signe', 'perdu'];
   const suivi = mine.slice(3, 15).map((l, i) => ({ lead_id: l.id, client_id: 'apercu', statut: st[i % st.length], note: i === 1 ? 'RDV mardi 14 h, maison des années 70.' : null, rappel_le: i === 0 ? new Date(Date.now() + 2 * 3600000).toISOString() : null, maj_le: new Date().toISOString() }));
