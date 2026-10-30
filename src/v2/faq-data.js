@@ -19,7 +19,7 @@ export const FAQ_V2 = [
   ['Comment je reçois les contacts ?', 'Dans votre espace client : nom, téléphone, e-mail, code postal, propriétaire ou non, type de logement, chauffage, surface. Vous les exportez en un clic.'],
   ['Combien coûte un contact ?', 'Pompe à chaleur 28 €, isolation par l’extérieur 27 €, photovoltaïque 35 €, hors taxes. Pour un autre secteur, le prix vous est donné avant toute commande. Kairn paie la pub : vous ne payez que les contacts, sur bon de commande, réglé par virement.'],
   ['Y a-t-il un engagement ou un abonnement ?', 'Non. Vous commandez à partir de 50 contacts, et vous arrêtez quand vous voulez.'],
-  ['Et si le contact est un doublon ou hors de ma zone ?', 'Vous le signalez depuis votre espace client : après vérification, il est remplacé. Les faux numéros, eux, ne sont pas remplacés.'],
+  ['Et si le contact est un doublon ou hors de ma zone ?', 'Vous le signalez depuis votre espace client : après vérification, il est remplacé.'],
   ['Vous garantissez des chantiers ?', 'Non, et méfiez-vous de ceux qui le font. Nous nous engageons sur le contact : frais, qualifié, dans votre zone, à vous seul. La signature se joue au téléphone.'],
   ['Quels secteurs couvrez-vous ?', 'Pompe à chaleur, isolation par l’extérieur et photovoltaïque sont ouverts en continu, et nous produisons des contacts dans bien d’autres secteurs : dites-nous lequel vous intéresse. Vous préférez vos propres campagnes ? C’est Kairn Pilotage : nous pilotons vos pubs Meta, sur votre budget et vos comptes, avec landing page et CRM.'],
   ['Vous couvrez ma région ?', 'Kairn est basé à Bordeaux et travaille partout en France, en visio. Vous indiquez vos départements à la commande, et nous vérifions avec vous que la zone est couverte.'],
