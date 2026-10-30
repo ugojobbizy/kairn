@@ -106,7 +106,9 @@
   border: 1px solid transparent; transition: background .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease);
 }
 .v2 .nav.is-scrolled .nav-bar { background: rgba(255,255,255,.78); border-color: var(--line); box-shadow: var(--shadow-card); backdrop-filter: saturate(180%) blur(14px); -webkit-backdrop-filter: saturate(180%) blur(14px); }
-.v2 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 20px; letter-spacing: -0.02em; min-height: 44px; }
+/* Nom à la hauteur du dessin du logo et collé à lui (Ugo, 30/10/2026 : « que Kairn soit de la même taille que le logo et qu'ils soient beaucoup plus proches ») ;
+   le SVG a environ 5 px de marge intérieure : aucun écart en plus ; majuscule d'environ 21 px pour un dessin de 22 px. */
+.v2 .brand { display: inline-flex; align-items: center; gap: 0; font-weight: 600; font-size: 30px; line-height: 1; letter-spacing: -0.04em; min-height: 44px; }
 .v2 .brand .kairn-logo { display: block; flex: none; filter: drop-shadow(0 0 10px rgba(103,232,249,.25)); }
 .v2 .nav-links { display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.6); border: 1px solid var(--line); }
 .v2 .nav-links a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; font-size: 14.5px; font-weight: 500; color: var(--muted); transition: color .2s, background .2s; }
