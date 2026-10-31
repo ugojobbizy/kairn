@@ -2,15 +2,10 @@
 // Captures de l'espace client en aperçu (données d'exemple) dans public/plateforme/.
 export const ETAPES = [
   {
-    // Ugo, 30/10/2026 : le Leads Shop ne contient que les hors zone et les doublons, tous 4 € moins chers, réduction affichée.
-    img: 'shop', tag: 'Leads Shop', h: 'Des contacts disponibles,', i: '4 € moins chers.',
-    p: 'Un espace à part, en plus de vos commandes : les contacts qu’un autre installateur a signalés hors de sa zone ou en doublon, remis en vente 4 € moins chers. Filtrés par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
-    points: ['Coordonnées visibles seulement après l’achat', 'Hors zone ou doublon d’un autre installateur, 4 € de moins', 'Consentement du particulier encore valable'],
-  },
-  {
-    img: 'prospects', tag: 'Mes prospects', h: 'Vos contacts,', i: 'prêts à appeler.',
-    p: 'Chaque lead livré arrive ici avec son nom, son téléphone, son e-mail, son code postal et sa qualification. Vous filtrez, vous exportez en CSV en un clic, et vous savez toujours ce qui reste à traiter.',
-    points: ['Onglets « À exporter » et « Exportés »', 'Filtres par date, secteur, département', 'Téléphone cliquable depuis le mobile'],
+    // Ugo, 31/10/2026 : Mes prospects montre le CRM (commit db1bb69) à la place de l'ancien tableau d'export, en premier onglet.
+    img: 'crm', tag: 'Mes prospects', h: 'Vos contacts,', i: 'suivis jusqu’à la signature.',
+    p: 'Chaque contact livré entre dans votre pipeline. Vous le faites glisser d’étape en étape : à rappeler, rendez-vous pris, devis envoyé, signé. Sa fiche s’ouvre sur le côté pour appeler, envoyer un SMS, poser un rendez-vous ou un rappel, prendre des notes. Un contact perdu ? Vous notez pourquoi.',
+    points: ['Pipeline à glisser, de « Nouveau » à « Signé »', 'Rendez-vous ajouté à Google Agenda en un clic', 'Vues Liste, Rappels et Agenda, notes et historique'],
   },
   {
     img: 'litige', tag: 'Litiges', h: 'Un doublon ?', i: 'Un clic.',
@@ -26,5 +21,11 @@ export const ETAPES = [
     img: 'compta', tag: 'Comptabilité', h: 'Vos règlements,', i: 'sans relance.',
     p: 'Tous vos bons de commande au même endroit, avec ce qui est réglé et ce qui reste à régler. Paiement par virement à réception du bon de commande ; la carte bancaire arrive bientôt.',
     points: ['Montant dû et déjà réglé', 'Bons de commande numérotés', 'Paiement par carte bientôt'],
+  },
+  {
+    // Ugo, 30/10/2026 : le Leads Shop ne contient que les hors zone et les doublons, tous 4 € moins chers, réduction affichée.
+    img: 'shop', tag: 'Leads Shop', h: 'Des contacts disponibles,', i: '4 € moins chers.',
+    p: 'Un espace à part, en plus de vos commandes : les contacts qu’un autre installateur a signalés hors de sa zone ou en doublon, remis en vente 4 € moins chers. Filtrés par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
+    points: ['Coordonnées visibles seulement après l’achat', 'Hors zone ou doublon d’un autre installateur, 4 € de moins', 'Consentement du particulier encore valable'],
   },
 ];

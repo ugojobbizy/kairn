@@ -41,7 +41,7 @@ export default function PlatformTabs() {
       <div className="pt-head">
         <p className="eyebrow">Notre plateforme</p>
         <h2 className="h2">Tout se passe <span className="serif grad-text">dans votre espace client.</span></h2>
-        <p>Acheter, recevoir, exporter, signaler, régler : une seule plateforme, ouverte dès votre première commande validée.</p>
+        <p>Recevoir, appeler, suivre, signaler, régler : une seule plateforme, ouverte dès votre première commande validée.</p>
       </div>
 
       <div className="pt-tabs" ref={bar} data-fade={fade || undefined} onScroll={majFade} role="tablist" aria-label="Fonctions de la plateforme">
