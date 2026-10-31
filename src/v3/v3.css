@@ -321,3 +321,9 @@
   .v2.font-tight .hero.is-light .hero-lead { font-size: 15.5px; line-height: 1.55; text-wrap: balance; margin-top: 14px; }
   .v2.font-tight .hero.is-light .hero-vsl { width: 100%; margin-top: 26px; }
 }
+
+/* Section Kairn Leads (quatre raisons) sur téléphone : déjà affichée, sans apparition au défilement
+   (Ugo, 31/10/2026 : « elle apparaît que lorsque l'on scrolle [...] ça met un temps de latence »). */
+@media (max-width: 640px) {
+  .v2 .pil > .sec-head, .v2 .pil-grid > .pil-card { opacity: 1 !important; transform: none !important; }
+}
