@@ -324,3 +324,16 @@
 .v2 .bk-modal-x:hover { background: rgba(255,255,255,.22); }
 @keyframes bk-in { from { opacity: 0; } }
 @media (max-width: 640px) { .v2 .bk-modal { padding: 0; place-items: stretch; } .v2 .bk-modal-box { max-height: 100dvh; border-radius: 0; } .v2 .vsl-cta .btn { width: 100%; } }
+
+/* Haut de l'accueil sur téléphone (Ugo, 31/10/2026) : titre et chapô équilibrés, la vidéo remonte dans le premier écran,
+   les boutons passent sous la vidéo (ceux du haut font doublon avec l'appel sous la VSL), la note Google en dernier. */
+@media (max-width: 640px) {
+  .v2.font-tight .hero.is-light .hero-inner { display: flex; flex-direction: column; align-items: center; }
+  .v2.font-tight .hero.is-light h1 { font-size: clamp(31px, 8.6vw, 36px); line-height: 1.08; text-wrap: balance; }
+  .v2.font-tight .hero.is-light .hero-lead { font-size: 15.5px; line-height: 1.55; text-wrap: balance; margin-top: 14px; }
+  .v2.font-tight .hero.is-light .hero-actions { display: none; }
+  .v2.font-tight .hero.is-light .hero-vsl { width: 100%; margin-top: 26px; }
+  .v2.font-tight .hero.is-light .hero-inner > :has(.g-rating) { order: 9; margin-top: 18px; }
+  .v2 .vsl-cta { width: 100%; margin-top: 18px; gap: 10px; }
+  .v2 .vsl-cta .btn { min-height: 50px; }
+}
