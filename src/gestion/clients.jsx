@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { db, THEMES, MOTIFS, LITIGE_STATUTS, SUIVI, TVA, euro, dateFr, dateHeure } from '../espace/db.js';
+import { db, THEMES, MOTIFS, LITIGE_STATUTS, SUIVI, TVA, euro, dateFr, dateHeure, appareilHeaders } from '../espace/db.js';
 
 // Clients de Kairn Admin (Ugo, 30/10/2026 : « visualiser tous mes clients et avoir une fiche sur eux avec toutes les infos,
 // le nombre de leads achetés, le montant dépensé, les encours, les factures réglées, celles à régler »).
@@ -95,7 +95,7 @@ function LienAcces({ lien, copie, onCopie }) {
 // Appel commun à la création et au renvoi de l'invitation.
 async function ouvrirCompte(fiche) {
   const { data: sd } = await db.auth.getSession();
-  const r = await fetch('/api/client-ouvrir', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sd.session?.access_token}` }, body: JSON.stringify(fiche) })
+  const r = await fetch('/api/client-ouvrir', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sd.session?.access_token}`, ...appareilHeaders() }, body: JSON.stringify(fiche) })
     .then(async (x) => ({ status: x.status, body: await x.json().catch(() => ({})) })).catch(() => null);
   if (!r || r.status !== 200) {
     const code = r?.body?.error;

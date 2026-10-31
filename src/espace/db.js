@@ -4,7 +4,19 @@ import { createClient } from '@supabase/supabase-js';
 // Même clé de session des deux côtés : Ugo se connecte une fois.
 const URL = 'https://bmqvlwdbwfnafuovzzhi.supabase.co';
 const KEY = 'sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV';
-export const db = createClient(URL, KEY, { auth: { storageKey: 'kairn-espace-auth' } });
+// Clé d'appareil connu de Kairn Admin (api/admin-code.js) : jointe à chaque appel à la base et aux fonctions admin
+// (en-tête x-kairn-appareil), la base n'accorde les droits admin qu'avec elle. Absente chez les clients : sans effet.
+export const CLE_APPAREIL = 'kairn-admin-appareil';
+export function cleAppareil() { try { return localStorage.getItem(CLE_APPAREIL) || ''; } catch { return ''; } }
+export function appareilHeaders() { const c = cleAppareil(); return c ? { 'x-kairn-appareil': c } : {}; }
+function fetchAvecAppareil(input, init = {}) {
+  const c = cleAppareil();
+  if (!c) return fetch(input, init);
+  const headers = new Headers(init.headers);
+  headers.set('x-kairn-appareil', c);
+  return fetch(input, { ...init, headers });
+}
+export const db = createClient(URL, KEY, { auth: { storageKey: 'kairn-espace-auth' }, global: { fetch: fetchAvecAppareil } });
 
 export const THEMES = { PAC: 'Pompe à chaleur', ITE: 'Isolation extérieure', PPV: 'Photovoltaïque' };
 export const MOTIFS = { doublon: 'Doublon', hors_zone: 'Hors zone' };
@@ -37,7 +49,7 @@ export async function alerterLivraison(commande, depart) {
     const { data } = await db.auth.getSession();
     const token = data.session?.access_token;
     if (!token || !commande) return null;
-    const r = await fetch('/api/livraison', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ commande, depuis: new Date(depart - 120000).toISOString() }) });
+    const r = await fetch('/api/livraison', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, ...appareilHeaders() }, body: JSON.stringify({ commande, depuis: new Date(depart - 120000).toISOString() }) });
     return r.ok ? r.json() : null;
   } catch { return null; }
 }

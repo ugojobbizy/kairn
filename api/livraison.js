@@ -16,8 +16,10 @@ const SITE = 'https://www.kairnagency.com';
 const THEMES = { PAC: 'Pompe à chaleur', ITE: 'Isolation extérieure', PPV: 'Photovoltaïque' };
 const UUID = /^[0-9a-f-]{36}$/i;
 
-async function rest(path, token, init = {}) {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { ...init, headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...(init.headers || {}) } });
+// auth = { jwt, appareil } : jeton de l'appelant et clé d'appareil admin (api/admin-code.js), relayée telle quelle
+// (sans elle, is_admin() est faux). Rien de propre à une requête n'est gardé hors de la requête.
+async function rest(path, auth, init = {}) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { ...init, headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${auth.jwt}`, 'Content-Type': 'application/json', ...(auth.appareil ? { 'x-kairn-appareil': auth.appareil } : {}), ...(init.headers || {}) } });
   if (!r.ok) throw new Error(`supabase_${r.status}`);
   return r.status === 204 ? null : r.json();
 }
@@ -59,7 +61,7 @@ async function viaEmail(prefs, leads, r) {
   return 'envoye';
 }
 
-async function viaPush(subs, leads, token, r) {
+async function viaPush(subs, leads, auth, r) {
   const pub = process.env.VAPID_PUBLIC_KEY;
   const priv = process.env.VAPID_PRIVATE_KEY;
   if (!pub || !priv) return 'non_configure';
@@ -74,7 +76,7 @@ async function viaPush(subs, leads, token, r) {
       ok += 1;
     } catch (err) {
       // Abonnement expiré : on le retire pour ne plus le tenter.
-      if (err.statusCode === 404 || err.statusCode === 410) await rest(`push_abonnements?id=eq.${s.id}`, token, { method: 'DELETE' }).catch(() => {});
+      if (err.statusCode === 404 || err.statusCode === 410) await rest(`push_abonnements?id=eq.${s.id}`, auth, { method: 'DELETE' }).catch(() => {});
       else console.error('[livraison] push refusé :', err.statusCode, String(err.body || '').slice(0, 200));
     }
   }
@@ -96,6 +98,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error: 'method_not_allowed' });
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
   if (!token) return send(res, 401, { error: 'no_token' });
+  const auth = { jwt: token, appareil: String(req.headers['x-kairn-appareil'] || '') };
   let body;
   try { body = await readJson(req); } catch { return send(res, 400, { error: 'bad_body' }); }
 
@@ -109,26 +112,26 @@ export default async function handler(req, res) {
       clientId = me.id;
       leads = [{ id: '00000000-0000-0000-0000-000000000000', livre_le: new Date().toISOString(), thematique: 'PAC', prenom: 'Contact', nom: 'Test', telephone: '06 00 00 00 00', email: 'test@exemple.fr', code_postal: '33000', ville: 'Bordeaux', statut_occupation: 'Propriétaire', type_logement: 'Maison', chauffage: 'Gaz', surface: '110 à 150 m²' }];
     } else {
-      const admin = await rest('rpc/is_admin', token, { method: 'POST', body: '{}' });
+      const admin = await rest('rpc/is_admin', auth, { method: 'POST', body: '{}' });
       if (admin !== true) return send(res, 403, { error: 'forbidden' });
       const commande = String(body.commande || '');
       const depuis = new Date(body.depuis || 0);
       if (!UUID.test(commande) || Number.isNaN(depuis.getTime())) return send(res, 400, { error: 'bad_params' });
-      const [c] = await rest(`commandes?select=user_id&id=eq.${commande}`, token);
+      const [c] = await rest(`commandes?select=user_id&id=eq.${commande}`, auth);
       if (!c?.user_id) return send(res, 404, { error: 'not_found' });
       clientId = c.user_id;
-      leads = await rest(`leads?select=*&commande_id=eq.${commande}&livre_le=gte.${encodeURIComponent(depuis.toISOString())}&order=livre_le.desc`, token);
+      leads = await rest(`leads?select=*&commande_id=eq.${commande}&livre_le=gte.${encodeURIComponent(depuis.toISOString())}&order=livre_le.desc`, auth);
       if (!leads.length) return send(res, 200, { ok: true, leads: 0 });
     }
 
-    const [prefs] = await rest(`client_prefs?select=*&user_id=eq.${clientId}`, token);
+    const [prefs] = await rest(`client_prefs?select=*&user_id=eq.${clientId}`, auth);
     const out = { leads: leads.length, email: 'desactive', push: 'desactive', webhook: 'aucun' };
     if (!prefs) return send(res, 200, { ok: true, ...out, prefs: 'aucune' });
-    const subs = prefs.alerte_push ? await rest(`push_abonnements?select=id,endpoint,p256dh,auth&user_id=eq.${clientId}`, token) : [];
+    const subs = prefs.alerte_push ? await rest(`push_abonnements?select=id,endpoint,p256dh,auth&user_id=eq.${clientId}`, auth) : [];
     const canal = (k, run) => run().then((v) => { out[k] = v; }, (err) => { out[k] = 'echec'; console.error(`[livraison] ${k} :`, err.message); });
     await Promise.all([
       prefs.alerte_email && prefs.email && canal('email', () => viaEmail(prefs, leads, r)),
-      prefs.alerte_push && canal('push', () => viaPush(subs, leads, token, r)),
+      prefs.alerte_push && canal('push', () => viaPush(subs, leads, auth, r)),
       prefs.webhook_url && canal('webhook', () => viaWebhook(prefs, leads, r)),
     ]);
     return send(res, 200, { ok: true, ...out });

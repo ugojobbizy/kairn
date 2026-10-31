@@ -8,7 +8,17 @@ const URL = 'https://bmqvlwdbwfnafuovzzhi.supabase.co';
 const KEY = 'sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV';
 export const BUCKET = 'onboarding';
 
-export const db = createClient(URL, KEY, { auth: { storageKey: 'kairn-onboarding-auth' } });
+// Clé d'appareil connu de Kairn Admin (même clé que src/espace/db.js) : is_admin l'exige pour l'admin des onboardings.
+// Un appareil devient connu en passant le code Telegram de /gestion.
+function fetchAvecAppareil(input, init = {}) {
+  let c = '';
+  try { c = localStorage.getItem('kairn-admin-appareil') || ''; } catch { /* stockage bloqué */ }
+  if (!c) return fetch(input, init);
+  const headers = new Headers(init.headers);
+  headers.set('x-kairn-appareil', c);
+  return fetch(input, { ...init, headers });
+}
+export const db = createClient(URL, KEY, { auth: { storageKey: 'kairn-onboarding-auth' }, global: { fetch: fetchAvecAppareil } });
 
 const local = (token) => `kairn-onboarding:${token}`;
 export function readLocal(token) {

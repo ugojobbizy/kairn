@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, Route, Routes } from 'react-router-dom';
 import { KairnLogo, useV2Favicon } from '../v2/layout.jsx';
 import { PRODUITS } from '../v3/produits.js';
-import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, euro, dateFr, dateHeure, errMsg, alerterLivraison } from '../espace/db.js';
+import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, euro, dateFr, dateHeure, errMsg, alerterLivraison, CLE_APPAREIL } from '../espace/db.js';
 import { apercuData } from '../espace/apercu.js';
 import { Campagnes, TicketsAdmin, ShopAdmin, Bientot } from './gestion-plus.jsx';
 import { Clients, FicheClient } from './clients.jsx';
@@ -356,6 +356,7 @@ function Shell({ session, apercu }) {
     { to: '/gestion/clients', t: 'Clients', ico: <><path d="M3 21V7l9-4 9 4v14" /><path d="M9 21v-6h6v6" /></> },
     { to: '/gestion/contrats', t: 'Contrats', ico: <><path d="M6 2h9l5 5v15H6z" /><path d="M14 2v6h6M9 13h6M9 17h6" /></> },
     { to: '/gestion/factures', t: 'Factures', ico: <><rect x="4" y="2" width="16" height="20" rx="2" /><path d="M8 7h8M8 11h8M8 15h5" /></> },
+    { to: '/gestion/appareils', t: 'Appareils', ico: <><rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></> },
   ];
   return (
     <div className={`ec${open ? ' is-open' : ''}`}>
@@ -396,6 +397,7 @@ function Shell({ session, apercu }) {
           <Route path="leads" element={<Leads data={data} apercu={apercu} />} />
           <Route path="clients" element={<Clients data={data} apercu={apercu} />} />
           <Route path="clients/:id" element={<FicheClient data={data} apercu={apercu} />} />
+          <Route path="appareils" element={<Appareils apercu={apercu} />} />
           <Route path="*" element={<Dashboard data={data} tickets={nTickets} />} />
         </Routes>
       </main>
@@ -435,10 +437,96 @@ function Login({ denied }) {
   );
 }
 
+// Code de connexion sur un nouvel appareil (Ugo, 31/10/2026 : « lorsque la connexion provient de mon Mac, on ne demande
+// pas de code supplémentaire », code par Telegram). Après le mot de passe, un code à 6 chiffres part sur le Telegram d'Ugo
+// (api/admin-code.js) ; une fois saisi, l'appareil est connu 30 jours (clé dans localStorage, exigée par is_admin).
+function CodeTelegram({ onOk }) {
+  const [etat, setEtat] = useState('envoi'); // 'envoi' | 'envoye' | 'erreur'
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const appel = useCallback(async (payload) => {
+    const { data } = await db.auth.getSession();
+    const r = await fetch('/api/admin-code', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session?.access_token}` }, body: JSON.stringify(payload) })
+      .then(async (x) => ({ status: x.status, body: await x.json().catch(() => ({})) })).catch(() => ({ status: 0, body: {} }));
+    return r;
+  }, []);
+  const envoyer = useCallback(async () => {
+    setError(''); setEtat('envoi');
+    const r = await appel({ etape: 'envoyer' });
+    if (r.body.ok) setEtat('envoye');
+    else if (r.body.error === 'trop_tot') { setEtat('envoye'); setError('Un code vient déjà de partir : attendez une minute avant d’en redemander un.'); }
+    else { setEtat('erreur'); setError('Le code n’a pas pu partir sur Telegram. Réessayez dans un instant.'); }
+  }, [appel]);
+  useEffect(() => { envoyer(); }, [envoyer]);
+  async function submit(e) {
+    e.preventDefault();
+    setError(''); setBusy(true);
+    const r = await appel({ etape: 'verifier', code });
+    setBusy(false);
+    if (r.body.ok && r.body.cle) {
+      try { localStorage.setItem(CLE_APPAREIL, r.body.cle); } catch { setError('Le navigateur refuse d’enregistrer l’appareil (navigation privée ?).'); return; }
+      onOk();
+    } else if (r.body.error === 'code_faux') setError(`Code incorrect.${r.body.reste ? ` Encore ${r.body.reste} essai${r.body.reste > 1 ? 's' : ''}.` : ' Demandez un nouveau code.'}`);
+    else if (r.body.error === 'code_expire') setError('Code expiré ou trop d’essais : demandez un nouveau code.');
+    else setError('Vérification impossible. Réessayez.');
+  }
+  return (
+    <div className="ec-login">
+      <div className="aurora-grid" aria-hidden="true" />
+      <form className="ec-login-card" onSubmit={submit}>
+        <span className="brand"><KairnLogo /><span className="brand-word">Kairn</span></span>
+        <h1>Kairn Admin</h1>
+        <p>{etat === 'envoi' ? 'Envoi du code sur votre Telegram…' : 'Nouvel appareil : entrez le code à 6 chiffres reçu sur Telegram. Cet appareil sera ensuite reconnu pendant 30 jours.'}</p>
+        <label><span>Code</span><input inputMode="numeric" autoComplete="one-time-code" required pattern="[0-9 ]{6,7}" value={code} onChange={(e) => setCode(e.target.value)} autoFocus /></label>
+        {error && <p className="ec-err" role="alert">{error}</p>}
+        <button type="submit" className="ec-btn" disabled={busy || etat === 'envoi'}>Valider</button>
+        <button type="button" className="ec-btn-ghost" onClick={envoyer} disabled={etat === 'envoi'}>Renvoyer un code</button>
+        <button type="button" className="ec-btn-ghost" onClick={() => db.auth.signOut()}>Changer de compte</button>
+      </form>
+    </div>
+  );
+}
+
+// Appareils connus de Kairn Admin : liste et retrait (un Mac perdu, un appareil qui n'est pas le vôtre).
+function Appareils({ apercu }) {
+  const [list, setList] = useState(null);
+  const [msg, setMsg] = useState('');
+  const load = useCallback(async () => {
+    if (apercu) { setList([{ id: 'a', nom: 'Mac · Chrome', cree_le: new Date().toISOString(), expire_le: new Date(Date.now() + 30 * 864e5).toISOString() }]); return; }
+    const { data, error } = await db.from('admin_appareils').select('id, nom, cree_le, expire_le').order('cree_le', { ascending: false });
+    setMsg(error ? 'Liste illisible (migration non appliquée ?).' : '');
+    setList(data || []);
+  }, [apercu]);
+  useEffect(() => { load(); }, [load]);
+  async function retirer(a) {
+    if (apercu || !window.confirm(`Retirer « ${a.nom || 'cet appareil'} » ? Il devra redemander un code.`)) return;
+    const { error } = await db.from('admin_appareils').delete().eq('id', a.id);
+    setMsg(error ? errMsg(error) : 'Appareil retiré.');
+    load();
+  }
+  return (
+    <section>
+      <Head title="Appareils" sub="Appareils qui entrent dans Kairn Admin sans code, 30 jours après leur code Telegram." />
+      {msg && <p className="ec-err" role="status">{msg}</p>}
+      {list === null ? <div className="ec-loading" aria-busy="true" /> : !list.length ? <p>Aucun appareil connu.</p> : (
+        <div className="ec-table-wrap"><table className="ec-table">
+          <thead><tr><th>Appareil</th><th>Connu depuis</th><th>Jusqu’au</th><th /></tr></thead>
+          <tbody>{list.map((a) => (
+            <tr key={a.id}><td>{a.nom || 'Appareil'}</td><td>{dateHeure(a.cree_le)}</td><td>{dateFr(a.expire_le)}</td>
+              <td><button type="button" className="ec-btn-ghost" onClick={() => retirer(a)}>Retirer</button></td></tr>
+          ))}</tbody>
+        </table></div>
+      )}
+    </section>
+  );
+}
+
 export default function Gestion() {
   useV2Favicon();
   const [session, setSession] = useState(undefined);
-  const [admin, setAdmin] = useState(undefined);
+  const [admin, setAdmin] = useState(undefined); // 'oui' | 'code' (code Telegram à faire sur cet appareil) | 'non'
+  const [verif, setVerif] = useState(0);
   useEffect(() => {
     db.auth.getSession().then(({ data }) => setSession(data.session));
     const { data } = db.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -446,14 +534,21 @@ export default function Gestion() {
   }, []);
   useEffect(() => {
     if (!session) { setAdmin(undefined); return; }
-    db.rpc('is_admin').then(({ data }) => setAdmin(Boolean(data)));
-  }, [session]);
+    (async () => {
+      // is_admin exige la clé d'un appareil connu (en-tête joint par db.js). compte_admin : l'e-mail est admin, sans clé.
+      const { data: ok } = await db.rpc('is_admin');
+      if (ok) { setAdmin('oui'); return; }
+      const c = await db.rpc('compte_admin');
+      setAdmin(!c.error && c.data ? 'code' : 'non');
+    })();
+  }, [session, verif]);
   const apercu = useMemo(() => import.meta.env.DEV && new URLSearchParams(window.location.search).has('apercu'), []);
   let body;
   if (apercu) body = <Shell session={{ user: { email: 'ugo@exemple.fr' } }} apercu />;
   else if (session === undefined || (session && admin === undefined)) body = <div className="ec-loading" aria-busy="true" />;
   else if (!session) body = <Login />;
-  else if (!admin) body = <Login denied />;
+  else if (admin === 'code') body = <CodeTelegram onOk={() => { setAdmin(undefined); setVerif((v) => v + 1); }} />;
+  else if (admin !== 'oui') body = <Login denied />;
   else body = <Shell session={session} />;
   return <div className="v2 v3 ec-root">{body}</div>;
 }

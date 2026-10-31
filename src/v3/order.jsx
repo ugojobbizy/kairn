@@ -18,7 +18,7 @@ const VOLUMES = ['50', '100', '200', '+ de 200'];
 
 const STEPS = [
   ['Votre demande est lue', 'Pas de tri automatique : votre demande est lue par celui qui règle les campagnes.'],
-  ['On vous rappelle', 'Pour comprendre votre métier, votre zone et le rythme qu’il vous faut, et vous dire franchement si c’est Kairn Leads ou Kairn Pilotage.'],
+  ['On vous rappelle', 'Pour comprendre votre métier, votre zone et le rythme qu’il vous faut, et vous dire franchement s’il vaut mieux qu’on vous fournisse des leads ou qu’on pilote votre campagne.'],
   ['Le flux s’ouvre', 'Accès à votre espace client, puis vos premiers contacts. Sur une thématique déjà ouverte, ça peut aller vite.'],
 ];
 
