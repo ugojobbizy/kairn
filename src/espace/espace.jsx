@@ -739,7 +739,7 @@ function Account({ session, client, apercu }) {
 }
 
 // ─ cadre : barre du haut, menu à gauche ─
-function Shell({ session, client, apercu }) {
+function Shell({ session, client, apercu, onQuitDemo }) {
   const [open, setOpen] = useState(false);
   const data = useClientData(session, apercu);
   const initials = (client?.societe || session.user.email).split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
@@ -778,6 +778,7 @@ function Shell({ session, client, apercu }) {
           </button>
         </nav>
         <main className="ec-main">
+          {onQuitDemo && <div className="ec-demo"><span><b>Démo</b> Données fictives : rien n’est enregistré.</span><button type="button" onClick={onQuitDemo}>Quitter la démo</button></div>}
           {data.error && <p className="ec-err">{data.error}</p>}
           <Routes>
             <Route index element={<Home client={client} />} />
@@ -848,6 +849,8 @@ function Bienvenue({ tokenHash, type, onDone }) {
   );
 }
 
+const DEMO_KEY = 'kairn-espace-demo';
+
 export default function ClientSpace() {
   useV2Favicon();
   // Manifeste propre à l'espace : installé sur l'écran d'accueil, il s'ouvre sur /espace (notifications sur iPhone).
@@ -873,12 +876,19 @@ export default function ClientSpace() {
     db.rpc('is_admin').then(({ data }) => setAdmin(Boolean(data)));
   }, [session]);
 
-  // Aperçu en développement seulement (/espace?apercu) : faux client et fausses données, rien n'est lu ni écrit en base.
-  const apercu = useMemo(() => (import.meta.env.DEV && new URLSearchParams(window.location.search).has('apercu') ? apercuData() : null), []);
+  // Aperçu : faux client et fausses données, rien n'est lu ni écrit en base. En développement par /espace?apercu ;
+  // en ligne par /espace/demo (Ugo, 31/10/2026 : « un accès client pour visualiser tous les changements »).
+  // La démo tient pour l'onglet (sessionStorage) pendant la navigation dans l'espace ; « Quitter la démo » la coupe.
+  const [demo, setDemo] = useState(() => {
+    const entree = window.location.pathname.startsWith('/espace/demo');
+    try { if (entree) sessionStorage.setItem(DEMO_KEY, '1'); return sessionStorage.getItem(DEMO_KEY) === '1'; } catch { return entree; }
+  });
+  const apercu = useMemo(() => ((import.meta.env.DEV && new URLSearchParams(window.location.search).has('apercu')) || demo ? apercuData() : null), [demo]);
+  const quitterDemo = () => { try { sessionStorage.removeItem(DEMO_KEY); } catch { /* stockage bloqué */ } setDemo(false); window.history.replaceState(null, '', '/espace'); };
   const [lien, setLien] = useState(() => { const q = new URLSearchParams(window.location.search); return window.location.pathname.startsWith('/espace/bienvenue') && q.get('token_hash') ? { tokenHash: q.get('token_hash'), type: q.get('type') } : null; });
   if (lien) return <div className="v2 v3 ec-root"><Bienvenue tokenHash={lien.tokenHash} type={lien.type} onDone={() => setLien(null)} /></div>;
   if (apercu) {
-    return <div className="v2 v3 ec-root"><Shell session={{ user: { id: 'apercu', email: 'client@exemple.fr' } }} client={{ societe: 'Exemple Chauffage', prenom: 'Julien' }} apercu={apercu} /></div>;
+    return <div className="v2 v3 ec-root"><Shell session={{ user: { id: 'apercu', email: 'client@exemple.fr' } }} client={{ societe: 'Exemple Chauffage', prenom: 'Julien' }} apercu={apercu} onQuitDemo={demo ? quitterDemo : null} /></div>;
   }
 
   let body;

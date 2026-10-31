@@ -503,3 +503,8 @@
   .v2 .ec-kpis-4 .ec-kpi { padding: 14px; }
   .v2 .ec-kpis-4 .ec-kpi strong, .v2 .ec-fiche-chiffres .ec-kpi strong { font-size: 22px; white-space: nowrap; }
 }
+
+/* ─ Démo en ligne (/espace/demo, 31/10/2026) ─ */
+.v2 .ec-demo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(217,119,6,.35); background: #FFFBEB; font-size: 13.5px; color: #92400E; }
+.v2 .ec-demo b { margin-right: 6px; padding: 2px 8px; border-radius: 999px; background: #F59E0B; color: #fff; font-size: 12px; }
+.v2 .ec-demo button { border: 0; background: none; padding: 0; font: 600 13.5px var(--font); color: #92400E; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
