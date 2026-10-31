@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { db, THEMES, ETAPES, euro, dateFr, dateHeure, errMsg } from '../espace/db.js';
+import { db, THEMES, ETAPES, euro, dateFr, dateHeure, errMsg, appareilHeaders } from '../espace/db.js';
 import { CATEGORIES } from '../espace/tickets.jsx';
 
 // Kairn Admin, suite (29/10/2026, demandes d'Ugo) : suivi des campagnes par client (4 étapes, « campagne lancée » au clic),
@@ -93,7 +93,7 @@ function BrancherTelegram({ apercu }) {
     if (apercu) { setEtat('Aperçu : rien n’est branché.'); return; }
     setEtat('Branchement…');
     const { data: sd } = await db.auth.getSession();
-    const r = await fetch('/api/telegram?brancher=1', { method: 'POST', headers: { Authorization: `Bearer ${sd.session?.access_token}` } }).then((x) => x.json()).catch(() => null);
+    const r = await fetch('/api/telegram?brancher=1', { method: 'POST', headers: { Authorization: `Bearer ${sd.session?.access_token}`, ...appareilHeaders() } }).then((x) => x.json()).catch(() => null);
     setEtat(r?.ok ? 'Branché : un message de confirmation vient d’arriver sur Telegram.' : `Échec${r?.error ? ` (${r.error}${r.detail ? ` : ${r.detail}` : ''})` : ''}.`);
   }
   return <div className="gp-tg"><button type="button" className="ec-btn-ghost" onClick={brancher}>Brancher les réponses Telegram</button>{etat && <small>{etat}</small>}</div>;

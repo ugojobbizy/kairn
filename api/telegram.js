@@ -22,7 +22,7 @@ const dire = (texte, replyTo) => tg('sendMessage', { chat_id: CHAT(), text: text
 
 async function brancher(req, res) {
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
-  const a = await fetch(`${SUPABASE_URL}/rest/v1/rpc/is_admin`, { method: 'POST', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: '{}' });
+  const a = await fetch(`${SUPABASE_URL}/rest/v1/rpc/is_admin`, { method: 'POST', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'x-kairn-appareil': String(req.headers['x-kairn-appareil'] || '') }, body: '{}' });
   if (!token || !a.ok || (await a.json()) !== true) return send(res, 403, { error: 'forbidden' });
   if (!BOT() || !CHAT()) return send(res, 503, { error: 'telegram_non_configure' });
   if (!serviceKey()) return send(res, 503, { error: 'service_non_configure' });

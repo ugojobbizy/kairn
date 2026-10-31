@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
   try {
     // L'appelant doit être admin : la question est posée avec son propre jeton.
-    const a = await fetch(`${SUPABASE_URL}/rest/v1/rpc/is_admin`, { method: 'POST', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: '{}' });
+    const a = await fetch(`${SUPABASE_URL}/rest/v1/rpc/is_admin`, { method: 'POST', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'x-kairn-appareil': String(req.headers['x-kairn-appareil'] || '') }, body: '{}' });
     if (!a.ok || (await a.json()) !== true) return send(res, 403, { error: 'forbidden' });
 
     // Compte : invitation (création) ; s'il existe déjà, lien pour (re)choisir son mot de passe.
