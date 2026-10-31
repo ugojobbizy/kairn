@@ -72,7 +72,7 @@ function HeroVsl() {
   };
   return (
     <div className="hero-vsl">
-      <video ref={ref} src="/vsl-kairn.mp4" poster="/vsl-kairn-poster.jpg" autoPlay muted loop playsInline preload="metadata" controls={sound} aria-label="Vidéo de présentation de Kairn (40 secondes)" />
+      <video ref={ref} src="/vsl-kairn-v4.mp4" poster="/vsl-kairn-v4-poster.jpg" autoPlay muted loop playsInline preload="metadata" controls={sound} aria-label="Vidéo de présentation de Kairn (1 minute)" />
       {!sound && (
         <button type="button" className="hero-vsl-cover" onClick={unmute} aria-label="Activer le son de la vidéo">
           <span className="hero-vsl-sound"><span aria-hidden="true">🔊</span> Activer le son</span>
