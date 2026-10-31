@@ -48,7 +48,7 @@ function Chevron({ dir }) {
 }
 
 // title / intro : textes de l'en-tête du formulaire (la V2 de l'accueil passe ceux de l'appel avec Ugo, 29/10/2026).
-export default function Booking({ title = 'Audit découverte Kairn', intro = ['Un premier échange pour parler de votre entreprise, de la façon dont vous trouvez vos clients aujourd’hui et de ce que vous aimeriez améliorer.', 'En visio, avec Ugo, fondateur de Kairn.'] }) {
+export default function Booking({ idp = 'bk', title = 'Audit découverte Kairn', intro = ['Un premier échange pour parler de votre entreprise, de la façon dont vous trouvez vos clients aujourd’hui et de ce que vous aimeriez améliorer.', 'En visio, avec Ugo, fondateur de Kairn.'] }) {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ country: 'FR', phone: '', firstName: '', company: '', email: '', website: '' });
   const [leadId] = useState(newId);
@@ -207,31 +207,31 @@ export default function Booking({ title = 'Audit découverte Kairn', intro = ['U
           <h3>{title}</h3>
           {intro.map((t) => <p className="bk-intro" key={t}>{t}</p>)}
 
-          <label className="bk-label" htmlFor="bk-phone">Votre numéro de téléphone</label>
+          <label className="bk-label" htmlFor={`${idp}-phone`}>Votre numéro de téléphone</label>
           <div className={`bk-phone${errors.phone ? ' has-error' : ''}`}>
             <select aria-label="Indicatif du pays" value={form.country} onChange={update('country')} disabled={step > 1}>
               {COUNTRIES.map((c) => <option key={c.code} value={c.code}>{c.code} {c.dial}</option>)}
             </select>
-            <input id="bk-phone" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" value={form.phone} onChange={update('phone')} disabled={step > 1} autoFocus={false} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'bk-phone-err' : undefined} />
+            <input id={`${idp}-phone`} type="tel" inputMode="tel" autoComplete="tel-national" placeholder="6 12 34 56 78" value={form.phone} onChange={update('phone')} disabled={step > 1} autoFocus={false} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? `${idp}-phone-err` : undefined} />
           </div>
-          {errors.phone && <p className="bk-err" id="bk-phone-err">{errors.phone}</p>}
+          {errors.phone && <p className="bk-err" id={`${idp}-phone-err`}>{errors.phone}</p>}
 
           {step > 1 && (
             <div className="bk-more">
               <div className="bk-row">
                 <div>
-                  <label className="bk-label" htmlFor="bk-first">Prénom</label>
-                  <input id="bk-first" className={`bk-input${errors.firstName ? ' has-error' : ''}`} autoComplete="given-name" value={form.firstName} onChange={update('firstName')} disabled={step > 2} aria-invalid={!!errors.firstName} />
+                  <label className="bk-label" htmlFor={`${idp}-first`}>Prénom</label>
+                  <input id={`${idp}-first`} className={`bk-input${errors.firstName ? ' has-error' : ''}`} autoComplete="given-name" value={form.firstName} onChange={update('firstName')} disabled={step > 2} aria-invalid={!!errors.firstName} />
                   {errors.firstName && <p className="bk-err">{errors.firstName}</p>}
                 </div>
                 <div>
-                  <label className="bk-label" htmlFor="bk-company">Société</label>
-                  <input id="bk-company" className={`bk-input${errors.company ? ' has-error' : ''}`} autoComplete="organization" value={form.company} onChange={update('company')} disabled={step > 2} aria-invalid={!!errors.company} />
+                  <label className="bk-label" htmlFor={`${idp}-company`}>Société</label>
+                  <input id={`${idp}-company`} className={`bk-input${errors.company ? ' has-error' : ''}`} autoComplete="organization" value={form.company} onChange={update('company')} disabled={step > 2} aria-invalid={!!errors.company} />
                   {errors.company && <p className="bk-err">{errors.company}</p>}
                 </div>
               </div>
-              <label className="bk-label" htmlFor="bk-email">E-mail <span className="bk-opt">(facultatif)</span></label>
-              <input id="bk-email" type="email" inputMode="email" className={`bk-input${errors.email ? ' has-error' : ''}`} autoComplete="email" value={form.email} onChange={update('email')} disabled={step > 2} aria-invalid={!!errors.email} />
+              <label className="bk-label" htmlFor={`${idp}-email`}>E-mail <span className="bk-opt">(facultatif)</span></label>
+              <input id={`${idp}-email`} type="email" inputMode="email" className={`bk-input${errors.email ? ' has-error' : ''}`} autoComplete="email" value={form.email} onChange={update('email')} disabled={step > 2} aria-invalid={!!errors.email} />
               {errors.email && <p className="bk-err">{errors.email}</p>}
             </div>
           )}
