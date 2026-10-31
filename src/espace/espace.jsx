@@ -876,7 +876,8 @@ export default function ClientSpace() {
     if (!session) { setClient(undefined); return; }
     db.from('clients').select('societe, prenom, telephone, siret').eq('user_id', session.user.id).maybeSingle()
       .then(({ data }) => setClient(data || null));
-    db.rpc('is_admin').then(({ data }) => setAdmin(Boolean(data)));
+    // Compte admin, même avant son code de double authentification (compte_admin) ; repli sur is_admin sans la migration.
+    db.rpc('compte_admin').then(({ data, error }) => (error ? db.rpc('is_admin') : { data })).then(({ data }) => setAdmin(Boolean(data)));
   }, [session]);
 
   // Aperçu : faux client et fausses données, rien n'est lu ni écrit en base. En développement par /espace?apercu ;

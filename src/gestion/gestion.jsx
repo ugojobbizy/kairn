@@ -435,10 +435,68 @@ function Login({ denied }) {
   );
 }
 
+// Double authentification (audit de sécurité du 31/10/2026) : après le mot de passe, un code à 6 chiffres
+// de l'application d'authentification (Google Authenticator, 1Password...). La première fois, Ugo scanne le QR code.
+// La base n'accorde les droits admin qu'à une session ainsi vérifiée (aal2, fonction is_admin).
+function CodeAdmin() {
+  const [factor, setFactor] = useState(undefined); // { id, qr?, secret? } : qr présent = première inscription
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    let off = false;
+    (async () => {
+      const { data, error: err } = await db.auth.mfa.listFactors();
+      if (err) { setError('Impossible de lire la double authentification. Rechargez la page.'); return; }
+      const ok = (data.totp || []).find((f) => f.status === 'verified');
+      if (ok) { if (!off) setFactor({ id: ok.id }); return; }
+      // Inscription interrompue : on repart d'un QR code neuf.
+      for (const f of (data.all || []).filter((x) => x.status !== 'verified')) await db.auth.mfa.unenroll({ factorId: f.id });
+      const { data: e, error: err2 } = await db.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Kairn Admin' });
+      if (err2) { setError('Impossible de créer le code. Rechargez la page.'); return; }
+      if (!off) setFactor({ id: e.id, qr: e.totp.qr_code, secret: e.totp.secret });
+    })();
+    return () => { off = true; };
+  }, []);
+  async function submit(e) {
+    e.preventDefault();
+    setError(''); setBusy(true);
+    const { error: err } = await db.auth.mfa.challengeAndVerify({ factorId: factor.id, code: code.replace(/\s/g, '') });
+    setBusy(false);
+    if (err) setError('Code incorrect ou expiré. Prenez le code affiché maintenant.');
+  }
+  return (
+    <div className="ec-login">
+      <div className="aurora-grid" aria-hidden="true" />
+      <form className="ec-login-card" onSubmit={submit}>
+        <span className="brand"><KairnLogo /><span className="brand-word">Kairn</span></span>
+        <h1>Kairn Admin</h1>
+        {factor === undefined && !error && <div className="ec-loading" aria-busy="true" />}
+        {factor?.qr && (
+          <>
+            <p>Première connexion avec double authentification : scannez ce QR code avec votre application d’authentification, puis entrez le code à 6 chiffres.</p>
+            <img src={factor.qr} alt="QR code de la double authentification" width="180" height="180" style={{ alignSelf: 'center', background: '#fff', borderRadius: 8 }} />
+            <p style={{ fontSize: 13, wordBreak: 'break-all' }}>Sans appareil photo, entrez cette clé : <code>{factor.secret}</code></p>
+          </>
+        )}
+        {factor && !factor.qr && <p>Entrez le code à 6 chiffres de votre application d’authentification.</p>}
+        {factor && (
+          <>
+            <label><span>Code</span><input inputMode="numeric" autoComplete="one-time-code" required pattern="[0-9 ]{6,7}" value={code} onChange={(e) => setCode(e.target.value)} autoFocus /></label>
+            <button type="submit" className="ec-btn" disabled={busy}>Valider</button>
+          </>
+        )}
+        {error && <p className="ec-err" role="alert">{error}</p>}
+        <button type="button" className="ec-btn-ghost" onClick={() => db.auth.signOut()}>Changer de compte</button>
+      </form>
+    </div>
+  );
+}
+
 export default function Gestion() {
   useV2Favicon();
   const [session, setSession] = useState(undefined);
-  const [admin, setAdmin] = useState(undefined);
+  const [admin, setAdmin] = useState(undefined); // 'oui' | 'code' (double authentification à faire) | 'non'
   useEffect(() => {
     db.auth.getSession().then(({ data }) => setSession(data.session));
     const { data } = db.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -446,14 +504,24 @@ export default function Gestion() {
   }, []);
   useEffect(() => {
     if (!session) { setAdmin(undefined); return; }
-    db.rpc('is_admin').then(({ data }) => setAdmin(Boolean(data)));
+    (async () => {
+      // compte_admin : l'e-mail est admin, quel que soit le niveau. Repli sur is_admin tant que la migration n'est pas appliquée.
+      const c = await db.rpc('compte_admin');
+      const compte = c.error ? Boolean((await db.rpc('is_admin')).data) : Boolean(c.data);
+      if (!compte) { setAdmin('non'); return; }
+      const { data: aal } = await db.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal?.currentLevel !== 'aal2') { setAdmin('code'); return; }
+      const { data } = await db.rpc('is_admin');
+      setAdmin(data ? 'oui' : 'non');
+    })();
   }, [session]);
   const apercu = useMemo(() => import.meta.env.DEV && new URLSearchParams(window.location.search).has('apercu'), []);
   let body;
   if (apercu) body = <Shell session={{ user: { email: 'ugo@exemple.fr' } }} apercu />;
   else if (session === undefined || (session && admin === undefined)) body = <div className="ec-loading" aria-busy="true" />;
   else if (!session) body = <Login />;
-  else if (!admin) body = <Login denied />;
+  else if (admin === 'code') body = <CodeAdmin />;
+  else if (admin !== 'oui') body = <Login denied />;
   else body = <Shell session={session} />;
   return <div className="v2 v3 ec-root">{body}</div>;
 }

@@ -29,7 +29,11 @@ export default async function handler(req, res) {
     // Compte : invitation (création) ; s'il existe déjà, lien pour (re)choisir son mot de passe.
     let l = await lienAcces(email, 'invite');
     let nouveau = true;
-    if (!l.ok && (l.status === 422 || /exist|registered/i.test(String(l.code)))) { l = await lienAcces(email, 'recovery'); nouveau = false; }
+    if (!l.ok && /signup/i.test(String(l.code))) {
+      // Inscriptions publiques fermées (audit de sécurité du 31/10/2026) : le compte est créé par l'API admin, puis lien de mot de passe.
+      const u = await adminFetch('/auth/v1/admin/users', { method: 'POST', body: JSON.stringify({ email, email_confirm: true }) });
+      if (u.ok || u.status === 422) { l = await lienAcces(email, 'recovery'); nouveau = u.ok; }
+    } else if (!l.ok && (l.status === 422 || /exist|registered/i.test(String(l.code)))) { l = await lienAcces(email, 'recovery'); nouveau = false; }
     if (!l.ok || !l.userId) { console.error('[client-ouvrir] lien :', l.status, l.code); return send(res, 502, { error: 'compte_impossible' }); }
 
     const fiche = { user_id: l.userId, societe, prenom: clean(body.prenom, 100), telephone: clean(body.telephone, 40), siret: clean(body.siret, 20) };
