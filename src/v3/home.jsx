@@ -83,6 +83,11 @@ function HeroVsl() {
 }
 
 // police = 'tight' : test de la police Inter Tight (Ugo, 28/10/2026), servi sur /v2.
+// Halos bleu clair qui dérivent lentement, repris de la VSL v4 (Ugo, 31/10/2026 : « j'adore le petit dégradé bleu clair »).
+function Halos() {
+  return <div className="halos" aria-hidden="true"><i className="halo-a" /><i className="halo-b" /></div>;
+}
+
 export default function KairnHomeV3({ police }) {
   useV2Favicon();
   useEffect(() => {
@@ -104,6 +109,7 @@ export default function KairnHomeV3({ police }) {
         <main id="contenu">
           {/* ── Hero ── */}
           <section className="hero is-light">
+            {police && <Halos />}
             {police ? <HeroBgV2 variant={new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('fond') || 'trame'} /> : <HeroBg variant={fond} />}
             <div className="wrap hero-inner">
               {/* Retirée de la V2 (Ugo, 28/10/2026 : « enlève ça sur la v2 »). */}
@@ -154,7 +160,8 @@ export default function KairnHomeV3({ police }) {
             </div>
           </section>}
           {/* ── Les deux offres ── */}
-          <section className="band" id="offres" style={{ paddingTop: 'var(--band-sm)' }}>
+          <section className={police ? 'band has-halos' : 'band'} id="offres" style={{ paddingTop: 'var(--band-sm)' }}>
+            {police && <Halos />}
             <div className="wrap">
               <Reveal className="sec-head sec-head-left">
                 {police ? (
@@ -179,7 +186,8 @@ export default function KairnHomeV3({ police }) {
           </section>
 
           {/* ── Notre plateforme (V2 seulement, avant la fiche lead : Ugo, 29/10/2026) ── */}
-          {police && <section className="band" id="plateforme">
+          {police && <section className="band has-halos" id="plateforme">
+            <Halos />
             <div className="wrap">
               <Reveal><PlatformTabs /></Reveal>
             </div>
@@ -227,7 +235,8 @@ export default function KairnHomeV3({ police }) {
           {police && (
             <>
           {/* ── FAQ ── */}
-          <section className="band" id="faq">
+          <section className="band has-halos" id="faq">
+            <Halos />
             <div className="wrap faq-grid">
               <Reveal className="faq-aside">
                 <Pill>Questions</Pill>

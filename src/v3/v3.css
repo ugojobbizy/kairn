@@ -275,3 +275,14 @@
   .v2 .pil-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) { .v2 .pil-grid { grid-template-columns: 1fr; gap: 12px; } .v2 .pil-txt { padding: 20px 20px 24px; } }
+
+/* Halos bleu clair qui dérivent (repris de la VSL v4, Ugo 31/10/2026) : haut de l'accueil, offres, plateforme, FAQ */
+.v2 .halos { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.v2 .halos i { position: absolute; border-radius: 50%; filter: blur(90px); will-change: transform; }
+.v2 .halos .halo-a { width: min(760px, 70vw); aspect-ratio: 1; left: -12%; top: -32%; background: #0EA5E9; opacity: .16; animation: halo-a 28s ease-in-out infinite alternate; }
+.v2 .halos .halo-b { width: min(860px, 80vw); aspect-ratio: 1; right: -16%; bottom: -42%; background: #4F46E5; opacity: .13; animation: halo-b 32s ease-in-out infinite alternate; }
+@keyframes halo-a { to { transform: translate(22%, 16%); } }
+@keyframes halo-b { to { transform: translate(-18%, -14%); } }
+.v2 .has-halos { overflow: hidden; isolation: isolate; }
+.v2 .has-halos > .wrap, .v2 .hero.is-light > .wrap { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .v2 .halos i { animation: none; } }
