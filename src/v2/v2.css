@@ -1155,6 +1155,8 @@
 .v2 .nav-item small { display: block; margin-top: 3px; font-size: 13px; line-height: 1.35; color: var(--muted); }
 .v2 .nav-links .nav-panel-foot, .v2 .nav-panel-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 0; margin-top: 6px; padding: 14px 16px; border-radius: 16px; background: var(--night); color: rgba(255,255,255,.78); font-size: 14px; font-weight: 400; text-decoration: none; }
 .v2 .nav-panel-foot b { color: #fff; font-weight: 600; }
+/* La couleur des liens du menu (gris sur fond nuit) passait devant : on la pose sur le texte lui-même. */
+.v2 .nav-panel-foot > span:first-child { color: rgba(255,255,255,.82); }
 .v2 .nav-panel-more { display: inline-flex; align-items: center; gap: 6px; flex: none; font-weight: 600; color: #A9C1FF; }
 .v2 .nav-links .nav-panel-foot:hover { background: #16132B; color: rgba(255,255,255,.9); }
 
