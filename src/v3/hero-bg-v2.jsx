@@ -21,11 +21,13 @@ function useCanvas(draw) {
     const host = cv?.parentElement;
     if (!cv || !host) return undefined;
     const ctx = cv.getContext('2d');
-    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Écran tactile (pas de souris à suivre) ou mouvement réduit : trame dessinée une fois, sans boucle (mesuré le 31/10/2026 :
+    // la boucle à 60 images/s occupait le processeur en continu, d'où la latence au défilement sur téléphone).
+    const still = window.matchMedia('(prefers-reduced-motion: reduce), (hover: none)').matches;
     const st = { w: 0, h: 0, mx: null, my: null, t0: performance.now(), visible: true };
     const resize = () => {
       const r = host.getBoundingClientRect();
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
       st.w = r.width; st.h = r.height;
       cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -37,7 +39,9 @@ function useCanvas(draw) {
     const io = new IntersectionObserver(([en]) => { st.visible = en.isIntersecting; }); io.observe(host);
     resize();
     let raf = 0;
-    const loop = (now) => { if (st.visible) draw(ctx, st, (now - st.t0) / 1000); raf = requestAnimationFrame(loop); };
+    let last = 0;
+    // 30 images/s suffisent pour un fond qui suit la souris avec retard.
+    const loop = (now) => { if (st.visible && now - last > 32) { last = now; draw(ctx, st, (now - st.t0) / 1000); } raf = requestAnimationFrame(loop); };
     if (!still) {
       window.addEventListener('pointermove', move, { passive: true });
       document.addEventListener('pointerleave', leave);
@@ -259,6 +263,29 @@ function drawAimant(ctx, st, t) {
 // ── Trame (Ugo, 28/10/2026 : « j'aime bien l'idée de l'animation lorsqu'on bouge la souris mais j'aimerais un truc plus classe et plus stylé ») ──
 // Une trame de points fins, comme le fond des grilles de pubs qu'il aime. Autour de la souris (suivie avec retard, pour la douceur),
 // les points s'allument en bleu, grossissent et s'écartent légèrement, sous un halo diffus. Un reflet lent traverse la trame en diagonale.
+// Mesuré le 31/10/2026 : redessiner les 3 000 points à chaque image occupait 60 % du processeur au repos.
+// Les points éteints sont dessinés une fois dans une couche en cache ; chaque image ne redessine que les points allumés.
+function trameBase(st, step) {
+  const { w, h } = st;
+  const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+  const key = `${w}x${h}x${step}x${dpr}`;
+  if (st.baseKey === key) return st.base;
+  const c = document.createElement('canvas');
+  c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+  const b = c.getContext('2d');
+  b.setTransform(dpr, 0, 0, dpr, 0, 0);
+  for (let y = step / 2; y < h; y += step) {
+    for (let x = step / 2; x < w; x += step) {
+      const cx = (x - w / 2) / (w * 0.34), cy = (y - 250) / 150;
+      const calm = Math.min(1, Math.max(0.25, Math.hypot(cx, cy) - 0.3));
+      b.fillStyle = `rgba(20,16,48,${(0.11 * calm).toFixed(3)})`;
+      b.fillRect(x - 0.75, y - 0.75, 1.5, 1.5);
+    }
+  }
+  st.base = c; st.baseKey = key;
+  return c;
+}
+
 function drawTrame(ctx, st, t) {
   const { w, h } = st;
   const H = Math.min(h, 900);
@@ -269,25 +296,28 @@ function drawTrame(ctx, st, t) {
   st.sy = st.sy == null ? ty : st.sy + (ty - st.sy) * 0.08;
   const { sx, sy } = st;
   const R = Math.min(220, w * 0.16);
-  const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, R * 2.4);
-  glow.addColorStop(0, 'rgba(47,91,234,.10)'); glow.addColorStop(0.5, 'rgba(14,165,233,.04)'); glow.addColorStop(1, 'rgba(47,91,234,0)');
-  ctx.fillStyle = glow; ctx.fillRect(0, 0, w, h);
   const step = w < 700 ? 20 : 24;
+  // Couche des points éteints : posée une fois en fond du canvas (aucune copie par image).
+  const base = trameBase(st, step);
+  if (st.bgSet !== st.baseKey) { ctx.canvas.style.backgroundImage = `url(${base.toDataURL()})`; ctx.canvas.style.backgroundSize = '100% 100%'; st.bgSet = st.baseKey; }
+  const G = R * 2.4;
+  const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, G);
+  glow.addColorStop(0, 'rgba(47,91,234,.10)'); glow.addColorStop(0.5, 'rgba(14,165,233,.04)'); glow.addColorStop(1, 'rgba(47,91,234,0)');
+  ctx.fillStyle = glow; ctx.fillRect(sx - G, sy - G, G * 2, G * 2);
+  const R2 = 2 * R * R, far = 9 * R * R;
   for (let y = step / 2; y < h; y += step) {
     for (let x = step / 2; x < w; x += step) {
       const dx = x - sx, dy = y - sy;
-      const d = Math.hypot(dx, dy) || 1;
-      const near = Math.exp(-(d * d) / (2 * R * R));
-      const sheen = 0.35 * Math.max(0, Math.sin((x + y) * 0.0035 - t * 0.7)) ** 12;
+      const dd = dx * dx + dy * dy;
+      const near = dd < far ? Math.exp(-dd / R2) : 0;
+      const s = Math.sin((x + y) * 0.0035 - t * 0.7);
+      const sheen = s > 0.7 ? 0.35 * s ** 12 : 0;
       const e = Math.min(1, near + sheen);
+      if (e < 0.03) continue;
+      const d = Math.sqrt(dd) || 1;
       const cx = (x - w / 2) / (w * 0.34), cy = (y - 250) / 150;
       const calm = Math.min(1, Math.max(0.25, Math.hypot(cx, cy) - 0.3));
       const px = x + (dx / d) * near * 6, py = y + (dy / d) * near * 6;
-      if (e < 0.03) {
-        ctx.fillStyle = `rgba(20,16,48,${(0.11 * calm).toFixed(3)})`;
-        ctx.fillRect(px - 0.75, py - 0.75, 1.5, 1.5);
-        continue;
-      }
       const c = mix(BLUE, CYAN, Math.min(1, Math.max(0, (x - sx) / (R * 2) + 0.5)));
       ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${((0.12 + 0.78 * e) * calm).toFixed(3)})`;
       ctx.beginPath(); ctx.arc(px, py, 0.8 + 1.5 * e, 0, Math.PI * 2); ctx.fill();

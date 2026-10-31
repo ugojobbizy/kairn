@@ -153,26 +153,6 @@ function HeroVsl() {
 }
 
 // police = 'tight' : test de la police Inter Tight (Ugo, 28/10/2026), servi sur /v2.
-// Calendrier de l'audit dans une fenêtre, ouvert depuis le bouton sous la VSL (Ugo, 31/10/2026).
-function BookModal({ onClose }) {
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKey);
-    return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', onKey); };
-  }, [onClose]);
-  return (
-    <div className="bk-modal" role="dialog" aria-modal="true" aria-label="Réserver mon audit offert" onClick={onClose}>
-      <div className="bk-modal-box book-card" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="bk-modal-x" onClick={onClose} aria-label="Fermer">×</button>
-        <AuditHeader variant="appel" />
-        <Booking idp="bkm" title="Audit stratégique" intro={['30 minutes en visio : votre métier, vos départements, le nombre de contacts par jour qu’il vous faut. Vous repartez avec un prix et une date de démarrage.']} />
-      </div>
-    </div>
-  );
-}
-
 // Halos bleu clair qui dérivent lentement, repris de la VSL v4 (Ugo, 31/10/2026 : « j'adore le petit dégradé bleu clair »).
 function Halos() {
   return <div className="halos" aria-hidden="true"><i className="halo-a" /><i className="halo-b" /></div>;
@@ -180,7 +160,6 @@ function Halos() {
 
 export default function KairnHomeV3({ police }) {
   useV2Favicon();
-  const [book, setBook] = useState(false);
   useEffect(() => {
     if (police !== 'tight' || document.getElementById('font-inter-tight')) return;
     const l = document.createElement('link');
@@ -197,7 +176,6 @@ export default function KairnHomeV3({ police }) {
         <a href="#contenu" className="skip">Aller au contenu</a>
         <Nav light shop />
 
-        {book && <BookModal onClose={() => setBook(false)} />}
         <main id="contenu">
           {/* ── Hero ── */}
           <section className="hero is-light">
@@ -240,14 +218,6 @@ export default function KairnHomeV3({ police }) {
               {/* Note Google donnée par Ugo le 29/10/2026 (« finalement j'ai 5 étoiles par 4,9 sur google »). */}
               {police && <Reveal delay={0.55} y={12}><GoogleRating /></Reveal>}
               <Reveal delay={0.6} y={24}><HeroVsl /></Reveal>
-              {/* Appel sous la vidéo, comme le dit la fin de la VSL (Ugo, 31/10/2026 : « un petit call to action », sans marketing trop offensif). */}
-              {police && (
-                <Reveal delay={0.65} y={16} className="vsl-cta">
-                  <Link to="/commander" className="btn btn-order">Commander des contacts</Link>
-                  <button type="button" className="btn btn-light" onClick={() => setBook(true)}>Réserver mon audit offert</button>
-                  <p>30 minutes en visio, sans engagement.</p>
-                </Reveal>
-              )}
               {/* Bande de clients retirée de l'accueil (Ugo, 29/10/2026 : « enlève ça finalement ») ; gardée sur /accueil-v1. */}
               {!police && <Reveal delay={0.65} y={16}><ClientLogos /></Reveal>}
             </div>

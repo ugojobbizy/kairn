@@ -40,3 +40,8 @@
 .od-zone .zp-body { grid-template-columns: 1fr; }
 .od-zone .zp-modes { grid-template-columns: 1fr 1fr; }
 .od-zone .zp-list.is-long { max-height: 220px; }
+
+/* Mode régions : traits des départements estompés, contour des régions affiché */
+.zp.is-regions .zp-dep { stroke: rgba(255,255,255,.45); stroke-width: 0.6; }
+.zp.is-regions .zp-dep.is-on { stroke: rgba(220,252,231,.35); }
+.zp-reg-lines rect { fill: #6F82B0; }

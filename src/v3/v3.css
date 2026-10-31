@@ -314,26 +314,10 @@
 .v2 .hero-vsl.is-sound:hover .vsl-ctrl, .v2 .hero-vsl.is-paused .vsl-ctrl { background: linear-gradient(180deg, transparent, rgba(11,9,24,.62)); padding-top: 60px; }
 .v2 .vsl-btns svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,.45)); }
 
-/* Appel sous la VSL et fenêtre du calendrier (Ugo, 31/10/2026) */
-.v2 .vsl-cta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; margin-top: 26px; }
-.v2 .vsl-cta .btn { min-height: 52px; font-weight: 600; }
-.v2 .vsl-cta p { flex-basis: 100%; margin: 4px 0 0; text-align: center; font-size: 14.5px; color: var(--muted); }
-.v2 .bk-modal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 20px; background: rgba(11,9,24,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); overflow-y: auto; animation: bk-in .25s ease-out; }
-.v2 .bk-modal-box { width: min(1000px, 100%); max-height: calc(100dvh - 40px); overflow-y: auto; text-align: left; }
-.v2 .bk-modal-x { position: absolute; top: 14px; right: 14px; z-index: 2; width: 42px; height: 42px; border: 0; border-radius: 50%; background: rgba(255,255,255,.12); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; }
-.v2 .bk-modal-x:hover { background: rgba(255,255,255,.22); }
-@keyframes bk-in { from { opacity: 0; } }
-@media (max-width: 640px) { .v2 .bk-modal { padding: 0; place-items: stretch; } .v2 .bk-modal-box { max-height: 100dvh; border-radius: 0; } .v2 .vsl-cta .btn { width: 100%; } }
-
-/* Haut de l'accueil sur téléphone (Ugo, 31/10/2026) : titre et chapô équilibrés, la vidéo remonte dans le premier écran,
-   les boutons passent sous la vidéo (ceux du haut font doublon avec l'appel sous la VSL), la note Google en dernier. */
+/* Haut de l'accueil sur téléphone (Ugo, 31/10/2026) : titre et chapô plus compacts et équilibrés,
+   boutons et note Google à leur place d'origine, au-dessus de la vidéo (Ugo, 31/10/2026). */
 @media (max-width: 640px) {
-  .v2.font-tight .hero.is-light .hero-inner { display: flex; flex-direction: column; align-items: center; }
   .v2.font-tight .hero.is-light h1 { font-size: clamp(31px, 8.6vw, 36px); line-height: 1.08; text-wrap: balance; }
   .v2.font-tight .hero.is-light .hero-lead { font-size: 15.5px; line-height: 1.55; text-wrap: balance; margin-top: 14px; }
-  .v2.font-tight .hero.is-light .hero-actions { display: none; }
   .v2.font-tight .hero.is-light .hero-vsl { width: 100%; margin-top: 26px; }
-  .v2.font-tight .hero.is-light .hero-inner > :has(.g-rating) { order: 9; margin-top: 18px; }
-  .v2 .vsl-cta { width: 100%; margin-top: 18px; gap: 10px; }
-  .v2 .vsl-cta .btn { min-height: 50px; }
 }

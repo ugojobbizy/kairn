@@ -78,6 +78,12 @@ export default function ZonePicker({ value, onChange }) {
               <linearGradient id="zp-vert" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stopColor="#4ADE80" /><stop offset="1" stopColor="#16A34A" /></linearGradient>
               <filter id="zp-socle" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="7" floodColor="#1E3A8A" floodOpacity="0.18" /></filter>
               <filter id="zp-relief" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="5" stdDeviation="4" floodColor="#14532D" floodOpacity="0.35" /></filter>
+              {mode === 'regions' && Object.keys(REGIONS).map((r) => (
+                <mask key={r} id={`zp-m-${r}`} maskUnits="userSpaceOnUse" x="0" y="0" width="613" height="585">
+                  {DEPARTEMENTS.filter((d) => d.region === r).map((d) => <path key={d.id} d={d.d} fill="#fff" stroke="#fff" strokeWidth="2.4" strokeLinejoin="round" />)}
+                  {DEPARTEMENTS.filter((d) => d.region === r).map((d) => <path key={`n${d.id}`} d={d.d} fill="#000" stroke="#000" strokeWidth="0.35" strokeLinejoin="round" />)}
+                </mask>
+              ))}
             </defs>
             <g filter="url(#zp-socle)">
               {autres.map((d) => (
@@ -90,6 +96,13 @@ export default function ZonePicker({ value, onChange }) {
                 <path key={d.id} d={d.d} className="zp-dep is-on" onClick={mode === 'france' ? undefined : () => basculer(unite(mode, d))} onMouseEnter={() => setSurvol(d)} onMouseLeave={() => setSurvol(null)} />
               ))}
             </g>
+            {/* Mode régions : contour de chaque région tracé par-dessus (Ugo, 31/10/2026 : « elles ne sont pas prédessinées »).
+                Masque par région : le trait épais de ses départements, moins leur intérieur, ne garde que le bord extérieur. */}
+            {mode === 'regions' && (
+              <g className="zp-reg-lines" pointerEvents="none">
+                {Object.keys(REGIONS).map((r) => <rect key={r} x="0" y="0" width="613" height="585" mask={`url(#zp-m-${r})`} />)}
+              </g>
+            )}
           </svg>
           <figcaption>
             <span className="zp-survol" aria-live="polite">{nomSurvol || aide}</span>
