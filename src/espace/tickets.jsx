@@ -5,11 +5,16 @@ import { db, dateHeure, errMsg, notifier } from './db.js';
 // un petit logo discussion pour ouvrir un ticket »). Un ticket = un sujet et des messages ; chaque message du client
 // déclenche une alerte Telegram (api/notif.js). Ugo répond depuis Kairn Admin, Tickets.
 
+// Catégories des retours (Ugo, 31/10/2026 : « remonter des bugs, des erreurs ou des recommandations ») ; la réponse
+// d'Ugo peut venir de Kairn Admin ou directement de Telegram (api/telegram.js).
+export const CATEGORIES = { bug: 'Bug', erreur: 'Erreur', suggestion: 'Suggestion', question: 'Question' };
+const PLACEHOLDERS = { bug: 'Ce qui s’est passé, sur quelle page, et ce que vous attendiez.', erreur: 'Ex. un contact en double, un montant qui ne correspond pas…', suggestion: 'Ce qui vous ferait gagner du temps.', question: 'Votre question.' };
+
 function Bubble() {
   return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /><path d="M8.5 11h7M8.5 14h4" /></svg>;
 }
 
-export default function Tickets({ session }) {
+export default function Tickets({ session, apercu }) {
   const [open, setOpen] = useState(false);
   const [tickets, setTickets] = useState([]);
   const [cur, setCur] = useState(null); // ticket ouvert, ou 'new'
@@ -17,14 +22,17 @@ export default function Tickets({ session }) {
   const [sujet, setSujet] = useState('');
   const [texte, setTexte] = useState('');
   const [urgent, setUrgent] = useState(false);
+  const [categorie, setCategorie] = useState('bug');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const end = useRef(null);
 
+  // Démo (/espace/demo) : la bulle s'affiche, rien n'est lu ni envoyé.
   const load = useCallback(async () => {
+    if (apercu) return;
     const { data } = await db.from('tickets').select('*').eq('client_id', session.user.id).order('maj_le', { ascending: false });
     setTickets(data || []);
-  }, [session.user.id]);
+  }, [session.user.id, apercu]);
   const loadMsgs = useCallback(async (id) => {
     const { data } = await db.from('ticket_messages').select('*').eq('ticket_id', id).order('created_at');
     setMsgs(data || []);
@@ -49,14 +57,15 @@ export default function Tickets({ session }) {
   async function creer(e) {
     e.preventDefault();
     if (!sujet.trim() || !texte.trim()) { setError('Indiquez un sujet et votre message.'); return; }
+    if (apercu) { setError('Démo : rien n’est envoyé.'); return; }
     setBusy(true); setError('');
-    const { data: t, error: err } = await db.from('tickets').insert({ sujet: sujet.trim().slice(0, 160), urgent }).select().single();
+    const { data: t, error: err } = await db.from('tickets').insert({ sujet: sujet.trim().slice(0, 160), urgent, categorie }).select().single();
     if (err) { setBusy(false); setError(errMsg(err)); return; }
     const { error: err2 } = await db.from('ticket_messages').insert({ ticket_id: t.id, texte: texte.trim().slice(0, 4000) });
     setBusy(false);
     if (err2) { setError(errMsg(err2)); return; }
     notifier('ticket', t.id);
-    setSujet(''); setTexte(''); setUrgent(false);
+    setSujet(''); setTexte(''); setUrgent(false); setCategorie('bug');
     await load();
     ouvrir(t);
   }
@@ -81,18 +90,18 @@ export default function Tickets({ session }) {
       {open && (
         <div className="tk-panel" role="dialog" aria-label="Contacter Kairn">
           <header className="tk-head">
-            {cur ? <button type="button" className="tk-back" onClick={() => { setCur(null); load(); }}>‹ Mes demandes</button> : <b>Contacter Kairn</b>}
+            {cur ? <button type="button" className="tk-back" onClick={() => { setCur(null); load(); }}>‹ Mes demandes</button> : <b>Bug, erreur, suggestion</b>}
             <span>Réponse dans la journée</span>
           </header>
 
           {!cur && (
             <div className="tk-body">
               <button type="button" className="ec-btn tk-new" onClick={() => { setCur('new'); setError(''); }}>Nouvelle demande</button>
-              {tickets.length === 0 ? <p className="tk-empty">Une question, un problème sur un lead, une urgence ? Écrivez ici : nous sommes prévenus tout de suite.</p> : (
+              {tickets.length === 0 ? <p className="tk-empty">Un bug, une erreur, une idée pour améliorer la plateforme, une question ? Écrivez ici : nous sommes prévenus tout de suite et nous vous répondons ici même.</p> : (
                 <ul className="tk-list">
                   {tickets.map((t) => (
                     <li key={t.id}><button type="button" onClick={() => ouvrir(t)}>
-                      <b>{t.urgent && <em>Urgent</em>}{t.sujet}</b>
+                      <b>{t.urgent && <em>Urgent</em>}{t.categorie && <i className={`tk-cat is-${t.categorie}`}>{CATEGORIES[t.categorie]}</i>}{t.sujet}</b>
                       <span>{t.statut === 'ferme' ? 'Fermée' : t.repondu_le && (!t.vu_client_le || t.repondu_le > t.vu_client_le) ? 'Nouvelle réponse' : 'Ouverte'} · {dateHeure(t.maj_le)}</span>
                     </button></li>
                   ))}
@@ -103,8 +112,11 @@ export default function Tickets({ session }) {
 
           {cur === 'new' && (
             <form className="tk-body tk-form" onSubmit={creer}>
+              <div className="tk-cats" role="radiogroup" aria-label="Type de demande">
+                {Object.entries(CATEGORIES).map(([k, t]) => <button type="button" role="radio" aria-checked={categorie === k} key={k} className={`is-${k}${categorie === k ? ' is-on' : ''}`} onClick={() => setCategorie(k)}>{t}</button>)}
+              </div>
               <label><span>Sujet</span><input value={sujet} onChange={(e) => setSujet(e.target.value)} maxLength={160} placeholder="Ex. Un lead ne répond pas" /></label>
-              <label><span>Message</span><textarea rows={5} value={texte} onChange={(e) => setTexte(e.target.value)} maxLength={4000} /></label>
+              <label><span>Message</span><textarea rows={5} value={texte} onChange={(e) => setTexte(e.target.value)} maxLength={4000} placeholder={PLACEHOLDERS[categorie]} /></label>
               <label className="tk-urgent"><input type="checkbox" checked={urgent} onChange={(e) => setUrgent(e.target.checked)} />C’est urgent</label>
               {error && <p className="ec-err">{error}</p>}
               <button type="submit" className="ec-btn" disabled={busy}>{busy ? 'Envoi…' : 'Envoyer'}</button>

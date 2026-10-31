@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { db, THEMES, ETAPES, euro, dateFr, dateHeure, errMsg } from '../espace/db.js';
+import { CATEGORIES } from '../espace/tickets.jsx';
 
 // Kairn Admin, suite (29/10/2026, demandes d'Ugo) : suivi des campagnes par client (4 étapes, « campagne lancée » au clic),
 // tickets des clients avec réponse, gestion du Leads Shop (hors zone remis en vente, prix, retrait).
@@ -85,6 +86,19 @@ export function Campagnes({ data, apercu }) {
 }
 
 // ─ Tickets ─
+// Branche une fois le webhook Telegram (api/telegram.js) : ensuite, répondre à une alerte dans Telegram écrit au client.
+function BrancherTelegram({ apercu }) {
+  const [etat, setEtat] = useState('');
+  async function brancher() {
+    if (apercu) { setEtat('Aperçu : rien n’est branché.'); return; }
+    setEtat('Branchement…');
+    const { data: sd } = await db.auth.getSession();
+    const r = await fetch('/api/telegram?brancher=1', { method: 'POST', headers: { Authorization: `Bearer ${sd.session?.access_token}` } }).then((x) => x.json()).catch(() => null);
+    setEtat(r?.ok ? 'Branché : un message de confirmation vient d’arriver sur Telegram.' : `Échec${r?.error ? ` (${r.error}${r.detail ? ` : ${r.detail}` : ''})` : ''}.`);
+  }
+  return <div className="gp-tg"><button type="button" className="ec-btn-ghost" onClick={brancher}>Brancher les réponses Telegram</button>{etat && <small>{etat}</small>}</div>;
+}
+
 export function TicketsAdmin({ data, apercu, onCount }) {
   const { clients } = data;
   const [tickets, setTickets] = useState(null);
@@ -126,14 +140,15 @@ export function TicketsAdmin({ data, apercu, onCount }) {
   const rows = (tickets || []).filter((t) => (tab === 'tous' ? true : t.statut === tab));
   return (
     <>
-      <header className="ec-head ec-head-row"><div><h1>Tickets</h1><p>Les messages des clients, envoyés depuis la bulle de leur espace. Chaque message vous arrive aussi sur Telegram.</p></div></header>
+      <header className="ec-head ec-head-row"><div><h1>Tickets</h1><p>Les messages des clients (bugs, erreurs, suggestions, questions), envoyés depuis la bulle de leur espace. Chaque message vous arrive sur Telegram : répondez à l’alerte dans Telegram, le client reçoit votre réponse ici et dans sa bulle.</p></div>
+        <BrancherTelegram apercu={apercu} /></header>
       <div className="ec-tabs">{[['ouvert', 'Ouverts'], ['ferme', 'Fermés'], ['tous', 'Tous']].map(([k, t]) => <button type="button" key={k} className={tab === k ? 'is-on' : ''} onClick={() => setTab(k)}>{t}{k === 'ouvert' && (tickets || []).some(nonLu) && <b>{tickets.filter(nonLu).length}</b>}</button>)}</div>
       <div className="gp-tickets">
         <div className="ec-card gp-tlist">
           {tickets && rows.length === 0 && <p className="ec-muted">Aucun ticket.</p>}
           {rows.map((t) => (
             <button type="button" key={t.id} className={`gp-t${cur?.id === t.id ? ' is-on' : ''}`} onClick={() => ouvrir(t)}>
-              <b>{nonLu(t) && <i className="gp-dot" />}{t.urgent && <em>Urgent</em>}{t.sujet}</b>
+              <b>{nonLu(t) && <i className="gp-dot" />}{t.urgent && <em>Urgent</em>}{t.categorie && <i className={`tk-cat is-${t.categorie}`}>{CATEGORIES[t.categorie]}</i>}{t.sujet}</b>
               <span>{nom(t.client_id)} · {dateHeure(t.maj_le)}</span>
             </button>
           ))}
@@ -141,7 +156,7 @@ export function TicketsAdmin({ data, apercu, onCount }) {
         <div className="ec-card gp-tview">
           {!cur ? <p className="ec-muted">Choisissez un ticket.</p> : (
             <>
-              <div className="gp-tview-head"><div><b>{cur.urgent && <em>Urgent</em>}{cur.sujet}</b><span>{nom(cur.client_id)}</span></div>
+              <div className="gp-tview-head"><div><b>{cur.urgent && <em>Urgent</em>}{cur.categorie && <i className={`tk-cat is-${cur.categorie}`}>{CATEGORIES[cur.categorie]}</i>}{cur.sujet}</b><span>{nom(cur.client_id)}</span></div>
                 {cur.statut === 'ouvert' ? <button type="button" className="ec-btn-ghost" onClick={() => fermer(cur, 'ferme')}>Fermer</button> : <button type="button" className="ec-btn-ghost" onClick={() => fermer(cur, 'ouvert')}>Rouvrir</button>}
               </div>
               <div className="tk-thread gp-thread">

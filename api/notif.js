@@ -5,6 +5,9 @@
 // Variables Vercel : TELEGRAM_BOT_TOKEN (bot créé avec @BotFather), TELEGRAM_CHAT_ID (conversation d'Ugo).
 import { send, readJson } from './_calendar.js';
 import { telegram } from './_telegram.js';
+import { serviceKey, adminFetch } from './_auth-admin.js';
+
+const CATEGORIES = { bug: '🐞 Bug', erreur: '⚠️ Erreur', suggestion: '💡 Suggestion', question: '💬 Question' };
 
 const SUPABASE_URL = 'https://bmqvlwdbwfnafuovzzhi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV';
@@ -40,13 +43,20 @@ export default async function handler(req, res) {
         ? `🛒 Achat Leads Shop\n${qui}\n${c.volume} lead(s) ${THEMES[c.thematique] || c.thematique}, ${c.montant_ht} € HT\n${c.bdc_numero}\n${SITE}/gestion/commandes`
         : `🆕 Nouvelle pré-commande\n${qui}\n${c.volume} leads ${THEMES[c.thematique] || c.thematique}\nZone : ${c.zone || 'non précisée'}\nÀ valider et lancer : ${SITE}/gestion/campagnes`;
     } else if (body.type === 'ticket') {
-      const [t] = await rest(`tickets?select=sujet,urgent&id=eq.${id}`, token);
+      const [t] = await rest(`tickets?select=sujet,urgent,categorie&id=eq.${id}`, token);
       if (!t) return send(res, 404, { error: 'not_found' });
       const [m] = await rest(`ticket_messages?select=texte&ticket_id=eq.${id}&order=created_at.desc&limit=1`, token);
-      text = `${t.urgent ? '🚨 URGENT · ' : '💬 '}Message client\n${qui}${client?.telephone ? ` · ${client.telephone}` : ''}\n« ${t.sujet} »\n${(m?.texte || '').slice(0, 600)}\n${SITE}/gestion/tickets`;
+      // Ugo répond en répondant à ce message dans Telegram (api/telegram.js) ; /fermer clôt la demande.
+      text = `${t.urgent ? '🚨 URGENT · ' : ''}${CATEGORIES[t.categorie] || '💬 Message'} client\n${qui}${client?.telephone ? ` · ${client.telephone}` : ''}\n« ${t.sujet} »\n${(m?.texte || '').slice(0, 600)}\n\n↩️ Répondez à ce message pour écrire au client (/fermer pour clore).\n${SITE}/gestion/tickets`;
+      const sent = await telegram(text);
+      if (typeof sent === 'number' && serviceKey()) {
+        await adminFetch('/rest/v1/telegram_liens', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ message_id: sent, ticket_id: id }) })
+          .catch((err) => console.error('[notif] lien Telegram :', err.message));
+      }
+      return send(res, 200, { ok: true, sent: Boolean(sent) });
     } else return send(res, 400, { error: 'bad_type' });
     const sent = await telegram(text);
-    return send(res, 200, { ok: true, sent });
+    return send(res, 200, { ok: true, sent: Boolean(sent) });
   } catch (err) {
     console.error('[notif]', err.message);
     return send(res, 502, { error: 'notif_failed' });

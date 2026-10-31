@@ -5,6 +5,7 @@ import { PRODUITS, GARANTIES } from '../v3/produits.js';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
 import { db, THEMES, MOTIFS, SUIVI, LITIGE_STATUTS, TVA, ETAPES, euro, dateFr, dateHeure, errMsg, downloadCsv, notifier } from './db.js';
 import Tickets from './tickets.jsx';
+import Aide from './aide.jsx';
 import { Data, useData } from './data.js';
 import Contacts, { useFilters, ETAPES_CRM, age } from './crm.jsx';
 import { apercuData } from './apercu.js';
@@ -745,7 +746,7 @@ function Shell({ session, client, apercu, onQuitDemo }) {
   const initials = (client?.societe || session.user.email).split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
   return (
     <Data.Provider value={data}>
-      <div className={`ec${open ? ' is-open' : ''}`}>
+      <div className={`ec has-tabbar${open ? ' is-open' : ''}`}>
         <header className="ec-top">
           <Link to="/" className="brand"><KairnLogo /><span className="brand-word">Kairn</span></Link>
           <span className="ec-company">{client?.societe || session.user.email}</span>
@@ -766,7 +767,9 @@ function Shell({ session, client, apercu, onQuitDemo }) {
             <button type="button" className="ec-logout" onClick={() => db.auth.signOut()}>Se déconnecter</button>
           </div>
         </aside>
-        {!apercu && <Tickets session={session} />}
+        {/* Bulle de conversation au-dessus, bouton d'aide « ? » dessous (Ugo, 31/10/2026). */}
+        <Tickets session={session} apercu={Boolean(apercu)} />
+        <Aide />
         <nav className="ec-tabbar" aria-label="Navigation rapide">
           {MENU.filter((m) => m.tab).map((m) => (
             <NavLink key={m.to} to={m.to} end={m.end} className={({ isActive }) => (isActive ? 'is-active' : undefined)} onClick={() => setOpen(false)}>

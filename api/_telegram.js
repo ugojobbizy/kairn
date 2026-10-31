@@ -1,4 +1,5 @@
 // Envoi d'un message Telegram à Ugo (bot @BotFather). Variables Vercel : TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID.
+// Rend false si l'envoi échoue, sinon le numéro du message (ou true).
 export async function telegram(text) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chat = process.env.TELEGRAM_CHAT_ID;
@@ -11,6 +12,8 @@ export async function telegram(text) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ chat_id: chat, text, disable_web_page_preview: true }),
   });
-  if (!r.ok) console.error('[notif] Telegram a refusé :', r.status, (await r.text()).slice(0, 200));
-  return r.ok;
+  if (!r.ok) { console.error('[notif] Telegram a refusé :', r.status, (await r.text()).slice(0, 200)); return false; }
+  // Rend le numéro du message envoyé (sert à relier une réponse d'Ugo à sa demande, api/telegram.js), sinon true.
+  const j = await r.json().catch(() => null);
+  return j?.result?.message_id || true;
 }
