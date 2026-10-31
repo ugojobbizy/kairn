@@ -782,7 +782,7 @@ function Shell({ session, client, apercu, onQuitDemo }) {
           {data.error && <p className="ec-err">{data.error}</p>}
           <Routes>
             <Route index element={<Home client={client} />} />
-            <Route path="prospects" element={<Contacts apercu={apercu} client={client} />} />
+            <Route path="prospects" element={<Contacts apercu={apercu} client={client} session={session} />} />
             <Route path="shop" element={<Shop apercu={apercu} />} />
             <Route path="litiges" element={<Litiges />} />
             <Route path="commandes" element={<Commandes />} />

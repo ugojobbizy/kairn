@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { db, THEMES, MOTIFS, LITIGE_STATUTS, SUIVI, MOTIFS_PERTE, dateFr, dateHeure, errMsg, downloadCsv } from './db.js';
+import { Link, useSearchParams } from 'react-router-dom';
+import { db, THEMES, MOTIFS, LITIGE_STATUTS, SUIVI, MOTIFS_PERTE, TVA, euro, dateFr, dateHeure, errMsg, downloadCsv, notifier } from './db.js';
+import { PRODUITS } from '../v3/produits.js';
 import { useData } from './data.js';
 
 // CRM de l'espace client « Mes contacts » (Ugo, 30/10/2026 : « prends la même base que le CRM que j'ai fait pour ETXE Énergie
@@ -283,14 +284,76 @@ function Fiche({ lead: l, client, litige, apercu, onClose, onSignal }) {
   );
 }
 
+// ─ Relancer une campagne (Ugo, 31/10/2026 : « un bouton en haut pour relancer une campagne automatiquement ») ─
+// Reprend la dernière campagne du client (thématique, zone, volume) et envoie la demande en un clic, sans repasser
+// par le formulaire ; le volume se change dans la fenêtre. Même enregistrement que la page « Commander des contacts ».
+const VOLUMES = [50, 100, 200, 500];
+function Relance({ session, client, apercu, onClose }) {
+  const { commandes, reload } = useData();
+  const derniere = (commandes || []).find((c) => c.type !== 'shop' && c.thematique && c.statut !== 'refusee');
+  const [qte, setQte] = useState(() => { const n = Number(derniere?.plafond || derniere?.volume); return VOLUMES.includes(n) ? n : 100; });
+  const [etat, setEtat] = useState('idle');
+  const [error, setError] = useState('');
+  const prix = PRODUITS.find((x) => x.code === derniere?.thematique)?.prix;
+  async function relancer() {
+    setError(''); setEtat('envoi');
+    if (apercu) { setEtat('ok'); return; }
+    const { data: created, error: err } = await db.from('commandes').insert({
+      user_id: session.user.id, souhait: 'leads', type: 'precommande', thematique: derniere.thematique, volume: String(qte), zone: derniere.zone || null,
+      societe: client?.societe || null, nom: client?.prenom || null, email: session.user.email, telephone: client?.telephone || null, siret: client?.siret || null,
+      page: '/espace/prospects',
+    }).select('id').single();
+    if (err) { setEtat('idle'); setError(errMsg(err)); return; }
+    notifier('commande', created.id);
+    setEtat('ok');
+    reload();
+  }
+  return (
+    <div className="ec-modal" role="dialog" aria-modal="true" aria-label="Relancer une campagne" onClick={onClose}>
+      <div className="ec-modal-card crm-relance" onClick={(e) => e.stopPropagation()}>
+        <h2>Relancer une campagne</h2>
+        {!derniere ? (
+          <>
+            <p className="ec-modal-lead">Vous n’avez pas encore de campagne à relancer.</p>
+            <div className="ec-modal-actions"><button type="button" className="ec-btn-ghost" onClick={onClose}>Fermer</button><Link to="/espace/precommande" className="ec-btn">Commander des contacts</Link></div>
+          </>
+        ) : etat === 'ok' ? (
+          <>
+            <p className="ec-ok">Campagne relancée : {qte} contacts {THEMES[derniere.thematique]?.toLowerCase()}. Nous validons la zone et le volume, puis le bon de commande arrive dans Mes commandes.{apercu ? ' (Démo : rien n’est enregistré.)' : ''}</p>
+            <div className="ec-modal-actions"><button type="button" className="ec-btn" onClick={onClose}>Fermer</button></div>
+          </>
+        ) : (
+          <>
+            <p className="ec-modal-lead">Même campagne que la dernière, envoyée en un clic.</p>
+            <dl className="crm-dl">
+              <div><dt>Thématique</dt><dd>{THEMES[derniere.thematique] || derniere.thematique}</dd></div>
+              <div><dt>Zone</dt><dd>{derniere.zone || 'À préciser avec nous'}</dd></div>
+              <div><dt>Dernière demande</dt><dd>{dateFr(derniere.created_at)}</dd></div>
+            </dl>
+            <p className="ec-sub">Nombre de contacts</p>
+            <div className="ec-seg ec-seg-sm">{VOLUMES.map((v) => <button type="button" key={v} className={qte === v ? 'is-on' : ''} onClick={() => setQte(v)}><b>{v}</b></button>)}</div>
+            {prix && <div className="ec-total"><span>Montant estimé</span><b>{euro(qte * prix)} HT</b><em>{euro(qte * prix * (1 + TVA))} TTC</em></div>}
+            {error && <p className="ec-err" role="alert">{error}</p>}
+            <div className="ec-modal-actions">
+              <Link to={`/espace/precommande?${new URLSearchParams({ thematique: derniere.thematique, quantite: String(qte), zone: derniere.zone || '' })}`} className="ec-btn-ghost">Changer la zone</Link>
+              <button type="button" className="ec-btn" onClick={relancer} disabled={etat === 'envoi'}>{etat === 'envoi' ? 'Envoi…' : 'Relancer'}</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─ Mes contacts ─
-export default function Contacts({ apercu, client }) {
+export default function Contacts({ apercu, client, session }) {
   const { leads, litiges, suiviPar, journalPar, majSuivi, reload } = useData();
   const [params, setParams] = useSearchParams();
   const vue = params.get('vue') || 'pipeline';
   const setVue = (v) => { const p = new URLSearchParams(params); p.set('vue', v); setParams(p, { replace: true }); };
   const [ouvert, setOuvert] = useState(null);
   const [litigeFor, setLitigeFor] = useState(null);
+  const [relance, setRelance] = useState(false);
   const [drag, setDrag] = useState(null);
   const [over, setOver] = useState(null);
   const board = useRef(null);
@@ -339,7 +402,7 @@ export default function Contacts({ apercu, client }) {
     <div className="crm">
       <header className="crm-head">
         <div className="crm-head-top">
-          <h1>Mes contacts</h1>
+          <div className="crm-title"><h1>Mes contacts</h1><button type="button" className="ec-btn crm-relancer" onClick={() => setRelance(true)}><Ico d={<path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5" />} />Relancer une campagne</button></div>
           <div className="crm-stats">
             <span><b>{parEtape.a_appeler.length}</b>nouveaux</span>
             <span className={rappelsDus ? 'is-warn' : ''}><b>{rappelsDus}</b>rappels aujourd’hui</span>
@@ -419,6 +482,7 @@ export default function Contacts({ apercu, client }) {
       ))}
 
       {lead && <Fiche lead={lead} client={client} litige={enLitige.get(lead.id)} apercu={apercu} onClose={() => setOuvert(null)} onSignal={setLitigeFor} />}
+      {relance && <Relance session={session} client={client} apercu={apercu} onClose={() => setRelance(false)} />}
       {litigeFor && <LitigeModal lead={litigeFor} apercu={apercu} onClose={() => setLitigeFor(null)} onDone={() => { setLitigeFor(null); reload(); }} />}
     </div>
   );

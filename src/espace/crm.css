@@ -160,3 +160,9 @@
 @media (max-width: 1150px) { .v2 .db-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } .v2 .db-grid { grid-template-columns: 1fr; } }
 @media (max-width: 860px) { .v2 .db-todo { grid-template-columns: 1fr; } .v2 .db-kpis { grid-template-columns: 1fr 1fr; } .v2 .db-period { width: 100%; } .v2 .db-period button { flex: 1; } }
 @media (max-width: 860px) { .v2 .db-row { flex-direction: column; align-items: stretch; gap: 10px; } .v2 .db-row .ec-btn { width: 100%; } }
+/* Bouton « Relancer une campagne » (31/10/2026) */
+.v2 .crm-title { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.v2 .crm-relancer { min-height: 40px; padding: 0 16px; }
+.v2 .crm-relance .crm-dl { margin-top: 14px; }
+.v2 .crm-relance .ec-total { margin-top: 14px; }
+@media (max-width: 860px) { .v2 .crm-title { width: 100%; } .v2 .crm-relancer { width: 100%; } }
