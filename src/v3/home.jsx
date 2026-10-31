@@ -58,9 +58,30 @@ function GoogleRating() {
   );
 }
 
+// Barre de progression façon VSL (Ugo, 31/10/2026) : elle avance vite au début et lentement à la fin, sans afficher les secondes.
+const vslProgress = (t) => 1 - (1 - t) * (1 - t);
+
 function HeroVsl() {
   const ref = useRef(null);
+  const box = useRef(null);
+  const bar = useRef(null);
   const [sound, setSound] = useState(false);
+  const [playing, setPlaying] = useState(true);
+  const [muted, setMuted] = useState(false);
+  const [ended, setEnded] = useState(false);
+
+  useEffect(() => {
+    if (!sound) return undefined;
+    let raf = 0;
+    const tick = () => {
+      const v = ref.current;
+      if (v && bar.current && v.duration) bar.current.style.transform = `scaleX(${vslProgress(Math.min(1, v.currentTime / v.duration))})`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [sound]);
+
   const unmute = () => {
     const v = ref.current;
     if (!v) return;
@@ -70,13 +91,62 @@ function HeroVsl() {
     v.play();
     setSound(true);
   };
+  const toggle = () => {
+    const v = ref.current;
+    if (!v) return;
+    if (v.paused) { if (v.ended) v.currentTime = 0; v.play(); } else v.pause();
+  };
+  const toggleMute = (e) => {
+    e.stopPropagation();
+    const v = ref.current;
+    if (!v) return;
+    v.muted = !v.muted;
+    setMuted(v.muted);
+  };
+  const fullscreen = (e) => {
+    e.stopPropagation();
+    const el = box.current, v = ref.current;
+    if (document.fullscreenElement) { document.exitFullscreen(); return; }
+    if (el && el.requestFullscreen) el.requestFullscreen();
+    else if (v && v.webkitEnterFullscreen) v.webkitEnterFullscreen(); // iPhone : plein écran natif
+  };
+
   return (
-    <div className="hero-vsl">
-      <video ref={ref} src="/vsl-kairn-v4b.mp4" poster="/vsl-kairn-v4-poster.jpg" autoPlay muted loop playsInline preload="metadata" controls={sound} aria-label="Vidéo de présentation de Kairn (1 minute)" />
+    <div className={`hero-vsl${sound ? ' is-sound' : ''}${sound && !playing ? ' is-paused' : ''}`} ref={box}>
+      <video ref={ref} src="/vsl-kairn-v4b.mp4" poster="/vsl-kairn-v4-poster.jpg" autoPlay muted loop playsInline preload="metadata"
+        onPlay={() => { setPlaying(true); setEnded(false); }} onPause={() => setPlaying(false)} onEnded={() => setEnded(true)}
+        onClick={sound ? toggle : undefined} aria-label="Vidéo de présentation de Kairn (1 minute)" />
       {!sound && (
         <button type="button" className="hero-vsl-cover" onClick={unmute} aria-label="Activer le son de la vidéo">
           <span className="hero-vsl-sound"><span aria-hidden="true">🔊</span> Activer le son</span>
         </button>
+      )}
+      {sound && !playing && (
+        <button type="button" className="vsl-big" onClick={toggle} aria-label={ended ? 'Revoir la vidéo' : 'Reprendre la vidéo'}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+          <span>{ended ? 'Revoir' : 'Reprendre'}</span>
+        </button>
+      )}
+      {sound && (
+        <div className="vsl-ctrl">
+          <div className="vsl-track" aria-hidden="true"><i ref={bar} /></div>
+          <div className="vsl-btns">
+            <button type="button" onClick={(e) => { e.stopPropagation(); toggle(); }} aria-label={playing ? 'Pause' : 'Lecture'}>
+              {playing
+                ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" /></svg>
+                : <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>}
+            </button>
+            <span className="vsl-sp" />
+            <button type="button" onClick={toggleMute} aria-label={muted ? 'Activer le son' : 'Couper le son'}>
+              {muted
+                ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" /><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                : <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" /><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>}
+            </button>
+            <button type="button" onClick={fullscreen} aria-label="Plein écran">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

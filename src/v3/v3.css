@@ -286,3 +286,30 @@
 .v2 .has-halos { overflow: hidden; isolation: isolate; }
 .v2 .has-halos > .wrap, .v2 .hero.is-light > .wrap { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) { .v2 .halos i { animation: none; } }
+
+/* Lecteur de la VSL : barre façon VSL sans durée, boutons son et plein écran (Ugo, 31/10/2026) */
+.v2 .hero-vsl.is-sound video { cursor: pointer; }
+.v2 .hero-vsl:fullscreen { max-width: none; border-radius: 0; border: 0; display: grid; place-items: center; background: #000; }
+.v2 .hero-vsl:fullscreen video { object-fit: contain; }
+.v2 .vsl-ctrl { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 16px 12px; background: linear-gradient(180deg, transparent, rgba(11,9,24,.55)); pointer-events: none; opacity: 0; transition: opacity .3s; }
+.v2 .hero-vsl.is-sound:hover .vsl-ctrl, .v2 .hero-vsl.is-paused .vsl-ctrl, .v2 .hero-vsl:focus-within .vsl-ctrl { opacity: 1; }
+@media (hover: none) { .v2 .vsl-ctrl { opacity: 1; } }
+.v2 .vsl-btns { display: flex; align-items: center; gap: 4px; margin-top: 8px; }
+.v2 .vsl-sp { flex: 1; }
+.v2 .vsl-btns button { pointer-events: auto; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 10px; background: transparent; color: #fff; cursor: pointer; }
+.v2 .vsl-btns button:hover { background: rgba(255,255,255,.14); }
+.v2 .vsl-btns button:focus-visible { outline: 2px solid #67E8F9; outline-offset: 1px; }
+.v2 .vsl-btns svg { width: 22px; height: 22px; }
+/* La barre reste visible en permanence, même quand les boutons se cachent */
+.v2 .vsl-track { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: rgba(255,255,255,.28); }
+.v2 .vsl-ctrl .vsl-track { opacity: 1; }
+.v2 .vsl-track i { display: block; height: 100%; background: linear-gradient(90deg, #0EA5E9, #2F5BEA 55%, #4F46E5); transform: scaleX(0); transform-origin: left center; }
+.v2 .hero-vsl.is-sound .vsl-ctrl { opacity: 1; background: none; }
+.v2 .hero-vsl.is-sound .vsl-btns { opacity: 0; transition: opacity .3s; }
+.v2 .hero-vsl.is-sound:hover .vsl-btns, .v2 .hero-vsl.is-paused .vsl-btns, .v2 .hero-vsl:focus-within .vsl-btns { opacity: 1; }
+.v2 .hero-vsl.is-sound:hover .vsl-ctrl, .v2 .hero-vsl.is-paused .vsl-ctrl { background: linear-gradient(180deg, transparent, rgba(11,9,24,.5)); }
+@media (hover: none) { .v2 .hero-vsl.is-sound .vsl-btns { opacity: 1; } }
+.v2 .vsl-big { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 10px; padding: 16px 26px; border: 0; border-radius: 999px; background: #F4F6FF; color: #0B0918; font: 700 clamp(16px, 1.5vw, 20px)/1 var(--font); cursor: pointer; box-shadow: 0 14px 34px rgba(0,0,0,.35); }
+.v2 .vsl-big svg { width: 22px; height: 22px; }
+.v2 .hero-vsl.is-sound:hover .vsl-ctrl, .v2 .hero-vsl.is-paused .vsl-ctrl { background: linear-gradient(180deg, transparent, rgba(11,9,24,.62)); padding-top: 60px; }
+.v2 .vsl-btns svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,.45)); }
