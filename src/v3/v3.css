@@ -327,3 +327,10 @@
 @media (max-width: 640px) {
   .v2 .pil > .sec-head, .v2 .pil-grid > .pil-card { opacity: 1 !important; transform: none !important; }
 }
+
+/* Écran tactile : pas de voile sombre sur la vidéo pendant la lecture (le survol reste collé après le toucher et assombrissait 60 % de l'image), les boutons portent leur propre fond (Ugo, 01/11/2026) */
+@media (hover: none) {
+  .v2 .hero-vsl.is-sound:not(.is-paused) .vsl-ctrl { background: none; padding-top: 12px; }
+  .v2 .hero-vsl.is-sound .vsl-btns button { width: 36px; height: 36px; border-radius: 999px; background: rgba(11,9,24,.38); }
+  .v2 .hero-vsl.is-sound .vsl-btns svg { width: 20px; height: 20px; }
+}
