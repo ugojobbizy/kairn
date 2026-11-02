@@ -214,13 +214,14 @@ export default function KairnHomeV3({ police }) {
                   </p>
                 )}
               </Reveal>
-              <Reveal delay={0.5} y={16} className="hero-actions">
+              {/* Note Google donnée par Ugo le 29/10/2026 (« finalement j'ai 5 étoiles par 4,9 sur google »). */}
+              {police && <Reveal delay={0.5} y={12}><GoogleRating /></Reveal>}
+              <Reveal delay={0.55} y={24}><HeroVsl /></Reveal>
+              {/* Boutons sous la vidéo, note Google au-dessus (Ugo, 02/11/2026). */}
+              <Reveal delay={0.6} y={16} className="hero-actions">
                 <Link to="/commander" className="btn btn-order">{police ? 'Commander des contacts' : 'Commander des leads'}</Link>
                 <a href="#reserver" className="btn btn-light">Lancer ma campagne</a>
               </Reveal>
-              {/* Note Google donnée par Ugo le 29/10/2026 (« finalement j'ai 5 étoiles par 4,9 sur google »). */}
-              {police && <Reveal delay={0.55} y={12}><GoogleRating /></Reveal>}
-              <Reveal delay={0.6} y={24}><HeroVsl /></Reveal>
               {/* Bande de clients retirée de l'accueil (Ugo, 29/10/2026 : « enlève ça finalement ») ; gardée sur /accueil-v1. */}
               {!police && <Reveal delay={0.65} y={16}><ClientLogos /></Reveal>}
             </div>

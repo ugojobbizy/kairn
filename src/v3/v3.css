@@ -30,7 +30,7 @@
 .v2 .hero.is-light .hero-lead strong { color: var(--ink); }
 .v2 .hero.is-light .hero-actions { margin-top: 32px; }
 .v2 .hero.is-light .hero-actions .btn { min-height: 52px; font-weight: 600; }
-.v2 .hero.is-light .hero-vsl { margin-top: clamp(40px, 5vw, 64px); box-shadow: 0 40px 100px -40px rgba(47,91,234,.45); border-color: var(--line-2); }
+.v2 .hero.is-light .hero-vsl { margin-top: clamp(28px, 3.5vw, 40px); box-shadow: 0 40px 100px -40px rgba(47,91,234,.45); border-color: var(--line-2); }
 .v2 .hero.is-light .logo-band { background: #fff; border-color: var(--line); box-shadow: var(--shadow-card); }
 .v2 .hero.is-light .logo-band-label { color: var(--faint); }
 .v2 .hero.is-light .logo-band-logos li { color: var(--ink); opacity: .7; }
@@ -315,11 +315,12 @@
 .v2 .vsl-btns svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,.45)); }
 
 /* Haut de l'accueil sur téléphone (Ugo, 31/10/2026) : titre et chapô plus compacts et équilibrés,
-   boutons et note Google à leur place d'origine, au-dessus de la vidéo (Ugo, 31/10/2026). */
+   note Google au-dessus de la vidéo, boutons dessous (Ugo, 02/11/2026). */
 @media (max-width: 640px) {
   .v2.font-tight .hero.is-light h1 { font-size: clamp(31px, 8.6vw, 36px); line-height: 1.08; text-wrap: balance; }
   .v2.font-tight .hero.is-light .hero-lead { font-size: 15.5px; line-height: 1.55; text-wrap: balance; margin-top: 14px; }
-  .v2.font-tight .hero.is-light .hero-vsl { width: 100%; margin-top: 26px; }
+  .v2.font-tight .hero.is-light .hero-vsl { width: 100%; margin-top: 22px; }
+  .v2.font-tight .hero.is-light .hero-actions { margin-top: 22px; }
 }
 
 /* Section Kairn Leads (quatre raisons) sur téléphone : déjà affichée, sans apparition au défilement
