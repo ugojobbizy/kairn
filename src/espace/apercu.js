@@ -2,8 +2,9 @@
 // prénoms et noms génériques numérotés, téléphones en 06 00 00 xx xx.
 // Les trois derniers contacts livrés datent de quelques minutes : l'accueil « Aujourd'hui » montre leur fraîcheur.
 const CP = ['33000', '33600', '24100', '47000', '40100', '64000', '17000', '16000', '87000', '19100', '81000', '31000'];
-const STATUTS = ['Propriétaire', 'Propriétaire', 'Propriétaire', 'Locataire'];
-const LOGEMENTS = ['Maison', 'Maison', 'Appartement'];
+// Comme les contacts livrés : propriétaires en maison uniquement (Ugo, 03/11/2026 : « tout est filtré »).
+const STATUTS = ['Propriétaire'];
+const LOGEMENTS = ['Maison'];
 const CHAUFFAGES = ['Fioul', 'Gaz', 'Électrique', 'Bois'];
 const SURFACES = ['Moins de 70 m²', '70 à 110 m²', '110 à 150 m²', 'Plus de 150 m²'];
 const PRIX = { PAC: 28, ITE: 27, PPV: 35 };
@@ -15,7 +16,7 @@ function lead(i, them, daysAgo, extra = {}) {
     id: `apercu-${them}-${i}`, recu_le: d.toISOString(), thematique: them, prix_ht: PRIX[them],
     consentement_jusqu: new Date(d.getTime() + 7 * 86400000).toISOString().slice(0, 10),
     code_postal: cp, departement: cp.slice(0, 2), ville: 'Ville exemple',
-    statut_occupation: STATUTS[i % 4], type_logement: LOGEMENTS[i % 3], chauffage: CHAUFFAGES[i % 4], surface: SURFACES[i % 4],
+    statut_occupation: STATUTS[i % STATUTS.length], type_logement: LOGEMENTS[i % LOGEMENTS.length], chauffage: CHAUFFAGES[i % 4], surface: SURFACES[i % 4],
     prenom: 'Prospect', nom: `Exemple ${i + 1}`, telephone: `06 00 00 ${String(10 + (i % 90)).padStart(2, '0')} ${String(i % 100).padStart(2, '0')}`,
     email: `prospect${i + 1}@exemple.fr`, client_id: null, commande_id: null, livre_le: null, exporte_le: null, annule: false, ...extra,
   };
