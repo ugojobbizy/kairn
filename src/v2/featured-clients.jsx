@@ -40,6 +40,17 @@ const CASES = [
     mock: true,
     deliv: ['Site sur mesure : ITE, ravalement, bardage', 'Simulateur de prix et comparateur d’isolants', 'Référencement SEO local et blog', 'Trésorerie : 3 banques, justificatifs, sauvegarde chiffrée'],
   },
+  {
+    id: 'isolia',
+    label: 'Outil Kairn · Rendez-vous ITE',
+    name: 'Isolia',
+    h: 'La façade rénovée,',
+    i: 'montrée pendant le rendez-vous.',
+    lead: 'Isolia est un outil maison de Kairn pour les installateurs ITE. Pendant le rendez-vous, le commercial prend la façade en photo : l’IA génère le rendu après travaux, en crépi ou en bardage bois, compare jusqu’à trois teintes côte à côte, puis sort un PDF avant et après à laisser au propriétaire.',
+    kpis: [['3', 'finitions : crépi, crépi avec contours, bardage bois'], ['3', 'teintes comparées côte à côte'], ['1', 'PDF avant et après laissé au propriétaire']],
+    shots: [],
+    deliv: ['Rendu après travaux généré par IA', 'Comparaison de 1 à 3 teintes', 'Mode présentation plein écran', 'PDF avant et après à laisser au client'],
+  },
 ];
 
 // Réplique de l'outil de trésorerie Decoratherm, chiffres inventés (Ugo, 30/10/2026 : « je peux pas afficher ses chiffres,
