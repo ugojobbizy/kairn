@@ -36,7 +36,7 @@ const CASES = [
     i: 'une compta qui se tient toute seule.',
     lead: 'Decoratherm, artisan façade et ITE à La Rochelle, nous a confié son site. On l’a reconstruit et référencé : pages métiers, simulateur de prix au m², comparateur d’isolants, réalisations avant et après, blog et demande de devis. Puis on a construit son outil de trésorerie : les relevés de ses trois banques arrivent au même endroit, chaque opération est classée et reliée à son justificatif.',
     kpis: [['3', 'banques réunies dans un seul outil'], ['1 200+', 'opérations classées et rapprochées'], ['892', 'tests automatiques pour ne perdre aucune donnée']],
-    shots: [{ img: '/v2/decoratherm-site.jpg', w: 1335, h: 896, url: 'decoratherm.com', alt: 'Site Decoratherm : « Isolez, ravalez, sublimez votre façade », boutons devis et estimation au m².' }],
+    shots: [{ img: '/v2/decoratherm-site.jpg', w: 1925, h: 915, url: 'decoratherm.com', alt: 'Site Decoratherm : « Isolez, ravalez, sublimez votre façade », boutons devis et estimation au m².' }],
     mock: true,
     deliv: ['Site sur mesure : ITE, ravalement, bardage', 'Simulateur de prix et comparateur d’isolants', 'Référencement SEO local et blog', 'Trésorerie : 3 banques, justificatifs, sauvegarde chiffrée'],
   },
