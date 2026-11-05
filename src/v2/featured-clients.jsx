@@ -24,8 +24,8 @@ const CASES = [
     i: 'dans un seul outil de gestion.',
     lead: 'ED HABITAT fait de l’isolation et de la façade. On lui a construit de zéro un outil de gestion à sa charte, pour le bureau, les commerciaux et les régies de pose : chaque dossier suit ses étapes du devis jusqu’au solde, avec le planning de pose, le SAV, la facturation, l’équipe et le matériel au même endroit.',
     kpis: [['12', 'modules : chantiers, dossiers, planning, SAV, facturation…'], ['9', 'étapes suivies, du devis en brouillon au dossier soldé'], ['1', 'seul outil pour le bureau, les commerciaux et les poseurs']],
-    shots: [{ img: '/v2/ed-habitat-hub.jpg', w: 2000, h: 776, url: 'Outil de gestion · ED HABITAT', alt: 'Fiche dossier de l’outil ED HABITAT : étape suivante, informations du dossier, montage du dossier en 9 étapes (données de démonstration).' }],
-    note: 'Données de démonstration.',
+    shots: [{ img: '/v2/ed-habitat-hub.jpg', w: 1891, h: 868, url: 'Outil de gestion · ED HABITAT', alt: 'Vue d’ensemble de l’outil ED HABITAT : leads sur 30 jours, coût par lead, affaires signées, dépense du mois, leads par mois et dépense publicitaire (chiffres floutés).' }],
+    note: 'Chiffres floutés.',
     deliv: ['Dossiers suivis étape par étape, avec historique', 'Planning de pose et SAV', 'Facturation, équipe et matériel', 'Accès par rôle : admin, commerciaux, régies'],
   },
   {
