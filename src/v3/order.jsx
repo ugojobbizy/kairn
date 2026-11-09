@@ -5,6 +5,7 @@ import { Nav, Footer, useV2Favicon } from '../v2/layout.jsx';
 import { Reveal } from '../v2/blocks.jsx';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
 import { PRODUITS, prixHT } from './produits.js';
+import { THEMATIQUES_DEVIS } from './leads/codes.js';
 import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from './zone-picker.jsx';
 import '../v2/v2.css';
 import './v3.css';
@@ -13,7 +14,11 @@ import './v3.css';
 // Une seule demande : acheter des leads (Kairn Leads) ou être accompagné (Kairn Pilotage).
 
 const SOUHAITS = [['leads', 'Acheter des leads'], ['accompagnement', 'Être accompagné']];
-const THEMATIQUES = [...PRODUITS.map((p) => [p.code, `${p.nom} (${prixHT(p.prix)} le contact)`]), ['Autre', 'Autre métier']];
+const THEMATIQUES = [
+  ...PRODUITS.map((p) => [p.code, `${p.nom} (${prixHT(p.prix)} le contact)`]),
+  ...THEMATIQUES_DEVIS.map((t) => [t.code, `${t.nom} (sur devis)`]),
+  ['Autre', 'Autre métier'],
+];
 const VOLUMES = ['50', '100', '200', '+ de 200'];
 
 const STEPS = [
@@ -128,7 +133,7 @@ export default function OrderPage() {
   useV2Favicon();
   const [params] = useSearchParams();
   const t = params.get('thematique');
-  const initial = PRODUITS.some((p) => p.code === t) ? { thematique: t } : {};
+  const initial = THEMATIQUES.some(([code]) => code === t && code !== 'Autre') ? { thematique: t } : {};
   return (
     <MotionConfig reducedMotion="user">
       <div className="v2 v3">
@@ -145,7 +150,7 @@ export default function OrderPage() {
               <Reveal className="od-aside">
                 <h2>Vos premiers contacts peuvent <span className="serif grad-text">arriver vite.</span></h2>
                 <p>Dites-nous la thématique, la zone et le volume qu’il vous faut : nous lisons votre demande et vous rappelons. Pas d’accusé de réception automatique.</p>
-                <p>Votre métier n’est pas dans la liste ? Choisissez « Être accompagné » : c’est Kairn Pilotage, sur votre propre budget.</p>
+                <p>Les autres secteurs sont sur devis : le prix vous est donné avant toute commande. Vous préférez vos propres campagnes ? Choisissez « Être accompagné » : c’est Kairn Pilotage, sur votre propre budget.</p>
                 <ul className="od-prices">
                   {PRODUITS.map((p) => <li key={p.code}><b>{p.nom}</b><span>{prixHT(p.prix)} le contact</span></li>)}
                 </ul>

@@ -10,6 +10,7 @@ import { join } from 'node:path';
 import { PAGES, headTags, SITE_URL } from '../src/seo.js';
 import { POSTS } from '../src/blog/generated/index.js';
 import { BLOG_PATH, CATEGORIES, AUTHOR } from '../src/blog/meta.js';
+import { PRETES, prixDe, MINIMUM } from '../src/v3/leads/thematiques.js';
 
 const DIST = 'dist';
 const { render: ssr } = await import('../dist-ssr/entry-server.js');
@@ -28,7 +29,7 @@ if (!template.includes('<!--seo:start-->') || !template.includes('<!--seo:noscri
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 // Le blog n'apparaît pas dans ces liens : il n'est accessible que par Google et le sitemap (choix de l'utilisateur).
-const MAIN_LINKS = [['/', 'Accueil'], ['/realisations', 'Réalisations'], ['/generation-de-leads', 'Génération de leads'], ['/creation-site-internet', 'Création de site internet'], ['/creation-landing-page', 'Création de landing page'], ['/crm-sur-mesure', 'CRM sur mesure'], ['/agence-bordeaux', 'Agence à Bordeaux']];
+const MAIN_LINKS = [['/', 'Accueil'], ['/leads', 'Leads par secteur'], ['/realisations', 'Réalisations'], ['/generation-de-leads', 'Génération de leads'], ['/creation-site-internet', 'Création de site internet'], ['/creation-landing-page', 'Création de landing page'], ['/crm-sur-mesure', 'CRM sur mesure'], ['/agence-bordeaux', 'Agence à Bordeaux']];
 const nav = `<nav>${MAIN_LINKS.map(([href, label]) => `<a href="${href}">${esc(label)}</a>`).join(' · ')}</nav>`;
 const dateFr = (iso) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
@@ -95,9 +96,39 @@ const LOW = ['/mentions-legales', '/confidentialite', '/cgv'];
 const urls = Object.entries(PAGES)
   .filter(([, p]) => !p.robots)
   .map(([path, p]) => {
-    const lastmod = p.kind === 'article' ? p.post.dateModified : today;
+    const lastmod = p.kind === 'article' ? p.post.dateModified : p.dateModified || today;
     const priority = path === '/' ? '1.0' : LOW.includes(path) ? '0.2' : p.kind === 'article' ? '0.7' : p.kind === 'blog' ? '0.8' : '0.9';
     return `  <url>\n    <loc>${SITE_URL}${path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <priority>${priority}</priority>\n  </url>`;
   });
 writeFileSync(join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
 console.log(`Sitemap : ${urls.length} adresses`);
+
+// llms.txt (proposition llmstxt.org) : résumé de Kairn et de ses pages pour les moteurs de réponse (ChatGPT, Perplexity, Claude).
+// Généré à partir des mêmes données que les pages, pour ne jamais dire autre chose qu'elles.
+const leadLines = PRETES.map((t) => {
+  const prix = prixDe(t);
+  return `- [${t.label}](${SITE_URL}/${t.slug}) : ${t.resume.charAt(0).toLowerCase()}${t.resume.slice(1)} ${prix ? `${prix} € HT le contact.` : 'Prix sur devis.'}`;
+});
+const llms = `# Kairn Agency
+
+> Kairn (kairnagency.com, nom de marque Kairn Agency) est une agence française de génération de leads basée à Bordeaux, qui travaille partout en France. Kairn vend des leads exclusifs : des particuliers qui ont demandé eux-mêmes à être rappelés, après une publicité Meta (Facebook, Instagram) payée par Kairn. Chaque contact est envoyé à un seul professionnel, livré chaque jour dans un espace client. Sans abonnement ni engagement, première commande à partir de ${MINIMUM} contacts. Doublon ou hors zone : remplacé. Kairn pilote aussi les campagnes Meta de ses clients sur leur propre budget (Kairn Pilotage).
+
+## Leads par secteur
+
+- [Catalogue des leads](${SITE_URL}/leads) : toutes les thématiques et les règles communes.
+${leadLines.join('\n')}
+
+## Services
+
+- [Génération de leads](${SITE_URL}/generation-de-leads) : campagnes Meta, landing page et CRM pour votre entreprise.
+- [Plateforme et espace client](${SITE_URL}/plateforme) : réception, suivi et export des contacts.
+- [Réalisations](${SITE_URL}/realisations) : cas clients chiffrés.
+- [Commander](${SITE_URL}/commander) : demande de commande ou de devis.
+
+## Contact
+
+- E-mail : contact@kairnagency.com
+- Site : ${SITE_URL}/
+`;
+writeFileSync(join(DIST, 'llms.txt'), llms);
+console.log(`llms.txt : ${leadLines.length} pages de leads`);

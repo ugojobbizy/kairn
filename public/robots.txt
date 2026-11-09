@@ -5,4 +5,19 @@ Disallow: /espace
 Disallow: /gestion
 Disallow: /api/
 
+# Moteurs de réponse et IA : autorisés sur les pages publiques (SEO et GEO, 09/11/2026).
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin
+Disallow: /espace
+Disallow: /gestion
+Disallow: /api/
+
 Sitemap: https://www.kairnagency.com/sitemap.xml

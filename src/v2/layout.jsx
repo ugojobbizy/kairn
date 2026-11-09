@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Icon } from './blocks.jsx';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
+import { PRETES } from '../v3/leads/thematiques.js';
+import { PRODUITS, prixHT } from '../v3/produits.js';
 
 // Éléments communs aux pages de la V2 : logo, navigation, pied de page, bouton de réservation.
 
@@ -60,6 +62,12 @@ const SERVICES = [
   { to: '/creation-landing-page', icon: 'layout', t: 'Création de landing page', d: 'Une page par offre, pensée pour vos campagnes' },
   { to: '/crm-sur-mesure', icon: 'users', t: 'CRM sur mesure', d: 'Pipeline, attribution des leads, relances' },
 ];
+// Pages « Leads {thématique} » (09/11/2026) : menu « Leads », panneau mobile et pied de page.
+const GROUPE_ICO = { renovation: 'bolt', finance: 'chart', services: 'users' };
+const LEADS = PRETES.filter((t) => !t.parent).map((t) => {
+  const p = t.produit && PRODUITS.find((x) => x.code === t.produit);
+  return { to: `/${t.slug}`, icon: GROUPE_ICO[t.groupe], t: t.label, d: p ? `${prixHT(p.prix)} le contact` : 'Sur devis' };
+});
 const LINKS = [
   { to: '/realisations', t: 'Réalisations' },
   { to: '/#methode', t: 'Méthode' },
@@ -80,8 +88,8 @@ function Chevron() {
   return <svg className="nav-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>;
 }
 
-// Menu déroulant « Services » : s'ouvre au survol et au clic, se ferme avec Échap ou un clic ailleurs.
-function ServicesMenu() {
+// Menu déroulant (« Services », « Leads ») : s'ouvre au survol et au clic, se ferme avec Échap ou un clic ailleurs.
+function ServicesMenu({ label = 'Services', id = 'nav-services', items = SERVICES, foot }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const timer = useRef(null);
@@ -97,15 +105,15 @@ function ServicesMenu() {
   }, [open]);
   const enter = () => { clearTimeout(timer.current); setOpen(true); };
   const leave = () => { clearTimeout(timer.current); timer.current = setTimeout(() => setOpen(false), 160); };
-  const active = SERVICES.some((x) => x.to === pathname) || pathname === '/agence-bordeaux';
+  const active = items.some((x) => x.to === pathname) || (id === 'nav-services' ? pathname === '/agence-bordeaux' : pathname === '/leads');
   return (
     <div className={`nav-drop${open ? ' is-open' : ''}`} ref={ref} onPointerEnter={(e) => e.pointerType === 'mouse' && enter()} onPointerLeave={(e) => e.pointerType === 'mouse' && leave()}>
-      <button type="button" className={`nav-drop-btn${active ? ' is-active' : ''}`} aria-expanded={open} aria-controls="nav-services" onClick={() => setOpen((o) => !o)}>
-        Services <Chevron />
+      <button type="button" className={`nav-drop-btn${active ? ' is-active' : ''}`} aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)}>
+        {label} <Chevron />
       </button>
-      <div className="nav-panel" id="nav-services" hidden={!open}>
+      <div className="nav-panel" id={id} hidden={!open}>
         <ul className="nav-panel-grid">
-          {SERVICES.map((x) => (
+          {items.map((x) => (
             <li key={x.to}>
               <Link to={x.to} className={`nav-item${pathname === x.to ? ' is-current' : ''}`} onClick={() => setOpen(false)}>
                 <span className="nav-item-ico"><Icon name={x.icon} size={18} /></span>
@@ -114,10 +122,17 @@ function ServicesMenu() {
             </li>
           ))}
         </ul>
-        <Link to="/agence-bordeaux" className="nav-panel-foot" onClick={() => setOpen(false)}>
-          <span>Basés à Bordeaux, <b>projets partout en France</b></span>
-          <span className="nav-panel-more">Agence à Bordeaux <Icon name="arrow" size={14} stroke={2} /></span>
-        </Link>
+        {foot ? (
+          <Link to={foot.to} className="nav-panel-foot" onClick={() => setOpen(false)}>
+            <span>{foot.text}</span>
+            <span className="nav-panel-more">{foot.more} <Icon name="arrow" size={14} stroke={2} /></span>
+          </Link>
+        ) : (
+          <Link to="/agence-bordeaux" className="nav-panel-foot" onClick={() => setOpen(false)}>
+            <span>Basés à Bordeaux, <b>projets partout en France</b></span>
+            <span className="nav-panel-more">Agence à Bordeaux <Icon name="arrow" size={14} stroke={2} /></span>
+          </Link>
+        )}
       </div>
     </div>
   );
@@ -137,6 +152,11 @@ function MobileMenu({ open, onClose, shop }) {
   if (!open) return null;
   return (
     <div className="mnav" id="mnav" role="dialog" aria-modal="true" aria-label="Menu">
+      <p className="mnav-label">Leads</p>
+      <ul className="mnav-leads">
+        {LEADS.map((x) => <li key={x.to}><Link to={x.to} className={pathname === x.to ? 'is-current' : undefined} onClick={onClose}>{x.t}</Link></li>)}
+        <li><Link to="/leads" onClick={onClose}>Toutes les thématiques</Link></li>
+      </ul>
       <p className="mnav-label">Services</p>
       <ul className="mnav-services">
         {SERVICES.map((x) => (
@@ -185,6 +205,7 @@ export function Nav({ light = false, shop = false }) {
         <div className="nav-bar">
           <Link to="/" className="brand" aria-label="Kairn, accueil"><KairnLogo /><span className="brand-word">Kairn</span></Link>
           <nav className="nav-links" aria-label="Navigation principale">
+            <ServicesMenu label="Leads" id="nav-leads" items={LEADS} foot={{ to: '/leads', text: <>Exclusifs, <b>sans engagement</b></>, more: 'Toutes les thématiques' }} />
             <ServicesMenu />
             {links.map((x) => <Link key={x.to} to={x.to} className={pathname === x.to ? 'is-active' : undefined}>{x.t}</Link>)}
             {WHATSAPP_NUMBER && (
@@ -232,6 +253,13 @@ export function Footer() {
               <li><Link to="/#methode">Méthode</Link></li>
               <li><Link to="/realisations">Réalisations</Link></li>
               <li><Link to="/agence-bordeaux">Agence à Bordeaux</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Leads</h3>
+            <ul>
+              {LEADS.map((x) => <li key={x.to}><Link to={x.to}>{x.t}</Link></li>)}
+              <li><Link to="/leads">Toutes les thématiques</Link></li>
             </ul>
           </div>
           <div>

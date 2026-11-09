@@ -6,6 +6,8 @@
 import { FAQ_V2, FAQ_LEADS, FAQ_WEB, FAQ_LP, FAQ_CRM, FAQ_BDX } from './v2/faq-data.js';
 import { POSTS } from './blog/generated/index.js';
 import { BLOG_PATH, CATEGORIES, AUTHOR } from './blog/meta.js';
+import { PRETES, parSlug, prixDe } from './v3/leads/thematiques.js';
+import { FAQ_HUB } from './v3/leads/hub-data.js';
 
 export const SITE_URL = 'https://www.kairnagency.com';
 export const SITE_NAME = 'Kairn';
@@ -64,6 +66,32 @@ export const PAGES = {
   '/mentions-legales': { title: 'Mentions légales · Kairn', description: 'Mentions légales du site kairnagency.com, édité par Kairn.' },
   '/confidentialite': { title: 'Politique de confidentialité · Kairn', description: 'Comment Kairn collecte, utilise et protège vos données personnelles sur kairnagency.com.' },
   '/cgv': { title: 'Conditions générales de vente · Kairn', description: 'Conditions générales de vente des prestations de Kairn : création web, campagnes publicitaires et CRM sur mesure.' },
+
+  // Pages « Leads {thématique} » (09/11/2026) : catalogue, puis une page par entrée prête de thematiques.js.
+  '/leads': {
+    title: 'Achat de leads exclusifs par secteur · Kairn',
+    description: 'Leads exclusifs pour installateurs, courtiers et pros : des particuliers qui ont demandé à être rappelés, envoyés à un seul acheteur. Sans engagement.',
+    crumb: 'Leads',
+    faq: FAQ_HUB,
+    service: { name: 'Vente de leads exclusifs', serviceType: 'Génération de leads' },
+  },
+  ...Object.fromEntries(PRETES.map((t) => {
+    const parent = t.parent ? parSlug(t.parent) : null;
+    const prix = prixDe(t);
+    return [`/${t.slug}`, {
+      title: t.title,
+      description: t.description,
+      crumb: t.court,
+      crumbs: [['Leads', '/leads'], ...(parent ? [[parent.court, `/${parent.slug}`]] : [])],
+      faq: t.faq,
+      service: {
+        name: t.label,
+        serviceType: 'Génération de leads',
+        ...(prix ? { offers: { '@type': 'Offer', price: String(prix), priceCurrency: 'EUR', priceSpecification: { '@type': 'UnitPriceSpecification', price: String(prix), priceCurrency: 'EUR', valueAddedTaxIncluded: false, unitText: 'contact' } } } : {}),
+      },
+      dateModified: t.maj,
+    }];
+  })),
 
   // Blog : la page d'accueil du blog, puis un article par fichier de content/blog (voir scripts/build-blog.mjs).
   [BLOG_PATH]: {
@@ -131,7 +159,7 @@ const ORGANIZATION = {
   address: { '@type': 'PostalAddress', addressLocality: 'Bordeaux', addressRegion: 'Nouvelle-Aquitaine', addressCountry: 'FR' },
   areaServed: { '@type': 'Country', name: 'France' },
   description: PAGES['/'].description,
-  knowsAbout: ['Création de landing pages', 'Génération de leads', 'Meta Ads', 'Google Ads', 'CRM sur mesure', 'Tracking serveur'],
+  knowsAbout: ['Génération de leads', 'Leads exclusifs', 'Leads pompe à chaleur', 'Leads isolation thermique par l’extérieur', 'Leads photovoltaïque', 'Meta Ads', 'Création de landing pages', 'CRM sur mesure', 'Tracking serveur'],
   hasMap: GOOGLE_PROFILE,
   sameAs: [GOOGLE_PROFILE],
 };
@@ -176,6 +204,7 @@ export function structuredData(path) {
         inLanguage: 'fr-FR',
         isPartOf: { '@id': `${SITE_URL}/#website` },
         publisher: { '@id': `${SITE_URL}/#organization` },
+        ...(page.dateModified ? { dateModified: page.dateModified } : {}),
       },
       ...(page.service ? [{
         '@type': 'Service',
@@ -186,6 +215,7 @@ export function structuredData(path) {
         url: `${SITE_URL}${path}`,
         provider: { '@id': `${SITE_URL}/#organization` },
         areaServed: page.service.areaServed || { '@type': 'Country', name: 'France' },
+        ...(page.service.offers ? { offers: page.service.offers } : {}),
       }] : []),
       ...(page.faq ? [{
         '@type': 'FAQPage',
@@ -194,9 +224,10 @@ export function structuredData(path) {
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Accueil', item: `${SITE_URL}/` },
-          { '@type': 'ListItem', position: 2, name: page.crumb || page.title.split(' · ')[0], item: `${SITE_URL}${path}` },
-        ],
+          ['Accueil', '/'],
+          ...(page.crumbs || []),
+          [page.crumb || page.title.split(' · ')[0], path],
+        ].map(([name, p], i) => ({ '@type': 'ListItem', position: i + 1, name, item: `${SITE_URL}${p}` })),
       },
     ],
   };

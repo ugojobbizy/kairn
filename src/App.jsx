@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import './styles.js';
 import KairnHomeV3 from './v3/home.jsx';
 import SeoManager from './seo-manager.jsx';
+import { PRETES } from './v3/leads/thematiques.js';
 
 // Une page chargée à la demande dont le fichier a disparu (onglet ouvert avant une mise en ligne : les noms de fichiers
 // changent à chaque version) recharge le site une fois, au lieu de rester blanche (Ugo, 30/10/2026 : « parfois je clique
@@ -31,6 +32,8 @@ const PRECHARGE = [
   ['/crm-sur-mesure', () => import('./v2/crm-page.jsx')],
   ['/agence-bordeaux', () => import('./v2/bordeaux-page.jsx')],
   ['/blog', () => import('./v2/blog-index.jsx')],
+  ['/leads', () => import('./v3/leads/leads-index.jsx')],
+  ...PRETES.map((t) => [`/${t.slug}`, () => import('./v3/leads/lead-page.jsx')]),
 ];
 function usePrechargement() {
   useEffect(() => {
@@ -74,6 +77,8 @@ const LandingCreationPage = lazyPage(() => import('./v2/landing-creation.jsx'));
 const CrmPage = lazyPage(() => import('./v2/crm-page.jsx'));
 const BordeauxPage = lazyPage(() => import('./v2/bordeaux-page.jsx'));
 const BlogIndex = lazyPage(() => import('./v2/blog-index.jsx'));
+const LeadsIndex = lazyPage(() => import('./v3/leads/leads-index.jsx'));
+const LeadPage = lazyPage(() => import('./v3/leads/lead-page.jsx'));
 const PresentationPac = lazyPage(() => import('./v2/presentation-pac.jsx'));
 const Onboarding = lazyPage(() => import('./onboarding/onboarding.jsx'));
 const OnboardingAdmin = lazyPage(() => import('./onboarding/admin.jsx'));
@@ -137,6 +142,9 @@ export function Shell() {
         <Route path="/crm-sur-mesure" element={<CrmPage />} />
         <Route path="/agence-bordeaux" element={<BordeauxPage />} />
         <Route path="/blog" element={<BlogIndex />} />
+        {/* Pages « Leads {thématique} » (SEO et GEO, 09/11/2026) : une par entrée prête de thematiques.js. */}
+        <Route path="/leads" element={<LeadsIndex />} />
+        {PRETES.map((t) => <Route key={t.slug} path={`/${t.slug}`} element={<LeadPage slug={t.slug} />} />)}
         <Route path="/presentation-pac" element={<PresentationPac />} />
         <Route path="/onboarding/admin" element={<OnboardingAdmin />} />
         <Route path="/onboarding/:token" element={<Onboarding />} />

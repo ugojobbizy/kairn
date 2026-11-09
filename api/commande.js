@@ -4,12 +4,13 @@
 import nodemailer from 'nodemailer';
 import { send, readJson } from './_calendar.js';
 import { telegram } from './_telegram.js';
+import { THEMATIQUES_DEVIS } from '../src/v3/leads/codes.js';
 
 const SUPABASE_URL = 'https://bmqvlwdbwfnafuovzzhi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV';
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const SOUHAITS = { leads: 'Acheter des leads', accompagnement: 'Être accompagné' };
-const THEMATIQUES = ['PAC', 'ITE', 'PPV', 'Autre'];
+const THEMATIQUES = ['PAC', 'ITE', 'PPV', ...THEMATIQUES_DEVIS.map((t) => t.code), 'Autre'];
 const VOLUMES = ['50', '100', '200', '+ de 200'];
 
 const clean = (v, max) => {
