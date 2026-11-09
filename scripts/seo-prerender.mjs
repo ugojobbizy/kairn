@@ -60,15 +60,6 @@ async function blogBody(path) {
   return `${PRE_STYLE}<article class="pre">${nav}<p><a href="${BLOG_PATH}">Blog</a></p><h1>${esc(post.title)}</h1><p>${post.minutes} min de lecture</p>${body.html}${faq}</article>`;
 }
 
-// Accueil : son code est chargé à la demande ; on le précharge dès le HTML de la page d'accueil.
-const manifest = JSON.parse(readFileSync(join(DIST, '.vite', 'manifest.json'), 'utf8'));
-const homeEntry = manifest['src/v3/home.jsx'];
-const preloadsHome = homeEntry ? [
-  `<link rel="modulepreload" crossorigin href="/${homeEntry.file}" />`,
-  ...(homeEntry.imports || []).map((k) => manifest[k]?.file).filter(Boolean).map((f) => `<link rel="modulepreload" crossorigin href="/${f}" />`),
-  ...(homeEntry.css || []).map((f) => `<link rel="stylesheet" crossorigin href="/${f}" />`),
-].join('') : '';
-
 async function render(path) {
   const page = PAGES[path];
   const noscript = `<noscript>
@@ -82,7 +73,6 @@ async function render(path) {
     .replace(/<!--seo:start-->[\s\S]*?<!--seo:end-->/, headTags(path))
     .replace('<!--seo:noscript-->', page.kind || full ? '' : noscript);
   if (page.kind) html = html.replace('<div id="root"></div>', `<div id="root">${await blogBody(path)}</div>`);
-  if (path === '/' && preloadsHome) html = html.replace('</head>', `${preloadsHome}</head>`);
   if (full) {
     // Le visiteur avec JavaScript ne voit pas ce HTML (sinon il apparaîtrait, disparaîtrait puis rejouerait
     // ses animations quand React prend le relais). Filet : si l'application n'a pas démarré après 4 s, on l'affiche.

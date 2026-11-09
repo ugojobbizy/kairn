@@ -1,6 +1,9 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './styles.js';
+// Accueil gardé dans le fichier principal : chargé à la demande, il s'affichait plus tard (mesuré le 09/11/2026 :
+// LCP mobile 2,3 s → 3,0 s), et c'est la page la plus visitée.
+import KairnHomeV3 from './v3/home.jsx';
 import SeoManager from './seo-manager.jsx';
 import { PRETES } from './v3/leads/thematiques.js';
 
@@ -60,9 +63,6 @@ function Chargement() {
 }
 
 // Pages chargées à la demande : la page d'accueil n'embarque pas le code des autres pages.
-// Accueil chargé à la demande (allègement du 09/11/2026) : les autres pages n'embarquent plus son code ;
-// sur l'accueil, le pré-rendu ajoute un préchargement de ce fichier (scripts/seo-prerender.mjs).
-const KairnHomeV3 = lazyPage(() => import('./v3/home.jsx'));
 const KairnHome = lazyPage(() => import('./home.jsx'));
 const KairnHomeV2 = lazyPage(() => import('./v2/home-v2.jsx'));
 const OrderPage = lazyPage(() => import('./v3/order.jsx'));
