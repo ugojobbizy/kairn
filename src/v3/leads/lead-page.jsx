@@ -6,11 +6,10 @@ import Booking from '../../v2/booking.jsx';
 import { AuditHeader } from '../../v2/trust.jsx';
 import { Reveal, FaqList } from '../../v2/blocks.jsx';
 import { CONTACT_EMAIL } from '../../config.js';
-import { AUTHOR } from '../../blog/meta.js';
 import { GARANTIES, prixHT } from '../produits.js';
-import { prixDe, commandeHref, parSlug, dateMaj, MINIMUM } from './thematiques.js';
+import { prixDe, commandeHref, parSlug, MINIMUM } from './thematiques.js';
 import {
-  Check, Ico, usePlay, VisToasts, VisFlux, VisSeul, VisZone, VisEngagement, VisRemplace, VisRappel, VisAd, VisForm, VisPipe,
+  Check, Ico, usePlay, VisToasts, VisSeul, VisAd, VisForm, VisPipe,
 } from './lead-visuals.jsx';
 import '../../v2/v2.css';
 import '../v3.css';
@@ -125,54 +124,42 @@ export default function LeadPage({ slug }) {
             </div>
           </section>
 
-          {/* ── En bref : 8 faits, chacun avec son visuel (balisage dl, lu tel quel par les moteurs) ── */}
+          {/* ── En bref : les faits clés (balisage dl, lu tel quel par les moteurs) ── */}
           <section className="band ld-band" id="en-bref">
             <div className="wrap">
               <Reveal className="sec-head sec-head-left">
                 <p className="eyebrow">En bref</p>
                 <h2 className="h2">L’essentiel, <span className="serif grad-text">avant de commander.</span></h2>
               </Reveal>
-              <dl ref={brefRef} className={`bb${brefPlay ? ' is-play' : ''}`}>
-                <Reveal className="bb-card bb-buy">
-                  <div className="bb-vis"><VisToasts play={brefPlay} items={toasts.slice(3).concat(toasts.slice(0, 3))} /></div>
-                  <div className="bb-txt"><dt>Ce que vous achetez</dt><dd>{t.definition}</dd></div>
-                </Reveal>
-                <Reveal delay={0.05} className="bb-card bb-price">
-                  <dt>Prix</dt>
-                  <dd>
-                    <span className="bb-price-v">{prix ? prixHT(prix) : 'Sur devis'}</span>
-                    <span className="bb-price-l">{prix ? 'le contact, payé sur bon de commande, par virement.' : 'Le prix dépend de la zone, du volume et des critères. Il vous est donné avant toute commande.'}</span>
-                  </dd>
-                  <Link to={href} className="btn btn-order bb-price-btn">{prix ? 'Commander' : 'Demander un prix'}</Link>
-                </Reveal>
-                <Reveal delay={0.05} className="bb-card bb-third">
-                  <div className="bb-vis"><VisSeul /></div>
-                  <div className="bb-txt"><dt>Exclusivité</dt><dd>Chaque contact est envoyé à un seul professionnel, jamais revendu.</dd></div>
-                </Reveal>
-                <Reveal delay={0.1} className="bb-card bb-third">
-                  <div className="bb-vis"><VisFlux /></div>
-                  <div className="bb-txt"><dt>Livraison</dt><dd>Au fil des demandes, chaque jour, dans votre espace client (export Excel ou CSV, alerte e-mail ou mobile).</dd></div>
-                </Reveal>
-                <Reveal delay={0.15} className="bb-card bb-third">
-                  <div className="bb-vis"><VisZone climat={t.groupe === 'renovation'} /></div>
-                  <div className="bb-txt"><dt>Zone</dt><dd>Partout en France métropolitaine : départements, régions{t.groupe === 'renovation' ? ' ou zones climatiques' : ''}, choisis à la commande.</dd></div>
-                </Reveal>
-                <Reveal className="bb-card bb-third">
-                  <div className="bb-vis"><VisEngagement minimum={MINIMUM} /></div>
-                  <div className="bb-txt"><dt>Engagement</dt><dd>Aucun. Première commande à partir de {MINIMUM} contacts, vous arrêtez quand vous voulez.</dd></div>
-                </Reveal>
-                <Reveal delay={0.05} className="bb-card bb-third">
-                  <div className="bb-vis"><VisRemplace /></div>
-                  <div className="bb-txt"><dt>Remplacement</dt><dd>Doublon ou hors zone : signalé depuis votre espace, remplacé après vérification.</dd></div>
-                </Reveal>
-                {t.bref && (
-                  <Reveal delay={0.1} className="bb-card bb-third">
-                    <div className="bb-vis"><VisRappel /></div>
-                    <div className="bb-txt"><dt>{t.bref[0]}</dt><dd>{t.bref[1]}</dd></div>
-                  </Reveal>
-                )}
-              </dl>
-              <p className="ld-maj"><span className="ld-maj-av">{AUTHOR.name.split(' ').map((w) => w[0]).join('')}</span>Mis à jour le <time dateTime={t.maj}>{dateMaj(t.maj)}</time> par {AUTHOR.name}, fondateur de Kairn.</p>
+              {/* Un seul bloc (Ugo, 09/11/2026 : « il y a trop de blocs ») : le prix en panneau nuit, les autres faits en liste. */}
+              <Reveal>
+                <div ref={brefRef} className={`bk${brefPlay ? ' is-play' : ''}`}>
+                  <div className="bk-side">
+                    <p className="bk-label">Prix</p>
+                    <p className="bk-price">{prix ? prixHT(prix) : 'Sur devis'}</p>
+                    <p className="bk-price-l">{prix ? 'le contact, payé sur bon de commande, par virement.' : 'Le prix dépend de la zone, du volume et des critères. Il vous est donné avant toute commande.'}</p>
+                    <div className="bk-toasts"><VisToasts play={brefPlay} items={toasts.slice(3).concat(toasts.slice(0, 3))} /></div>
+                    <Link to={href} className="btn btn-order bk-btn">{prix ? `Commander des leads ${t.motCommande}` : 'Demander un prix'}</Link>
+                  </div>
+                  <dl className="bk-list">
+                    {[
+                      ['home', 'Ce que vous achetez', t.definition],
+                      ['user', 'Exclusivité', 'Chaque contact est envoyé à un seul professionnel, jamais revendu.'],
+                      ['chart', 'Livraison', 'Au fil des demandes, chaque jour, dans votre espace client (export Excel ou CSV, alerte e-mail ou mobile).'],
+                      ['pin', 'Zone', `Partout en France métropolitaine : départements, régions${t.groupe === 'renovation' ? ' ou zones climatiques' : ''}, choisis à la commande.`],
+                      ['badge', 'Engagement', `Aucun. Première commande à partir de ${MINIMUM} contacts, vous arrêtez quand vous voulez.`],
+                      ['shield', 'Remplacement', 'Doublon ou hors zone : signalé depuis votre espace, remplacé après vérification.'],
+                      ...(t.bref ? [['phone', t.bref[0], t.bref[1]]] : []),
+                    ].map(([ico, k, v], i) => (
+                      <div key={k} className={i === 0 ? 'is-wide' : undefined}>
+                        <span className="bk-ico"><Ico name={ico} size={18} /></span>
+                        <dt>{k}</dt>
+                        <dd>{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </Reveal>
             </div>
           </section>
 
