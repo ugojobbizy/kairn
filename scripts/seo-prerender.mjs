@@ -52,7 +52,7 @@ async function blogBody(path) {
   const { post } = PAGES[path];
   const { default: body } = await import(`../src/blog/generated/posts/${post.slug}.js`);
   const faq = post.faq.length ? `<h2>Questions fréquentes</h2>${post.faq.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('')}` : '';
-  return `${PRE_STYLE}<article class="pre">${nav}<p><a href="${BLOG_PATH}">Blog</a></p><h1>${esc(post.title)}</h1><p>Par ${esc(AUTHOR.name)} · ${dateFr(post.datePublished)} · ${post.minutes} min de lecture</p>${body.html}${faq}</article>`;
+  return `${PRE_STYLE}<article class="pre">${nav}<p><a href="${BLOG_PATH}">Blog</a></p><h1>${esc(post.title)}</h1><p>${post.minutes} min de lecture</p>${body.html}${faq}</article>`;
 }
 
 async function render(path) {
@@ -128,6 +128,10 @@ ${leadLines.join('\n')}
 - [Plateforme et espace client](${SITE_URL}/plateforme) : réception, suivi et export des contacts.
 - [Réalisations](${SITE_URL}/realisations) : cas clients chiffrés.
 - [Commander](${SITE_URL}/commander) : demande de commande ou de devis.
+
+## Guides
+
+${POSTS.map((p) => `- [${p.title}](${SITE_URL}${p.path}) : ${p.description}`).join('\n')}
 
 ## Contact
 

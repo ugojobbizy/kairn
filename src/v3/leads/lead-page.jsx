@@ -9,6 +9,7 @@ import { CONTACT_EMAIL } from '../../config.js';
 import { GARANTIES, prixHT } from '../produits.js';
 import { prixDe, commandeHref, parSlug, MINIMUM } from './thematiques.js';
 import { CONTENUS } from './contenus.js';
+import { POSTS } from '../../blog/generated/index.js';
 import {
   Check, Ico, usePlay, VisToasts, VisSeul, VisCampagne, VisForm, VisPipe,
 } from './lead-visuals.jsx';
@@ -68,6 +69,15 @@ const COMPARE = (prix) => [
 const COLS = [['Lead partagé', 'Plateformes, annuaires', 'is-a'], ['Lead exclusif', 'Kairn Leads', 'is-b'], ['Campagne en propre', 'Kairn Pilotage', 'is-c']];
 
 const LEGAL_ICO = ['phone', 'message', 'user', 'badge', 'scale', 'shield'];
+
+// Articles du blog liés à chaque page (maillage interne, 09/11/2026) : ceux dont l'appel renvoie vers la page,
+// plus, pour la rénovation, les articles du métier.
+const LECTURES_RENOV = ['prix-lead-pompe-a-chaleur-isolation-photovoltaique-2026', 'lead-exclusif-ou-mutualise', 'rappeler-un-lead-renovation', 'demarchage-telephonique-renovation-energetique-2026', 'trouver-des-clients-renovation-sans-demarchage'];
+function lectures(t) {
+  const voulus = t.groupe === 'renovation' ? LECTURES_RENOV : [];
+  const liste = POSTS.filter((p) => p.servicePage === `/${t.slug}` || (t.parent && p.servicePage === `/${t.parent}`) || voulus.includes(p.slug));
+  return liste.slice(0, 4);
+}
 
 export default function LeadPage({ slug }) {
   useV2Favicon();
@@ -384,6 +394,18 @@ export default function LeadPage({ slug }) {
               <FaqList items={t.faq} />
             </div>
           </section>
+
+          {/* ── Articles du blog liés ── */}
+          {lectures(t).length > 0 && (
+            <section className="band ld-band" id="a-lire">
+              <div className="wrap">
+                <h2 className="ld-h3">À lire sur le sujet</h2>
+                <div className="ld-links">
+                  {lectures(t).map((p) => <Link key={p.slug} to={p.path} className="ld-link"><b>{p.title}</b><span>{p.minutes} min de lecture</span><i>→</i></Link>)}
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* ── Pages proches : maillage interne ── */}
           {proches.length > 0 && (

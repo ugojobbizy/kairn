@@ -108,9 +108,8 @@ export default function ArticlePage() {
               </nav>
               <h1>{post.title}</h1>
               <p className="post-lead">{post.description}</p>
+              {/* Ni nom ni « mis à jour le » visibles (Ugo, 09/11/2026 : « n'écris plus jamais ça ») ; auteur et dates restent dans les données structurées. */}
               <p className="post-meta">
-                <span>{AUTHOR.name}</span>
-                <span>Mis à jour le <time dateTime={post.dateModified}>{dateFr(post.dateModified)}</time></span>
                 <span>{post.minutes} min de lecture</span>
               </p>
             </div>
@@ -138,18 +137,7 @@ export default function ArticlePage() {
                 </div>
               </aside>
 
-              <aside className="post-author">
-                <span className="post-author-avatar" aria-hidden="true">
-                  {AUTHOR.photo ? <img src={AUTHOR.photo} alt="" width="56" height="56" /> : AUTHOR.name.split(' ').map((w) => w[0]).join('')}
-                </span>
-                <div>
-                  <p className="post-author-name">
-                    {AUTHOR.linkedin ? <a href={AUTHOR.linkedin} target="_blank" rel="noopener noreferrer">{AUTHOR.name}</a> : AUTHOR.name}
-                    <small>{AUTHOR.role}</small>
-                  </p>
-                  <p>{AUTHOR.bio}</p>
-                </div>
-              </aside>
+{/* Encadré auteur retiré (Ugo, 09/11/2026 : jamais son nom visible sur le site). */}
             </article>
           </div>
 

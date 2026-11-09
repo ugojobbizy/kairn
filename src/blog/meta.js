@@ -1,5 +1,7 @@
 // Données fixes du blog, partagées par l'application, src/seo.js et les scripts de compilation.
 
+import { PRETES } from '../v3/leads/thematiques.js';
+
 export const BLOG_PATH = '/blog';
 
 // Ordre d'affichage sur la page /blog.
@@ -17,6 +19,9 @@ export const SERVICE_PAGES = {
   '/creation-landing-page': 'Création de landing page',
   '/crm-sur-mesure': 'CRM sur mesure',
   '/agence-bordeaux': 'Agence à Bordeaux',
+  // Pages Leads (09/11/2026) : un article peut renvoyer vers le catalogue ou une thématique.
+  '/leads': 'Leads exclusifs par secteur',
+  ...Object.fromEntries(PRETES.map((t) => [`/${t.slug}`, t.label])),
 };
 
 // Auteur des articles (encadré en fin d'article et données structurées).
