@@ -18,6 +18,7 @@ import LeadSample from './lead-sample.jsx';
 import PlatformTabs from './platform-tabs.jsx';
 import MethodV2 from './method-v2.jsx';
 import Piliers from './piliers.jsx';
+import CalcMini from './calc-mini.jsx';
 import '../v2/v2.css';
 import './v3.css';
 import './police.css';
@@ -260,6 +261,11 @@ export default function KairnHomeV3({ police }) {
               {!police && <OfferCards />}
             </div>
           </section>
+
+          {/* ── Calculateur court (Ugo, 09/11/2026) : juste après les offres, là où l'acheteur compare les prix ── */}
+          {police && <section className="band" id="calculateur" style={{ paddingTop: 'var(--band-sm)' }}>
+            <div className="wrap"><CalcMini /></div>
+          </section>}
 
           {/* ── Notre plateforme (V2 seulement, avant la fiche lead : Ugo, 29/10/2026) ── */}
           {police && <section className="band has-halos" id="plateforme">

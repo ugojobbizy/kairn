@@ -83,6 +83,7 @@ const BlogIndex = lazyPage(() => import('./v2/blog-index.jsx'));
 const LeadsIndex = lazyPage(() => import('./v3/leads/leads-index.jsx'));
 const LeadPage = lazyPage(() => import('./v3/leads/lead-page.jsx'));
 const CalculateurPage = lazyPage(() => import('./v3/leads/calculateur.jsx'));
+const EmbedCalculateur = lazyPage(() => import('./v3/leads/calculateur.jsx').then((m) => ({ default: m.EmbedCalculateur })));
 const PresentationPac = lazyPage(() => import('./v2/presentation-pac.jsx'));
 const Onboarding = lazyPage(() => import('./onboarding/onboarding.jsx'));
 const OnboardingAdmin = lazyPage(() => import('./onboarding/admin.jsx'));
@@ -149,6 +150,7 @@ export function Shell() {
         {/* Pages « Leads {thématique} » (SEO et GEO, 09/11/2026) : une par entrée prête de thematiques.js. */}
         <Route path="/leads" element={<LeadsIndex />} />
         <Route path="/calculateur-cout-par-chantier" element={<CalculateurPage />} />
+        <Route path="/embed/calculateur" element={<EmbedCalculateur />} />
         {PRETES.map((t) => <Route key={t.slug} path={`/${t.slug}`} element={<LeadPage slug={t.slug} />} />)}
         <Route path="/presentation-pac" element={<PresentationPac />} />
         <Route path="/onboarding/admin" element={<OnboardingAdmin />} />

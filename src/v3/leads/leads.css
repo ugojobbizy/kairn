@@ -404,3 +404,17 @@
   .v2 .calc-results.is-two { grid-template-columns: 1fr; }
   .v2 .calc-row { grid-template-columns: minmax(0, 1fr) 120px; }
 }
+
+/* ─ intégration du calculateur sur d'autres sites (09/11/2026) ─ */
+html.is-embed, html.is-embed body { background: transparent; }
+.v2.calc-embed { padding: 4px; background: transparent; }
+.v2.calc-embed .calc-results { position: static; }
+.v2 .calc-credit { margin-top: 12px; font-size: 13px; color: var(--muted); }
+.v2 .calc-credit a { color: var(--violet); text-decoration: underline; text-underline-offset: 3px; }
+.v2 .calc-int { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 4vw, 64px); align-items: center; }
+.v2 .calc-int .h2 { margin-top: 14px; }
+.v2 .calc-int p:not(.eyebrow) { margin-top: 16px; color: var(--muted); font-size: clamp(16px, 1.4vw, 18px); line-height: 1.6; }
+.v2 .calc-code { display: grid; gap: 14px; padding: 20px; border-radius: 24px; background: var(--night); }
+.v2 .calc-code pre { margin: 0; max-height: 220px; overflow: auto; white-space: pre-wrap; word-break: break-all; font: 12.5px/1.6 var(--mono); color: #C7D2FE; }
+.v2 .calc-code .btn { justify-self: start; min-height: 46px; }
+@media (max-width: 960px) { .v2 .calc-int { grid-template-columns: 1fr; } }

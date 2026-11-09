@@ -122,6 +122,7 @@ export const PAGES = {
   '/v1': { title: 'Kairn (ancienne version)', description: 'Ancienne version du site Kairn.', robots: NOINDEX, canonical: '/' },
   '/v1/realisations': { title: 'Réalisations (ancienne version) · Kairn', description: 'Ancienne version de la page Réalisations.', robots: NOINDEX, canonical: '/realisations' },
   '/commander': { title: 'Commander des leads · Kairn', description: 'Commandez des contacts exclusifs en pompe à chaleur, isolation par l’extérieur ou photovoltaïque, ou confiez vos campagnes Meta à Kairn.' },
+  '/embed/calculateur': { title: 'Calculateur du coût par chantier signé · Kairn', description: 'Version intégrable du calculateur Kairn.', robots: 'noindex, follow', canonical: '/calculateur-cout-par-chantier' },
   '/espace': { title: 'Espace client · Kairn', description: 'Espace client Kairn.', robots: 'noindex, nofollow' },
   '/plateforme': { title: 'La plateforme Kairn · Espace client', description: 'Vos leads, vos commandes et vos règlements au même endroit : Leads Shop, export des prospects, litiges, bons de commande.' },
   '/gestion': { title: 'Kairn Admin', description: 'Gestion Kairn.', robots: 'noindex, nofollow' },

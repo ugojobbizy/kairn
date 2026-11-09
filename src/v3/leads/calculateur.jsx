@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MotionConfig } from 'framer-motion';
 import { Nav, Footer, useV2Favicon } from '../../v2/layout.jsx';
@@ -201,6 +201,10 @@ export default function CalculateurPage() {
             </div>
           </section>
 
+          <section className="band ld-band" id="integrer">
+            <div className="wrap"><Integration /></div>
+          </section>
+
           <section className="band has-halos" id="faq">
             <Halos />
             <div className="wrap faq-grid">
@@ -216,5 +220,50 @@ export default function CalculateurPage() {
         <div className="mob-cta"><Link to="/leads" className="btn btn-order">Voir les leads par secteur</Link></div>
       </div>
     </MotionConfig>
+  );
+}
+
+// ─ Version intégrable (Ugo, 09/11/2026) : affichée dans l'iframe d'autres sites, avec le lien vers Kairn.
+// La page /embed/calculateur est autorisée en iframe (vercel.json) et non indexée (src/seo.js).
+// Elle envoie sa hauteur à la page hôte pour que l'iframe s'ajuste (script du code d'intégration).
+export function EmbedCalculateur() {
+  const ref = useRef(null);
+  useEffect(() => {
+    document.documentElement.classList.add('is-embed');
+    const envoyer = () => { try { window.parent.postMessage({ kairnCalc: true, height: Math.ceil(ref.current?.getBoundingClientRect().height || 0) + 8 }, '*'); } catch { /* hors iframe */ } };
+    envoyer();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(envoyer) : null;
+    if (ro && ref.current) ro.observe(ref.current);
+    return () => ro?.disconnect();
+  }, []);
+  return (
+    <div className="v2 v3 font-tight ld calc-embed" ref={ref}>
+      <Calculateur />
+      <p className="calc-credit">Calculateur proposé par <a href="https://www.kairnagency.com/calculateur-cout-par-chantier" target="_blank" rel="noopener">Kairn, leads exclusifs pour les professionnels</a></p>
+    </div>
+  );
+}
+
+const CODE_INTEGRATION = `<iframe src="https://www.kairnagency.com/embed/calculateur" id="kairn-calculateur" title="Calculateur du coût par chantier signé" loading="lazy" style="width:100%;height:1100px;border:0;"></iframe>
+<p style="font-size:13px;">Calculateur proposé par <a href="https://www.kairnagency.com/calculateur-cout-par-chantier">Kairn, leads exclusifs</a></p>
+<script>window.addEventListener("message",function(e){if(e.origin==="https://www.kairnagency.com"&&e.data&&e.data.kairnCalc){document.getElementById("kairn-calculateur").style.height=e.data.height+"px";}});</script>`;
+
+export function Integration() {
+  const [copie, setCopie] = useState(false);
+  const copier = async () => {
+    try { await navigator.clipboard.writeText(CODE_INTEGRATION); setCopie(true); setTimeout(() => setCopie(false), 2500); } catch { /* copie manuelle */ }
+  };
+  return (
+    <div className="calc-int">
+      <div>
+        <p className="eyebrow">Pour votre site</p>
+        <h2 className="h2">Ajoutez ce calculateur <span className="serif grad-text">à votre site.</span></h2>
+        <p>Vous tenez un blog, un média ou un site pour les artisans, les courtiers ou les installateurs ? Intégrez gratuitement ce calculateur : copiez le code et collez-le dans votre page. Il s’ajuste tout seul à la largeur et à la hauteur.</p>
+      </div>
+      <div className="calc-code">
+        <pre><code>{CODE_INTEGRATION}</code></pre>
+        <button type="button" className="btn btn-order" onClick={copier}>{copie ? 'Code copié' : 'Copier le code'}</button>
+      </div>
+    </div>
   );
 }
