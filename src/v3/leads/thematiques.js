@@ -54,11 +54,15 @@ export const THEMATIQUES = [
       ['Surface', 'Tranche de surface chauffée'],
     ],
     pourQuiTitre: ['Pour les installateurs', 'qui posent des PAC.'],
+    // [titre, texte, icône, étiquettes]
     pourQui: [
-      ['Chauffagistes RGE QualiPAC', 'Vous posez vous-même et voulez remplir le planning avec des projets dans votre secteur, sans dépendre du bouche-à-oreille ni des plateformes partagées.'],
-      ['Entreprises de rénovation énergétique', 'Vous avez des équipes de pose et des commerciaux à occuper : un flux régulier de demandes de PAC, au rythme que vous choisissez.'],
-      ['Structures commerciales', 'Vous vendez et faites poser par des partenaires : vous absorbez du volume et vous avez besoin de demandes récentes, que vous êtes seul à appeler.'],
+      ['Chauffagistes RGE QualiPAC', 'Vous posez vous-même et voulez remplir le planning avec des projets dans votre secteur, sans dépendre du bouche-à-oreille ni des plateformes partagées.', 'wrench', ['Pose en direct', 'QualiPAC', '1 à 10 salariés']],
+      ['Entreprises de rénovation énergétique', 'Vous avez des équipes de pose et des commerciaux à occuper : un flux régulier de demandes de PAC, au rythme que vous choisissez.', 'building', ['Équipes de pose', 'Commerciaux', 'Multi-métiers']],
+      ['Structures commerciales', 'Vous vendez et faites poser par des partenaires : vous absorbez du volume et vous avez besoin de demandes récentes, que vous êtes seul à appeler.', 'briefcase', ['Gros volumes', 'Vente', 'Pose sous-traitée']],
     ],
+    // Fiche d'exemple (données fictives) et question du formulaire montrée dans « Comment ça marche ».
+    exemple: { init: 'JP', nom: 'Jean P.', ville: 'Mérignac · 33700', projet: 'Pompe à chaleur', mail: 'j•••••@orange.fr', reponses: [['Statut', 'Propriétaire'], ['Logement', 'Maison'], ['Chauffage', 'Fioul'], ['Surface', '110 à 150 m²']] },
+    form: ['Comment vous chauffez-vous aujourd’hui ?', ['Fioul', 'Gaz', 'Électrique']],
     exclusif: 'Une demande de PAC revendue à plusieurs installateurs se joue au premier qui décroche son téléphone, et le particulier, appelé plusieurs fois, finit par ne plus répondre. Un lead exclusif vous laisse le temps de bien préparer l’appel.',
     marcheTitre: ['Un marché de la PAC', 'qui repart en 2026.'],
     marcheIntro: 'Après deux années de baisse, les ventes de pompes à chaleur air-eau repartent nettement en 2026. Les chiffres ci-dessous portent leur source.',
