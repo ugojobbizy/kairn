@@ -99,9 +99,42 @@ export const THEMATIQUES = [
   { pret: false, slug: 'leads-mutuelle-sante', code: 'MUTUELLE', groupe: 'finance', parent: 'leads-assurance', court: 'Mutuelle santé', label: 'Leads mutuelle santé', resume: 'Des particuliers, souvent seniors, qui comparent leur complémentaire santé.' },
   { pret: false, slug: 'leads-assurance-emprunteur', code: 'EMPRUNTEUR', groupe: 'finance', parent: 'leads-assurance', court: 'Assurance emprunteur', label: 'Leads assurance emprunteur', resume: 'Des emprunteurs qui veulent changer d’assurance de prêt.' },
   { pret: false, slug: 'leads-contrat-obseques', code: 'OBSEQUES', groupe: 'finance', parent: 'leads-assurance', court: 'Contrat obsèques', label: 'Leads contrat obsèques', resume: 'Des particuliers qui veulent préparer et financer leurs obsèques.' },
-  { pret: false, slug: 'leads-appareils-auditifs', code: 'AUDITION', groupe: 'services', court: 'Appareils auditifs', label: 'Leads appareils auditifs', resume: 'Des personnes qui veulent un bilan auditif ou un appareil.' },
-  { pret: false, slug: 'leads-formation-professionnelle', code: 'FORMATION', groupe: 'services', court: 'Formation professionnelle', label: 'Leads formation professionnelle', resume: 'Des actifs et des entreprises qui cherchent une formation.' },
-  { pret: false, slug: 'leads-demenagement', code: 'DEMENAGEMENT', groupe: 'services', court: 'Déménagement', label: 'Leads déménagement', resume: 'Des particuliers qui préparent un déménagement et demandent un devis.' },
+  {
+    "pret": true,
+    "slug": "leads-appareils-auditifs",
+    "code": "AUDITION",
+    "groupe": "services",
+    "court": "Appareils auditifs",
+    "label": "Leads appareils auditifs",
+    "resume": "Des personnes qui veulent faire un bilan auditif dans un centre près de chez elles.",
+    "maj": "2026-11-09",
+    "title": "Leads appareils auditifs et audition exclusifs · Kairn",
+    "description": "Leads audition exclusifs pour audioprothésistes : des personnes qui demandent un bilan auditif dans votre centre. Sur devis, sans engagement."
+  },
+  {
+    "pret": true,
+    "slug": "leads-formation-professionnelle",
+    "code": "FORMATION",
+    "groupe": "services",
+    "court": "Formation professionnelle",
+    "label": "Leads formation professionnelle",
+    "resume": "Des dirigeants et des RH qui veulent former leurs salariés, financement entreprise ou OPCO.",
+    "maj": "2026-11-09",
+    "title": "Leads formation professionnelle entreprises · Kairn",
+    "description": "Leads formation exclusifs pour organismes Qualiopi : dirigeants et RH qui veulent former leurs salariés, financé par l’entreprise ou l’OPCO. Sur devis."
+  },
+  {
+    "pret": true,
+    "slug": "leads-demenagement",
+    "code": "DEMENAGEMENT",
+    "groupe": "services",
+    "court": "Déménagement",
+    "label": "Leads déménagement",
+    "resume": "Des particuliers qui préparent un déménagement et demandent un devis.",
+    "maj": "2026-11-09",
+    "title": "Leads déménagement exclusifs, sur devis · Kairn",
+    "description": "Leads déménagement exclusifs : des particuliers qui demandent un devis, avec volume en m³, date, trajet, étage et ascenseur. Sur devis, sans engagement."
+  },
 ];
 
 // Contrôle au chargement : chaque code de page existe au catalogue (prix) ou dans la liste des devis.

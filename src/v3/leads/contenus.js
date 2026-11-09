@@ -1068,4 +1068,677 @@ export const CONTENUS = {
       "leads-toiture"
     ]
   },
+  // ───────────────────────────── Appareils auditifs ─────────────────────────────
+  'leads-appareils-auditifs': {
+    "h1": [
+      "Leads appareils auditifs",
+      "pour remplir votre agenda de bilans."
+    ],
+    "chapo": "Un lead audition exclusif est vendu sur devis chez Kairn à un seul audioprothésiste, sans engagement, à partir de 50 contacts : c’est une personne qui a demandé elle-même à faire un bilan auditif dans un centre proche de chez elle. La demande naît d’une publicité Meta dédiée à votre zone, et votre appel sert à fixer ce bilan, jamais à vendre un appareil à distance.",
+    "motTitre": "appareils auditifs",
+    "motCommande": "audition",
+    "pourLe": "aux projets de bilan auditif",
+    "definition": "Un contact de particulier qui a rempli lui-même une demande de bilan auditif dans un centre de sa zone : coordonnées, tranche d’âge, code postal et délai souhaité pour le rendez-vous. Aucune question sur sa santé.",
+    "bref": [
+      "Le bilan, pas la vente",
+      "La vente d’aides auditives par démarchage, à domicile ou par correspondance est interdite (art. L4361-7 du Code de la santé publique) : chaque lead mène à un rendez-vous dans votre centre."
+    ],
+    "qualif": "Avant d’appeler, vous savez quel âge a la personne, où elle habite par rapport à votre centre et dans quel délai elle veut son bilan. Le reste, l’audition, l’ordonnance, l’ancien appareil, se découvre au bilan, là où la loi et le secret médical le permettent.",
+    "champs": [
+      [
+        "Âge",
+        "Tranche d’âge (60 à 69 ans, 70 ans et plus…)"
+      ],
+      [
+        "Demande",
+        "Bilan auditif en centre"
+      ],
+      [
+        "Code postal",
+        "Commune et code postal du domicile"
+      ],
+      [
+        "Délai",
+        "Ce mois-ci, dans les 3 mois, se renseigne"
+      ]
+    ],
+    "pourQuiTitre": [
+      "Pour les audioprothésistes",
+      "qui veulent plus de bilans."
+    ],
+    "pourQui": [
+      [
+        "Audioprothésistes indépendants",
+        "Votre centre vit de sa zone de chalandise, à quelques kilomètres autour de la vitrine. Des demandes de bilan qui ne viennent que de chez vous comblent les creux de l’agenda sans passer par une plateforme de rendez-vous partagée.",
+        "user",
+        [
+          "Libéral",
+          "Un ou deux centres",
+          "Zone courte"
+        ]
+      ],
+      [
+        "Centres sous enseigne",
+        "Vous dirigez un centre franchisé ou affilié et vous avez des objectifs de bilans à tenir. Une campagne propre à votre secteur complète la communication nationale de l’enseigne, qui ne vise pas vos rues.",
+        "building",
+        [
+          "Franchise",
+          "Objectifs de bilans",
+          "Directeur de centre"
+        ]
+      ],
+      [
+        "Réseaux de plusieurs centres",
+        "Vous ouvrez un nouveau centre ou un point de consultation qui démarre lentement. Les contacts arrivent par centre, chacun dans sa zone, et vous suivez leur avancée dans le même espace.",
+        "chart",
+        [
+          "Multi-centres",
+          "Ouverture",
+          "Suivi par centre"
+        ]
+      ]
+    ],
+    "exemple": {
+      "init": "MR",
+      "nom": "Monique R.",
+      "ville": "Angers · 49000",
+      "projet": "Bilan auditif",
+      "mail": "m•••••@laposte.net",
+      "reponses": [
+        [
+          "Âge",
+          "70 ans et plus"
+        ],
+        [
+          "Demande",
+          "Bilan en centre"
+        ],
+        [
+          "Code postal",
+          "49000"
+        ],
+        [
+          "Délai",
+          "Ce mois-ci"
+        ]
+      ]
+    },
+    "form": [
+      "Quand souhaitez-vous faire votre bilan auditif ?",
+      [
+        "Ce mois-ci",
+        "Dans les 3 mois",
+        "Je me renseigne"
+      ]
+    ],
+    "exclusif": "Une personne de 70 ans appelée par trois centres le même jour ne sait plus qui l’a vraiment invitée, et elle ne vient chez aucun. Avec un lead exclusif, c’est votre centre qu’elle attend au téléphone, et c’est chez vous qu’elle prend rendez-vous.",
+    "marcheTitre": [
+      "Un marché de l’aide auditive",
+      "porté par les 65 ans et plus."
+    ],
+    "marcheIntro": "Le 100 % Santé a ouvert l’appareillage à un public plus large, mais la plupart des acheteurs choisissent encore le panier libre. Les chiffres ci-dessous portent leur source.",
+    "marche": [
+      {
+        "v": "2 Md€",
+        "l": "de prothèses auditives achetées en France en 2022, dont 42 % pris en charge par l’Assurance maladie obligatoire.",
+        "src": "DREES, La complémentaire santé 2024, fiche 24 (lu le 09/11/2026)",
+        "url": "https://drees.solidarites-sante.gouv.fr/sites/default/files/2025-04/CS24%20-%20Fiche%2024%20-%20La%20prise%20en%20charge%20des%20proth%C3%A8ses%20auditives%20%28MAJ%29_1.pdf"
+      },
+      {
+        "v": "79 %",
+        "l": "des personnes qui ont acheté un appareil auditif en 2021 avaient 65 ans ou plus.",
+        "src": "DREES, La complémentaire santé 2024, fiche 24 (lu le 09/11/2026)",
+        "url": "https://drees.solidarites-sante.gouv.fr/sites/default/files/2025-04/CS24%20-%20Fiche%2024%20-%20La%20prise%20en%20charge%20des%20proth%C3%A8ses%20auditives%20%28MAJ%29_1.pdf"
+      },
+      {
+        "v": "61 %",
+        "l": "des acheteurs d’une paire ont choisi le panier libre (classe II) en 2021, pour un prix moyen de 2 951 € la paire.",
+        "src": "DREES, La complémentaire santé 2024, fiche 24 (lu le 09/11/2026)",
+        "url": "https://drees.solidarites-sante.gouv.fr/sites/default/files/2025-04/CS24%20-%20Fiche%2024%20-%20La%20prise%20en%20charge%20des%20proth%C3%A8ses%20auditives%20%28MAJ%29_1.pdf"
+      },
+      {
+        "v": "5 053",
+        "l": "audioprothésistes en France en 2024, dont 71 % salariés et 29 % libéraux ou mixtes.",
+        "src": "ARS Île-de-France, démographie des audioprothésistes, mai 2025 (lu le 09/11/2026)",
+        "url": "https://www.iledefrance.paps.sante.fr/media/139500/download"
+      }
+    ],
+    "legal": [
+      [
+        "Un bilan en centre, jamais une vente à distance",
+        [
+          [
+            "La location, le colportage, les ventes itinérantes, de démonstration, par démarchage ou par correspondance d’appareils de prothèse auditive sont interdits (Code de la santé publique, "
+          ],
+          [
+            "art. L4361-7",
+            "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072665/LEGISCTA000006171563"
+          ],
+          [
+            "). Votre appel sert donc à fixer un bilan dans votre centre : pas de vente au téléphone, pas d’essai ni de visite à domicile pour vendre."
+          ]
+        ]
+      ],
+      [
+        "Aucune question de santé dans le formulaire",
+        [
+          [
+            "« J’entends mal » ou « je porte déjà un appareil » sont des données de santé : leur collecte exige un consentement explicite et séparé ("
+          ],
+          [
+            "RGPD, art. 9",
+            "https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2"
+          ],
+          [
+            "). Le formulaire Kairn s’en tient à l’âge, au souhait de bilan et au code postal. L’audition se mesure au bilan, dans votre cabine."
+          ]
+        ]
+      ],
+      [
+        "Votre nom dans le formulaire",
+        [
+          [
+            "Depuis le 11/08/2026, appeler un particulier exige son consentement préalable, et la demande de consentement doit nommer le professionnel qui appellera (Code de la consommation, "
+          ],
+          [
+            "art. L223-1",
+            "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006069565/LEGISCTA000032221441"
+          ],
+          [
+            " et "
+          ],
+          [
+            "art. R223-1, décret n° 2026-662",
+            "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000054483939"
+          ],
+          [
+            "). Le formulaire de votre campagne affiche donc le nom de votre centre, et ce consentement vaut un an au plus."
+          ]
+        ]
+      ],
+      LEGAL_RGPD,
+      LEGAL_RESPONSABLE
+    ],
+    "prixTexte": "Sur devis : le prix du contact dépend de la zone autour de votre centre, du volume et des critères d’âge retenus. Il vous est donné par écrit avant la commande, payée sur bon de commande par virement. Kairn paie la publicité, vous payez les contacts livrés.",
+    "faq": [
+      [
+        "Combien coûte un lead appareils auditifs ?",
+        "Le prix est sur devis : il dépend de la zone autour de votre centre, du volume commandé et des critères retenus, comme la tranche d’âge. Il vous est donné avant toute commande. Kairn paie la publicité, sans abonnement, et la première commande commence à 50 contacts."
+      ],
+      [
+        "Un lead audition est-il envoyé à plusieurs centres ?",
+        "Non. Chaque demande de bilan est envoyée à un seul audioprothésiste et n’est jamais revendue. Le formulaire nomme votre centre : la personne sait qui va l’appeler."
+      ],
+      [
+        "Ai-je le droit d’appeler ces personnes ?",
+        "Oui, pour fixer le bilan qu’elles ont demandé : elles ont donné leur accord à un appel de votre centre, nommé dans le formulaire (art. L223-1 du Code de la consommation). En revanche, vendre l’appareil au téléphone ou proposer de venir le vendre à domicile est interdit (art. L4361-7 du Code de la santé publique)."
+      ],
+      [
+        "Quel âge ont les contacts ?",
+        "Chaque contact indique sa tranche d’âge. Les tranches visées, par exemple 60 ans et plus, se règlent avec vous avant le lancement : un contact qui n’y entre pas ne vous est pas envoyé. Pour repère, 79 % des acheteurs d’un appareil en 2021 avaient 65 ans ou plus (DREES)."
+      ],
+      [
+        "Le contact sait-il s’il veut le 100 % Santé ou la classe II ?",
+        "Le formulaire ne le demande pas : le choix entre les deux paniers se fait au bilan, devis en main. En classe I (100 % Santé), le prix est plafonné à 950 € par oreille et le reste à charge est nul avec une complémentaire responsable (DREES). Les publicités Kairn ne présentent jamais l’appareil comme « gratuit » sans ces conditions."
+      ],
+      [
+        "Le contact a-t-il déjà une ordonnance ?",
+        "Kairn ne le demande pas, car c’est une donnée de santé. La délivrance d’un appareil exige une prescription médicale préalable (art. L4361-1 du Code de la santé publique) : c’est un point à vérifier au premier rendez-vous."
+      ],
+      [
+        "Recevez-vous des leads avec un rendez-vous déjà posé ?",
+        "Non. Kairn livre la demande de bilan avec ses coordonnées, chaque jour, dans votre espace client (export Excel ou CSV, alertes, CRM avec pipeline). C’est votre centre qui appelle et fixe le créneau dans son agenda."
+      ],
+      [
+        "Que se passe-t-il si le contact est un doublon ou hors zone ?",
+        "Vous le signalez depuis votre espace client. Après vérification, il est remplacé par un nouveau contact de votre zone."
+      ]
+    ],
+    "proches": [
+      "leads-mutuelle-sante",
+      "leads-contrat-obseques",
+      "leads-assurance"
+    ]
+  },
+  // ───────────────────────────── Formation professionnelle ─────────────────────────────
+  'leads-formation-professionnelle': {
+    "h1": [
+      "Leads formation professionnelle",
+      "des entreprises qui veulent former."
+    ],
+    "chapo": "Un lead formation professionnelle exclusif est vendu sur devis chez Kairn à un seul organisme de formation, sans engagement, à partir de 50 contacts : c’est un dirigeant ou un responsable RH qui a demandé lui-même à être rappelé pour former ses salariés. Il précise le thème, le nombre de personnes et le financement prévu, fonds propres de l’entreprise ou OPCO.",
+    "motTitre": "formation professionnelle",
+    "motCommande": "formation",
+    "pourLe": "aux projets de formation en entreprise",
+    "definition": "Un contact professionnel, dirigeant ou responsable RH, qui a rempli lui-même une demande de rappel pour former ses salariés : coordonnées, entreprise et effectif, thème, nombre de personnes à former et financement prévu.",
+    "bref": [
+      "Financement annoncé",
+      "Chaque contact dit qui paiera la formation : l’entreprise sur ses fonds propres ou l’OPCO, dans le cadre du plan de développement des compétences. Vous savez avant l’appel s’il y a un dossier de prise en charge à monter."
+    ],
+    "qualif": "Avant d’appeler, vous savez à qui vous parlez dans l’entreprise, quelle est sa taille, quel thème l’intéresse, combien de salariés sont à former et qui paiera. Une demande prise en charge par l’OPCO ne se traite pas comme une formation réglée sur fonds propres : vous préparez la bonne proposition dès le premier échange.",
+    "champs": [
+      [
+        "Fonction",
+        "Dirigeant ou responsable RH"
+      ],
+      [
+        "Entreprise",
+        "Tranche d’effectif"
+      ],
+      [
+        "Besoin",
+        "Thème et nombre de salariés à former"
+      ],
+      [
+        "Financement",
+        "Entreprise, OPCO ou à voir"
+      ]
+    ],
+    "pourQuiTitre": [
+      "Pour les organismes de formation",
+      "qui vendent aux entreprises."
+    ],
+    "pourQui": [
+      [
+        "Organismes inter et intra-entreprises",
+        "Vous vendez des sessions aux TPE et PME et vos commerciaux passent trop de temps à trouver le bon interlocuteur. Des dirigeants et des RH qui ont eux-mêmes posé la question arrivent avec un besoin et un nombre de stagiaires.",
+        "briefcase",
+        [
+          "B2B",
+          "Sessions inter",
+          "Intra sur site"
+        ]
+      ],
+      [
+        "Centres certifiés Qualiopi",
+        "Votre certification vous ouvre la prise en charge par l’OPCO. Les entreprises qui comptent sur ce financement vous reviennent, et vous montez le dossier avec elles.",
+        "badge",
+        [
+          "Qualiopi",
+          "OPCO",
+          "Montage de dossier"
+        ]
+      ],
+      [
+        "Formateurs et petites structures",
+        "Vous animez vous-même, et le temps passé à prospecter est du temps de formation perdu. Quelques demandes d’entreprises par semaine sur votre thème suffisent à ouvrir une session de plus.",
+        "user",
+        [
+          "Indépendant",
+          "Thème précis",
+          "Petit volume"
+        ]
+      ]
+    ],
+    "exemple": {
+      "init": "SL",
+      "nom": "Sandrine L.",
+      "ville": "Tours · 37000",
+      "projet": "Formation management",
+      "mail": "s•••••@transports-exemple.fr",
+      "reponses": [
+        [
+          "Fonction",
+          "Dirigeante"
+        ],
+        [
+          "Entreprise",
+          "10 à 49 salariés"
+        ],
+        [
+          "Besoin",
+          "Management, 3 salariés"
+        ],
+        [
+          "Financement",
+          "OPCO"
+        ]
+      ]
+    },
+    "form": [
+      "Qui finance la formation ?",
+      [
+        "L’entreprise",
+        "L’OPCO",
+        "À voir avec vous"
+      ]
+    ],
+    "exclusif": "Une entreprise qui a demandé un devis de formation et reçoit cinq propositions le même jour choisit la moins chère, ou repousse le projet à l’an prochain. Seul à la rappeler, vous défendez votre programme et votre tarif plutôt qu’une remise.",
+    "marcheTitre": [
+      "Un marché de la formation",
+      "très concurrentiel."
+    ],
+    "marcheIntro": "Plus de 150 000 organismes sont déclarés, et moins d’un tiers sont certifiés Qualiopi. Pour être choisi, il faut être appelé par l’entreprise avant les autres. Les chiffres ci-dessous portent leur source.",
+    "marche": [
+      {
+        "v": "154 589",
+        "l": "organismes de formation déclarés en activité en France (liste publique mise à jour le 08/11/2026).",
+        "src": "DGEFP, liste publique des organismes de formation, data.gouv.fr (lu le 09/11/2026)",
+        "url": "https://www.data.gouv.fr/fr/datasets/582c8978c751df788ec0bb7e/"
+      },
+      {
+        "v": "45 866",
+        "l": "organismes certifiés Qualiopi, dont 44 597 pour les actions de formation.",
+        "src": "DGEFP, liste publique des organismes de formation, data.gouv.fr (lu le 09/11/2026)",
+        "url": "https://www.data.gouv.fr/fr/datasets/582c8978c751df788ec0bb7e/"
+      },
+      {
+        "v": "56,6 Md€",
+        "l": "de dépense nationale pour la formation professionnelle continue et l’apprentissage en 2024.",
+        "src": "Banque des Territoires, d’après la DARES (lu le 09/11/2026)",
+        "url": "https://www.banquedesterritoires.fr/en-2024-566-milliards-deuros-de-depenses-pour-la-formation-professionnelle-continue-et"
+      },
+      {
+        "v": "16,4 Md€",
+        "l": "dépensés directement par les entreprises pour la formation en 2024, soit 29 % du total.",
+        "src": "Banque des Territoires, d’après la DARES (lu le 09/11/2026)",
+        "url": "https://www.banquedesterritoires.fr/en-2024-566-milliards-deuros-de-depenses-pour-la-formation-professionnelle-continue-et"
+      }
+    ],
+    "legal": [
+      [
+        "Des entreprises, pas de prospection sur les droits individuels",
+        [
+          [
+            "Le Code du travail interdit, même avec l’accord de la personne, toute prospection par téléphone, SMS, courriel ou réseau social qui vise à collecter les droits à la formation d’un salarié ou à lui faire signer une formation payée par ces droits ("
+          ],
+          [
+            "art. L6323-8-1",
+            "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047666673"
+          ],
+          [
+            ", jusqu’à 375 000 € d’amende pour une société). Les campagnes Kairn ne visent donc que les entreprises qui forment leurs salariés, sur fonds propres ou avec l’OPCO."
+          ]
+        ]
+      ],
+      [
+        "Prospection B2B : coordonnées professionnelles et opposition",
+        [
+          [
+            "Entre professionnels, la CNIL admet la prospection sans consentement préalable si le message est lié à la fonction de la personne, qu’elle en est informée et qu’elle peut s’y opposer simplement ("
+          ],
+          [
+            "CNIL, prospection commerciale par courrier électronique",
+            "https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique"
+          ],
+          [
+            "). Chaque contact Kairn laisse ses coordonnées professionnelles pour être rappelé sur son besoin de formation : à chaque relance, laissez-lui le moyen de dire non, et retirez-le de vos envois s’il le demande."
+          ]
+        ]
+      ],
+      [
+        "Qualiopi pour la prise en charge OPCO",
+        [
+          [
+            "Un OPCO ne finance que des organismes certifiés Qualiopi ("
+          ],
+          [
+            "art. L6316-1 du Code du travail",
+            "https://code.travail.gouv.fr/code-du-travail/l6316-1"
+          ],
+          [
+            "). Sans certification, vous pouvez traiter les formations payées par l’entreprise sur ses fonds propres, mais pas celles qui comptent sur l’OPCO : les critères d’envoi en tiennent compte."
+          ]
+        ]
+      ],
+      LEGAL_RGPD
+    ],
+    "prixTexte": "Sur devis : le prix du contact dépend de la zone, du volume, du thème et de la taille d’entreprise visée. Il vous est donné avant la commande, payée sur bon de commande par virement. Kairn paie la publicité.",
+    "faq": [
+      [
+        "Combien coûte un lead formation professionnelle ?",
+        "Le prix est sur devis : il dépend de la zone, du volume, du thème de formation et de la taille d’entreprise visée. Il vous est donné avant toute commande. Kairn paie la publicité, sans abonnement, et la première commande commence à 50 contacts."
+      ],
+      [
+        "Les leads sont-ils revendus à d’autres organismes ?",
+        "Non. Chaque demande est envoyée à un seul organisme de formation et n’est jamais revendue. L’entreprise n’attend qu’un appel, le vôtre."
+      ],
+      [
+        "Qui sont les contacts ?",
+        "Des dirigeants et des responsables RH qui veulent former leurs salariés. Chaque contact indique sa fonction, la tranche d’effectif de l’entreprise, le thème et le nombre de personnes à former."
+      ],
+      [
+        "Comment savoir si la formation sera financée ?",
+        "Chaque contact indique le financement prévu : l’entreprise sur ses fonds propres, l’OPCO dans le cadre du plan de développement des compétences, ou à voir avec vous. Vous pouvez ne recevoir que certains financements : cela se règle avec vous avant le lancement."
+      ],
+      [
+        "Faut-il être certifié Qualiopi pour acheter ces leads ?",
+        "Non, mais sans Qualiopi l’OPCO ne finance pas la formation (art. L6316-1 du Code du travail). Les demandes qui comptent sur l’OPCO sont alors écartées des critères d’envoi, et vous recevez celles financées par l’entreprise."
+      ],
+      [
+        "Ai-je le droit d’appeler et de relancer ces contacts ?",
+        "Oui, sur leurs coordonnées professionnelles et pour le besoin de formation qu’ils ont exprimé. La CNIL admet la prospection entre professionnels quand le message est lié à la fonction de la personne, à condition qu’elle puisse s’y opposer à tout moment."
+      ],
+      [
+        "Comment les contacts sont-ils livrés ?",
+        "Chaque jour, dans votre espace client : export Excel ou CSV, alerte à chaque nouveau contact et CRM avec pipeline pour suivre les demandes jusqu’à la convention de formation. Chaque contact porte la date et l’heure de sa demande."
+      ],
+      [
+        "Que se passe-t-il si le contact est un doublon ou hors zone ?",
+        "Vous le signalez depuis votre espace client. Après vérification, il est remplacé par un nouveau contact."
+      ]
+    ],
+    "proches": [
+      "leads-demenagement",
+      "leads-appareils-auditifs",
+      "leads-assurance"
+    ]
+  },
+  // ───────────────────────────── Déménagement ─────────────────────────────
+  'leads-demenagement': {
+    "h1": [
+      "Leads déménagement",
+      "avec le volume et la date."
+    ],
+    "chapo": "Un lead déménagement exclusif est vendu sur devis chez Kairn à un seul déménageur, sans engagement, à partir de 50 contacts : c’est un particulier qui a demandé lui-même un devis pour son déménagement. Il indique le volume en m³, la date, les villes de départ et d’arrivée, l’étage et l’ascenseur, de quoi chiffrer avant même la visite technique.",
+    "motTitre": "déménagement",
+    "motCommande": "déménagement",
+    "pourLe": "aux projets de déménagement",
+    "definition": "Un contact de particulier qui a rempli lui-même une demande de devis de déménagement : coordonnées, volume estimé en m³, date souhaitée, villes de départ et d’arrivée, étage et ascenseur.",
+    "bref": [
+      "Haute saison en été",
+      "Près d’un déménagement sur deux (48,7 %) a lieu de juin à septembre, d’après le baromètre Nextories 2025 : le volume de contacts se règle mois par mois, pour remplir aussi les camions hors saison."
+    ],
+    "qualif": "Avant d’appeler, vous savez combien de mètres cubes il faut charger, à quelle date, d’où à où et à quel étage. Vous écartez les petits volumes ou les dates déjà prises, vous prévoyez le monte-meubles et vous arrivez à la visite avec une première idée du prix.",
+    "champs": [
+      [
+        "Volume",
+        "Estimation en m³"
+      ],
+      [
+        "Date",
+        "Date ou semaine souhaitée"
+      ],
+      [
+        "Trajet",
+        "Villes de départ et d’arrivée"
+      ],
+      [
+        "Accès",
+        "Étage et ascenseur, au départ et à l’arrivée"
+      ]
+    ],
+    "pourQuiTitre": [
+      "Pour les déménageurs",
+      "qui veulent remplir leurs camions."
+    ],
+    "pourQui": [
+      [
+        "Déménageurs locaux",
+        "Vous faites surtout des déménagements dans votre agglomération et le département voisin. Des demandes de votre secteur, avec le volume et l’étage, vous évitent de vous déplacer pour un studio au rez-de-chaussée que vous auriez chiffré au téléphone.",
+        "home",
+        [
+          "Agglomération",
+          "1 à 10 salariés",
+          "Visite technique"
+        ]
+      ],
+      [
+        "Entreprises multi-agences",
+        "Vous avez plusieurs dépôts et des équipes à occuper toute l’année. Les contacts arrivent par zone, et vous lissez le planning entre la haute saison et les mois creux.",
+        "building",
+        [
+          "Plusieurs dépôts",
+          "Planning",
+          "Équipes salariées"
+        ]
+      ],
+      [
+        "Spécialistes longue distance",
+        "Vous organisez des trajets entre régions et vous cherchez des volumes qui justifient le camion. Les villes de départ et d’arrivée vous permettent de grouper les chargements sur un même trajet.",
+        "chart",
+        [
+          "Longue distance",
+          "Groupage",
+          "Gros volumes"
+        ]
+      ]
+    ],
+    "exemple": {
+      "init": "CD",
+      "nom": "Camille D.",
+      "ville": "Villeurbanne · 69100",
+      "projet": "Déménagement",
+      "mail": "c•••••@free.fr",
+      "reponses": [
+        [
+          "Volume",
+          "Environ 30 m³"
+        ],
+        [
+          "Date",
+          "Semaine du 13 juillet"
+        ],
+        [
+          "Trajet",
+          "Villeurbanne vers Nantes"
+        ],
+        [
+          "Accès",
+          "3e étage sans ascenseur"
+        ]
+      ]
+    },
+    "form": [
+      "Quel volume pensez-vous déménager ?",
+      [
+        "Moins de 20 m³",
+        "20 à 40 m³",
+        "Plus de 40 m³"
+      ]
+    ],
+    "exclusif": "Sur un comparateur, la même famille reçoit quatre ou cinq devis et choisit souvent le moins cher, parfois sans visite. Seul à la rappeler, vous prenez le temps de la visite technique et vous chiffrez au juste prix.",
+    "marcheTitre": [
+      "Près de 6 millions",
+      "de personnes déménagent chaque année."
+    ],
+    "marcheIntro": "Les Français déménagent moins qu’il y a dix ans, et la plupart restent près de chez eux. Le secteur, lui, reste fait de petites entreprises qui se disputent l’été. Les chiffres ci-dessous portent leur source.",
+    "marche": [
+      {
+        "v": "5,91 M",
+        "l": "de personnes ont changé de résidence principale en 2023, contre 6,95 millions en 2013.",
+        "src": "INSEE, Insee Première n° 2073 (lu le 09/11/2026)",
+        "url": "https://www.insee.fr/fr/statistiques/8648157"
+      },
+      {
+        "v": "18,8 km",
+        "l": "de distance médiane pour un déménagement d’une commune à une autre ; le quart le plus long dépasse 105 km.",
+        "src": "INSEE, Insee Première n° 2073 (lu le 09/11/2026)",
+        "url": "https://www.insee.fr/fr/statistiques/8648157"
+      },
+      {
+        "v": "1 219",
+        "l": "établissements de déménagement en France en 2025, pour 10 241 salariés.",
+        "src": "Chambre syndicale du déménagement, chiffres clés (lu le 09/11/2026)",
+        "url": "https://www.csdemenagement.fr/espace-presse/chiffres-cles/en-france.html"
+      },
+      {
+        "v": "48,7 %",
+        "l": "des déménagements ont lieu de juin à septembre, dont environ 19 % en juillet.",
+        "src": "Nextories, baromètre 2025, cité par Selectra (lu le 09/11/2026)",
+        "url": "https://www.nextories.com/demenageur/barometre-2025"
+      }
+    ],
+    "legal": [
+      [
+        "Votre nom dans le formulaire",
+        [
+          [
+            "Depuis le 11/08/2026, un particulier ne peut être appelé que s’il y a consenti au préalable, et la demande de consentement doit nommer le déménageur qui appellera (Code de la consommation, "
+          ],
+          [
+            "art. L223-1",
+            "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006069565/LEGISCTA000032221441"
+          ],
+          [
+            " et "
+          ],
+          [
+            "art. R223-1, décret n° 2026-662",
+            "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000054483939"
+          ],
+          [
+            "). Ce consentement vaut un an au plus : le formulaire de votre campagne affiche le nom de votre entreprise."
+          ]
+        ]
+      ],
+      [
+        "« Nos partenaires » ne suffit plus",
+        [
+          [
+            "Une demande de devis transmise à plusieurs déménageurs sous un simple accord « pour nos partenaires », sans noms, ne couvre pas leurs appels. La CNIL exige que les partenaires soient identifiés au moment du recueil, et toute revente à un autre acheteur demande un nouveau consentement ("
+          ],
+          [
+            "CNIL, 10/06/2026",
+            "https://www.cnil.fr/fr/la-prospection-b-to-c-quelles-regles-pour-transmettre-des-donnees-des-partenaires"
+          ],
+          [
+            "). Un lead Kairn n’est transmis qu’à vous."
+          ]
+        ]
+      ],
+      LEGAL_RGPD,
+      LEGAL_RESPONSABLE
+    ],
+    "prixTexte": "Sur devis : le prix du contact dépend de votre zone, du volume commandé et des critères retenus, comme un volume minimum en m³. Il vous est donné avant la commande, payée sur bon de commande par virement. Kairn paie la publicité.",
+    "faq": [
+      [
+        "Combien coûte un lead déménagement ?",
+        "Le prix est sur devis : il dépend de votre zone, du volume commandé et des critères retenus, par exemple un minimum de m³ ou la longue distance seule. Il vous est donné avant toute commande. Kairn paie la publicité, sans abonnement, et la première commande commence à 50 contacts."
+      ],
+      [
+        "Le lead est-il envoyé à plusieurs déménageurs ?",
+        "Non. Chaque demande de devis est envoyée à un seul déménageur et n’est jamais revendue. C’est la différence avec un comparateur, où la même famille est rappelée par plusieurs entreprises."
+      ],
+      [
+        "Puis-je fixer un volume minimum ?",
+        "Oui. Chaque contact indique son volume estimé en m³, et un seuil, par exemple 20 m³ et plus, se règle avec vous avant le lancement. Une demande sous ce seuil ne vous est pas envoyée."
+      ],
+      [
+        "Puis-je recevoir seulement les longues distances ?",
+        "Oui. Chaque contact donne ses villes de départ et d’arrivée : la zone peut porter sur le départ, sur l’arrivée ou sur les deux, selon ce que vous savez faire. Les critères se règlent avec vous avant le lancement."
+      ],
+      [
+        "Comment gérer le pic de l’été ?",
+        "Vous choisissez le volume de contacts à chaque commande, sans abonnement : vous pouvez en prendre moins quand le planning est plein et davantage de septembre à mai pour remplir les mois creux. Près d’un déménagement sur deux a lieu de juin à septembre (baromètre Nextories 2025)."
+      ],
+      [
+        "Combien de leads faut-il pour signer un déménagement ?",
+        "Kairn ne promet aucun taux de signature : il dépend du délai de rappel, de la visite technique et de votre prix. Kairn s’engage sur le contact, une demande réelle, récente, dans votre zone, envoyée à vous seul."
+      ],
+      [
+        "Comment les contacts sont-ils livrés ?",
+        "Chaque jour, dans votre espace client : export Excel ou CSV, alerte à chaque nouveau contact et CRM avec pipeline pour suivre chaque devis jusqu’à la signature. La date et l’heure de la demande sont indiquées sur chaque fiche."
+      ],
+      [
+        "Que se passe-t-il si le contact est un doublon ou hors zone ?",
+        "Vous le signalez depuis votre espace client. Après vérification, il est remplacé par un nouveau contact de votre zone."
+      ]
+    ],
+    "proches": [
+      "leads-assurance",
+      "leads-regroupement-de-credits",
+      "leads-formation-professionnelle"
+    ]
+  },
 };
