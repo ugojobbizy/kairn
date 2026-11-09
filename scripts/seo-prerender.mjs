@@ -15,6 +15,11 @@ import { CONTENUS } from '../src/v3/leads/contenus.js';
 
 // Pages Leads : la FAQ vit dans contenus.js (hors du code chargé partout) ; on l'ajoute ici aux données structurées.
 for (const t of PRETES) if (PAGES[`/${t.slug}`] && CONTENUS[t.slug]) PAGES[`/${t.slug}`].faq = CONTENUS[t.slug].faq;
+// Articles : leur FAQ vit dans leur module (src/blog/generated/posts/<slug>.js).
+for (const p of POSTS) {
+  const { default: b } = await import(`../src/blog/generated/posts/${p.slug}.js`);
+  if (b.faq?.length && PAGES[p.path]) PAGES[p.path].faq = b.faq;
+}
 
 const DIST = 'dist';
 const { render: ssr } = await import('../dist-ssr/entry-server.js');
@@ -51,9 +56,18 @@ async function blogBody(path) {
   }
   const { post } = PAGES[path];
   const { default: body } = await import(`../src/blog/generated/posts/${post.slug}.js`);
-  const faq = post.faq.length ? `<h2>Questions fréquentes</h2>${post.faq.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('')}` : '';
+  const faq = body.faq?.length ? `<h2>Questions fréquentes</h2>${body.faq.map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('')}` : '';
   return `${PRE_STYLE}<article class="pre">${nav}<p><a href="${BLOG_PATH}">Blog</a></p><h1>${esc(post.title)}</h1><p>${post.minutes} min de lecture</p>${body.html}${faq}</article>`;
 }
+
+// Accueil : son code est chargé à la demande ; on le précharge dès le HTML de la page d'accueil.
+const manifest = JSON.parse(readFileSync(join(DIST, '.vite', 'manifest.json'), 'utf8'));
+const homeEntry = manifest['src/v3/home.jsx'];
+const preloadsHome = homeEntry ? [
+  `<link rel="modulepreload" crossorigin href="/${homeEntry.file}" />`,
+  ...(homeEntry.imports || []).map((k) => manifest[k]?.file).filter(Boolean).map((f) => `<link rel="modulepreload" crossorigin href="/${f}" />`),
+  ...(homeEntry.css || []).map((f) => `<link rel="stylesheet" crossorigin href="/${f}" />`),
+].join('') : '';
 
 async function render(path) {
   const page = PAGES[path];
@@ -68,6 +82,7 @@ async function render(path) {
     .replace(/<!--seo:start-->[\s\S]*?<!--seo:end-->/, headTags(path))
     .replace('<!--seo:noscript-->', page.kind || full ? '' : noscript);
   if (page.kind) html = html.replace('<div id="root"></div>', `<div id="root">${await blogBody(path)}</div>`);
+  if (path === '/' && preloadsHome) html = html.replace('</head>', `${preloadsHome}</head>`);
   if (full) {
     // Le visiteur avec JavaScript ne voit pas ce HTML (sinon il apparaîtrait, disparaîtrait puis rejouerait
     // ses animations quand React prend le relais). Filet : si l'application n'a pas démarré après 4 s, on l'affiche.

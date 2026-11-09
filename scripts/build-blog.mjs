@@ -114,8 +114,11 @@ for (const file of files) {
     words,
     minutes: Math.max(1, Math.round(words / 220)),
   };
+  // FAQ dans le module de l'article (chargé avec lui), pas dans l'index chargé sur tout le site (allègement du 09/11/2026).
+  bodies[slug] = { html, toc, faq: post.faq };
+  post.faqCount = post.faq.length;
+  delete post.faq;
   posts.push(post);
-  bodies[slug] = { html, toc };
 }
 
 for (const p of posts) {

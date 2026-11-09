@@ -113,7 +113,7 @@ export const PAGES = {
     title: post.seoTitle,
     description: post.description,
     crumb: post.title,
-    faq: post.faq.length ? post.faq : undefined,
+    // FAQ ajoutée au pré-rendu depuis le module de l'article (scripts/seo-prerender.mjs).
     kind: 'article',
     post,
   }])),

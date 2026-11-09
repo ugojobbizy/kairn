@@ -27,4 +27,6 @@ function localApi() {
 export default defineConfig({
   plugins: [react(), localApi()],
   server: { port: 5173, open: true },
+  // Manifeste : permet au pré-rendu de précharger le fichier de l'accueil sur la page d'accueil.
+  build: { manifest: true },
 });

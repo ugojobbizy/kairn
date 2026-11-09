@@ -141,14 +141,14 @@ export default function ArticlePage() {
             </article>
           </div>
 
-          {post.faq.length > 0 && (
+          {body?.faq?.length > 0 && (
             <section className="band post-faq" id="faq">
               <div className="wrap faq-grid">
                 <Reveal className="faq-aside">
                   <Pill>Questions fréquentes</Pill>
                   <h2 className="h2">Les questions <span className="serif grad-text">qu’on nous pose.</span></h2>
                 </Reveal>
-                <FaqList items={post.faq} />
+                <FaqList items={body.faq} />
               </div>
             </section>
           )}
