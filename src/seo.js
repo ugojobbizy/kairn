@@ -146,7 +146,7 @@ export function pageFor(pathname) {
 const BRAND_NAME = 'Kairn Agency';
 const GOOGLE_PROFILE = 'https://maps.google.com/?cid=17839410346044495568';
 // Profils de la marque (donnés par Ugo, 09/11/2026), reliés pour que Google et les IA reconnaissent une seule entité.
-const PROFILS = [GOOGLE_PROFILE, 'https://www.linkedin.com/company/kairn-agence/'];
+const PROFILS = [GOOGLE_PROFILE, 'https://www.linkedin.com/company/kairn-agence/', 'https://www.instagram.com/kairnagency/'];
 
 const ORGANIZATION = {
   '@type': 'ProfessionalService',
