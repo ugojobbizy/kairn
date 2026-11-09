@@ -40,15 +40,22 @@ function calcul(o, c) {
   };
 }
 
-function Champ({ label, aide, value, onChange, suffix, step = 1, min = 0, max }) {
+// Curseur + case chiffrée (Ugo, 09/11/2026 : « que le visiteur puisse modifier le prix avec un curseur et les pourcentages »).
+// La case accepte une valeur hors de la plage du curseur ; le curseur se cale alors à son bout.
+function Champ({ label, aide, value, onChange, suffix, step = 1, min = 0, max, rmin = min, rmax = max }) {
+  const lire = (e) => onChange(e.target.value === '' ? 0 : Number(e.target.value));
+  const p = Math.max(0, Math.min(100, ((value - rmin) / (rmax - rmin)) * 100));
   return (
-    <label className="calc-field">
-      <span className="calc-label">{label}{aide && <small>{aide}</small>}</span>
-      <span className="calc-input">
-        <input type="number" inputMode="decimal" value={value} step={step} min={min} max={max} onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))} />
-        <i>{suffix}</i>
-      </span>
-    </label>
+    <div className="calc-field">
+      <label className="calc-row">
+        <span className="calc-label">{label}{aide && <small>{aide}</small>}</span>
+        <span className="calc-input">
+          <input type="number" inputMode="decimal" value={value} step={step} min={min} max={max} onChange={lire} />
+          <i>{suffix}</i>
+        </span>
+      </label>
+      <input type="range" className="calc-range" aria-label={label} min={rmin} max={rmax} step={step} value={Math.max(rmin, Math.min(rmax, value))} onChange={lire} style={{ '--p': `${p}%` }} />
+    </div>
   );
 }
 
@@ -57,8 +64,8 @@ function Offre({ titre, o, set }) {
   return (
     <fieldset className="calc-offre">
       <legend>{titre}</legend>
-      <Champ label="Prix du lead" value={o.prix} onChange={up('prix')} suffix="€ HT" step={0.5} />
-      <Champ label="Leads achetés" aide="sur la période" value={o.leads} onChange={up('leads')} suffix="leads" />
+      <Champ label="Prix du lead" value={o.prix} onChange={up('prix')} suffix="€ HT" step={1} rmin={1} rmax={150} />
+      <Champ label="Leads achetés" aide="sur la période" value={o.leads} onChange={up('leads')} suffix="leads" step={10} rmin={10} rmax={1000} />
       <Champ label="Contacts joints" aide="ont décroché" value={o.joints} onChange={up('joints')} suffix="%" max={100} />
       <Champ label="Rendez-vous" aide="parmi les joints" value={o.rdv} onChange={up('rdv')} suffix="%" max={100} />
       <Champ label="Signés" aide="parmi les rendez-vous" value={o.signes} onChange={up('signes')} suffix="%" max={100} />
@@ -98,7 +105,7 @@ export function Calculateur() {
       <div className="calc-inputs">
         <fieldset className="calc-offre calc-commun">
           <legend>Votre métier</legend>
-          <Champ label="Panier moyen d’un chantier" value={c.panier} onChange={(v) => setC({ ...c, panier: v })} suffix="€ HT" step={100} />
+          <Champ label="Panier moyen d’un chantier" value={c.panier} onChange={(v) => setC({ ...c, panier: v })} suffix="€ HT" step={100} rmin={500} rmax={50000} />
           <Champ label="Marge brute" value={c.marge} onChange={(v) => setC({ ...c, marge: v })} suffix="%" max={100} />
         </fieldset>
         <Offre titre={b ? 'Offre A' : 'Votre offre de leads'} o={a} set={setA} />
