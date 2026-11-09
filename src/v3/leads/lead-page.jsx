@@ -9,7 +9,7 @@ import { CONTACT_EMAIL } from '../../config.js';
 import { GARANTIES, prixHT } from '../produits.js';
 import { prixDe, commandeHref, parSlug, MINIMUM } from './thematiques.js';
 import {
-  Check, Ico, usePlay, VisToasts, VisSeul, VisAd, VisForm, VisPipe,
+  Check, Ico, usePlay, VisToasts, VisSeul, VisCampagne, VisForm, VisPipe,
 } from './lead-visuals.jsx';
 import '../../v2/v2.css';
 import '../v3.css';
@@ -231,10 +231,10 @@ export default function LeadPage({ slug }) {
                 {ETAPES(t).map(([h, d], i) => (
                   <Reveal as="li" key={h} delay={i * 0.06} className="pil-card">
                     <div className="pil-vis">
-                      {i === 0 && <VisAd court={t.court} />}
-                      {i === 1 && <VisForm question={t.form ? t.form[0] : 'Vous êtes ?'} options={t.form ? t.form[1] : ['Propriétaire', 'Locataire']} />}
+                      {i === 0 && <VisCampagne court={t.court} />}
+                      {i === 1 && <VisForm play={stepsPlay} question={t.form ? t.form[0] : 'Vous êtes ?'} options={t.form ? t.form[1] : ['Propriétaire', 'Locataire']} />}
                       {i === 2 && <VisSeul />}
-                      {i === 3 && <VisPipe />}
+                      {i === 3 && <VisPipe play={stepsPlay} />}
                     </div>
                     <div className="pil-txt">
                       <span className="pil-tag"><b>{String(i + 1).padStart(2, '0')}</b>Étape</span>

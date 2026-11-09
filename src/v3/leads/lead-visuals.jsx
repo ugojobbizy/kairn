@@ -144,38 +144,55 @@ export function VisRappel() {
   );
 }
 
-// Étape 1 : une publicité Meta dédiée (maquette, sans marque ni visage).
-export function VisAd({ court }) {
+// Étape 1 : la campagne Meta dédiée au métier, active, payée par Kairn, et ses demandes qui montent
+// (Ugo, 09/11/2026 : pas fan de la maquette de pub ; pas de vraie pub montrée, consigne du 13/10).
+export function VisCampagne({ court }) {
   return (
-    <div className="ld-ad" aria-hidden="true">
-      <div className="ld-ad-top"><span className="ld-ad-logo" /><div><b>Votre campagne</b><small>Sponsorisé</small></div></div>
-      <div className="ld-ad-img"><Ico name="home" size={34} /><span>{court}</span></div>
-      <div className="ld-ad-cta"><span>Demande de rappel gratuite</span><b>Obtenir un devis</b></div>
+    <div className="ld-camp" aria-hidden="true">
+      <div className="ld-camp-top"><b>Campagne Meta</b><span className="ld-camp-on"><i />Active</span></div>
+      <div className="ld-camp-row"><span>Métier</span><b>{court}</b></div>
+      <div className="ld-camp-row"><span>Zone</span><b>33 · 40 · 47</b></div>
+      <div className="ld-camp-row"><span>Budget pub</span><b className="is-k">Payé par Kairn</b></div>
+      <svg className="ld-camp-chart" viewBox="0 0 200 44" preserveAspectRatio="none">
+        <path className="ld-camp-area" d="M0 40 L25 34 L50 36 L75 26 L100 28 L125 18 L150 20 L175 10 L200 6 L200 44 L0 44 Z" />
+        <path className="ld-camp-line" d="M0 40 L25 34 L50 36 L75 26 L100 28 L125 18 L150 20 L175 10 L200 6" />
+      </svg>
     </div>
   );
 }
 
-// Étape 2 : une question du formulaire, la bonne réponse se coche.
-export function VisForm({ question, options }) {
+// Étape 2 : la réponse se coche, change toutes les 1,6 s, avec le curseur qui clique (Ugo, 09/11/2026).
+export function VisForm({ question, options, play }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (!play || reduit()) return undefined;
+    const id = setInterval(() => setI((x) => (x + 1) % options.length), 1600);
+    return () => clearInterval(id);
+  }, [play, options.length]);
   return (
-    <div className="ld-form" aria-hidden="true">
+    <div className="ld-form" aria-hidden="true" style={{ '--sel': i }}>
       <p>{question}</p>
-      {options.map((o, i) => <span key={o} className={i === 0 ? 'is-on' : undefined}><i />{o}</span>)}
+      {options.map((o, k) => <span key={o} className={k === i ? 'is-on' : undefined}><i />{o}</span>)}
+      <svg className="ld-cursor" viewBox="0 0 24 24"><path d="M5 3l14 8-6.5 1.5L9 19z" /></svg>
     </div>
   );
 }
 
-// Étape 4 : le pipeline de l'espace client.
-export function VisPipe() {
-  const cols = [['Nouveau', 3], ['Rendez-vous', 2], ['Signé', 1]];
+// Étape 4 : le même lead avance de Nouveau à Rendez-vous puis à Signé (Ugo, 09/11/2026).
+const ETAPES_PIPE = ['Nouveau', 'Rendez-vous', 'Signé'];
+export function VisPipe({ play }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (!play || reduit()) return undefined;
+    const id = setInterval(() => setI((x) => (x + 1) % ETAPES_PIPE.length), 1700);
+    return () => clearInterval(id);
+  }, [play]);
   return (
-    <div className="ld-pipe" aria-hidden="true">
-      {cols.map(([c, n], i) => (
-        <div key={c} className="ld-pipe-col">
-          <small>{c}</small>
-          {Array.from({ length: n }, (_, k) => <span key={k} className={i === 2 ? 'is-won' : undefined} style={{ '--k': k + i }} />)}
-        </div>
+    <div className="ld-pipe" aria-hidden="true" style={{ '--col': i }}>
+      {ETAPES_PIPE.map((c, k) => (
+        <div key={c} className={`ld-pipe-col${k === i ? ' is-here' : ''}`}><small>{c}</small><span /><span /></div>
       ))}
+      <div className={`ld-pipe-card${i === 2 ? ' is-won' : ''}`}><b>Jean P.</b><em>{i === 2 ? 'Signé' : i === 1 ? 'RDV jeudi' : 'À appeler'}</em></div>
     </div>
   );
 }
