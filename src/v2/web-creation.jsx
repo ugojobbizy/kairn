@@ -55,7 +55,7 @@ export default function WebCreationPage() {
               </motion.h1>
               <Reveal delay={0.35} y={16}>
                 <p className="hero-lead">
-                  En complément de nos campagnes de génération de leads, pour des clients partout en France. Sites, landing pages, tunnels de conversion et <strong>plateformes sur mesure</strong>, développés à la main et livrés en quelques semaines. Le code vous appartient.
+                  En complément de vos leads, pour des clients partout en France : sites, landing pages, tunnels de conversion et <strong>plateformes sur mesure</strong>, développés à la main et livrés en quelques semaines. Le code vous appartient.
                 </p>
               </Reveal>
               <Reveal delay={0.5} y={16} className="hero-cta">

@@ -52,7 +52,7 @@ export default function BordeauxPage() {
               </motion.h1>
               <Reveal delay={0.35} y={16}>
                 <p className="hero-lead">
-                  Kairn est basée à Bordeaux. On vous apporte des leads exclusifs ou on pilote vos campagnes Meta, et on crée en complément vos sites, landing pages et CRM, pour les entreprises bordelaises comme pour des <strong>projets partout en France</strong>.
+                  Kairn est une agence de génération de leads : des leads exclusifs payés au contact, ou vos campagnes Meta pilotées sur votre budget, pour des <strong>projets partout en France</strong>. Sites, landing pages et CRM en complément.
                 </p>
               </Reveal>
               <Reveal delay={0.5} y={16} className="hero-cta">

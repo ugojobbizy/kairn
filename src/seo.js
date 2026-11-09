@@ -26,14 +26,14 @@ export const PAGES = {
   },
   '/generation-de-leads': {
     title: 'Agence de génération de leads : Meta Ads, landing page et CRM · Kairn',
-    description: 'Kairn, agence de génération de leads basée à Bordeaux : campagnes Meta et Google Ads, landing page, qualification et CRM sur mesure. Chaque lead tracé jusqu’à la vente.',
+    description: 'Kairn, agence de génération de leads partout en France : campagnes Meta et Google Ads, landing page, qualification et CRM sur mesure. Chaque lead tracé jusqu’à la vente.',
     crumb: 'Génération de leads',
     faq: FAQ_LEADS,
     service: { name: 'Génération de leads', serviceType: 'Génération de leads' },
   },
   '/creation-site-internet': {
     title: 'Création de site internet sur mesure · Kairn',
-    description: 'En complément de nos campagnes de génération de leads : sites internet, landing pages, tunnels et plateformes sur mesure, livrés en quelques semaines. Le code vous appartient.',
+    description: 'Kairn crée vos sites internet, landing pages, tunnels de conversion et plateformes sur mesure, livrés en quelques semaines. Le code vous appartient.',
     crumb: 'Création de site internet',
     faq: FAQ_WEB,
     service: { name: 'Création de site internet', serviceType: 'Création de site internet' },
@@ -53,9 +53,8 @@ export const PAGES = {
     service: { name: 'CRM sur mesure', serviceType: 'Développement de CRM sur mesure' },
   },
   '/agence-bordeaux': {
-    // Ugo, 09/11/2026 : « je ne veux plus me positionner comme une agence web » ; Bordeaux retiré du titre (la page reste).
-    title: 'Agence de génération de leads, partout en France · Kairn',
-    description: 'Kairn, agence de génération de leads basée à Bordeaux : leads exclusifs payés au contact ou campagnes Meta pilotées, et en complément sites et CRM. Partout en France.',
+    title: 'Agence de génération de leads partout en France · Kairn',
+    description: 'Kairn, agence de génération de leads : leads exclusifs payés au contact, ou campagnes Meta pilotées sur votre budget, partout en France. Sites, landing pages et CRM en complément.',
     crumb: 'Agence à Bordeaux',
     faq: FAQ_BDX,
     service: {
