@@ -8,6 +8,7 @@ import { Reveal, FaqList } from '../../v2/blocks.jsx';
 import { CONTACT_EMAIL } from '../../config.js';
 import { GARANTIES, prixHT } from '../produits.js';
 import { prixDe, commandeHref, parSlug, MINIMUM } from './thematiques.js';
+import { CONTENUS } from './contenus.js';
 import {
   Check, Ico, usePlay, VisToasts, VisSeul, VisCampagne, VisForm, VisPipe,
 } from './lead-visuals.jsx';
@@ -70,7 +71,7 @@ const LEGAL_ICO = ['phone', 'message', 'user', 'badge', 'scale', 'shield'];
 
 export default function LeadPage({ slug }) {
   useV2Favicon();
-  const t = parSlug(slug);
+  const t = { ...parSlug(slug), ...CONTENUS[slug] };
   const prix = prixDe(t);
   const parent = t.parent ? parSlug(t.parent) : null;
   const fil = [['Accueil', '/'], ['Leads', '/leads'], ...(parent ? [[parent.court, `/${parent.slug}`]] : []), [t.court, null]];

@@ -11,6 +11,10 @@ import { PAGES, headTags, SITE_URL } from '../src/seo.js';
 import { POSTS } from '../src/blog/generated/index.js';
 import { BLOG_PATH, CATEGORIES, AUTHOR } from '../src/blog/meta.js';
 import { PRETES, prixDe, MINIMUM } from '../src/v3/leads/thematiques.js';
+import { CONTENUS } from '../src/v3/leads/contenus.js';
+
+// Pages Leads : la FAQ vit dans contenus.js (hors du code chargé partout) ; on l'ajoute ici aux données structurées.
+for (const t of PRETES) if (PAGES[`/${t.slug}`] && CONTENUS[t.slug]) PAGES[`/${t.slug}`].faq = CONTENUS[t.slug].faq;
 
 const DIST = 'dist';
 const { render: ssr } = await import('../dist-ssr/entry-server.js');

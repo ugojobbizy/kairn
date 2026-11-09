@@ -15,6 +15,10 @@ function setMeta(attr, key, value) {
   el.setAttribute('content', value);
 }
 
+// Premier affichage : la page pré-rendue porte déjà ses données structurées complètes (dont la FAQ des pages Leads,
+// absente du code chargé dans le navigateur) ; on les garde, et on ne les remplace qu'à la navigation suivante.
+let premier = true;
+
 export default function SeoManager() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -35,7 +39,11 @@ export default function SeoManager() {
     // Données structurées de la page affichée (article, FAQ, fil d'Ariane…).
     const data = structuredData(path);
     let ld = document.head.querySelector('script[type="application/ld+json"]');
-    if (data) {
+    const garder = premier && ld;
+    premier = false;
+    if (garder) {
+      // données pré-rendues gardées telles quelles
+    } else if (data) {
       if (!ld) {
         ld = document.createElement('script');
         ld.type = 'application/ld+json';

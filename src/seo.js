@@ -83,7 +83,7 @@ export const PAGES = {
       description: t.description,
       crumb: t.court,
       crumbs: [['Leads', '/leads'], ...(parent ? [[parent.court, `/${parent.slug}`]] : [])],
-      faq: t.faq,
+      // FAQ ajoutée au pré-rendu (contenus.js n'est pas chargé dans le navigateur avec cette page).
       service: {
         name: t.label,
         serviceType: 'Génération de leads',
