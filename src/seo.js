@@ -8,6 +8,7 @@ import { POSTS } from './blog/generated/index.js';
 import { BLOG_PATH, CATEGORIES, AUTHOR } from './blog/meta.js';
 import { PRETES, parSlug, prixDe } from './v3/leads/thematiques.js';
 import { FAQ_HUB } from './v3/leads/hub-data.js';
+import { FAQ_CALC } from './v3/leads/calc-data.js';
 
 export const SITE_URL = 'https://www.kairnagency.com';
 export const SITE_NAME = 'Kairn';
@@ -74,6 +75,14 @@ export const PAGES = {
     crumb: 'Leads',
     faq: FAQ_HUB,
     service: { name: 'Vente de leads exclusifs', serviceType: 'Génération de leads' },
+  },
+  '/calculateur-cout-par-chantier': {
+    title: 'Calculateur du coût par chantier signé (leads) · Kairn',
+    description: 'Calculateur gratuit : du prix de vos leads à votre coût par chantier signé, votre marge et le prix maximum à payer par lead. Comparez deux offres.',
+    crumb: 'Calculateur',
+    crumbs: [['Leads', '/leads']],
+    faq: FAQ_CALC,
+    app: { name: 'Calculateur de coût par chantier signé', description: 'Calcule le coût par chantier signé, la marge après achat des leads et le prix maximum d’un lead à partir du prix du lead et des taux de joignabilité, de rendez-vous et de signature.' },
   },
   ...Object.fromEntries(PRETES.map((t) => {
     const parent = t.parent ? parSlug(t.parent) : null;
@@ -218,6 +227,19 @@ export function structuredData(path) {
         provider: { '@id': `${SITE_URL}/#organization` },
         areaServed: page.service.areaServed || { '@type': 'Country', name: 'France' },
         ...(page.service.offers ? { offers: page.service.offers } : {}),
+      }] : []),
+      ...(page.app ? [{
+        '@type': 'WebApplication',
+        '@id': `${SITE_URL}${path}#app`,
+        name: page.app.name,
+        description: page.app.description,
+        url: `${SITE_URL}${path}`,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Tous (navigateur web)',
+        inLanguage: 'fr-FR',
+        isAccessibleForFree: true,
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+        publisher: { '@id': `${SITE_URL}/#organization` },
       }] : []),
       ...(page.faq ? [{
         '@type': 'FAQPage',

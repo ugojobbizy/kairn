@@ -368,6 +368,7 @@ export default function LeadPage({ slug }) {
                   <p className="eyebrow">Prix</p>
                   <h2 className="h2">Combien coûte <span className="serif grad-text">un lead {t.motTitre} ?</span></h2>
                   <p>{t.prixTexte}</p>
+                  <p className="ld-link-line">Ce prix est-il rentable pour vous ? <Link to="/calculateur-cout-par-chantier">Calculez votre coût par chantier signé</Link>.</p>
                 </div>
                 <div className="ld-price-box">
                   <p className="ld-price-v">{prix ? prixHT(prix) : 'Sur devis'}</p>

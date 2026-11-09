@@ -125,6 +125,7 @@ ${leadLines.join('\n')}
 ## Services
 
 - [Génération de leads](${SITE_URL}/generation-de-leads) : campagnes Meta, landing page et CRM pour votre entreprise.
+- [Calculateur de coût par chantier signé](${SITE_URL}/calculateur-cout-par-chantier) : outil gratuit, du prix d'un lead au coût par chantier signé et au prix maximum d'un lead.
 - [Plateforme et espace client](${SITE_URL}/plateforme) : réception, suivi et export des contacts.
 - [Réalisations](${SITE_URL}/realisations) : cas clients chiffrés.
 - [Commander](${SITE_URL}/commander) : demande de commande ou de devis.

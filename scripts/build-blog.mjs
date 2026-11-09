@@ -15,7 +15,7 @@ import { PRETES } from '../src/v3/leads/thematiques.js';
 const SRC = 'content/blog';
 const OUT = 'src/blog/generated';
 const REQUIRED = ['title', 'seoTitle', 'description', 'category', 'datePublished', 'servicePage', 'faq'];
-const SITE_ROUTES = ['/', '/realisations', BLOG_PATH, ...Object.keys(SERVICE_PAGES), '/leads', ...PRETES.map((t) => `/${t.slug}`), '/mentions-legales', '/confidentialite', '/cgv'];
+const SITE_ROUTES = ['/', '/realisations', BLOG_PATH, ...Object.keys(SERVICE_PAGES), '/leads', '/calculateur-cout-par-chantier', ...PRETES.map((t) => `/${t.slug}`), '/mentions-legales', '/confidentialite', '/cgv'];
 // Mots proscrits par brain/core/style.md : avertissement, pas blocage.
 const AVOID = [/\bsur-mesure\b/i, /à votre écoute/i, /professionnalisme/i, /expertise reconnue/i, /clé en main/i];
 

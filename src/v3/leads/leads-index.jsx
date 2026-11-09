@@ -43,6 +43,7 @@ export default function LeadsIndex() {
                 <Link to="/commander" className="btn btn-order">Commander des leads</Link>
                 <a href="#reserver" className="btn btn-light">Réserver un appel</a>
               </div>
+              <p className="ld-link-line">Combien vous coûte vraiment un chantier signé ? <Link to="/calculateur-cout-par-chantier">Faites le calcul avec notre calculateur gratuit</Link>.</p>
             </div>
           </section>
 

@@ -260,6 +260,7 @@ export function Footer() {
             <ul>
               {LEADS.map((x) => <li key={x.to}><Link to={x.to}>{x.t}</Link></li>)}
               <li><Link to="/leads">Toutes les thématiques</Link></li>
+              <li><Link to="/calculateur-cout-par-chantier">Calculateur de coût par chantier</Link></li>
             </ul>
           </div>
           <div>

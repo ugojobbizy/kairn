@@ -144,6 +144,7 @@ C'est la condition pour répondre à la seule question qui compte : **quelle pub
 
 ## Pour aller plus loin
 
+- [Calculateur gratuit : votre coût par chantier signé et le prix maximum d’un lead](/calculateur-cout-par-chantier)
 - [Tous nos leads exclusifs, par secteur](/leads)
 - [Leads pompe à chaleur exclusifs (28 € HT le contact)](/leads-pompe-a-chaleur)
 - [Génération de leads : définition, méthodes, coûts et règles en France (guide 2026)](/blog/generation-de-leads-definition-guide)
