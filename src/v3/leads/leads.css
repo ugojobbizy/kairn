@@ -338,3 +338,10 @@
 .v2 .ld-pipe-card em { font-style: normal; color: var(--violet); font-weight: 600; }
 .v2 .ld-pipe-card.is-won { background: #ECFDF5; border-color: #10B981; box-shadow: 0 10px 22px -10px rgba(16,185,129,.8); }
 .v2 .ld-pipe-card.is-won em { color: #047857; }
+
+/* Pages sur devis : « Sur devis » tient sur une ligne dans la carte du haut. */
+.v2 .ld-hero-price b.is-devis { font-size: 40px; white-space: nowrap; }
+.v2 .ld-hero-qual .pv-row b { max-width: 60%; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2 .ld-hero-qual { width: 270px; }
+.v2 .ld-hero-qual .pv-row { gap: 10px; }
+.v2 .ld-hero-qual .pv-row span { white-space: nowrap; }

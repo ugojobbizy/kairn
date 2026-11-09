@@ -110,7 +110,7 @@ export default function LeadPage({ slug }) {
               <div ref={heroRef} className={`ld-hero-vis${heroPlay ? ' is-play' : ''}`} aria-hidden="true">
                 <div className="ld-hero-price">
                   <small>Prix du contact</small>
-                  <b>{prixTxt}{prix && <em>HT</em>}</b>
+                  <b className={prix ? undefined : 'is-devis'}>{prixTxt}{prix && <em>HT</em>}</b>
                   <span><Check />Exclusif</span>
                   <span><Check />Sans engagement</span>
                 </div>
