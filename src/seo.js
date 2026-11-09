@@ -33,7 +33,7 @@ export const PAGES = {
   },
   '/creation-site-internet': {
     title: 'Création de site internet sur mesure · Kairn',
-    description: 'Kairn, agence web à Bordeaux : sites internet, landing pages, tunnels de conversion et plateformes sur mesure, livrés en quelques semaines. Le code vous appartient.',
+    description: 'En complément de nos campagnes de génération de leads : sites internet, landing pages, tunnels et plateformes sur mesure, livrés en quelques semaines. Le code vous appartient.',
     crumb: 'Création de site internet',
     faq: FAQ_WEB,
     service: { name: 'Création de site internet', serviceType: 'Création de site internet' },
@@ -53,13 +53,14 @@ export const PAGES = {
     service: { name: 'CRM sur mesure', serviceType: 'Développement de CRM sur mesure' },
   },
   '/agence-bordeaux': {
-    title: 'Agence web et génération de leads à Bordeaux · Kairn',
-    description: 'Kairn, agence basée à Bordeaux : sites, landing pages, CRM sur mesure et campagnes Meta et Google Ads, pour des entreprises bordelaises et des projets partout en France.',
+    // Ugo, 09/11/2026 : « je ne veux plus me positionner comme une agence web » ; Bordeaux retiré du titre (la page reste).
+    title: 'Agence de génération de leads, partout en France · Kairn',
+    description: 'Kairn, agence de génération de leads basée à Bordeaux : leads exclusifs payés au contact ou campagnes Meta pilotées, et en complément sites et CRM. Partout en France.',
     crumb: 'Agence à Bordeaux',
     faq: FAQ_BDX,
     service: {
-      name: 'Agence web et génération de leads à Bordeaux',
-      serviceType: 'Création web et génération de leads',
+      name: 'Agence de génération de leads',
+      serviceType: 'Génération de leads',
       areaServed: [{ '@type': 'City', name: 'Bordeaux' }, { '@type': 'Country', name: 'France' }],
     },
   },
@@ -204,7 +205,7 @@ export function structuredData(path) {
         inLanguage: 'fr-FR',
         isPartOf: { '@id': `${SITE_URL}/#website` },
         publisher: { '@id': `${SITE_URL}/#organization` },
-        ...(page.dateModified ? { dateModified: page.dateModified } : {}),
+        ...(page.dateModified ? { dateModified: page.dateModified, author: { '@type': 'Person', name: AUTHOR.name, worksFor: { '@id': `${SITE_URL}/#organization` } } } : {}),
       },
       ...(page.service ? [{
         '@type': 'Service',
@@ -327,7 +328,7 @@ export function headTags(path) {
     `<meta property="og:image" content="${page.image || OG_IMAGE}" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
-    `<meta property="og:image:alt" content="Kairn, création web et génération de leads" />`,
+    `<meta property="og:image:alt" content="Kairn, agence de génération de leads" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(page.title)}" />`,
     `<meta name="twitter:description" content="${esc(page.description)}" />`,

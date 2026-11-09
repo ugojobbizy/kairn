@@ -129,7 +129,7 @@ La rénovation énergétique est encadrée, et les publicités aussi. Trois poin
 
 Dans tous les cas, la condition est la même : **suivre chaque lead jusqu'à la signature**, avec sa source. Sans ça, acheter ou produire revient à choisir au hasard.
 
-C'est ce que nous mettons en place pour les entreprises de rénovation : des [campagnes de génération de leads](/generation-de-leads) dont chaque demande arrive dans un CRM avec sa source, et un suivi jusqu'au chantier signé.
+C'est ce que nous mettons en place pour les entreprises de rénovation : des [campagnes de génération de leads](/generation-de-leads) dont chaque demande arrive dans un CRM avec sa source, et un suivi jusqu'au chantier signé. Vous préférez acheter des contacts ? Nos [leads pompe à chaleur exclusifs](/leads-pompe-a-chaleur) sont vendus au contact, à un seul installateur, sans engagement ; les autres secteurs sont sur [la page des leads par thématique](/leads).
 
 ## À retenir
 

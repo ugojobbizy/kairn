@@ -91,7 +91,7 @@ export default function LeadGenPage() {
               <Reveal className="sec-head">
                 <Pill>Ce qu’on met en place</Pill>
                 <h2 className="h2">Une chaîne complète, <span className="serif grad-text">de la pub à la signature.</span></h2>
-                <p>Chaque maillon est construit pour le suivant. C’est ce qui permet de baisser le coût par lead sans perdre en qualité.</p>
+                <p>Chaque maillon est construit pour le suivant. C’est ce qui permet de baisser le coût par lead sans perdre en qualité. Vous préférez acheter des contacts sans gérer de campagne ? Voyez nos <Link to="/leads">leads exclusifs par secteur</Link>, comme les <Link to="/leads-pompe-a-chaleur">leads pompe à chaleur</Link>.</p>
               </Reveal>
               <BentoGrid>
                 <BentoCard span icon="megaphone" title="Campagnes Meta Ads et Google Ads" description="Google capte ceux qui cherchent déjà votre service, Meta va chercher ceux qui ne cherchent pas encore. Plusieurs créas testées en parallèle, on garde celles qui font signer."><AdsVisual /></BentoCard>

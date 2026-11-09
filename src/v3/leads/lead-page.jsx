@@ -6,6 +6,7 @@ import Booking from '../../v2/booking.jsx';
 import { AuditHeader } from '../../v2/trust.jsx';
 import { Reveal, FaqList } from '../../v2/blocks.jsx';
 import { CONTACT_EMAIL } from '../../config.js';
+import { AUTHOR } from '../../blog/meta.js';
 import { GARANTIES, prixHT } from '../produits.js';
 import { prixDe, commandeHref, parSlug, dateMaj, MINIMUM } from './thematiques.js';
 import '../../v2/v2.css';
@@ -53,11 +54,14 @@ const ETAPES = (t) => [
   ['Suivi jusqu’à la signature', 'Dans votre espace : appel, SMS, rappel, rendez-vous, motif de perte. Doublon ou hors zone : vous le signalez, il est remplacé après vérification.'],
 ];
 
-const COMPARE = [
-  ['Combien de professionnels l’appellent', 'Vous seul', 'Souvent 3 à 5'],
-  ['Qui arrive le premier', 'Vous, dès la demande', 'Le plus rapide des acheteurs'],
-  ['D’où vient la demande', 'Une campagne dédiée à votre métier', 'Un comparateur ou un site généraliste'],
-  ['Ce que vous payez', 'Le contact livré, sans abonnement', 'Souvent un abonnement, plus le contact'],
+// Trois façons d'avoir des demandes (gabarit transmis le 09/11/2026) : sans chiffre sur les plateformes,
+// faute de source datée pour chacune ; délai et engagement de Pilotage repris de FAQ_LEADS et d'offers-compare-v2.
+const COMPARE = (prix) => [
+  ['Prix', 'Au contact ou par abonnement, selon la plateforme', prix ? `${prixHT(prix)} le contact` : 'Sur devis, au contact', 'Sur devis, plus votre budget publicitaire'],
+  ['Exclusivité', 'La même demande part souvent à plusieurs professionnels', 'Vous seul', 'Vous seul : ce sont vos campagnes'],
+  ['Délai', 'Selon les demandes reçues par la plateforme', 'Chaque jour, dès la demande', 'Lancement sous 5 jours ouvrés après l’appel de cadrage'],
+  ['Engagement', 'Souvent un abonnement', `Aucun, à partir de ${MINIMUM} contacts`, 'À voir ensemble'],
+  ['Qui paie la publicité', 'La plateforme', 'Kairn', 'Vous, sur vos propres comptes'],
 ];
 
 export default function LeadPage({ slug }) {
@@ -120,7 +124,7 @@ export default function LeadPage({ slug }) {
                   </tbody>
                 </table>
               </Reveal>
-              <p className="ld-maj">Mis à jour le {dateMaj(t.maj)}.</p>
+              <p className="ld-maj">Mis à jour le <time dateTime={t.maj}>{dateMaj(t.maj)}</time> par {AUTHOR.name}, fondateur de Kairn.</p>
             </div>
           </section>
 
@@ -209,12 +213,14 @@ export default function LeadPage({ slug }) {
                 <p>{t.exclusif}</p>
               </Reveal>
               <Reveal>
-                <table className="ld-compare">
-                  <thead><tr><th scope="col"><span className="sr-only">Critère</span></th><th scope="col">Lead exclusif Kairn</th><th scope="col">Lead mutualisé</th></tr></thead>
-                  <tbody>
-                    {COMPARE.map(([k, a, b]) => <tr key={k}><th scope="row">{k}</th><td><Check />{a}</td><td>{b}</td></tr>)}
-                  </tbody>
-                </table>
+                <div className="ld-scroll">
+                  <table className="ld-compare">
+                    <thead><tr><th scope="col"><span className="sr-only">Critère</span></th><th scope="col">Lead partagé<small>plateformes, annuaires</small></th><th scope="col">Lead exclusif Kairn<small>Kairn Leads</small></th><th scope="col">Campagne en propre<small>Kairn Pilotage</small></th></tr></thead>
+                    <tbody>
+                      {COMPARE(prix).map(([k, a, b, c]) => <tr key={k}><th scope="row">{k}</th><td>{a}</td><td><Check />{b}</td><td>{c}</td></tr>)}
+                    </tbody>
+                  </table>
+                </div>
               </Reveal>
             </div>
           </section>

@@ -253,7 +253,9 @@ export default function KairnHomeV3({ police }) {
                 )}
               </Reveal>
               {police ? <OffersCompareV2 /> : <OffersCompare />}
-              <p className="of-note">{police ? 'Les deux se combinent : des contacts achetés chez Kairn Leads, et vos propres campagnes pilotées par Kairn Pilotage.' : 'Et les deux se combinent : un installateur peut acheter des contacts sur nos thématiques et nous confier le reste de son acquisition.'}</p>
+              <p className="of-note">{police ? 'Les deux se combinent : des contacts achetés chez Kairn Leads, et vos propres campagnes pilotées par Kairn Pilotage.' : 'Et les deux se combinent : un installateur peut acheter des contacts sur nos thématiques et nous confier le reste de son acquisition.'}
+                {/* Liens vers les pages Leads par thématique (SEO, 09/11/2026). */}
+                {police && <> Le détail par secteur : <Link to="/leads-pompe-a-chaleur">leads pompe à chaleur</Link>, <Link to="/leads">toutes les thématiques</Link>.</>}</p>
               {/* V2 : cartes retirées, elles redisaient le tableau (proposition de copy du 29/10/2026). */}
               {!police && <OfferCards />}
             </div>

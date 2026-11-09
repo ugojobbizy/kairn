@@ -80,7 +80,7 @@ export default function KairnHomeV2() {
             <Glow />
             <LivingGradient />
             <div className="wrap hero-inner">
-              <Reveal y={12}><Pill>Création web &amp; génération de leads</Pill></Reveal>
+              <Reveal y={12}><Pill>Génération de leads &amp; création web</Pill></Reveal>
 
               <h1>
                 {headline.map((x, i) => x.br ? <br key={i} className="hero-br" /> : (

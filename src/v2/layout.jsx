@@ -243,7 +243,7 @@ export function Footer() {
           <div>
             <Link to="/" className="brand"><KairnLogo /><span className="brand-word">Kairn</span></Link>
             <p style={{ marginTop: 12, maxWidth: '34ch', fontSize: 15, color: 'var(--muted)' }}>
-              Agence de génération de leads. Campagnes, landing pages et CRM sur mesure, par une seule équipe.
+              Agence de génération de leads : leads exclusifs payés au contact, ou campagnes Meta pilotées. Landing pages et CRM en complément.
             </p>
           </div>
           <div>
@@ -266,6 +266,11 @@ export function Footer() {
             <h3>Services</h3>
             <ul>
               <li><Link to="/generation-de-leads">Génération de leads</Link></li>
+              <li><Link to="/plateforme">Plateforme client</Link></li>
+            </ul>
+            {/* Création web au second plan (Ugo, 09/11/2026 : « la création web c'est un second plan »). */}
+            <h3 className="footer-sub">En complément</h3>
+            <ul>
               <li><Link to="/creation-site-internet">Création de site internet</Link></li>
               <li><Link to="/creation-landing-page">Création de landing page</Link></li>
               <li><Link to="/crm-sur-mesure">CRM sur mesure</Link></li>

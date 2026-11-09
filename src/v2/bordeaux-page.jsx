@@ -48,11 +48,11 @@ export default function BordeauxPage() {
             <div className="wrap hero-inner">
               <Reveal y={12}><Pill>Agence à Bordeaux · Projets partout en France</Pill></Reveal>
               <motion.h1 className="bdx-h1" initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} transition={{ duration: 0.9, ease: EASE, delay: 0.1 }}>
-                Agence web et génération de leads à Bordeaux, <span className="serif grad-text">pour des projets partout en France.</span>
+                Agence de génération de leads, <span className="serif grad-text">pour des projets partout en France.</span>
               </motion.h1>
               <Reveal delay={0.35} y={16}>
                 <p className="hero-lead">
-                  Kairn est basée à Bordeaux. On crée vos sites, landing pages et CRM, et on lance vos campagnes Meta et Google Ads, pour les entreprises bordelaises comme pour des <strong>projets partout en France</strong>.
+                  Kairn est basée à Bordeaux. On vous apporte des leads exclusifs ou on pilote vos campagnes Meta, et on crée en complément vos sites, landing pages et CRM, pour les entreprises bordelaises comme pour des <strong>projets partout en France</strong>.
                 </p>
               </Reveal>
               <Reveal delay={0.5} y={16} className="hero-cta">

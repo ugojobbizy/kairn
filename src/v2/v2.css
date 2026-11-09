@@ -1364,3 +1364,5 @@
 
 /* Essai du 30/10/2026 (Ugo : « mettre Kairn de la même couleur que le logo pour voir ») : même dégradé que le pictogramme. */
 .v2 .brand-word { background: linear-gradient(90deg, #67E8F9, #818CF8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.v2 .sec-head p a, .v2 .of-note a { color: var(--violet); text-decoration: underline; text-underline-offset: 3px; }
+.v2 .footer-sub { margin-top: 22px; }
