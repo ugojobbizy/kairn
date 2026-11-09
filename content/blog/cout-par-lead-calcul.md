@@ -141,3 +141,10 @@ C'est la condition pour répondre à la seule question qui compte : **quelle pub
 - Avant 30 leads, un coût par lead n'est pas lisible. Protégez-vous avec un plafond de dépense décidé à l'avance.
 - Ne comparez deux coûts par lead qu'à budget comparable.
 - Le chiffre qui décide, au final, c'est le coût par client signé.
+
+## Pour aller plus loin
+
+- [Tous nos leads exclusifs, par secteur](/leads)
+- [Leads pompe à chaleur exclusifs (28 € HT le contact)](/leads-pompe-a-chaleur)
+- [Génération de leads : définition, méthodes, coûts et règles en France (guide 2026)](/blog/generation-de-leads-definition-guide)
+- [Fournisseur de leads : 12 questions à poser avant d'acheter des leads qualifiés](/blog/fournisseur-de-leads-comment-choisir)

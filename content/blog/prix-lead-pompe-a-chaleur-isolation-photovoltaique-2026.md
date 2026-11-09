@@ -158,6 +158,13 @@ Kairn paie la publicité et vous facture chaque contact reçu : 28 € HT en pom
 - Comparez le coût par chantier signé (prix du lead ÷ taux de signature), jamais le prix du lead seul.
 - Mesurez votre propre taux de signature, par source, sur au moins 50 leads.
 
+## Pour aller plus loin
+
+- [Leads pompe à chaleur exclusifs (28 € HT le contact)](/leads-pompe-a-chaleur)
+- [Leads isolation thermique par l’extérieur (ITE)](/leads-isolation-thermique-exterieur)
+- [Leads panneaux solaires et photovoltaïque](/leads-panneaux-solaires)
+- [Leads isolation des combles](/leads-isolation-combles)
+
 ## Sources
 
 - DGCCRF, [Les règles du démarchage téléphonique s'imposant aux entreprises](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/les-regles-du-demarchage-telephonique-simposant-aux-entreprises), fiche pratique écrite le 27/07/2026, consultée le 09/11/2026.

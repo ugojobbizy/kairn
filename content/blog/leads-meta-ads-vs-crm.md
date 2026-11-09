@@ -143,3 +143,8 @@ C'est ce que nous construisons pour nos clients : un [CRM qui relie chaque lead 
 - Un petit écart est normal. Un écart du simple au double mérite une vérification, en commençant par les six causes ci-dessus.
 - Le coût par lead se calcule avec les leads du CRM. Sur notre exemple, le chiffre de Meta le sous-estimait de moitié.
 - Un événement mal placé ne fausse pas seulement les rapports : il apprend à l'algorithme à chercher les mauvaises personnes.
+
+## Pour aller plus loin
+
+- [Tous nos leads exclusifs, par secteur](/leads)
+- [Lead qualifié : définition, critères et questions de qualification par secteur](/blog/lead-qualifie-definition)

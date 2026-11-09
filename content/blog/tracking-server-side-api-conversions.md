@@ -107,3 +107,8 @@ Le niveau 1 prend peu de temps et règle les problèmes les plus fréquents. Com
 - Chez Meta, pixel et API de conversions vont ensemble, avec un identifiant d'événement commun.
 - Le consentement s'applique aussi aux envois côté serveur.
 - Le vrai gain vient quand on renvoie aux plateformes les rendez-vous et les ventes, pas seulement les leads.
+
+## Pour aller plus loin
+
+- [Tous nos leads exclusifs, par secteur](/leads)
+- [Génération de leads : définition, méthodes, coûts et règles en France (guide 2026)](/blog/generation-de-leads-definition-guide)

@@ -145,6 +145,8 @@ export function pageFor(pathname) {
 // Il ne figure que dans ces données invisibles, pour que Google relie le site, la fiche et les recherches « Kairn Agency ».
 const BRAND_NAME = 'Kairn Agency';
 const GOOGLE_PROFILE = 'https://maps.google.com/?cid=17839410346044495568';
+// Profils de la marque (donnés par Ugo, 09/11/2026), reliés pour que Google et les IA reconnaissent une seule entité.
+const PROFILS = [GOOGLE_PROFILE, 'https://www.linkedin.com/company/kairn-agence/'];
 
 const ORGANIZATION = {
   '@type': 'ProfessionalService',
@@ -161,7 +163,7 @@ const ORGANIZATION = {
   description: PAGES['/'].description,
   knowsAbout: ['Génération de leads', 'Leads exclusifs', 'Leads pompe à chaleur', 'Leads isolation thermique par l’extérieur', 'Leads photovoltaïque', 'Meta Ads', 'Création de landing pages', 'CRM sur mesure', 'Tracking serveur'],
   hasMap: GOOGLE_PROFILE,
-  sameAs: [GOOGLE_PROFILE],
+  sameAs: PROFILS,
 };
 
 const WEBSITE = {

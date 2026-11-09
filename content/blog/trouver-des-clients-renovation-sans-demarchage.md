@@ -133,6 +133,13 @@ Kairn est un canal payant parmi ceux de cette liste, pas un remplaçant des avis
 
 Dans les deux cas, chaque contact a fait lui-même une demande. Kairn ne garantit pas de chantiers : la signature dépend de votre rappel, de votre devis et de votre zone.
 
+## Pour aller plus loin
+
+- [Leads pompe à chaleur exclusifs (28 € HT le contact)](/leads-pompe-a-chaleur)
+- [Leads isolation thermique par l’extérieur (ITE)](/leads-isolation-thermique-exterieur)
+- [Leads isolation des combles](/leads-isolation-combles)
+- [Installateur photovoltaïque : comment trouver des clients en 2026, après la fin de la prime à l'autoconsommation](/blog/installateur-photovoltaique-trouver-des-clients-2026)
+
 ## Sources
 
 - DGCCRF, [Les règles du démarchage téléphonique s'imposant aux entreprises](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/les-regles-du-demarchage-telephonique-simposant-aux-entreprises), fiche pratique écrite le 27/07/2026, consultée le 09/11/2026.

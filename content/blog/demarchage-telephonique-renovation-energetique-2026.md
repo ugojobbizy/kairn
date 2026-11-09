@@ -97,6 +97,13 @@ Le lead acheté reste permis : c'est précisément une demande explicite d'infor
 
 Chez Kairn, chaque contact a rempli lui-même une demande pour être rappelé sur son projet, et il n'est envoyé qu'à **un seul professionnel**. Il arrive dans votre espace client au fil des demandes, ce qui vous laisse la totalité du délai pour rappeler. Si la loi vous inquiète, posez-nous les cinq questions ci-dessus : on vous répond par écrit, lead par lead.
 
+## Pour aller plus loin
+
+- [Leads pompe à chaleur exclusifs (28 € HT le contact)](/leads-pompe-a-chaleur)
+- [Leads isolation thermique par l’extérieur (ITE)](/leads-isolation-thermique-exterieur)
+- [Leads panneaux solaires et photovoltaïque](/leads-panneaux-solaires)
+- [Démarchage téléphonique depuis le 11 août 2026 : fin de Bloctel, consentement obligatoire, ce qui change pour les professionnels](/blog/demarchage-telephonique-consentement-11-aout-2026)
+
 ## Sources
 
 - DGCCRF, [Les règles du démarchage téléphonique s'imposant aux entreprises](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/les-regles-du-demarchage-telephonique-simposant-aux-entreprises), fiche pratique écrite le 27/07/2026, consultée le 09/11/2026.

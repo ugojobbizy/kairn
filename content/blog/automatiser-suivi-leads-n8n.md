@@ -131,3 +131,8 @@ Nous construisons ces automatisations avec n8n et Make, autour d'un [CRM qui rel
 - Le coût par lead calculé chaque nuit dans le CRM remplace les chiffres des plateformes.
 - Renvoyer les ventes à Meta et Google améliore la qualité des leads sur la durée.
 - Testez tout ce qui touche à l'argent, et faites en sorte qu'un échec prévienne quelqu'un.
+
+## Pour aller plus loin
+
+- [Tous nos leads exclusifs, par secteur](/leads)
+- [Lead qualifié : définition, critères et questions de qualification par secteur](/blog/lead-qualifie-definition)

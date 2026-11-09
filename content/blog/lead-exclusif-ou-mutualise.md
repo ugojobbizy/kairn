@@ -150,6 +150,13 @@ Chez Kairn, chaque contact n'est envoyé qu'à **un seul professionnel**. Kairn 
 - Depuis le 11 août 2026, demandez si le particulier a demandé à être rappelé par votre entreprise, et si vous pouvez le prouver.
 - Comparez sur le coût par chantier signé, avec un taux de signature mesuré séparément pour chaque type de lead.
 
+## Pour aller plus loin
+
+- [Leads pompe à chaleur exclusifs (28 € HT le contact)](/leads-pompe-a-chaleur)
+- [Leads isolation thermique par l’extérieur (ITE)](/leads-isolation-thermique-exterieur)
+- [Leads panneaux solaires et photovoltaïque](/leads-panneaux-solaires)
+- [Fournisseur de leads : 12 questions à poser avant d'acheter des leads qualifiés](/blog/fournisseur-de-leads-comment-choisir)
+
 ## Sources
 
 - DGCCRF, [Les règles du démarchage téléphonique s'imposant aux entreprises](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/les-regles-du-demarchage-telephonique-simposant-aux-entreprises), fiche pratique écrite le 27/07/2026, consultée le 09/11/2026.

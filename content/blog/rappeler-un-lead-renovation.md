@@ -148,6 +148,13 @@ Un tableur suffit pour commencer. L'important est de le remplir à chaque appel,
 
 Chez Kairn, chaque contact a rempli lui-même une demande pour être rappelé sur son projet, et il n'est envoyé qu'à un seul professionnel. Les contacts arrivent chaque jour dans votre espace client avec le nom, le téléphone, l'e-mail, le code postal, le statut de propriétaire ou non, le type de logement, le chauffage et la surface : de quoi préparer l'appel avant de composer le numéro. L'espace client vous permet de suivre vos contacts et de signaler un contact hors zone ou en doublon, remplacé après vérification. Kairn ne garantit pas de chantiers : la visite et la signature restent votre travail. Pour en savoir plus, voyez notre page [génération de leads](/generation-de-leads).
 
+## Pour aller plus loin
+
+- [Leads pompe à chaleur exclusifs (28 € HT le contact)](/leads-pompe-a-chaleur)
+- [Leads isolation thermique par l’extérieur (ITE)](/leads-isolation-thermique-exterieur)
+- [Leads panneaux solaires et photovoltaïque](/leads-panneaux-solaires)
+- [Démarchage téléphonique depuis le 11 août 2026 : fin de Bloctel, consentement obligatoire, ce qui change pour les professionnels](/blog/demarchage-telephonique-consentement-11-aout-2026)
+
 ## Sources
 
 - DGCCRF, [Les règles du démarchage téléphonique s'imposant aux entreprises](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/les-regles-du-demarchage-telephonique-simposant-aux-entreprises), fiche pratique écrite le 27/07/2026, consultée le 09/11/2026.

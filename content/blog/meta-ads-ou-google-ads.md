@@ -129,3 +129,9 @@ Une condition pour faire les deux sereinement : **savoir quel canal a amené cha
 - Une demande qui existe attire la concurrence : Google n'est pas toujours le canal le moins cher, même quand il semble évident.
 - Commencez par un seul canal, avec un plafond de dépense décidé à l'avance.
 - Comparez les canaux sur le coût par client signé, mesuré dans votre CRM, jamais sur les chiffres des plateformes.
+
+## Pour aller plus loin
+
+- [Tous nos leads exclusifs, par secteur](/leads)
+- [Leads isolation des combles](/leads-isolation-combles)
+- [Génération de leads : définition, méthodes, coûts et règles en France (guide 2026)](/blog/generation-de-leads-definition-guide)

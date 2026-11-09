@@ -117,3 +117,8 @@ C'est ce que nous construisons dans nos [CRM sur mesure](/crm-sur-mesure). Et qu
 - Le sur mesure devient plus simple quand vous voulez relier chaque vente à sa publicité, quand votre métier ne rentre pas dans les cases, quand le prix par utilisateur freine, ou quand vous voulez posséder l'outil.
 - Comparez sur trois ans, en comptant les utilisateurs, les modules et le temps perdu.
 - Aucun outil ne remplace la discipline : un CRM ne vaut que si les statuts sont tenus à jour.
+
+## Pour aller plus loin
+
+- [Tous nos leads exclusifs, par secteur](/leads)
+- [Lead qualifié : définition, critères et questions de qualification par secteur](/blog/lead-qualifie-definition)
