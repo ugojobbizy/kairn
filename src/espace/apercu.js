@@ -33,7 +33,7 @@ export function apercuData() {
   const mine = [
     ...Array.from({ length: 73 }, (_, i) => lead(i, 'ITE', Math.floor(i / 10), { client_id: 'apercu', commande_id: cmd.id, livre_le: new Date(i < 3 ? Date.now() - [6, 22, 48][i] * 60000 : Date.now() - Math.floor(i / 10) * 86400000 - i * 3600000).toISOString(), exporte_le: i > 8 ? new Date().toISOString() : null })),
     ...Array.from({ length: 4 }, (_, i) => lead(200 + i, 'PPV', 20, { client_id: 'apercu', commande_id: shopCmd.id, livre_le: shopCmd.created_at, exporte_le: new Date().toISOString() })),
-  ];
+  ].map((l) => ({ ...l, recu_le: l.livre_le })); // demande = livraison dans l'aperçu : le délai légal part de la livraison
   const litiges = [
     { id: 'apercu-lit-1', created_at: new Date(Date.now() - 2 * 86400000).toISOString(), lead_id: mine[3].id, client_id: 'apercu', motif: 'doublon', message: 'Déjà reçu la semaine dernière.', statut: 'en_attente', reponse: null },
     { id: 'apercu-lit-2', created_at: new Date(Date.now() - 4 * 86400000).toISOString(), lead_id: mine[12].id, client_id: 'apercu', motif: 'hors_zone', message: null, statut: 'accepte', reponse: 'Vérifié, remplacé.', remplacement_id: mine[13].id },
@@ -50,7 +50,8 @@ export function apercuData() {
     const statut = st[i % st.length];
     return { lead_id: l.id, client_id: 'apercu', statut, maj_le: new Date().toISOString(),
       rdv_le: statut === 'rdv' ? h(4 + i * 7) : statut === 'devis' ? h(-48 - i) : null,
-      rappel_le: statut === 'a_rappeler' ? h(i % 3 === 0 ? -2 : 3 + i) : null,
+      rappel_le: statut === 'a_rappeler' ? h(i % 3 === 0 ? -2 : 3 + i) : statut === 'nrp' ? h(i % 2 ? -1 : 2) : null,
+      tentatives: statut === 'nrp' ? 1 + (i % 3) : ['a_appeler', 'a_rappeler'].includes(statut) ? 0 : 1,
       motif_perte: statut === 'perdu' ? (i % 2 ? 'plus_interesse' : 'injoignable') : null };
   });
   const journal = suivi.flatMap((x, i) => {
@@ -60,5 +61,5 @@ export function apercuData() {
     if (i % 3 === 0) out.push({ id: `j-${i}-2`, lead_id: x.lead_id, client_id: 'apercu', type: 'note', texte: 'Appelé, intéressé. Souhaite un devis avant fin du mois.', cree_le: t(20 + i * 9) });
     return out;
   });
-  return { leads: mine, commandes: [pre, cmd, shopCmd], litiges, stock, suivi, journal };
+  return { leads: mine, commandes: [pre, cmd, shopCmd], litiges, stock, suivi, journal, prefs: {}, modeles: [] };
 }

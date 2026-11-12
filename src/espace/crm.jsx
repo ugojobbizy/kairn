@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { db, THEMES, MOTIFS, LITIGE_STATUTS, SUIVI, MOTIFS_PERTE, TVA, euro, dateFr, dateHeure, errMsg, downloadCsv, notifier } from './db.js';
 import { PRODUITS } from '../v3/produits.js';
 import { useData } from './data.js';
+import { MAX_APPELS, planDe, prochaineTentative, etatDelai, dansCreneau, finCreneau, prochainCreneau, duree, remplir, numeroIntl } from './relance.js';
 
 // CRM de l'espace client « Mes contacts » (Ugo, 30/10/2026 : « prends la même base que le CRM que j'ai fait pour ETXE Énergie
 // et pour Isolation d'Aquitaine »). Même logique que ~/combles-crm (AdminShell, LeadDrawer) : pipeline en colonnes avec
@@ -28,10 +29,81 @@ const fromLocal = (v) => (v ? new Date(v).toISOString() : null);
 const tel = (l) => (l.telephone || '').replace(/\s/g, '');
 const jour = (d) => new Date(d).toDateString();
 const quand = (d) => new Date(d).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-function smsHref(l, client) {
-  const t = (THEMES[l.thematique] || 'votre projet').toLowerCase();
-  const corps = `Bonjour ${l.prenom || ''}, vous avez demandé à être rappelé pour votre projet (${t}). Je vous appelle dans quelques minutes.${client?.societe ? ` ${client.societe}` : ''}`;
-  return `sms:${tel(l)}?&body=${encodeURIComponent(corps.replace(/\s+/g, ' ').trim())}`;
+// ─ relance : délai légal et plan d'appels (src/espace/relance.js) ─
+export const demandeDe = (l) => l.recu_le || l.livre_le;
+const RELANCABLES = ['a_appeler', 'nrp', 'a_rappeler'];
+const heure = (d) => new Date(d).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', ' h ').replace(/ h 00$/, ' h');
+const jourHeure = (d) => {
+  const x = new Date(d); const auj = new Date(); const dem = new Date(); dem.setDate(dem.getDate() + 1);
+  if (x.toDateString() === auj.toDateString()) return `aujourd’hui ${heure(x)}`;
+  if (x.toDateString() === dem.toDateString()) return `demain ${heure(x)}`;
+  return `${x.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })} ${heure(x)}`;
+};
+// Pastille du délai légal de rappel (5 jours ouvrables après la demande).
+export function Delai({ lead: l, sv, now }) {
+  if (sv && !RELANCABLES.includes(sv.statut)) return null;
+  const e = etatDelai(demandeDe(l), now);
+  if (!e.fin) return null;
+  if (e.depasse) return <span className="crm-delai is-out" title="Le délai légal de rappel est passé : ne plus appeler ce contact.">Délai dépassé</span>;
+  return <span className={`crm-delai${e.urgent ? ' is-urgent' : ''}`} title={`Dernier appel possible : ${jourHeure(e.fin)} (5 jours ouvrables après la demande)`}>Délai : {duree(e.reste)}</span>;
+}
+
+// ─ modèles de SMS (« Générer un SMS », Ugo, 12/11/2026 : l'installateur copie le texte et l'envoie lui-même) ─
+// Textes : Claude, 12/11/2026, d'après ~/kairn-copy/references-cache-brain/2026-11-12-sms-rappel-leads.md ; chaque SMS ne
+// parle que du projet demandé (rappel limité à l'objet de la demande, fiche DGCCRF du 27/07/2026). Modifiables dans Mon compte.
+export const MODELES_DEFAUT = [
+  { id: 'defaut-1', titre: 'Injoignable (1er appel)', texte: 'Bonjour {prenom}, ici {signataire} de {entreprise}. Vous avez demandé à être rappelé pour votre projet de {projet}. Je viens d’essayer de vous joindre. Quand puis-je vous rappeler ? Répondez simplement avec un créneau.' },
+  { id: 'defaut-2', titre: 'Injoignable (relance)', texte: 'Bonjour {prenom}, c’est {signataire} de {entreprise}, au sujet de votre demande pour votre projet de {projet}. Je n’arrive pas à vous joindre. Si le projet est toujours d’actualité, répondez OUI et je vous rappelle quand ça vous arrange.' },
+  { id: 'defaut-3', titre: 'Confirmation de rendez-vous', texte: 'Bonjour {prenom}, je vous confirme notre rendez-vous du {rdv} pour votre projet de {projet}. Merci de répondre OK pour le confirmer. {signataire}, {entreprise}' },
+  { id: 'defaut-4', titre: 'Rappel la veille du rendez-vous', texte: 'Bonjour {prenom}, petit rappel : nous avons rendez-vous demain, {rdv}, pour votre projet de {projet}. En cas d’empêchement, prévenez-moi ici. {signataire}, {entreprise}' },
+  { id: 'defaut-5', titre: 'Relance du devis', texte: 'Bonjour {prenom}, avez-vous pu regarder le devis pour votre projet de {projet} ? Je reste disponible pour répondre à vos questions ou l’ajuster. {signataire}, {entreprise}' },
+];
+const PROJET = { PAC: 'pompe à chaleur', ITE: 'isolation extérieure', PPV: 'panneaux solaires' };
+const dateRdv = (d) => (d ? new Date(d).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).replace(':', ' h ') : '');
+export function variablesSms(l, client, sv) {
+  return { prenom: l.prenom || '', nom: l.nom || '', projet: PROJET[l.thematique] || (THEMES[l.thematique] || '').toLowerCase(), ville: l.ville || '',
+    entreprise: client?.societe || '', signataire: client?.prenom || '', rdv: dateRdv(sv?.rdv_le) };
+}
+// Modèle proposé d'office selon l'étape du contact.
+function modeleConseille(sv) {
+  if (sv?.statut === 'rdv') return new Date(sv.rdv_le || 0) - Date.now() < 36 * 3600000 ? 'defaut-4' : 'defaut-3';
+  if (sv?.statut === 'devis') return 'defaut-5';
+  return (sv?.tentatives || 0) >= 2 ? 'defaut-2' : 'defaut-1';
+}
+function SmsModal({ lead: l, client, sv, onClose }) {
+  const { modeles } = useData();
+  const liste = modeles?.length ? modeles : MODELES_DEFAUT;
+  const conseil = modeles?.length ? liste[0].id : modeleConseille(sv);
+  const [choix, setChoix] = useState(conseil);
+  const m = liste.find((x) => x.id === choix) || liste[0];
+  const [texte, setTexte] = useState(() => remplir(m.texte, variablesSms(l, client, sv)));
+  const [copie, setCopie] = useState(false);
+  useEffect(() => { setTexte(remplir(m.texte, variablesSms(l, client, sv))); setCopie(false); }, [choix]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { const k = (e) => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose]);
+  const manque = /\{\w+\}/.test(m.texte) && (!client?.societe || !client?.prenom);
+  async function copier() {
+    try { await navigator.clipboard.writeText(texte); setCopie(true); setTimeout(() => setCopie(false), 2500); } catch { /* presse-papiers refusé : le texte reste sélectionnable */ }
+  }
+  return (
+    <div className="ec-modal" role="dialog" aria-modal="true" aria-label="Générer un SMS" onClick={onClose}>
+      <div className="ec-modal-card crm-sms" onClick={(e) => e.stopPropagation()}>
+        <h2>Générer un SMS</h2>
+        <p className="ec-modal-lead">Pour {nomComplet(l)} · {l.telephone || 'pas de numéro'}</p>
+        <div className="crm-sms-modeles" role="radiogroup" aria-label="Modèle">
+          {liste.map((x) => <button type="button" role="radio" aria-checked={choix === x.id} key={x.id} className={choix === x.id ? 'is-on' : ''} onClick={() => setChoix(x.id)}>{x.titre}</button>)}
+        </div>
+        <label className="ec-field"><span>Message (modifiable)</span><textarea rows={6} value={texte} onChange={(e) => setTexte(e.target.value)} maxLength={640} /></label>
+        <p className="crm-sms-compte">{texte.length} caractères{texte.length > 160 ? ` · ${Math.ceil(texte.length / 153)} SMS` : ''}</p>
+        {manque && <p className="ec-note">Le nom de votre société ou votre prénom manque : écrivez-nous pour compléter votre fiche.</p>}
+        <div className="crm-sms-actions">
+          <button type="button" className="ec-btn" onClick={copier}>{copie ? 'Copié' : 'Copier le texte'}</button>
+          <a className="ec-btn-ghost" href={`sms:${tel(l)}?&body=${encodeURIComponent(texte)}`}>Ouvrir dans Messages</a>
+          <a className="ec-btn-ghost" href={`https://wa.me/${numeroIntl(l.telephone)}?text=${encodeURIComponent(texte)}`} target="_blank" rel="noopener noreferrer">Ouvrir dans WhatsApp</a>
+        </div>
+        <p className="ec-small">Le message part de votre téléphone : rien n’est envoyé par Kairn. <Link to="/espace/compte#modeles" onClick={onClose}>Gérer mes modèles</Link></p>
+      </div>
+    </div>
+  );
 }
 function gcalUrl(l, rdv, client) {
   if (!rdv) return null;
@@ -165,6 +237,12 @@ function Carte({ lead: l, sv, litige, onOpen, onDrag, dragging }) {
         <span className="crm-age">{age(l.livre_le)}</span>
       </div>
       <p className="crm-card-them">{THEMES[l.thematique] || l.thematique}</p>
+      {(!sv || RELANCABLES.includes(sv.statut)) && (
+        <div className="crm-card-relance">
+          <span className="crm-appels">{sv?.tentatives ? `Appel ${Math.min(sv.tentatives, MAX_APPELS)}/${MAX_APPELS}` : 'Jamais appelé'}</span>
+          <Delai lead={l} sv={sv} />
+        </div>
+      )}
       <div className="crm-tags">
         {[l.statut_occupation, l.type_logement, l.chauffage].filter(Boolean).map((t) => <span key={t}>{t}</span>)}
       </div>
@@ -181,9 +259,32 @@ function Carte({ lead: l, sv, litige, onOpen, onDrag, dragging }) {
 }
 
 // ─ fiche latérale ─
-function Fiche({ lead: l, client, litige, apercu, onClose, onSignal }) {
-  const { suiviPar, journalPar, majSuivi, noter } = useData();
-  const sv = suiviPar.get(l.id) || { statut: 'a_appeler', rappel_le: null, rdv_le: null, motif_perte: null };
+// Après « Appeler » : l'installateur dit ce qui s'est passé. « Pas de réponse » compte l'appel et programme la relance
+// suivante du plan (4 appels au plus, créneaux autorisés, avant la fin du délai légal) ; « Il a répondu » compte l'appel.
+export function useAppel(onToast) {
+  const { suiviPar, appeler, prefs } = useData();
+  return async (l, resultat) => {
+    const sv = suiviPar.get(l.id);
+    const faites = (sv?.tentatives || 0) + 1;
+    const prochaine = resultat === 'nrp' ? prochaineTentative(demandeDe(l), faites, planDe(prefs), new Date()) : null;
+    const ok = await appeler(l.id, resultat, prochaine ? prochaine.toISOString() : null);
+    if (!ok) return;
+    if (resultat === 'repondu') onToast?.(`Appel ${faites} noté. Choisissez la suite : rendez-vous, rappel ou perdu.`);
+    else if (sv && !RELANCABLES.includes(sv.statut)) onToast?.(`Appel ${faites} noté, sans réponse.`);
+    else onToast?.(prochaine ? `Pas de réponse (appel ${faites}/${MAX_APPELS}). Relance prévue ${jourHeure(prochaine)}.`
+      : `Pas de réponse (appel ${faites}). Plus de relance possible : ${faites >= MAX_APPELS ? `${MAX_APPELS} appels faits` : 'délai légal atteint'}. Vous pouvez le classer perdu (injoignable).`);
+  };
+}
+
+function Fiche({ lead: l, client, litige, apercu, onClose, onSignal, onToast }) {
+  const { suiviPar, journalPar, majSuivi, noter, prefs } = useData();
+  const sv = suiviPar.get(l.id) || { statut: 'a_appeler', rappel_le: null, rdv_le: null, motif_perte: null, tentatives: 0 };
+  const [sms, setSms] = useState(false);
+  const appel = useAppel(onToast);
+  const relancable = RELANCABLES.includes(sv.statut);
+  const delai = etatDelai(demandeDe(l));
+  const convenu = sv.statut === 'a_rappeler';
+  const prevue = !relancable ? null : sv.rappel_le ? (convenu ? sv.rappel_le : prochainCreneau(new Date(sv.rappel_le))) : prochaineTentative(demandeDe(l), sv.tentatives || 0, planDe(prefs));
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   useEffect(() => { const k = (e) => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose]);
@@ -207,15 +308,33 @@ function Fiche({ lead: l, client, litige, apercu, onClose, onSignal }) {
       <aside className="crm-drawer-panel">
         <header className="crm-drawer-head">
           <span className="crm-av is-lg">{initiales(l)}</span>
-          <div><b>{nomComplet(l)}</b><span>Reçu le {dateHeure(l.livre_le)} · il y a {age(l.livre_le)}</span></div>
+          <div><b>{nomComplet(l)}</b><span>Demande du {dateHeure(demandeDe(l))} · il y a {age(demandeDe(l))}</span></div>
           <button type="button" className="crm-x" aria-label="Fermer" onClick={onClose}><Ico d={I.x} size={18} /></button>
         </header>
         <div className="crm-drawer-body">
           <div className="crm-actions">
             <a className="crm-call" href={`tel:${tel(l)}`}><Ico d={I.tel} size={18} />Appeler</a>
-            <a className="crm-act" href={smsHref(l, client)}><Ico d={I.sms} size={18} />SMS</a>
+            <button type="button" className="crm-act" onClick={() => setSms(true)}><Ico d={I.sms} size={18} />Générer un SMS</button>
             {l.email && <a className="crm-act" href={`mailto:${l.email}`}><Ico d={I.mail} size={18} />E-mail</a>}
           </div>
+
+          <section className="crm-appel">
+            <div className="crm-appel-head">
+              <b>{sv.tentatives ? `Appel${sv.tentatives > 1 ? 's' : ''} passé${sv.tentatives > 1 ? 's' : ''} : ${sv.tentatives}/${MAX_APPELS}` : 'Pas encore appelé'}</b>
+              {relancable && <Delai lead={l} sv={sv} />}
+            </div>
+            <p className="crm-appel-txt">
+              {!relancable ? 'Contact en cours de traitement.'
+                : delai.depasse ? 'Le délai légal de rappel (5 jours ouvrables après la demande) est passé : ne l’appelez plus.'
+                  : sv.tentatives >= MAX_APPELS ? `${MAX_APPELS} appels faits : plus de relance prévue.`
+                    : prevue ? `${convenu ? 'Rappel convenu' : sv.tentatives ? 'Prochaine relance' : 'À appeler'} ${new Date(prevue) <= new Date() ? (convenu ? `le ${jourHeure(prevue)}, à faire maintenant` : 'maintenant') : jourHeure(prevue)} · dernier appel possible ${jourHeure(delai.fin)}.`
+                      : `Dernier appel possible ${jourHeure(delai.fin)}.`}
+            </p>
+            <div className="crm-appel-btns">
+              <button type="button" className="ec-btn-ghost" onClick={() => appel(l, 'nrp')}>Pas de réponse</button>
+              <button type="button" className="ec-btn-ghost" onClick={() => appel(l, 'repondu')}>Il a répondu</button>
+            </div>
+          </section>
 
           <section><h3>Étape</h3>
             <div className="crm-steps">{ETAPES_CRM.map((k) => <button type="button" key={k} style={{ '--c': TON[k] }} className={sv.statut === k ? 'is-on' : ''} aria-pressed={sv.statut === k} onClick={() => set({ statut: k })}>{SUIVI[k]}</button>)}</div>
@@ -266,7 +385,7 @@ function Fiche({ lead: l, client, litige, apercu, onClose, onSignal }) {
               {journal.map((j) => (
                 <li key={j.id} className={j.type === 'note' ? 'is-note' : ''}>
                   <i style={{ background: j.type === 'note' ? '#CBD5E1' : TON[j.statut] }} />
-                  <div>{j.type === 'note' ? <p>{j.texte}</p> : <p>Étape : <b>{SUIVI[j.statut] || j.statut}</b></p>}<span>{dateHeure(j.cree_le)}</span></div>
+                  <div>{j.type === 'note' ? <p>{j.texte}</p> : j.type === 'appel' ? <p>Appel : <b>{j.texte === 'nrp' ? 'pas de réponse' : 'a répondu'}</b></p> : <p>Étape : <b>{SUIVI[j.statut] || j.statut}</b></p>}<span>{dateHeure(j.cree_le)}</span></div>
                 </li>
               ))}
               <li><i style={{ background: TON.a_appeler }} /><div><p>Contact reçu</p><span>{dateHeure(l.livre_le)}</span></div></li>
@@ -280,6 +399,7 @@ function Fiche({ lead: l, client, litige, apercu, onClose, onSignal }) {
           </footer>
         </div>
       </aside>
+      {sms && <SmsModal lead={l} client={client} sv={sv} onClose={() => setSms(false)} />}
     </div>
   );
 }
@@ -345,11 +465,114 @@ function Relance({ session, client, apercu, onClose }) {
   );
 }
 
+// ─ Ma journée : qui appeler maintenant (bloc 1 « vitesse et relance », 12/11/2026) ─
+// Nouveaux contacts d'abord (le plus ancien en tête : son délai court depuis plus longtemps), puis relances arrivées à
+// échéance ; ensuite ce qui tombe plus tard dans la journée, les rendez-vous du jour et les contacts dont le délai est passé.
+export function planJournee(rows, suiviPar, prefs, now = new Date()) {
+  const finJour = new Date(now); finJour.setHours(23, 59, 59, 999);
+  const plan = planDe(prefs);
+  const out = { maintenant: [], plusTard: [], ensuite: [], depasses: [], rdv: [] };
+  for (const l of rows) {
+    const sv = suiviPar.get(l.id);
+    const statut = sv?.statut || 'a_appeler';
+    if (sv?.rdv_le && ['rdv', 'devis'].includes(statut)) { const r = new Date(sv.rdv_le); if (r.toDateString() === now.toDateString()) out.rdv.push({ l, quand: r }); }
+    if (!RELANCABLES.includes(statut)) continue;
+    const delai = etatDelai(demandeDe(l), now);
+    // Lecture prudente : même un rappel convenu (« À rappeler ») sort de la liste une fois le délai de la demande passé.
+    if (delai.depasse) { out.depasses.push({ l }); continue; }
+    let quand;
+    if (statut === 'a_rappeler') quand = sv?.rappel_le ? new Date(sv.rappel_le) : now; // heure convenue avec le particulier
+    else if (sv?.rappel_le) quand = prochainCreneau(new Date(sv.rappel_le)); // relance recalée dans un créneau autorisé
+    else quand = prochaineTentative(demandeDe(l), sv?.tentatives || 0, plan, now);
+    if (!quand) continue; // plus de relance possible (4 appels faits) : visible dans le pipeline, pas dans la journée
+    const item = { l, quand, nouveau: statut === 'a_appeler' && !sv?.tentatives };
+    if (quand <= now) out.maintenant.push(item); else if (quand <= finJour) out.plusTard.push(item); else out.ensuite.push(item);
+  }
+  out.maintenant.sort((a, b) => (b.nouveau - a.nouveau) || (new Date(demandeDe(a.l)) - new Date(demandeDe(b.l))));
+  out.plusTard.sort((a, b) => a.quand - b.quand);
+  out.ensuite.sort((a, b) => a.quand - b.quand);
+  out.rdv.sort((a, b) => a.quand - b.quand);
+  return out;
+}
+
+function Journee({ rows, onOpen, onToast, now }) {
+  const { suiviPar, prefs, majSuivi } = useData();
+  const appel = useAppel(onToast);
+  const j = useMemo(() => planJournee(rows, suiviPar, prefs, now), [rows, suiviPar, prefs, now]);
+  const ok = dansCreneau(now);
+  const fin = finCreneau(now);
+  const reprise = ok ? null : prochainCreneau(now);
+  const ligne = ({ l, quand, nouveau }, tard) => {
+    const sv = suiviPar.get(l.id);
+    const when = tard === 'jour' ? jourHeure(quand) : tard ? heure(quand) : '';
+    return (
+      <li key={l.id} className="crm-jl">
+        <button type="button" className="crm-jl-who" onClick={() => onOpen(l.id)}>
+          <span className="crm-av">{initiales(l)}</span>
+          <span className="crm-line-who"><b>{nomComplet(l)}</b><small>{[THEMES[l.thematique], [l.code_postal, l.ville].filter(Boolean).join(' ')].filter(Boolean).join(' · ')}</small></span>
+        </button>
+        <span className="crm-jl-meta">
+          {nouveau ? <span className="crm-chrono" title="Temps écoulé depuis la demande">Attend depuis {duree(now - new Date(demandeDe(l)))}{when ? ` · à appeler ${when}` : ''}</span>
+            : <span className="crm-appels">{sv?.statut === 'a_rappeler' ? `Rappel convenu${when ? ` ${when}` : ''}` : `Relance · appel ${(sv?.tentatives || 0) + 1}/${MAX_APPELS}${when ? ` · ${when}` : ''}`}</span>}
+          <Delai lead={l} sv={sv} now={now} />
+        </span>
+        <span className="crm-jl-act">
+          <a className="crm-jl-call" href={`tel:${tel(l)}`}><Ico d={I.tel} size={16} />Appeler</a>
+          <button type="button" className="crm-jl-btn" onClick={() => appel(l, 'nrp')}>Pas de réponse</button>
+          <button type="button" className="crm-jl-btn" onClick={() => { appel(l, 'repondu'); onOpen(l.id); }}>Répondu</button>
+        </span>
+      </li>
+    );
+  };
+  return (
+    <div className="crm-journee">
+      <p className={`crm-creneau${ok ? ' is-ok' : ''}`}>
+        <i aria-hidden="true" />
+        {ok ? <>Appels autorisés jusqu’à <b>{heure(fin)}</b></> : <>Hors des horaires d’appel. Reprise <b>{reprise ? jourHeure(reprise) : '·'}</b></>}
+        <small>Lundi au vendredi hors fériés, 10 h à 13 h et 14 h à 20 h, sauf horaire précis convenu avec le particulier.</small>
+      </p>
+
+      <section className="crm-jsec is-now">
+        <h2>À appeler maintenant<b>{j.maintenant.length}</b></h2>
+        {j.maintenant.length ? <ul>{j.maintenant.map((x) => ligne(x, false))}</ul> : <p className="crm-jvide">Personne à appeler pour l’instant. Les nouveaux contacts et les relances arrivent ici.</p>}
+      </section>
+      {j.plusTard.length > 0 && <section className="crm-jsec"><h2>Plus tard aujourd’hui<b>{j.plusTard.length}</b></h2><ul>{j.plusTard.map((x) => ligne(x, true))}</ul></section>}
+      {j.ensuite.length > 0 && (
+        <details className="crm-jsec crm-jsec-plie"><summary><h2>Prochains jours<b>{j.ensuite.length}</b></h2></summary>
+          <ul>{j.ensuite.map((x) => ligne(x, 'jour'))}</ul></details>
+      )}
+      {j.rdv.length > 0 && (
+        <section className="crm-jsec"><h2>Rendez-vous aujourd’hui<b>{j.rdv.length}</b></h2>
+          <ul>{j.rdv.map(({ l, quand }) => (
+            <li key={l.id} className="crm-jl"><button type="button" className="crm-jl-who" onClick={() => onOpen(l.id)}><span className="crm-av">{initiales(l)}</span><span className="crm-line-who"><b>{nomComplet(l)}</b><small>{[THEMES[l.thematique], [l.code_postal, l.ville].filter(Boolean).join(' ')].filter(Boolean).join(' · ')}</small></span></button>
+              <span className="crm-jl-meta"><span className="crm-appels">{heure(quand)}</span></span>
+              <span className="crm-jl-act"><a className="crm-jl-call" href={`tel:${tel(l)}`}><Ico d={I.tel} size={16} />Appeler</a></span></li>
+          ))}</ul>
+        </section>
+      )}
+      {j.depasses.length > 0 && (
+        <section className="crm-jsec is-out"><h2>Délai légal dépassé<b>{j.depasses.length}</b></h2>
+          <p className="crm-jvide">Ces contacts n’ont pas été joints dans les 5 jours ouvrables qui suivent leur demande : la loi ne permet plus de les appeler. Classez-les pour vider la liste.</p>
+          {j.depasses.length > 1 && <p className="crm-jvide"><button type="button" className="crm-jl-btn" onClick={async () => { for (const { l } of j.depasses) await majSuivi(l.id, { statut: 'perdu', motif_perte: 'injoignable', rappel_le: null }); }}>Tout classer perdu (injoignable)</button></p>}
+          <ul>{j.depasses.map(({ l }) => (
+            <li key={l.id} className="crm-jl"><button type="button" className="crm-jl-who" onClick={() => onOpen(l.id)}><span className="crm-av">{initiales(l)}</span><span className="crm-line-who"><b>{nomComplet(l)}</b><small>Demande du {dateFr(demandeDe(l))}</small></span></button>
+              <span className="crm-jl-act"><button type="button" className="crm-jl-btn" onClick={() => majSuivi(l.id, { statut: 'perdu', motif_perte: 'injoignable', rappel_le: null })}>Classer perdu (injoignable)</button></span></li>
+          ))}</ul>
+        </section>
+      )}
+    </div>
+  );
+}
+
 // ─ Mes contacts ─
 export default function Contacts({ apercu, client, session }) {
-  const { leads, litiges, suiviPar, journalPar, majSuivi, reload } = useData();
+  const { leads, litiges, suiviPar, journalPar, majSuivi, reload, prefs } = useData();
   const [params, setParams] = useSearchParams();
-  const vue = params.get('vue') || 'pipeline';
+  const vue = params.get('vue') || 'journee';
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const t = setInterval(() => setNow(new Date()), 30000); return () => clearInterval(t); }, []);
+  const [toast, setToast] = useState('');
+  useEffect(() => { if (!toast) return undefined; const t = setTimeout(() => setToast(''), 6000); return () => clearTimeout(t); }, [toast]);
   const setVue = (v) => { const p = new URLSearchParams(params); p.set('vue', v); setParams(p, { replace: true }); };
   const [ouvert, setOuvert] = useState(null);
   const [litigeFor, setLitigeFor] = useState(null);
@@ -368,6 +591,7 @@ export default function Contacts({ apercu, client, session }) {
   const rdvs = f.rows.filter((l) => suiviPar.get(l.id)?.rdv_le && new Date(suiviPar.get(l.id).rdv_le) > maintenant - 86400000).sort((a, b) => suiviPar.get(a.id).rdv_le.localeCompare(suiviPar.get(b.id).rdv_le));
   const rappelsDus = rappels.filter((l) => new Date(suiviPar.get(l.id).rappel_le) <= finJour).length;
   const lead = ouvert && (leads || []).find((l) => l.id === ouvert);
+  const journee = useMemo(() => planJournee(f.rows, suiviPar, prefs, now), [f.rows, suiviPar, prefs, now]);
   const exportRows = f.rows.map((l) => {
     const s = suiviPar.get(l.id) || {}; const j = (journalPar.get(l.id) || []).filter((x) => x.type === 'note').sort((a, b) => String(b.cree_le).localeCompare(String(a.cree_le)))[0];
     return { ...l, _etape: SUIVI[st(l)], _rdv: s.rdv_le ? dateHeure(s.rdv_le) : '', _rappel: s.rappel_le ? dateHeure(s.rappel_le) : '', _motif: s.motif_perte ? MOTIFS_PERTE[s.motif_perte] || s.motif_perte : '', _note: j?.texte || '' };
@@ -404,6 +628,7 @@ export default function Contacts({ apercu, client, session }) {
         <div className="crm-head-top">
           <div className="crm-title"><h1>Mes contacts</h1><button type="button" className="ec-btn crm-relancer" onClick={() => setRelance(true)}><Ico d={<path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5" />} />Relancer une campagne</button></div>
           <div className="crm-stats">
+            <span className={journee.maintenant.length ? 'is-hot' : ''}><b>{journee.maintenant.length}</b>à appeler maintenant</span>
             <span><b>{parEtape.a_appeler.length}</b>nouveaux</span>
             <span className={rappelsDus ? 'is-warn' : ''}><b>{rappelsDus}</b>rappels aujourd’hui</span>
             <span><b>{rdvs.filter((l) => new Date(suiviPar.get(l.id).rdv_le) >= maintenant).length}</b>RDV à venir</span>
@@ -414,7 +639,7 @@ export default function Contacts({ apercu, client, session }) {
           <input className="crm-search" value={f.q} onChange={(e) => f.setQ(e.target.value)} placeholder="Nom, téléphone, code postal…" aria-label="Rechercher un contact" />
           <select className="crm-select" value={f.them} onChange={(e) => f.setThem(e.target.value)} aria-label="Thématique"><option value="">Toutes les thématiques</option>{Object.entries(THEMES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
           <div className="crm-views" role="tablist" aria-label="Affichage">
-            {[['pipeline', 'Pipeline'], ['liste', 'Liste'], ['rappels', `Rappels${rappelsDus ? ` (${rappelsDus})` : ''}`], ['agenda', 'Agenda']].map(([k, t]) => <button type="button" role="tab" aria-selected={vue === k} key={k} className={vue === k ? 'is-on' : ''} onClick={() => setVue(k)}>{t}</button>)}
+            {[['journee', `Ma journée${journee.maintenant.length ? ` (${journee.maintenant.length})` : ''}`], ['pipeline', 'Pipeline'], ['liste', 'Liste'], ['rappels', `Rappels${rappelsDus ? ` (${rappelsDus})` : ''}`], ['agenda', 'Agenda']].map(([k, t]) => <button type="button" role="tab" aria-selected={vue === k} key={k} className={vue === k ? 'is-on' : ''} onClick={() => setVue(k)}>{t}</button>)}
           </div>
           <ExportMenu rows={exportRows} onExported={marquer} />
         </div>
@@ -426,6 +651,8 @@ export default function Contacts({ apercu, client, session }) {
       </header>
 
       {leads && actifs.length === 0 && <div className="ec-card ec-empty"><p><b>Aucun contact pour l’instant.</b></p><p>Ils arrivent ici dès qu’ils vous sont livrés.</p></div>}
+
+      {vue === 'journee' && actifs.length > 0 && <Journee rows={f.rows} onOpen={setOuvert} onToast={setToast} now={now} />}
 
       {vue === 'pipeline' && actifs.length > 0 && (
         <div className="crm-board" ref={board}>
@@ -481,7 +708,8 @@ export default function Contacts({ apercu, client, session }) {
         </div>
       ))}
 
-      {lead && <Fiche lead={lead} client={client} litige={enLitige.get(lead.id)} apercu={apercu} onClose={() => setOuvert(null)} onSignal={setLitigeFor} />}
+      {lead && <Fiche lead={lead} client={client} litige={enLitige.get(lead.id)} apercu={apercu} onClose={() => setOuvert(null)} onSignal={setLitigeFor} onToast={setToast} />}
+      {toast && <p className="crm-toast" role="status" onClick={() => setToast('')}>{toast}</p>}
       {relance && <Relance session={session} client={client} apercu={apercu} onClose={() => setRelance(false)} />}
       {litigeFor && <LitigeModal lead={litigeFor} apercu={apercu} onClose={() => setLitigeFor(null)} onDone={() => { setLitigeFor(null); reload(); }} />}
     </div>

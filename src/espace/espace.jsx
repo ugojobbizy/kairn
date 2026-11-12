@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Link, Navigate, NavLink, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { KairnLogo, useV2Favicon } from '../v2/layout.jsx';
 import { PRODUITS, GARANTIES } from '../v3/produits.js';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
@@ -8,6 +8,7 @@ import Tickets from './tickets.jsx';
 import Aide from './aide.jsx';
 import { Data, useData } from './data.js';
 import Contacts, { useFilters, ETAPES_CRM, age } from './crm.jsx';
+import { PlanRelance, ModelesSms } from './reglages.jsx';
 import { apercuData } from './apercu.js';
 import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from '../v3/zone-picker.jsx';
 import '../v2/v2.css';
@@ -42,18 +43,21 @@ const Check = () => <Ico size={15}><path d="M20 6 9 17l-5-5" /></Ico>;
 // ─ données : base réelle, ou jeu fictif pour l'aperçu de développement ─
 
 function useClientData(session, apercu) {
-  const [state, setState] = useState({ leads: null, commandes: null, litiges: null, suivi: null, journal: null, error: '' });
+  const [state, setState] = useState({ leads: null, commandes: null, litiges: null, suivi: null, journal: null, prefs: null, modeles: null, error: '' });
   const load = useCallback(async () => {
-    if (apercu) { setState((st) => ({ ...apercu, suivi: st.suivi || apercu.suivi, journal: st.journal || apercu.journal, error: '' })); return; }
+    if (apercu) { setState((st) => ({ ...apercu, suivi: st.suivi || apercu.suivi, journal: st.journal || apercu.journal, prefs: st.prefs || apercu.prefs || {}, modeles: st.modeles || apercu.modeles || [], error: '' })); return; }
     const uid = session.user.id;
-    const [l, c, g, sv, jo] = await Promise.all([
+    const [l, c, g, sv, jo, pf, md] = await Promise.all([
       db.from('leads').select('*').eq('client_id', uid).order('livre_le', { ascending: false }),
       db.from('commandes').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
       db.from('litiges').select('*').eq('client_id', uid).order('created_at', { ascending: false }),
       db.from('lead_suivi').select('*').eq('client_id', uid),
       db.from('lead_suivi_journal').select('*').eq('client_id', uid).order('cree_le', { ascending: true }).limit(10000),
+      db.from('client_prefs').select('*').eq('user_id', uid).maybeSingle(),
+      db.from('sms_modeles').select('*').eq('user_id', uid).order('ordre').order('cree_le'),
     ]);
-    setState({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], suivi: sv.data || [], journal: jo.data || [], error: l.error || c.error || g.error || sv.error || jo.error ? 'Une partie de vos données n’a pas pu être chargée.' : '' });
+    setState({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], suivi: sv.data || [], journal: jo.data || [], prefs: pf.data || {}, modeles: md.data || [],
+      error: l.error || c.error || g.error || sv.error || jo.error ? 'Une partie de vos données n’a pas pu être chargée.' : '' });
   }, [session.user.id, apercu]);
   useEffect(() => { load(); }, [load]);
   const suiviPar = useMemo(() => new Map((state.suivi || []).map((x) => [x.lead_id, x])), [state.suivi]);
@@ -83,7 +87,27 @@ function useClientData(session, apercu) {
     setState((st) => ({ ...st, journal: [...(st.journal || []), entree] }));
     return true;
   }, [apercu]);
-  return { ...state, suiviPar, journalPar, majSuivi, noter, reload: load };
+  // Enregistre un appel (fonction suivi_appel) : « nrp » programme la relance suivante du plan, « repondu » compte l'appel.
+  // Renvoie la ligne de suivi à jour, ou null si l'écriture a échoué.
+  const appeler = useCallback(async (leadId, resultat, prochaine) => {
+    const maintenant = new Date().toISOString();
+    const cur = (state.suivi || []).find((x) => x.lead_id === leadId) || { lead_id: leadId, statut: 'a_appeler', rappel_le: null, rdv_le: null, motif_perte: null, tentatives: 0 };
+    const relancable = ['a_appeler', 'nrp', 'a_rappeler'].includes(cur.statut);
+    const next = { ...cur, tentatives: (cur.tentatives || 0) + 1, derniere_tentative: maintenant, maj_le: maintenant,
+      ...(resultat === 'nrp' && relancable ? { statut: 'nrp', rappel_le: prochaine || null } : {}) };
+    const journal = [{ id: `local-a-${Date.now()}`, lead_id: leadId, type: 'appel', texte: resultat, cree_le: maintenant }];
+    if (next.statut !== cur.statut) journal.push({ id: `local-s-${Date.now()}`, lead_id: leadId, type: 'statut', statut: next.statut, cree_le: maintenant });
+    const avant = state;
+    setState((st) => ({ ...st, suivi: [...(st.suivi || []).filter((x) => x.lead_id !== leadId), next], journal: [...(st.journal || []), ...journal] }));
+    if (apercu) return next;
+    const { data, error } = await db.rpc('suivi_appel', { p_lead: leadId, p_resultat: resultat, p_prochaine: resultat === 'nrp' ? prochaine || null : null });
+    if (error) { setState({ ...avant, error: 'L’appel n’a pas pu être enregistré. Réessayez.' }); return null; }
+    setState((st) => ({ ...st, suivi: [...(st.suivi || []).filter((x) => x.lead_id !== leadId), data] }));
+    return data;
+  }, [state, apercu]);
+  const setPrefs = useCallback((prefs) => setState((st) => ({ ...st, prefs })), []);
+  const setModeles = useCallback((modeles) => setState((st) => ({ ...st, modeles })), []);
+  return { ...state, suiviPar, journalPar, majSuivi, noter, appeler, setPrefs, setModeles, reload: load };
 }
 
 // Chiffres dérivés : livrés par commande (hors leads annulés après litige), montant dû.
@@ -267,7 +291,7 @@ function Home({ client }) {
 
       <p className="ec-label">À faire maintenant</p>
       <div className="db-todo">
-        <Link to="/espace/prospects?vue=pipeline" className={d?.nouveaux ? 'is-hot' : ''}><span>Nouveaux contacts à appeler</span><b>{d ? d.nouveaux : '·'}</b><small>{d?.nouveauxHeure ? `dont ${d.nouveauxHeure} reçu${d.nouveauxHeure > 1 ? 's' : ''} dans l’heure` : 'Ouvrir le pipeline'}</small></Link>
+        <Link to="/espace/prospects?vue=journee" className={d?.nouveaux ? 'is-hot' : ''}><span>Nouveaux contacts à appeler</span><b>{d ? d.nouveaux : '·'}</b><small>{d?.nouveauxHeure ? `dont ${d.nouveauxHeure} reçu${d.nouveauxHeure > 1 ? 's' : ''} dans l’heure` : 'Ouvrir Ma journée'}</small></Link>
         <Link to="/espace/prospects?vue=rappels" className={d?.rappelsRetard ? 'is-warn' : ''}><span>Rappels aujourd’hui</span><b>{d ? d.rappels : '·'}</b><small>{d?.rappelsRetard ? `dont ${d.rappelsRetard} en retard` : 'Voir mes rappels'}</small></Link>
         <Link to="/espace/prospects?vue=agenda"><span>Rendez-vous aujourd’hui</span><b>{d ? d.rdvJour : '·'}</b><small>{d ? `${d.rdvAVenir} à venir au total` : ''}</small></Link>
       </div>
@@ -644,14 +668,15 @@ async function abonnerAppareil(userId) {
 }
 
 function Alertes({ session, apercu }) {
+  const { prefs, setPrefs } = useData();
   const [p, setP] = useState(null);
   const [busy, setBusy] = useState('');
   const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
   useEffect(() => {
-    if (apercu) { setP({ alerte_email: true, email: session.user.email, alerte_push: false, webhook_url: '' }); return; }
+    if (apercu) { setP({ alerte_email: true, email: session.user.email, emails_sup: [], alerte_push: false, webhook_url: '' }); return; }
     db.from('client_prefs').select('*').eq('user_id', session.user.id).maybeSingle()
-      .then(({ data }) => setP(data ? { ...data, webhook_url: data.webhook_url || '' } : { alerte_email: true, email: session.user.email, alerte_push: false, webhook_url: '' }));
+      .then(({ data }) => setP(data ? { ...data, webhook_url: data.webhook_url || '', emails_sup: data.emails_sup || [] } : { alerte_email: true, email: session.user.email, emails_sup: [], alerte_push: false, webhook_url: '' }));
   }, [session, apercu]);
   if (!p) return <div className="ec-card"><p className="ec-muted">Chargement…</p></div>;
   const set = (k, v) => setP((x) => ({ ...x, [k]: v }));
@@ -660,9 +685,14 @@ function Alertes({ session, apercu }) {
     const url = (next.webhook_url || '').trim();
     if (url && !/^https:\/\/\S+$/i.test(url)) { setErr('L’adresse du webhook doit commencer par https://'); return false; }
     if (next.alerte_email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(next.email || '')) { setErr('Indiquez une adresse e-mail valide pour les alertes.'); return false; }
+    const sup = [...new Set((next.emails_sup || []).map((x) => x.trim().toLowerCase()).filter(Boolean))].filter((x) => x !== (next.email || '').trim().toLowerCase());
+    if (sup.some((x) => !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(x))) { setErr('Une des adresses de l’équipe n’est pas valide.'); return false; }
     if (apercu) { setMsg('Enregistré (aperçu : rien n’est écrit).'); return true; }
-    const { error } = await db.from('client_prefs').upsert({ user_id: session.user.id, alerte_email: next.alerte_email, email: next.email || null, alerte_push: next.alerte_push, webhook_url: url || null, maj_le: new Date().toISOString() });
+    const row = { user_id: session.user.id, alerte_email: next.alerte_email, email: next.email || null, emails_sup: sup, alerte_push: next.alerte_push, webhook_url: url || null, maj_le: new Date().toISOString() };
+    const { error } = await db.from('client_prefs').upsert(row);
     if (error) { setErr('L’enregistrement n’a pas abouti. Réessayez.'); return false; }
+    setP((x) => ({ ...x, emails_sup: sup }));
+    setPrefs({ ...(prefs || {}), ...row });
     setMsg('Préférences enregistrées.');
     return true;
   }
@@ -702,6 +732,13 @@ function Alertes({ session, apercu }) {
       <div className="ec-alerte">
         <label className="ec-toggle"><input type="checkbox" checked={p.alerte_email} onChange={(e) => set('alerte_email', e.target.checked)} /><span><b>Par e-mail</b><small>Un e-mail avec les contacts livrés.</small></span></label>
         {p.alerte_email && <label className="ec-field"><span>Adresse des alertes</span><input type="email" value={p.email || ''} onChange={(e) => set('email', e.target.value)} placeholder="commercial@votre-societe.fr" /></label>}
+        {p.alerte_email && (p.emails_sup || []).map((x, i) => (
+          <div className="ec-field ec-email-sup" key={i}>
+            <input type="email" value={x} aria-label={`Autre adresse ${i + 1}`} onChange={(e) => set('emails_sup', p.emails_sup.map((y, n) => (n === i ? e.target.value : y)))} placeholder="patron@votre-societe.fr" />
+            <button type="button" className="ec-link-btn" onClick={() => set('emails_sup', p.emails_sup.filter((_, n) => n !== i))}>Retirer</button>
+          </div>
+        ))}
+        {p.alerte_email && (p.emails_sup || []).length < 4 && <button type="button" className="ec-link-btn ec-add-email" onClick={() => set('emails_sup', [...(p.emails_sup || []), ''])}>+ Prévenir aussi une autre personne (patron, commercial, secrétariat)</button>}
       </div>
       <div className="ec-alerte">
         <label className="ec-toggle"><input type="checkbox" checked={p.alerte_push} disabled={busy === 'push'} onChange={(e) => activerPush(e.target.checked)} /><span><b>Notification sur ce téléphone</b><small>{isIos() && !standalone() ? 'Sur iPhone, ajoutez d’abord l’espace à l’écran d’accueil (Partager, puis « Sur l’écran d’accueil »).' : 'Une notification sur cet appareil, comme un SMS. À activer sur chaque téléphone.'}</small></span></label>
@@ -721,10 +758,15 @@ function Alertes({ session, apercu }) {
 }
 
 function Account({ session, client, apercu }) {
+  // Lien « Gérer mes modèles » (/espace/compte#modeles) : on descend jusqu'à la section une fois la page affichée.
+  const { hash } = useLocation();
+  useEffect(() => { if (hash) setTimeout(() => document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350); }, [hash]);
   return (
     <>
       <PageHead title="Mon compte" />
       <Alertes session={session} apercu={apercu} />
+      <PlanRelance session={session} apercu={apercu} />
+      <ModelesSms session={session} client={client} apercu={apercu} />
       <div className="ec-card">
         <dl className="ec-dl">
           <div><dt>Société</dt><dd>{client?.societe || '·'}</dd></div>

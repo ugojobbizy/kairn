@@ -9,6 +9,8 @@
 import nodemailer from 'nodemailer';
 import webpush from 'web-push';
 import { send, readJson } from './_calendar.js';
+import { emailLeads } from './_email-leads.js';
+import { LOGO_EMAIL_PNG } from './_logo-email.js';
 
 const SUPABASE_URL = 'https://bmqvlwdbwfnafuovzzhi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV';
@@ -52,13 +54,14 @@ async function viaEmail(prefs, leads, r) {
   const pass = process.env.ZOHO_SMTP_PASS;
   if (!user || !pass) return 'non_configure';
   const { titre } = resume(leads);
-  const lignes = leads.slice(0, 20).map((l) => `• ${[l.prenom, l.nom].filter(Boolean).join(' ')} · ${l.telephone || ''} · ${l.code_postal || ''} ${l.ville || ''} · ${THEMES[l.thematique] || l.thematique}`);
+  // Adresse principale + l'équipe (patron, commercial, secrétariat : client_prefs.emails_sup, 12/11/2026).
+  const dest = [...new Set([prefs.email, ...(prefs.emails_sup || [])].filter(Boolean))];
+  if (!dest.length) return 'aucun';
+  const { sujet, html, texte } = emailLeads({ titre: r.test ? `Test · ${titre}` : titre, leads, site: SITE, test: r.test });
   const transport = nodemailer.createTransport({ host: process.env.ZOHO_SMTP_HOST || 'smtp.zoho.eu', port: 465, secure: true, auth: { user, pass } });
-  await transport.sendMail({
-    from: `Kairn <${user}>`, to: prefs.email, subject: titre,
-    text: [`${titre}.`, '', ...lignes, leads.length > 20 ? `… et ${leads.length - 20} autres.` : '', '', `Appelez-les depuis votre espace : ${SITE}/espace`, '', 'Plus vous rappelez vite, plus ça décroche.', r.test ? '\n(Ceci est un e-mail de test.)' : ''].filter((x) => x !== null).join('\n'),
-  });
-  return 'envoye';
+  await transport.sendMail({ from: `Kairn <${user}>`, to: dest.join(', '), subject: sujet, text: texte, html,
+    attachments: [{ filename: 'kairn.png', content: Buffer.from(LOGO_EMAIL_PNG, 'base64'), contentType: 'image/png', cid: 'logo-kairn' }] });
+  return dest.length > 1 ? `envoye_${dest.length}` : 'envoye';
 }
 
 async function viaPush(subs, leads, auth, r) {
@@ -124,9 +127,16 @@ export default async function handler(req, res) {
       if (!leads.length) return send(res, 200, { ok: true, leads: 0 });
     }
 
-    const [prefs] = await rest(`client_prefs?select=*&user_id=eq.${clientId}`, auth);
+    let [prefs] = await rest(`client_prefs?select=*&user_id=eq.${clientId}`, auth);
     const out = { leads: leads.length, email: 'desactive', push: 'desactive', webhook: 'aucun' };
-    if (!prefs) return send(res, 200, { ok: true, ...out, prefs: 'aucune' });
+    // Sans réglage enregistré, l'alerte part quand même par e-mail (12/11/2026) : à l'adresse de connexion pour un test,
+    // à l'adresse de la commande pour une livraison. Avant, un client qui n'avait jamais ouvert Mon compte n'était pas prévenu.
+    if (!prefs) {
+      let email = r.test ? me.email : null;
+      if (!email && body.commande) { const [c] = await rest(`commandes?select=email&id=eq.${body.commande}`, auth); email = c?.email || null; }
+      if (!email) return send(res, 200, { ok: true, ...out, prefs: 'aucune' });
+      prefs = { alerte_email: true, email, emails_sup: [], alerte_push: false, webhook_url: null };
+    }
     const subs = prefs.alerte_push ? await rest(`push_abonnements?select=id,endpoint,p256dh,auth&user_id=eq.${clientId}`, auth) : [];
     const canal = (k, run) => run().then((v) => { out[k] = v; }, (err) => { out[k] = 'echec'; console.error(`[livraison] ${k} :`, err.message); });
     await Promise.all([

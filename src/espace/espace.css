@@ -551,3 +551,20 @@
 }
 .v2 .gp-tg { display: grid; justify-items: end; gap: 6px; } .v2 .gp-tg small { max-width: 320px; font-size: 12.5px; color: var(--muted); text-align: right; }
 .v2 .ad-head { text-align: left; }
+
+/* Réglages du bloc 1 « vitesse et relance » (12/11/2026) */
+.v2 .ec-email-sup { display: flex; gap: 10px; align-items: center; }
+.v2 .ec-email-sup input { flex: 1; }
+.v2 .ec-add-email { margin-top: 10px; }
+.v2 .ec-plan h2, .v2 .ec-modeles h2 { font-size: 18px; font-weight: 600; }
+.v2 .ec-plan-list { list-style: none; margin: 16px 0 10px; padding: 0; display: grid; gap: 8px; }
+.v2 .ec-plan-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 12px; border-radius: 12px; background: #F5F7FB; }
+.v2 .ec-plan-list b { min-width: 64px; font-size: 14px; }
+.v2 .ec-plan-list select { min-height: 40px; padding: 0 10px; border-radius: 10px; border: 1px solid #DDE2EC; background: #fff; font: 14px var(--font); color: var(--ink); }
+.v2 .ec-modeles-list { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
+.v2 .ec-modeles-list li { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line-2); }
+.v2 .ec-modeles-list b { font-size: 14.5px; }
+.v2 .ec-modeles-list p { margin-top: 4px; font-size: 13.5px; line-height: 1.5; color: var(--ink-2); }
+.v2 .ec-modeles-list span { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+.v2 .ec-modeles .ec-modal-card textarea, .v2 .ec-modeles .ec-modal-card input { width: 100%; }
+@media (max-width: 860px) { .v2 .ec-modeles-list li { flex-direction: column; } .v2 .ec-modeles-list span { flex-direction: row; align-items: center; } .v2 .ec-plan-list select { flex: 1; } }

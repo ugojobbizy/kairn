@@ -1,0 +1,144 @@
+import React, { useEffect, useState } from 'react';
+import { db } from './db.js';
+import { useData } from './data.js';
+import { MODELES_DEFAUT, variablesSms } from './crm.jsx';
+import { MAX_APPELS, PLAN_DEFAUT, planDe, planValide, remplir, VARIABLES } from './relance.js';
+
+// Réglages du bloc 1 « vitesse et relance » (12/11/2026), dans Mon compte : plan de relance des NRP et modèles de SMS.
+
+const MOMENTS = [['reception', 'Dès réception'], ['10:00', '10 h'], ['10:30', '10 h 30'], ['11:30', '11 h 30'], ['12:15', '12 h 15'], ['14:00', '14 h'], ['15:00', '15 h'], ['17:00', '17 h'], ['18:00', '18 h'], ['19:00', '19 h']];
+const JOURS = [1, 2, 3, 4, 5];
+const libJour = (j) => (j === 1 ? 'Jour de la demande' : `${j}e jour d’appel`);
+
+export function PlanRelance({ session, apercu }) {
+  const { prefs, setPrefs } = useData();
+  const [plan, setPlan] = useState(() => planDe(prefs));
+  const [msg, setMsg] = useState('');
+  const [err, setErr] = useState('');
+  useEffect(() => { setPlan(planDe(prefs)); }, [prefs]);
+  const perso = Boolean(prefs?.plan_relance);
+  const maj = (i, k, v) => setPlan((p) => p.map((x, n) => (n === i ? { ...x, [k]: k === 'j' ? Number(v) : v } : x)));
+  async function enregistrer(next) {
+    setMsg(''); setErr('');
+    const tri = next ? [...next].sort((a, b) => a.j - b.j || (a.h === 'reception' ? -1 : b.h === 'reception' ? 1 : a.h.localeCompare(b.h))) : null;
+    if (tri && !planValide(tri)) { setErr(`Le plan compte de 1 à ${MAX_APPELS} appels, du jour de la demande au 5e jour d’appel.`); return; }
+    if (!apercu) {
+      const { error } = await db.from('client_prefs').upsert({ user_id: session.user.id, plan_relance: tri, maj_le: new Date().toISOString() });
+      if (error) { setErr('L’enregistrement n’a pas abouti. Réessayez.'); return; }
+    }
+    setPrefs({ ...(prefs || {}), plan_relance: tri });
+    setMsg(tri ? 'Plan enregistré. Il s’applique aux prochains appels sans réponse.' : 'Plan Kairn rétabli.');
+  }
+  return (
+    <div className="ec-card ec-plan" id="plan">
+      <h2>Plan de relance des contacts injoignables</h2>
+      <p className="ec-muted">Quand vous notez « Pas de réponse », le prochain appel est programmé selon ce plan et apparaît dans Ma journée au bon moment. {MAX_APPELS} appels au plus, toujours dans les horaires autorisés (lundi au vendredi hors fériés, 10 h à 13 h et 14 h à 20 h) et avant la fin du délai légal de 5 jours ouvrables.</p>
+      <ol className="ec-plan-list">
+        {plan.map((x, i) => (
+          <li key={i}>
+            <b>Appel {i + 1}</b>
+            <select value={x.j} onChange={(e) => maj(i, 'j', e.target.value)} aria-label={`Jour de l’appel ${i + 1}`}>{JOURS.map((j) => <option key={j} value={j}>{libJour(j)}</option>)}</select>
+            <select value={x.h} onChange={(e) => maj(i, 'h', e.target.value)} aria-label={`Heure de l’appel ${i + 1}`}>{MOMENTS.map(([v, t]) => <option key={v} value={v}>{t}</option>)}</select>
+            {plan.length > 1 && <button type="button" className="ec-link-btn" onClick={() => setPlan((p) => p.filter((_, n) => n !== i))}>Retirer</button>}
+          </li>
+        ))}
+      </ol>
+      {plan.length < MAX_APPELS && <button type="button" className="ec-link-btn" onClick={() => setPlan((p) => [...p, { j: Math.min(5, (p[p.length - 1]?.j || 1) + 1), h: '18:00' }])}>+ Ajouter un appel</button>}
+      {err && <p className="ec-err" role="alert">{err}</p>}
+      {msg && <p className="ec-ok">{msg}</p>}
+      <div className="ec-alertes-actions">
+        <button type="button" className="ec-btn" onClick={() => enregistrer(plan)}>Enregistrer le plan</button>
+        {perso && <button type="button" className="ec-btn-ghost" onClick={() => enregistrer(null)}>Revenir au plan Kairn</button>}
+      </div>
+      <p className="ec-small">Plan Kairn : {PLAN_DEFAUT.map((x) => `${x.j === 1 ? 'J1' : `J${x.j}`} ${x.h === 'reception' ? 'dès réception' : x.h.replace(/:00$/, ' h').replace(':', ' h ')}`).join(', ')}.</p>
+    </div>
+  );
+}
+
+export function ModelesSms({ session, client, apercu }) {
+  const { modeles, setModeles } = useData();
+  const perso = (modeles || []).length > 0;
+  const liste = perso ? modeles : MODELES_DEFAUT;
+  const [edit, setEdit] = useState(null); // { id?, titre, texte }
+  const [err, setErr] = useState('');
+  const exemple = variablesSms({ prenom: 'Marie', thematique: 'PAC', ville: 'Mérignac' }, client, { rdv_le: new Date(Date.now() + 86400000).setHours(14, 30, 0, 0) });
+
+  // Premier changement : les modèles Kairn sont copiés dans le compte, puis modifiés comme les autres.
+  async function copierDefauts() {
+    if (apercu) { const c = MODELES_DEFAUT.map((m, i) => ({ ...m, id: `apercu-m-${i}`, ordre: i })); setModeles(c); return c; }
+    const { data, error } = await db.from('sms_modeles').insert(MODELES_DEFAUT.map((m, i) => ({ user_id: session.user.id, titre: m.titre, texte: m.texte, ordre: i }))).select('*');
+    if (error) { setErr('L’enregistrement n’a pas abouti. Réessayez.'); return null; }
+    setModeles(data); return data;
+  }
+  async function enregistrer(e) {
+    e.preventDefault(); setErr('');
+    const titre = edit.titre.trim(); const texte = edit.texte.trim();
+    if (!titre || !texte) { setErr('Donnez un nom et un texte au modèle.'); return; }
+    let base = perso ? modeles : await copierDefauts();
+    if (!base) return;
+    let id = edit.id;
+    if (id && id.startsWith('defaut-')) { const i = MODELES_DEFAUT.findIndex((m) => m.id === id); id = base[i]?.id; }
+    if (apercu) {
+      setModeles(id ? base.map((m) => (m.id === id ? { ...m, titre, texte } : m)) : [...base, { id: `apercu-m-${Date.now()}`, titre, texte, ordre: base.length }]);
+      setEdit(null); return;
+    }
+    const q = id ? db.from('sms_modeles').update({ titre, texte }).eq('id', id).select('*').single()
+      : db.from('sms_modeles').insert({ user_id: session.user.id, titre, texte, ordre: base.length }).select('*').single();
+    const { data, error } = await q;
+    if (error) { setErr('L’enregistrement n’a pas abouti. Réessayez.'); return; }
+    base = id ? base.map((m) => (m.id === id ? data : m)) : [...base, data];
+    setModeles(base); setEdit(null);
+  }
+  async function supprimer(m) {
+    setErr('');
+    let base = perso ? modeles : await copierDefauts();
+    if (!base) return;
+    const id = m.id.startsWith('defaut-') ? base[MODELES_DEFAUT.findIndex((x) => x.id === m.id)]?.id : m.id;
+    if (!apercu) { const { error } = await db.from('sms_modeles').delete().eq('id', id); if (error) { setErr('La suppression n’a pas abouti.'); return; } }
+    base = base.filter((x) => x.id !== id);
+    setModeles(base);
+  }
+  async function retablir() {
+    setErr('');
+    if (!apercu) { const { error } = await db.from('sms_modeles').delete().eq('user_id', session.user.id); if (error) { setErr('L’opération n’a pas abouti.'); return; } }
+    setModeles([]);
+  }
+  const inserer = (v) => setEdit((x) => ({ ...x, texte: `${x.texte}${x.texte && !x.texte.endsWith(' ') ? ' ' : ''}${v}` }));
+
+  return (
+    <div className="ec-card ec-modeles" id="modeles">
+      <h2>Mes modèles de SMS</h2>
+      <p className="ec-muted">Dans la fiche d’un contact, « Générer un SMS » remplit le modèle avec son prénom et son projet. Vous le copiez et l’envoyez depuis votre téléphone : rien ne part de Kairn.</p>
+      <ul className="ec-modeles-list">
+        {liste.map((m) => (
+          <li key={m.id}>
+            <div><b>{m.titre}</b><p>{remplir(m.texte, exemple)}</p></div>
+            <span>
+              <button type="button" className="ec-link-btn" onClick={() => setEdit({ id: m.id, titre: m.titre, texte: m.texte })}>Modifier</button>
+              {liste.length > 1 && <button type="button" className="ec-link-btn" onClick={() => supprimer(m)}>Supprimer</button>}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {err && <p className="ec-err" role="alert">{err}</p>}
+      <div className="ec-alertes-actions">
+        <button type="button" className="ec-btn-ghost" onClick={() => setEdit({ titre: '', texte: '' })} disabled={liste.length >= 20}>+ Nouveau modèle</button>
+        {perso && <button type="button" className="ec-btn-ghost" onClick={retablir}>Revenir aux modèles Kairn</button>}
+      </div>
+      {edit && (
+        <div className="ec-modal" role="dialog" aria-modal="true" aria-label="Modèle de SMS" onClick={() => setEdit(null)}>
+          <form className="ec-modal-card" onClick={(e) => e.stopPropagation()} onSubmit={enregistrer}>
+            <h2>{edit.id ? 'Modifier le modèle' : 'Nouveau modèle'}</h2>
+            <label className="ec-field"><span>Nom du modèle</span><input value={edit.titre} maxLength={60} onChange={(e) => setEdit((x) => ({ ...x, titre: e.target.value }))} placeholder="Ex. Après la visite technique" /></label>
+            <label className="ec-field"><span>Texte</span><textarea rows={5} maxLength={640} value={edit.texte} onChange={(e) => setEdit((x) => ({ ...x, texte: e.target.value }))} /></label>
+            <p className="ec-sub">Insérer</p>
+            <div className="crm-sms-modeles">{VARIABLES.map(([v, t]) => <button type="button" key={v} onClick={() => inserer(v)} title={v}>{t}</button>)}</div>
+            <p className="ec-small">Aperçu : {remplir(edit.texte, exemple) || '·'}</p>
+            <p className="ec-note">Parlez seulement du projet que le particulier a demandé : la loi limite le rappel à l’objet de sa demande.</p>
+            <div className="ec-modal-actions"><button type="button" className="ec-btn-ghost" onClick={() => setEdit(null)}>Annuler</button><button type="submit" className="ec-btn">Enregistrer</button></div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
