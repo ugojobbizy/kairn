@@ -6,6 +6,7 @@ import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, euro, dateFr, dateHeure, errMs
 import { apercuData } from '../espace/apercu.js';
 import { Campagnes, TicketsAdmin, ShopAdmin, Bientot } from './gestion-plus.jsx';
 import { Clients, FicheClient } from './clients.jsx';
+import { Apporteurs, FicheApporteur } from './apporteurs.jsx';
 
 // Kairn Monitor (suivi des campagnes Meta), ouvert depuis le menu (Ugo, 29/10/2026).
 const MONITOR_URL = 'https://kairn-monitor.vercel.app';
@@ -342,8 +343,17 @@ function Shell({ session, apercu }) {
     const i = setInterval(() => { if (!document.hidden) count(); }, 60000);
     return () => clearInterval(i);
   }, [apercu]);
+  // Candidatures d'apporteurs à valider (13/11/2026), relues toutes les minutes comme les tickets.
+  const [nCandidatures, setNCandidatures] = useState(0);
+  useEffect(() => {
+    if (apercu) return undefined;
+    const count = () => db.from('apporteurs').select('id', { count: 'exact', head: true }).eq('statut', 'candidature').then(({ count: n }) => setNCandidatures(n || 0));
+    count();
+    const i = setInterval(() => { if (!document.hidden) count(); }, 60000);
+    return () => clearInterval(i);
+  }, [apercu]);
   const aLancer = (data.commandes || []).filter((c) => c.user_id && c.type !== 'shop' && c.statut !== 'refusee' && ['recue', 'preparation'].includes(c.etape)).length;
-  const alertes = attente + nTickets + aLancer;
+  const alertes = attente + nTickets + aLancer + nCandidatures;
   useEffect(() => { document.title = alertes ? `(${alertes}) Kairn Admin` : 'Kairn Admin'; }, [alertes]);
   const MENU = [
     { to: '/gestion', end: true, t: 'Tableau de bord', ico: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
@@ -354,6 +364,7 @@ function Shell({ session, apercu }) {
     { to: '/gestion/leads', t: 'Leads', ico: <><circle cx="9" cy="8" r="4" /><path d="M2 21v-1a6 6 0 0 1 12 0v1M16 4a4 4 0 0 1 0 8M22 21v-1a6 6 0 0 0-4-5.6" /></> },
     { to: '/gestion/shop', t: 'Leads Shop', ico: <><path d="M6 6h15l-2 9H7z" /><circle cx="9" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" /><path d="M6 6 5 2H2" /></> },
     { to: '/gestion/clients', t: 'Clients', ico: <><path d="M3 21V7l9-4 9 4v14" /><path d="M9 21v-6h6v6" /></> },
+    { to: '/gestion/apporteurs', t: 'Apporteurs', n: nCandidatures, ico: <><circle cx="8" cy="8" r="3.5" /><circle cx="17" cy="9" r="3" /><path d="M2 20v-1a6 6 0 0 1 12 0v1M14 15.5a5 5 0 0 1 8 3.5v1" /></> },
     { to: '/gestion/contrats', t: 'Contrats', ico: <><path d="M6 2h9l5 5v15H6z" /><path d="M14 2v6h6M9 13h6M9 17h6" /></> },
     { to: '/gestion/factures', t: 'Factures', ico: <><rect x="4" y="2" width="16" height="20" rx="2" /><path d="M8 7h8M8 11h8M8 15h5" /></> },
     { to: '/gestion/appareils', t: 'Appareils', ico: <><rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></> },
@@ -397,6 +408,8 @@ function Shell({ session, apercu }) {
           <Route path="leads" element={<Leads data={data} apercu={apercu} />} />
           <Route path="clients" element={<Clients data={data} apercu={apercu} />} />
           <Route path="clients/:id" element={<FicheClient data={data} apercu={apercu} />} />
+          <Route path="apporteurs" element={<Apporteurs data={data} apercu={apercu} />} />
+          <Route path="apporteurs/:id" element={<FicheApporteur data={data} apercu={apercu} />} />
           <Route path="appareils" element={<Appareils apercu={apercu} />} />
           <Route path="*" element={<Dashboard data={data} tickets={nTickets} />} />
         </Routes>

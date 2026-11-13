@@ -6,21 +6,29 @@ import { SITE } from './_auth-admin.js';
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // mode « invite » : première connexion ; « recovery » : mot de passe oublié.
-export function emailAcces({ mode, prenom, societe, lien }) {
+// espace « apporteur » : espace des apporteurs d'affaires (13/11/2026), mêmes liens, autres textes.
+export function emailAcces({ mode, prenom, societe, lien, espace = 'client' }) {
   const invite = mode === 'invite';
-  const sujet = invite ? 'Votre espace Kairn est prêt' : 'Choisissez un nouveau mot de passe Kairn';
+  const apporteur = espace === 'apporteur';
+  const sujet = invite ? (apporteur ? 'Votre espace apporteur Kairn est prêt' : 'Votre espace Kairn est prêt') : 'Choisissez un nouveau mot de passe Kairn';
   const bonjour = `Bonjour${prenom ? ` ${prenom}` : ''},`;
-  const intro = invite
+  const intro = invite && apporteur
+    ? 'Votre candidature d’apporteur d’affaires est validée et votre espace est ouvert. Il ne reste qu’une étape : choisir votre mot de passe.'
+    : invite
     ? `L’espace client${societe ? ` ${/^[aeiouyhâéèêîôûAEIOUYHÂÉÈÊÎÔÛ]/.test(societe) ? 'd’' : 'de '}${societe}` : ''} est ouvert. Il ne reste qu’une étape : choisir votre mot de passe.`
     : 'Vous avez demandé à changer le mot de passe de votre espace Kairn. Choisissez-en un nouveau avec le bouton ci-dessous.';
   const bouton = invite ? 'Choisir mon mot de passe' : 'Choisir un nouveau mot de passe';
-  const points = [
+  const points = apporteur ? [
+    ['Vos clients', 'Chaque entreprise que vous nous apportez apparaît dans votre espace, avec votre commission par lead.'],
+    ['Leurs commandes', 'Le nombre de leads livrés à vos clients, commande par commande, en toute transparence.'],
+    ['Vos commissions', 'En cours, à payer, versées : vous savez à tout moment ce qui vous revient.'],
+  ] : [
     ['Vos contacts du jour', 'Chaque contact arrive dans votre espace dès qu’il vous est livré, prêt à appeler.'],
     ['Le suivi de chaque dossier', 'NRP, rendez-vous, devis, signé : tout est noté, avec vos rappels.'],
     ['Vos commandes', 'Livraisons, bons de commande et règlements au même endroit.'],
   ];
   const fin = invite
-    ? `Ensuite, connectez-vous sur ${SITE.replace('https://', '')}/espace avec cette adresse e-mail.`
+    ? `Ensuite, connectez-vous sur ${SITE.replace('https://', '')}/${apporteur ? 'apporteur' : 'espace'} avec cette adresse e-mail.`
     : 'Si vous n’avez rien demandé, ignorez cet e-mail : votre mot de passe actuel reste valable.';
 
   const html = `<!doctype html>
@@ -38,7 +46,7 @@ export function emailAcces({ mode, prenom, societe, lien }) {
     </td></tr>
     <tr><td style="height:4px;line-height:4px;font-size:0;background:#2F5BEA;background-image:linear-gradient(90deg,#0EA5E9,#4F46E5);">&nbsp;</td></tr>
     <tr><td style="padding:36px 36px 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#0B0918;">
-      <p style="margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:1.6px;text-transform:uppercase;color:#64748B;">${invite ? 'Espace client' : 'Mot de passe'}</p>
+      <p style="margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:1.6px;text-transform:uppercase;color:#64748B;">${invite ? (apporteur ? 'Espace apporteur' : 'Espace client') : 'Mot de passe'}</p>
       <h1 style="margin:0 0 18px;font-size:28px;line-height:1.2;font-weight:600;letter-spacing:-0.8px;color:#0B0918;">${invite ? 'Bienvenue sur Kairn' : 'Nouveau mot de passe'}</h1>
       <p style="margin:0 0 10px;font-size:16px;line-height:1.6;color:#1E293B;">${esc(bonjour)}</p>
       <p style="margin:0 0 28px;font-size:16px;line-height:1.6;color:#334155;">${esc(intro)}</p>

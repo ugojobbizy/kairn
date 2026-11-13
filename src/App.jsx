@@ -26,6 +26,8 @@ const PRECHARGE = [
   ['/commander', () => import('./v3/order.jsx')],
   ['/espace', () => import('./espace/espace.jsx')],
   ['/gestion', () => import('./gestion/gestion.jsx')],
+  ['/apporteur', () => import('./apporteur/apporteur.jsx')],
+  ['/devenir-apporteur', () => import('./v3/devenir-apporteur.jsx')],
   ['/plateforme', () => import('./v3/plateforme.jsx')],
   ['/realisations', () => import('./v2/realisations-v2.jsx')],
   ['/generation-de-leads', () => import('./v2/lead-gen.jsx')],
@@ -68,6 +70,8 @@ const KairnHomeV2 = lazyPage(() => import('./v2/home-v2.jsx'));
 const OrderPage = lazyPage(() => import('./v3/order.jsx'));
 const ClientSpace = lazyPage(() => import('./espace/espace.jsx'));
 const Gestion = lazyPage(() => import('./gestion/gestion.jsx'));
+const Apporteur = lazyPage(() => import('./apporteur/apporteur.jsx'));
+const DevenirApporteur = lazyPage(() => import('./v3/devenir-apporteur.jsx'));
 const Plateforme = lazyPage(() => import('./v3/plateforme.jsx'));
 const RealisationsPage = lazyPage(() => import('./realisations.jsx'));
 const LandingPage = lazyPage(() => import('./landing.jsx'));
@@ -138,6 +142,8 @@ export function Shell() {
         <Route path="/commander" element={<OrderPage />} />
         <Route path="/espace/*" element={<ClientSpace />} />
         <Route path="/gestion/*" element={<Gestion />} />
+        <Route path="/apporteur/*" element={<Apporteur />} />
+        <Route path="/devenir-apporteur" element={<DevenirApporteur />} />
         <Route path="/plateforme" element={<Plateforme />} />
         <Route path="/v1" element={<KairnHome variant={variant} />} />
         <Route path="/realisations" element={<RealisationsV2 />} />

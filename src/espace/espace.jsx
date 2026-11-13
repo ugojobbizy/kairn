@@ -910,17 +910,20 @@ export default function ClientSpace() {
   const [session, setSession] = useState(undefined);
   const [client, setClient] = useState(undefined);
   const [admin, setAdmin] = useState(false);
+  const [apporteur, setApporteur] = useState(undefined);
   useEffect(() => {
     db.auth.getSession().then(({ data }) => setSession(data.session));
     const { data } = db.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => data.subscription.unsubscribe();
   }, []);
   useEffect(() => {
-    if (!session) { setClient(undefined); return; }
+    if (!session) { setClient(undefined); setApporteur(undefined); return; }
     db.from('clients').select('societe, prenom, telephone, siret').eq('user_id', session.user.id).maybeSingle()
       .then(({ data }) => setClient(data || null));
     // Compte admin, même avant son code de double authentification (compte_admin) ; repli sur is_admin sans la migration.
     db.rpc('compte_admin').then(({ data, error }) => (error ? db.rpc('is_admin') : { data })).then(({ data }) => setAdmin(Boolean(data)));
+    // Apporteur d'affaires actif (13/11/2026) : il a son propre espace, /apporteur.
+    db.rpc('est_apporteur').then(({ data }) => setApporteur(Boolean(data)));
   }, [session]);
 
   // Aperçu : faux client et fausses données, rien n'est lu ni écrit en base. En développement par /espace?apercu ;
@@ -939,11 +942,12 @@ export default function ClientSpace() {
   }
 
   let body;
-  if (session === undefined || (session && client === undefined)) body = <div className="ec-loading" aria-busy="true" />;
+  if (session === undefined || (session && (client === undefined || (!client && apporteur === undefined)))) body = <div className="ec-loading" aria-busy="true" />;
   else if (!session) body = <Login />;
   // Compte admin : il vend des leads, il n'en achète pas. Il part sur Kairn Admin (/gestion), pas sur une vue client
   // (Ugo, 29/10/2026 : « en tant qu'admin je n'ai pas besoin de voir combien coûtent les leads »).
   else if (!client && admin) body = <Navigate to="/gestion" replace />;
+  else if (!client && apporteur) body = <Navigate to="/apporteur" replace />;
   else if (!client) {
     body = (
       <div className="ec-login">

@@ -1,6 +1,6 @@
 // POST /api/mot-de-passe { email, website }
 // « Mot de passe oublié » de l'espace client : envoie par e-mail un lien pour choisir un nouveau mot de passe,
-// seulement si l'adresse correspond à un compte client. La réponse est toujours la même : on ne révèle pas qui est client.
+// seulement si l'adresse correspond à un compte client ou apporteur actif. La réponse est toujours la même : on ne révèle pas qui est client.
 import { send, readJson } from './_calendar.js';
 import { serviceKey, adminFetch, lienAcces, envoyerEmail } from './_auth-admin.js';
 import { emailAcces } from './_email-kairn.js';
@@ -19,7 +19,12 @@ export default async function handler(req, res) {
     const l = await lienAcces(email, 'recovery');
     if (l.ok && l.userId) {
       const c = await adminFetch(`/rest/v1/clients?select=prenom&user_id=eq.${l.userId}`);
-      const fiche = Array.isArray(c.body) ? c.body[0] : null;
+      let fiche = Array.isArray(c.body) ? c.body[0] : null;
+      // Apporteur d'affaires actif (13/11/2026) : même lien, même page.
+      if (!fiche) {
+        const a = await adminFetch(`/rest/v1/apporteurs?select=prenom&statut=eq.actif&user_id=eq.${l.userId}`);
+        fiche = Array.isArray(a.body) ? a.body[0] : null;
+      }
       if (fiche) {
         const m = emailAcces({ mode: 'recovery', prenom: fiche.prenom, lien: l.lien });
         await envoyerEmail(email, m.sujet, m.texte, m.html);

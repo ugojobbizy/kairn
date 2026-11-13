@@ -150,6 +150,10 @@
 .v2 .od-prices span { font-family: var(--mono); font-weight: 600; color: var(--violet); }
 .v2 .od-contact { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px 22px; font-weight: 600; font-size: 15.5px; }
 .v2 .od-contact a { text-decoration: underline; text-underline-offset: 3px; }
+.v2 .od-points { margin-top: 24px; display: grid; gap: 8px; }
+.v2 .od-points li { padding: 14px 18px; border-radius: 14px; background: var(--tint); }
+.v2 .od-points b { font-size: 15.5px; }
+.v2 .od-points p { margin-top: 4px; color: var(--muted); font-size: 14.5px; }
 .v2 .od-steps { margin-top: 30px; display: grid; gap: 18px; }
 .v2 .od-steps li { display: flex; gap: 14px; }
 .v2 .od-steps li > span { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--night); color: #fff; font: 600 13px var(--mono); }
@@ -162,6 +166,8 @@
 .od-form h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
 .od-form .od-field { display: block; margin-top: 18px; border: 0; padding: 0; min-width: 0; }
 .od-form .od-field > span, .od-form legend { display: block; margin-bottom: 8px; font: 600 11.5px/1.2 var(--mono, monospace); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2, #2A2640); }
+.od-form textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #DDE2EC; background: #F7F9FC; font: 16px/1.5 var(--font, sans-serif); color: var(--ink, #0C0A1A); resize: vertical; }
+.od-form textarea:focus { outline: none; border-color: #3B82F6; background: #fff; box-shadow: 0 0 0 4px rgba(59,130,246,.15); }
 .od-form input, .od-form select { width: 100%; min-height: 50px; padding: 0 14px; border-radius: 12px; border: 1px solid #DDE2EC; background: #F7F9FC; font: 16px var(--font, sans-serif); color: var(--ink, #0C0A1A); transition: border-color .2s, box-shadow .2s, background .2s; }
 .od-form input:focus, .od-form select:focus { outline: none; border-color: #3B82F6; background: #fff; box-shadow: 0 0 0 4px rgba(59,130,246,.15); }
 .od-form .od-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }

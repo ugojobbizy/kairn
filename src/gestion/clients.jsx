@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { db, THEMES, MOTIFS, LITIGE_STATUTS, SUIVI, TVA, euro, dateFr, dateHeure, appareilHeaders } from '../espace/db.js';
+import { TagApporteur } from './apporteurs.jsx';
 
 // Clients de Kairn Admin (Ugo, 30/10/2026 : « visualiser tous mes clients et avoir une fiche sur eux avec toutes les infos,
 // le nombre de leads achetés, le montant dépensé, les encours, les factures réglées, celles à régler »).
@@ -273,6 +274,8 @@ export function FicheClient({ data, apercu }) {
           <p className="ec-note">Les statuts viennent du suivi tenu par le client : ils mesurent d’abord s’il traite ses contacts, pas leur qualité.</p>
         </section>
       </div>
+
+      <TagApporteur client={c} reload={reload} apercu={apercu} />
 
       <div className="ec-tabs">
         {[['commandes', `Commandes et factures (${s.cmds.length})`], ['leads', `Contacts livrés (${mesLeads.length})`], ['litiges', `Litiges (${s.lit.length})`], ['tickets', `Messages (${extra.tickets.length})`]].map(([k, t]) => <button type="button" key={k} className={onglet === k ? 'is-on' : ''} onClick={() => setOnglet(k)}>{t}</button>)}
