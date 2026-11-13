@@ -1,0 +1,149 @@
+/* Style « sobre type Attio/Linear » de l'espace client (choix d'Ugo, 13/11/2026). Chargé après espace.css et crm.css :
+   fond blanc, gris neutres, une seule couleur d'accent (boutons principaux), texte plus dense, bordures plutôt qu'ombres. */
+.v2.ec-root { --pro-bg: #FFFFFF; --pro-soft: #F7F7F8; --pro-line: #E6E6EA; --pro-line-2: #D9D9DF; --pro-ink: #18181B; --pro-ink-2: #3F3F46; --pro-muted: #71717A; --pro-faint: #A1A1AA; --pro-accent: #2F5BEA; background: var(--pro-bg); }
+
+/* Cadre : barre du haut et menu clairs */
+.v2 .ec { grid-template-columns: 232px minmax(0, 1fr); grid-template-rows: 56px 1fr; }
+.v2 .ec-top { background: var(--pro-bg); color: var(--pro-ink); border-bottom: 1px solid var(--pro-line); padding: 0 16px; }
+.v2 .ec-top .brand { color: var(--pro-ink); font-size: 22px; }
+.v2 .ec-top .brand .kairn-logo { filter: none; width: 22px; height: 22px; }
+.v2 .ec-company { background: var(--pro-soft); border: 1px solid var(--pro-line); color: var(--pro-ink-2); font-size: 12px; letter-spacing: .01em; text-transform: none; padding: 4px 10px; }
+.v2 .ec-avatar { width: 30px; height: 30px; font-size: 11.5px; background: var(--pro-ink); }
+.v2 .ec-side { top: 56px; height: calc(100vh - 56px); background: var(--pro-soft); border-top: 0; border-right: 1px solid var(--pro-line); color: var(--pro-ink); padding: 14px 10px; }
+.v2 .ec-side-label { color: var(--pro-faint); font: 500 11px/1 var(--font); letter-spacing: .02em; text-transform: none; }
+.v2 .ec-side nav { margin-top: 10px; gap: 1px; }
+.v2 .ec-link { min-height: 34px; gap: 10px; padding: 0 10px; border-radius: 7px; font-size: 13.5px; color: var(--pro-ink-2); }
+.v2 .ec-link svg { width: 17px; height: 17px; color: var(--pro-muted); }
+.v2 .ec-link:hover { background: #EDEDF0; color: var(--pro-ink); }
+.v2 .ec-link.is-active { background: var(--pro-bg); color: var(--pro-ink); font-weight: 600; box-shadow: 0 0 0 1px var(--pro-line); }
+.v2 .ec-link.is-active svg { color: var(--pro-ink); }
+.v2 .ec-help { background: var(--pro-bg); border: 1px solid var(--pro-line); color: var(--pro-muted); font-size: 12.5px; padding: 12px; border-radius: 10px; }
+.v2 .ec-help b { color: var(--pro-ink); }
+.v2 .ec-logout { border-color: var(--pro-line); color: var(--pro-ink-2); font-size: 13px; min-height: 34px; }
+.v2 .ec-logout:hover { color: var(--pro-ink); border-color: var(--pro-line-2); }
+.v2 .ec-main { padding-top: 22px; }
+.v2 .ec-demo { border-radius: 10px; }
+
+/* En-tête de Mes contacts */
+.v2 .crm-head h1 { font-size: 22px; letter-spacing: -0.02em; padding-bottom: 0; background: none; }
+.v2 .crm-relancer { min-height: 32px; padding: 0 12px; font-size: 13px; border-radius: 8px; }
+.v2 .crm-stats { gap: 0; border: 1px solid var(--pro-line); border-radius: 9px; overflow: hidden; }
+.v2 .crm-stats span { border: 0; border-radius: 0; background: var(--pro-bg); padding: 6px 12px; font-size: 12.5px; color: var(--pro-muted); }
+.v2 .crm-stats span + span { border-left: 1px solid var(--pro-line); }
+.v2 .crm-stats b { font-size: 13.5px; }
+.v2 .crm-stats .is-hot, .v2 .crm-stats .is-warn { background: var(--pro-bg); }
+.v2 .crm-stats .is-hot b { color: var(--pro-accent); } .v2 .crm-stats .is-warn b { color: #B45309; }
+.v2 .crm-toolbar { margin-top: 14px; gap: 8px; }
+.v2 .crm-search, .v2 .crm-select { min-height: 34px; border-radius: 8px; border-color: var(--pro-line); font-size: 13.5px; }
+.v2 .crm-views { padding: 2px; border-radius: 8px; background: var(--pro-soft); border: 1px solid var(--pro-line); }
+.v2 .crm-views button { min-height: 28px; padding: 0 11px; border-radius: 6px; font-size: 13px; }
+.v2 .crm-views button.is-on { box-shadow: 0 0 0 1px var(--pro-line); }
+.v2 .crm .ec-btn-ghost, .v2 .crm-export summary { min-height: 34px; border-radius: 8px; font-size: 13px; }
+
+/* Pipeline : colonnes sans fond, en-tête net, cartes fines */
+.v2 .crm-board { gap: 10px; margin-top: 14px; }
+.v2 .crm-col { flex: 1 0 248px; max-width: 320px; background: var(--pro-soft); border: 1px solid var(--pro-line); border-radius: 10px; }
+.v2 .crm-col.is-over { background: color-mix(in srgb, var(--c) 6%, var(--pro-soft)); }
+.v2 .crm-col h2 { padding: 10px 12px 8px; font-size: 12.5px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--pro-ink); }
+.v2 .crm-col h2 i { width: 8px; height: 8px; }
+.v2 .crm-col h2 b { background: none; padding: 0; color: var(--pro-muted); font-weight: 500; }
+.v2 .crm-col-body { gap: 6px; padding: 0 6px 8px; }
+.v2 .crm-card { padding: 10px 11px; border-radius: 8px; border-color: var(--pro-line); }
+.v2 .crm-card:hover, .v2 .crm-card:focus-visible { border-color: var(--pro-line-2); box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.v2 .crm-card.is-fresh { border-color: var(--pro-line); box-shadow: inset 3px 0 0 #10B981; }
+.v2 .crm-card-name { font-size: 13.5px; }
+.v2 .crm-card-sub { font-size: 12.5px; color: var(--pro-muted); }
+.v2 .crm-age { font-size: 11.5px; color: var(--pro-faint); }
+.v2 .crm-next { margin-top: 8px; font-size: 12.5px; font-weight: 500; }
+.v2 .crm-card-foot { margin-top: 8px; padding-top: 7px; border-top-color: var(--pro-line); font-size: 11.5px; color: var(--pro-muted); }
+.v2 .crm-delai { padding: 1px 6px; border-radius: 5px; background: var(--pro-soft); border: 1px solid var(--pro-line); font-size: 11px; font-weight: 500; color: var(--pro-ink-2); }
+.v2 .crm-delai.is-urgent { background: #FFFBEB; border-color: #FDE68A; color: #92400E; }
+.v2 .crm-delai.is-out { background: #FEF2F2; border-color: #FECACA; color: #B91C1C; }
+.v2 .crm-empty, .v2 .crm-more { border-color: var(--pro-line-2); border-radius: 8px; }
+
+/* Ma journée et listes */
+.v2 .crm-jsec, .v2 .crm-creneau { border-radius: 10px; border-color: var(--pro-line); box-shadow: none; }
+.v2 .crm-jsec.is-now { border-color: var(--pro-line-2); box-shadow: none; }
+.v2 .crm-jsec h2 { padding: 11px 14px; font-size: 12.5px; letter-spacing: 0; text-transform: none; color: var(--pro-ink); }
+.v2 .crm-jl { padding: 9px 14px; border-top-color: var(--pro-line); }
+.v2 .crm-jl-call { min-height: 32px; padding: 0 12px; border-radius: 7px; font-size: 13px; }
+.v2 .crm-jl-btn { min-height: 32px; border-radius: 7px; font-size: 13px; border-color: var(--pro-line); }
+.v2 .crm-av { width: 28px; height: 28px; font-size: 11px; background: var(--pro-soft); color: var(--pro-ink-2); border: 1px solid var(--pro-line); }
+
+/* Fiche */
+.v2 .crm-drawer-panel { background: var(--pro-bg); border-left: 1px solid var(--pro-line); box-shadow: -24px 0 60px -30px rgba(0,0,0,.25); }
+.v2 .crm-drawer-head { border-bottom-color: var(--pro-line); }
+.v2 .crm-call, .v2 .crm-act { min-height: 40px; border-radius: 9px; font-size: 14px; }
+.v2 .crm-act { border-color: var(--pro-line); }
+.v2 .crm-appel, .v2 .crm-dl { border-color: var(--pro-line); border-radius: 10px; }
+.v2 .crm-steps button { min-height: 30px; font-size: 13px; border-color: var(--pro-line); }
+
+@media (max-width: 860px) {
+  .v2 .ec { grid-template-columns: 1fr; grid-template-rows: 56px 1fr; }
+  .v2 .ec-side { top: 56px; }
+  .v2 .crm-stats { width: 100%; }
+  .v2 .crm-stats span { flex: 1; justify-content: center; }
+}
+
+/* Colonnes configurables, totaux, tri, sélection multiple (13/11/2026) */
+.v2 .crm-col-head { position: relative; display: flex; align-items: center; gap: 6px; padding-right: 6px; }
+.v2 .crm-col-head h2 { flex: 1; min-width: 0; }
+.v2 .crm-col-total { font-size: 12px; font-weight: 600; color: var(--pro-ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.v2 .crm-col-more { display: grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 6px; background: none; color: var(--pro-muted); cursor: pointer; }
+.v2 .crm-col-more:hover { background: #E9E9EC; color: var(--pro-ink); }
+.v2 .crm-menu { position: absolute; z-index: 40; top: 38px; right: 6px; width: 250px; padding: 10px; border-radius: 10px; border: 1px solid var(--pro-line); background: #fff; box-shadow: 0 12px 32px -12px rgba(0,0,0,.25); display: grid; gap: 6px; text-align: left; }
+.v2 .crm-menu hr { border: 0; border-top: 1px solid var(--pro-line); margin: 4px 0; }
+.v2 .crm-menu-field { display: grid; gap: 4px; font-size: 12px; color: var(--pro-muted); }
+.v2 .crm-menu-field input, .v2 .crm-menu-field select { min-height: 32px; padding: 0 9px; border-radius: 7px; border: 1px solid var(--pro-line); background: #fff; font: 13.5px var(--font); color: var(--pro-ink); width: 100%; }
+.v2 .crm-menu-colors { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0; }
+.v2 .crm-menu-colors button { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--pro-line); cursor: pointer; }
+.v2 .crm-menu-colors button.is-on { box-shadow: 0 0 0 2px var(--pro-ink); }
+.v2 .crm-menu-label { margin-top: 2px; font-size: 11.5px; font-weight: 600; color: var(--pro-muted); }
+.v2 .crm-menu-tri { display: flex; flex-wrap: wrap; gap: 4px; }
+.v2 .crm-menu-tri button { min-height: 26px; padding: 0 8px; border-radius: 6px; border: 1px solid var(--pro-line); background: #fff; font: 500 12px var(--font); color: var(--pro-ink-2); cursor: pointer; }
+.v2 .crm-menu-tri button.is-on { background: var(--pro-ink); border-color: var(--pro-ink); color: #fff; }
+.v2 .crm-menu-item { min-height: 30px; padding: 0 8px; border: 0; border-radius: 6px; background: none; text-align: left; font: 13px var(--font); color: var(--pro-ink); cursor: pointer; }
+.v2 .crm-menu-item:hover:not(:disabled) { background: var(--pro-soft); }
+.v2 .crm-menu-item:disabled { color: var(--pro-faint); cursor: default; }
+.v2 .crm-menu-item.is-danger { color: #B91C1C; }
+.v2 .crm-menu-note { font-size: 12px; line-height: 1.45; color: var(--pro-muted); }
+.v2 .crm-menu-check { display: flex; align-items: center; gap: 8px; min-height: 30px; font-size: 13px; color: var(--pro-ink); cursor: pointer; }
+.v2 .crm-menu-check i { width: 8px; height: 8px; border-radius: 50%; }
+.v2 .crm-menu-check small { margin-left: auto; font-size: 11.5px; color: var(--pro-faint); }
+.v2 .crm-cols-btn { position: relative; }
+.v2 .crm-menu-cols { top: 40px; right: 0; }
+.v2 .crm-dep { flex: 0 0 120px; }
+.v2 .crm-col-add { flex: 0 0 200px; align-self: flex-start; min-height: 42px; border: 1px dashed var(--pro-line-2); border-radius: 10px; background: none; font: 500 13px var(--font); color: var(--pro-muted); cursor: pointer; }
+.v2 .crm-col-add:hover { color: var(--pro-ink); border-color: var(--pro-muted); background: var(--pro-soft); }
+.v2 .crm-col-new { flex: 0 0 260px; align-self: flex-start; display: grid; gap: 10px; padding: 12px; background: #fff; }
+.v2 .crm-col-new-act { display: flex; justify-content: flex-end; gap: 6px; }
+.v2 .crm-col-new-act .ec-btn, .v2 .crm-col-new-act .ec-btn-ghost { min-height: 32px; padding: 0 12px; font-size: 13px; }
+.v2 .crm-card-check { flex: none; width: 15px; height: 15px; margin: 0 2px 0 0; accent-color: var(--pro-ink); opacity: 0; transition: opacity .12s; cursor: pointer; }
+.v2 .crm-card:hover .crm-card-check, .v2 .crm-card.is-selecting .crm-card-check, .v2 .crm-card-check:focus-visible { opacity: 1; }
+.v2 .crm-card-top { align-items: center; }
+.v2 .crm-card.is-sel { border-color: var(--pro-ink); box-shadow: 0 0 0 1px var(--pro-ink); }
+.v2 .crm-montant { margin-top: 6px; font-size: 12.5px; font-weight: 600; color: var(--pro-ink); font-variant-numeric: tabular-nums; }
+.v2 .crm-montant-field input { max-width: 180px; }
+.v2 .crm-montant-field span { font-size: 13px; color: var(--pro-muted); }
+.v2 .crm-th-check { width: 36px; }
+.v2 .ec-table tr.is-sel td { background: #F4F4F6; }
+.v2 .crm-bulk { position: fixed; z-index: 90; left: 50%; bottom: 22px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 16px; border-radius: 12px; background: var(--pro-ink); color: #fff; box-shadow: 0 18px 40px -16px rgba(0,0,0,.5); font-size: 13.5px; white-space: nowrap; }
+.v2 .crm-bulk select, .v2 .crm-bulk button { min-height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.08); color: #fff; font: 500 13px var(--font); cursor: pointer; }
+.v2 .crm-bulk select option { color: var(--pro-ink); }
+.v2 .crm-bulk button:hover { background: rgba(255,255,255,.16); }
+.v2 .crm-bulk .is-ghost { border-color: transparent; background: none; color: rgba(255,255,255,.7); }
+@media (max-width: 860px) {
+  .v2 .crm-bulk { left: 12px; right: 12px; transform: none; bottom: 84px; flex-wrap: wrap; white-space: normal; }
+  .v2 .crm-dep { flex: 1 1 100px; }
+  .v2 .crm-card-check { opacity: 1; }
+}
+.v2 .crm-card-name { flex: 1; text-align: left; }
+.v2 .crm-toolbar .crm-search:first-child { flex: 1 1 200px; }
+.v2 .crm-dep { flex: 0 0 110px; }
+.v2 .crm-menu-field span, .v2 .crm-menu-label { text-transform: none; letter-spacing: 0; font-family: var(--font); }
+@media (min-width: 1200px) {
+  .v2 .crm-toolbar { flex-wrap: nowrap; }
+  .v2 .crm-toolbar .crm-search:first-child { flex: 1 1 160px; min-width: 140px; }
+  .v2 .crm-toolbar > * { flex-shrink: 0; }
+  .v2 .crm-toolbar > .crm-search:first-child { flex-shrink: 1; }
+}

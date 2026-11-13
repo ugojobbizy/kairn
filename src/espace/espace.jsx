@@ -9,12 +9,14 @@ import Aide from './aide.jsx';
 import { Data, useData } from './data.js';
 import Contacts, { useFilters, ETAPES_CRM, age } from './crm.jsx';
 import { PlanRelance, ModelesMessages } from './reglages.jsx';
+import { listeColonnes, etapeBase, typeDe } from './colonnes.js';
 import { apercuData } from './apercu.js';
 import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from '../v3/zone-picker.jsx';
 import '../v2/v2.css';
 import '../v3/v3.css';
 import './espace.css';
 import './crm.css';
+import './pro.css';
 
 // Espace client Kairn (29/10/2026), sur le modèle de Flow d'AKA Médias (captures d'Ugo) avec la DA Kairn :
 // Accueil (tableau de bord, raccourcis, catalogue), Mes prospects, Leads Shop, Mes litiges, Mes commandes, Comptabilité, Mes contrats.
@@ -43,11 +45,11 @@ const Check = () => <Ico size={15}><path d="M20 6 9 17l-5-5" /></Ico>;
 // ─ données : base réelle, ou jeu fictif pour l'aperçu de développement ─
 
 function useClientData(session, apercu) {
-  const [state, setState] = useState({ leads: null, commandes: null, litiges: null, suivi: null, journal: null, prefs: null, modeles: null, error: '' });
+  const [state, setState] = useState({ leads: null, commandes: null, litiges: null, suivi: null, journal: null, prefs: null, modeles: null, colonnes: null, error: '' });
   const load = useCallback(async () => {
-    if (apercu) { setState((st) => ({ ...apercu, suivi: st.suivi || apercu.suivi, journal: st.journal || apercu.journal, prefs: st.prefs || apercu.prefs || {}, modeles: st.modeles || apercu.modeles || [], error: '' })); return; }
+    if (apercu) { setState((st) => ({ ...apercu, suivi: st.suivi || apercu.suivi, journal: st.journal || apercu.journal, prefs: st.prefs || apercu.prefs || {}, modeles: st.modeles || apercu.modeles || [], colonnes: st.colonnes || apercu.colonnes || [], error: '' })); return; }
     const uid = session.user.id;
-    const [l, c, g, sv, jo, pf, md] = await Promise.all([
+    const [l, c, g, sv, jo, pf, md, co] = await Promise.all([
       db.from('leads').select('*').eq('client_id', uid).order('livre_le', { ascending: false }),
       db.from('commandes').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
       db.from('litiges').select('*').eq('client_id', uid).order('created_at', { ascending: false }),
@@ -55,8 +57,9 @@ function useClientData(session, apercu) {
       db.from('lead_suivi_journal').select('*').eq('client_id', uid).order('cree_le', { ascending: true }).limit(10000),
       db.from('client_prefs').select('*').eq('user_id', uid).maybeSingle(),
       db.from('sms_modeles').select('*').eq('user_id', uid).order('ordre').order('cree_le'),
+      db.from('crm_colonnes').select('*').eq('user_id', uid).order('ordre'),
     ]);
-    setState({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], suivi: sv.data || [], journal: jo.data || [], prefs: pf.data || {}, modeles: md.data || [],
+    setState({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], suivi: sv.data || [], journal: jo.data || [], prefs: pf.data || {}, modeles: md.data || [], colonnes: co.data || [],
       error: l.error || c.error || g.error || sv.error || jo.error ? 'Une partie de vos données n’a pas pu être chargée.' : '' });
   }, [session.user.id, apercu]);
   useEffect(() => { load(); }, [load]);
@@ -68,7 +71,7 @@ function useClientData(session, apercu) {
     const avant = state;
     const cur = (state.suivi || []).find((x) => x.lead_id === leadId) || { lead_id: leadId, statut: 'a_appeler', rappel_le: null, rdv_le: null, motif_perte: null };
     const next = { ...cur, ...patch, maj_le: new Date().toISOString() };
-    if (next.statut !== 'perdu') next.motif_perte = null;
+    if (etapeBase(next.statut, listeColonnes(state.colonnes)) !== 'perdu') next.motif_perte = null;
     const change = next.statut !== cur.statut;
     setState((st) => ({ ...st, suivi: [...(st.suivi || []).filter((x) => x.lead_id !== leadId), next],
       journal: change ? [...(st.journal || []), { id: `local-${Date.now()}`, lead_id: leadId, type: 'statut', statut: next.statut, cree_le: new Date().toISOString() }] : st.journal }));
@@ -92,9 +95,10 @@ function useClientData(session, apercu) {
   const appeler = useCallback(async (leadId, resultat, prochaine) => {
     const maintenant = new Date().toISOString();
     const cur = (state.suivi || []).find((x) => x.lead_id === leadId) || { lead_id: leadId, statut: 'a_appeler', rappel_le: null, rdv_le: null, motif_perte: null, tentatives: 0 };
-    const relancable = ['a_appeler', 'nrp', 'a_rappeler'].includes(cur.statut);
+    const relancable = typeDe(cur.statut, listeColonnes(state.colonnes)) === 'relance';
+    const base = ['a_appeler', 'nrp', 'a_rappeler'].includes(cur.statut);
     const next = { ...cur, tentatives: (cur.tentatives || 0) + 1, derniere_tentative: maintenant, maj_le: maintenant,
-      ...(resultat === 'nrp' && relancable ? { statut: 'nrp', rappel_le: prochaine || null } : {}) };
+      ...(resultat === 'nrp' && relancable ? { statut: base ? 'nrp' : cur.statut, rappel_le: prochaine || null } : {}) };
     const journal = [{ id: `local-a-${Date.now()}`, lead_id: leadId, type: 'appel', texte: resultat, cree_le: maintenant }];
     if (next.statut !== cur.statut) journal.push({ id: `local-s-${Date.now()}`, lead_id: leadId, type: 'statut', statut: next.statut, cree_le: maintenant });
     const avant = state;
@@ -106,8 +110,19 @@ function useClientData(session, apercu) {
     return data;
   }, [state, apercu]);
   const setPrefs = useCallback((prefs) => setState((st) => ({ ...st, prefs })), []);
+  const setColonnes = useCallback((colonnes) => setState((st) => ({ ...st, colonnes })), []);
+  // Montant du devis HT (fonction suivi_montant) ; null efface. Affichage immédiat, retour arrière si l'écriture échoue.
+  const majMontant = useCallback(async (leadId, montant) => {
+    const avant = state;
+    const cur = (state.suivi || []).find((x) => x.lead_id === leadId) || { lead_id: leadId, statut: 'a_appeler', tentatives: 0 };
+    setState((st) => ({ ...st, suivi: [...(st.suivi || []).filter((x) => x.lead_id !== leadId), { ...cur, montant }] }));
+    if (apercu) return true;
+    const { error } = await db.rpc('suivi_montant', { p_lead: leadId, p_montant: montant });
+    if (error) { setState({ ...avant, error: 'Le montant n’a pas pu être enregistré. Réessayez.' }); return false; }
+    return true;
+  }, [state, apercu]);
   const setModeles = useCallback((modeles) => setState((st) => ({ ...st, modeles })), []);
-  return { ...state, suiviPar, journalPar, majSuivi, noter, appeler, setPrefs, setModeles, reload: load };
+  return { ...state, suiviPar, journalPar, majSuivi, noter, appeler, majMontant, setPrefs, setModeles, setColonnes, reload: load };
 }
 
 // Chiffres dérivés : livrés par commande (hors leads annulés après litige), montant dû.
@@ -240,9 +255,10 @@ function duree(min) {
 
 function Home({ client }) {
   const s = useStats();
-  const { leads, suiviPar, journalPar } = useData();
+  const { leads, suiviPar, journalPar, colonnes } = useData();
   const [jours, setJours] = useState(30);
-  const st = (l) => (suiviPar.get(l.id) || {}).statut || 'a_appeler';
+  const cols = listeColonnes(colonnes);
+  const st = (l) => etapeBase((suiviPar.get(l.id) || {}).statut || 'a_appeler', cols);
   const d = useMemo(() => {
     if (!leads) return null;
     const actifs = leads.filter((l) => !l.annule && l.livre_le);
@@ -274,12 +290,12 @@ function Home({ client }) {
       mediane, depense, coutSignature: signes.length ? depense / signes.length : null, barres,
       nouveaux: actifs.filter((l) => st(l) === 'a_appeler').length,
       nouveauxHeure: actifs.filter((l) => st(l) === 'a_appeler' && Date.now() - new Date(l.livre_le).getTime() < 3600000).length,
-      rappels: suivis.filter((x) => x.rappel_le && new Date(x.rappel_le) <= finJour && !['signe', 'perdu'].includes(x.statut)).length,
-      rappelsRetard: suivis.filter((x) => x.rappel_le && new Date(x.rappel_le) < new Date() && !['signe', 'perdu'].includes(x.statut)).length,
+      rappels: suivis.filter((x) => x.rappel_le && new Date(x.rappel_le) <= finJour && !['signe', 'perdu'].includes(etapeBase(x.statut, cols))).length,
+      rappelsRetard: suivis.filter((x) => x.rappel_le && new Date(x.rappel_le) < new Date() && !['signe', 'perdu'].includes(etapeBase(x.statut, cols))).length,
       rdvJour: suivis.filter((x) => x.rdv_le && new Date(x.rdv_le) >= debutJour && new Date(x.rdv_le) <= finJour).length,
       rdvAVenir: suivis.filter((x) => x.rdv_le && new Date(x.rdv_le) > new Date()).length,
     };
-  }, [leads, suiviPar, journalPar, jours]);
+  }, [leads, suiviPar, journalPar, jours, colonnes]); // eslint-disable-line react-hooks/exhaustive-deps
   const max = d ? Math.max(1, ...d.barres.map((b) => b.n)) : 1;
   const etapes = d ? [['Reçus', d.periode], ['Traités', d.traites], ['Joints', d.joints], ['RDV', d.rdv], ['Devis', d.devis], ['Signés', d.signes]] : [];
   return (

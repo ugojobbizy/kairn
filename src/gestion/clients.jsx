@@ -316,7 +316,7 @@ export function FicheClient({ data, apercu }) {
                   <td>{dateHeure(l.livre_le)}</td><td>{THEMES[l.thematique] || l.thematique}</td>
                   <td><b>{[l.prenom, l.nom].filter(Boolean).join(' ') || '·'}</b></td><td>{l.code_postal || '·'}</td>
                   <td className="ec-num">{euro(l.prix_ht)}</td>
-                  <td>{sv ? <span className={`ec-st is-${sv.statut}`}>{SUIVI[sv.statut]}</span> : <span className="ec-muted">À appeler</span>}</td>
+                  <td>{sv ? <span className={`ec-st is-${sv.statut}`}>{SUIVI[sv.statut] || 'Colonne du client'}</span> : <span className="ec-muted">À appeler</span>}</td>
                   <td>{l.annule ? <span className="ec-status is-refusee">Annulé (litige)</span> : l.exporte_le ? 'Exporté' : '·'}</td>
                 </tr>
               );

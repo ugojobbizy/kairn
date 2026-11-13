@@ -52,6 +52,7 @@ export function apercuData() {
       rdv_le: statut === 'rdv' ? h(4 + i * 7) : statut === 'devis' ? h(-48 - i) : null,
       rappel_le: statut === 'a_rappeler' ? h(i % 3 === 0 ? -2 : 3 + i) : statut === 'nrp' ? h(i % 2 ? -1 : 2) : null,
       tentatives: statut === 'nrp' ? 1 + (i % 3) : ['a_appeler', 'a_rappeler'].includes(statut) ? 0 : 1,
+      montant: ['devis', 'signe'].includes(statut) ? [8900, 12500, 15400, 6200, 18900, 9800][i % 6] : null,
       motif_perte: statut === 'perdu' ? (i % 2 ? 'plus_interesse' : 'injoignable') : null };
   });
   const journal = suivi.flatMap((x, i) => {
@@ -61,5 +62,5 @@ export function apercuData() {
     if (i % 3 === 0) out.push({ id: `j-${i}-2`, lead_id: x.lead_id, client_id: 'apercu', type: 'note', texte: 'Appelé, intéressé. Souhaite un devis avant fin du mois.', cree_le: t(20 + i * 9) });
     return out;
   });
-  return { leads: mine, commandes: [pre, cmd, shopCmd], litiges, stock, suivi, journal, prefs: {}, modeles: [] };
+  return { leads: mine, commandes: [pre, cmd, shopCmd], litiges, stock, suivi, journal, prefs: {}, modeles: [], colonnes: [] };
 }

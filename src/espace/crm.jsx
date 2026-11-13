@@ -5,6 +5,7 @@ import { PRODUITS } from '../v3/produits.js';
 import { useData } from './data.js';
 import { MAX_APPELS, planDe, prochaineTentative, etatDelai, dansCreneau, finCreneau, prochainCreneau, duree, remplir, numeroIntl, VARIABLES } from './relance.js';
 import { useModeles, variables, conseille } from './modeles.js';
+import { useColonnes, listeColonnes, etapeBase, typeDe, nomDe, couleurDe, TYPES, COULEURS } from './colonnes.js';
 
 // CRM de l'espace client « Mes contacts » (Ugo, 30/10/2026 : « prends la même base que le CRM que j'ai fait pour ETXE Énergie
 // et pour Isolation d'Aquitaine »). Même logique que ~/combles-crm (AdminShell, LeadDrawer) : pipeline en colonnes avec
@@ -13,7 +14,6 @@ import { useModeles, variables, conseille } from './modeles.js';
 // Données : table lead_suivi et journal lead_suivi_journal (supabase/2026-10-30-crm-client.sql).
 
 export const ETAPES_CRM = Object.keys(SUIVI);
-const TON = { a_appeler: '#2F5BEA', nrp: '#94A3B8', a_rappeler: '#D97706', rdv: '#0EA5E9', devis: '#7C3AED', signe: '#16A34A', perdu: '#64748B' };
 
 // ─ petites aides ─
 export const nomComplet = (l) => [l.prenom, l.nom].filter(Boolean).join(' ') || 'Contact';
@@ -32,7 +32,6 @@ const jour = (d) => new Date(d).toDateString();
 const quand = (d) => new Date(d).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).replace(',', '').replace(/(\d{2}):(\d{2})$/, (_, h, m) => `à ${Number(h)} h${m === '00' ? '' : ` ${m}`}`);
 // ─ relance : délai légal et plan d'appels (src/espace/relance.js) ─
 export const demandeDe = (l) => l.recu_le || l.livre_le;
-const RELANCABLES = ['a_appeler', 'nrp', 'a_rappeler'];
 const heure = (d) => new Date(d).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', ' h ').replace(/ h 00$/, ' h');
 const jourHeure = (d) => {
   const x = new Date(d); const auj = new Date(); const dem = new Date(); dem.setDate(dem.getDate() + 1);
@@ -41,8 +40,10 @@ const jourHeure = (d) => {
   return `${x.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })} ${heure(x)}`;
 };
 // Pastille du délai légal de rappel (5 jours ouvrables après la demande).
+function useCols() { const { colonnes } = useData(); return useMemo(() => listeColonnes(colonnes), [colonnes]); }
 export function Delai({ lead: l, sv, now }) {
-  if (sv && !RELANCABLES.includes(sv.statut)) return null;
+  const cols = useCols();
+  if (sv && typeDe(sv.statut, cols) !== 'relance') return null;
   const e = etatDelai(demandeDe(l), now);
   if (!e.fin) return null;
   if (e.depasse) return <span className="crm-delai is-out" title="Le délai légal de rappel est passé : ne plus appeler ce contact.">Délai dépassé</span>;
@@ -184,13 +185,13 @@ export function useFilters(rows, dateKey) {
       </div>
     </div>
   );
-  return { rows: out, bar, q, setQ, them, setThem };
+  return { rows: out, bar, q, setQ, them, setThem, dep, setDep };
 }
 
 // ─ export : Excel (point-virgule), CSV standard (Google Sheets, CRM), ou copie à coller ─
 const COLS = [['livre_le', 'Reçu le'], ['thematique', 'Thématique'], ['prenom', 'Prénom'], ['nom', 'Nom'], ['telephone', 'Téléphone'], ['email', 'E-mail'],
   ['code_postal', 'Code postal'], ['ville', 'Ville'], ['statut_occupation', 'Statut d’occupation'], ['type_logement', 'Type de logement'], ['chauffage', 'Chauffage'],
-  ['surface', 'Surface'], ['_etape', 'Étape'], ['_rdv', 'Rendez-vous'], ['_rappel', 'Rappel'], ['_motif', 'Motif de perte'], ['_note', 'Dernière note']];
+  ['surface', 'Surface'], ['_etape', 'Étape'], ['_montant', 'Montant devis HT'], ['_rdv', 'Rendez-vous'], ['_rappel', 'Rappel'], ['_motif', 'Motif de perte'], ['_note', 'Dernière note']];
 function ExportMenu({ rows, onExported }) {
   const [copied, setCopied] = useState(false);
   const cols = COLS.map(([k, t]) => [k === 'livre_le' ? (r) => dateHeure(r.livre_le) : k, t]);
@@ -246,24 +247,27 @@ export function LitigeModal({ lead, apercu, onClose, onDone }) {
 // Lisible en un coup d'œil (Ugo, 13/11/2026 : « c'est pas assez clair ») : qui, quoi et où, puis UNE prochaine action
 // (rendez-vous, rappel, motif de perte), puis l'état des appels et le délai légal. Plus d'initiales ni d'étiquettes
 // de logement sur la carte : elles sont dans la fiche.
-function Carte({ lead: l, sv, litige, onOpen, onDrag, dragging }) {
+function Carte({ lead: l, sv, litige, onOpen, onDrag, dragging, selected, selecting, onSelect }) {
+  const cols = useCols();
   const rdv = sv?.rdv_le && new Date(sv.rdv_le) > new Date(Date.now() - 3600000);
   const rappel = sv?.rappel_le;
   const enRetard = rappel && new Date(rappel) < new Date();
-  const relancable = !sv || RELANCABLES.includes(sv.statut);
+  const relancable = !sv || typeDe(sv.statut, cols) === 'relance';
   const action = rdv ? <p className="crm-next is-rdv"><Ico d={I.cal} size={13} />RDV {quand(sv.rdv_le)}</p>
     : rappel && relancable ? <p className={`crm-next ${enRetard ? 'is-late' : 'is-rappel'}`}><Ico d={I.bell} size={13} />{enRetard ? 'En retard · ' : 'Rappel '}{quand(rappel)}</p>
       : sv?.motif_perte ? <p className="crm-next">{MOTIFS_PERTE[sv.motif_perte] || sv.motif_perte}</p> : null;
   return (
-    <div role="button" tabIndex={0} draggable className={`crm-card${dragging ? ' is-drag' : ''}${!sv && Date.now() - new Date(l.livre_le).getTime() < 3600000 ? ' is-fresh' : ''}`}
+    <div role="button" tabIndex={0} draggable className={`crm-card${dragging ? ' is-drag' : ''}${selected ? ' is-sel' : ''}${selecting ? ' is-selecting' : ''}${!sv && Date.now() - new Date(l.livre_le).getTime() < 3600000 ? ' is-fresh' : ''}`}
       onClick={() => onOpen(l.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(l.id); } }}
       onDragStart={(e) => { e.dataTransfer.setData('text/plain', l.id); e.dataTransfer.effectAllowed = 'move'; onDrag(l.id); }} onDragEnd={() => onDrag(null)}>
       <div className="crm-card-top">
+        {onSelect && <input type="checkbox" className="crm-card-check" checked={Boolean(selected)} aria-label={`Sélectionner ${nomComplet(l)}`} onClick={(e) => e.stopPropagation()} onChange={onSelect} />}
         <b className="crm-card-name">{nomComplet(l)}</b>
         <span className="crm-age" title={`Demande du ${dateHeure(demandeDe(l))}`}>{age(demandeDe(l))}</span>
       </div>
       <p className="crm-card-sub">{[THEMES[l.thematique] || l.thematique, [l.code_postal, l.ville].filter(Boolean).join(' ')].filter(Boolean).join(' · ')}</p>
       {action}
+      {Number(sv?.montant) > 0 && <p className="crm-montant">{Math.round(Number(sv.montant)).toLocaleString('fr-FR')} € HT</p>}
       {litige && <p className="crm-next is-lit">Litige {LITIGE_STATUTS[litige.statut].toLowerCase()}</p>}
       {relancable && (
         <div className="crm-card-foot">
@@ -279,7 +283,7 @@ function Carte({ lead: l, sv, litige, onOpen, onDrag, dragging }) {
 // Après « Appeler » : l'installateur dit ce qui s'est passé. « Pas de réponse » compte l'appel et programme la relance
 // suivante du plan (4 appels au plus, créneaux autorisés, avant la fin du délai légal) ; « Il a répondu » compte l'appel.
 export function useAppel(onToast) {
-  const { suiviPar, appeler, prefs } = useData();
+  const { suiviPar, appeler, prefs, colonnes } = useData();
   return async (l, resultat) => {
     const sv = suiviPar.get(l.id);
     const faites = (sv?.tentatives || 0) + 1;
@@ -287,18 +291,22 @@ export function useAppel(onToast) {
     const ok = await appeler(l.id, resultat, prochaine ? prochaine.toISOString() : null);
     if (!ok) return;
     if (resultat === 'repondu') onToast?.(`Appel ${faites} noté. Choisissez la suite : rendez-vous, rappel ou perdu.`);
-    else if (sv && !RELANCABLES.includes(sv.statut)) onToast?.(`Appel ${faites} noté, sans réponse.`);
+    else if (sv && typeDe(sv.statut, listeColonnes(colonnes)) !== 'relance') onToast?.(`Appel ${faites} noté, sans réponse.`);
     else onToast?.(prochaine ? `Pas de réponse (appel ${faites}/${MAX_APPELS}). Relance prévue ${jourHeure(prochaine)}.`
       : `Pas de réponse (appel ${faites}). Plus de relance possible : ${faites >= MAX_APPELS ? `${MAX_APPELS} appels faits` : 'délai légal atteint'}. Vous pouvez le classer perdu (injoignable).`);
   };
 }
 
 function Fiche({ lead: l, client, litige, apercu, onClose, onSignal, onToast }) {
-  const { suiviPar, journalPar, majSuivi, noter, prefs } = useData();
+  const { suiviPar, journalPar, majSuivi, noter, prefs, majMontant } = useData();
+  const cols = useCols();
   const sv = suiviPar.get(l.id) || { statut: 'a_appeler', rappel_le: null, rdv_le: null, motif_perte: null, tentatives: 0 };
+  const [montant, setMontant] = useState(sv.montant ?? '');
+  useEffect(() => { setMontant(sv.montant ?? ''); }, [l.id, sv.montant]);
+  const sauverMontant = () => { const v = String(montant).replace(/\s/g, '').replace(',', '.'); const n = v === '' ? null : Math.round(Number(v) * 100) / 100; if (v !== '' && (!Number.isFinite(n) || n < 0)) { onToast?.('Montant invalide.'); return; } if (n !== (sv.montant == null ? null : Number(sv.montant))) majMontant(l.id, n); };
   const [msg, setMsg] = useState(null); // 'sms' | 'email'
   const appel = useAppel(onToast);
-  const relancable = RELANCABLES.includes(sv.statut);
+  const relancable = typeDe(sv.statut, cols) === 'relance';
   const delai = etatDelai(demandeDe(l));
   const convenu = sv.statut === 'a_rappeler';
   const prevue = !relancable ? null : sv.rappel_le ? (convenu ? sv.rappel_le : prochainCreneau(new Date(sv.rappel_le))) : prochaineTentative(demandeDe(l), sv.tentatives || 0, planDe(prefs));
@@ -354,12 +362,19 @@ function Fiche({ lead: l, client, litige, apercu, onClose, onSignal, onToast }) 
           </section>
 
           <section><h3>Étape</h3>
-            <div className="crm-steps">{ETAPES_CRM.map((k) => <button type="button" key={k} style={{ '--c': TON[k] }} className={sv.statut === k ? 'is-on' : ''} aria-pressed={sv.statut === k} onClick={() => set({ statut: k })}>{SUIVI[k]}</button>)}</div>
-            {sv.statut === 'perdu' && (
+            <div className="crm-steps">{cols.filter((c) => !c.masquee || c.statut === sv.statut).map((c) => <button type="button" key={c.statut} style={{ '--c': c.couleur }} className={sv.statut === c.statut ? 'is-on' : ''} aria-pressed={sv.statut === c.statut} onClick={() => set({ statut: c.statut })}>{c.nom}</button>)}</div>
+            {etapeBase(sv.statut, cols) === 'perdu' && (
               <label className="crm-field"><span>Motif de perte</span>
                 <select value={sv.motif_perte || ''} onChange={(e) => set({ motif_perte: e.target.value || null })}><option value="">Choisir un motif…</option>{Object.entries(MOTIFS_PERTE).map(([k, t]) => <option key={k} value={k}>{t}</option>)}</select>
               </label>
             )}
+          </section>
+
+          <section><h3>Montant du devis</h3>
+            <div className="crm-when crm-montant-field">
+              <input type="text" inputMode="decimal" value={montant} onChange={(e) => setMontant(e.target.value)} onBlur={sauverMontant} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }} placeholder="Ex. 12 500" aria-label="Montant du devis HT en euros" />
+              <span>€ HT</span>
+            </div>
           </section>
 
           <section><h3>Coordonnées</h3>
@@ -374,7 +389,7 @@ function Fiche({ lead: l, client, litige, apercu, onClose, onSignal, onToast }) 
 
           <section><h3>Rendez-vous</h3>
             <div className="crm-when">
-              <input type="datetime-local" value={toLocal(sv.rdv_le)} onChange={(e) => set({ rdv_le: fromLocal(e.target.value), ...(e.target.value && ['a_appeler', 'nrp', 'a_rappeler'].includes(sv.statut) ? { statut: 'rdv' } : {}) })} />
+              <input type="datetime-local" value={toLocal(sv.rdv_le)} onChange={(e) => set({ rdv_le: fromLocal(e.target.value), ...(e.target.value && relancable ? { statut: 'rdv' } : {}) })} />
               {sv.rdv_le && <button type="button" className="ec-link-btn" onClick={() => set({ rdv_le: null })}>Effacer</button>}
             </div>
             {g && <a className="crm-gcal" href={g} target="_blank" rel="noopener noreferrer"><Ico d={I.cal} size={14} />Ajouter à Google Agenda</a>}
@@ -401,11 +416,11 @@ function Fiche({ lead: l, client, litige, apercu, onClose, onSignal, onToast }) 
             <ol className="crm-feed">
               {journal.map((j) => (
                 <li key={j.id} className={j.type === 'note' ? 'is-note' : ''}>
-                  <i style={{ background: j.type === 'note' ? '#CBD5E1' : TON[j.statut] }} />
-                  <div>{j.type === 'note' ? <p>{j.texte}</p> : j.type === 'appel' ? <p>Appel : <b>{j.texte === 'nrp' ? 'pas de réponse' : 'a répondu'}</b></p> : <p>Étape : <b>{SUIVI[j.statut] || j.statut}</b></p>}<span>{dateHeure(j.cree_le)}</span></div>
+                  <i style={{ background: j.type === 'note' ? '#CBD5E1' : j.type === 'appel' ? '#94A3B8' : couleurDe(j.statut, cols) }} />
+                  <div>{j.type === 'note' ? <p>{j.texte}</p> : j.type === 'appel' ? <p>Appel : <b>{j.texte === 'nrp' ? 'pas de réponse' : 'a répondu'}</b></p> : <p>Étape : <b>{nomDe(j.statut, cols)}</b></p>}<span>{dateHeure(j.cree_le)}</span></div>
                 </li>
               ))}
-              <li><i style={{ background: TON.a_appeler }} /><div><p>Contact reçu</p><span>{dateHeure(l.livre_le)}</span></div></li>
+              <li><i style={{ background: couleurDe('a_appeler', cols) }} /><div><p>Contact reçu</p><span>{dateHeure(l.livre_le)}</span></div></li>
             </ol>
           </section>
 
@@ -485,7 +500,7 @@ function Relance({ session, client, apercu, onClose }) {
 // ─ Ma journée : qui appeler maintenant (bloc 1 « vitesse et relance », 12/11/2026) ─
 // Nouveaux contacts d'abord (le plus ancien en tête : son délai court depuis plus longtemps), puis relances arrivées à
 // échéance ; ensuite ce qui tombe plus tard dans la journée, les rendez-vous du jour et les contacts dont le délai est passé.
-export function planJournee(rows, suiviPar, prefs, now = new Date()) {
+export function planJournee(rows, suiviPar, prefs, now = new Date(), cols = listeColonnes([])) {
   const finJour = new Date(now); finJour.setHours(23, 59, 59, 999);
   const plan = planDe(prefs);
   const out = { maintenant: [], plusTard: [], ensuite: [], depasses: [], rdv: [] };
@@ -493,7 +508,7 @@ export function planJournee(rows, suiviPar, prefs, now = new Date()) {
     const sv = suiviPar.get(l.id);
     const statut = sv?.statut || 'a_appeler';
     if (sv?.rdv_le && ['rdv', 'devis'].includes(statut)) { const r = new Date(sv.rdv_le); if (r.toDateString() === now.toDateString()) out.rdv.push({ l, quand: r }); }
-    if (!RELANCABLES.includes(statut)) continue;
+    if (typeDe(statut, cols) !== 'relance') continue;
     const delai = etatDelai(demandeDe(l), now);
     // Lecture prudente : même un rappel convenu (« À rappeler ») sort de la liste une fois le délai de la demande passé.
     if (delai.depasse) { out.depasses.push({ l }); continue; }
@@ -512,10 +527,10 @@ export function planJournee(rows, suiviPar, prefs, now = new Date()) {
   return out;
 }
 
-function Journee({ rows, onOpen, onToast, now }) {
+function Journee({ rows, onOpen, onToast, now, cols }) {
   const { suiviPar, prefs, majSuivi } = useData();
   const appel = useAppel(onToast);
-  const j = useMemo(() => planJournee(rows, suiviPar, prefs, now), [rows, suiviPar, prefs, now]);
+  const j = useMemo(() => planJournee(rows, suiviPar, prefs, now, cols), [rows, suiviPar, prefs, now, cols]);
   const ok = dansCreneau(now);
   const fin = finCreneau(now);
   const reprise = ok ? null : prochainCreneau(now);
@@ -581,9 +596,169 @@ function Journee({ rows, onOpen, onToast, now }) {
   );
 }
 
+// ─ Pipeline : colonnes du client (renommer, couleur, type, ordre, masquer, supprimer), total des devis, tri par
+// colonne, sélection multiple (Ugo, 13/11/2026). Réglage des colonnes : src/espace/colonnes.js.
+const TRIS = { recent: 'Plus récents', ancien: 'Plus anciens', delai: 'Délai restant', montant: 'Montant' };
+function trier(rows, tri, suiviPar) {
+  const r = [...rows];
+  const dem = (l) => new Date(demandeDe(l)).getTime();
+  if (tri === 'ancien') return r.sort((a, b) => dem(a) - dem(b));
+  if (tri === 'montant') return r.sort((a, b) => (Number(suiviPar.get(b.id)?.montant) || 0) - (Number(suiviPar.get(a.id)?.montant) || 0));
+  if (tri === 'delai') return r.sort((a, b) => (etatDelai(demandeDe(a)).reste ?? 9e15) - (etatDelai(demandeDe(b)).reste ?? 9e15));
+  return r.sort((a, b) => dem(b) - dem(a));
+}
+const euroRond = (n) => `${Math.round(Number(n) || 0).toLocaleString('fr-FR')} €`;
+
+function MenuColonne({ col, cols, n, tri, onTri, onSelectAll, onClose, gestion, onToast }) {
+  const [nom, setNom] = useState(col.nom);
+  const [confirmer, setConfirmer] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const k = (e) => { if (e.key === 'Escape') onClose(); };
+    const c = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    window.addEventListener('keydown', k); window.addEventListener('mousedown', c);
+    return () => { window.removeEventListener('keydown', k); window.removeEventListener('mousedown', c); };
+  }, [onClose]);
+  const i = cols.findIndex((c) => c.statut === col.statut);
+  const ok = (p, msg) => p.then((r) => { if (!r) onToast('L’enregistrement n’a pas abouti. Réessayez.'); else if (msg) onToast(msg); });
+  return (
+    <div className="crm-menu" ref={ref} role="menu">
+      <form onSubmit={(e) => { e.preventDefault(); if (nom.trim() && nom.trim() !== col.nom) ok(gestion.renommer(col.statut, nom)); onClose(); }}>
+        <label className="crm-menu-field"><span>Nom de la colonne</span><input value={nom} maxLength={40} onChange={(e) => setNom(e.target.value)} autoFocus /></label>
+      </form>
+      <div className="crm-menu-colors" aria-label="Couleur">{COULEURS.map((c) => <button type="button" key={c} style={{ background: c }} className={c === col.couleur ? 'is-on' : ''} aria-label={`Couleur ${c}`} onClick={() => ok(gestion.changerCouleur(col.statut, c))} />)}</div>
+      {col.perso && (
+        <label className="crm-menu-field"><span>Type</span>
+          <select value={col.type} onChange={(e) => ok(gestion.changerType(col.statut, e.target.value))}>{Object.entries(TYPES).map(([k, t]) => <option key={k} value={k}>{t}</option>)}</select>
+        </label>
+      )}
+      <p className="crm-menu-label">Trier</p>
+      <div className="crm-menu-tri">{Object.entries(TRIS).map(([k, t]) => <button type="button" key={k} className={tri === k ? 'is-on' : ''} onClick={() => onTri(k)}>{t}</button>)}</div>
+      <hr />
+      <button type="button" className="crm-menu-item" onClick={() => { onSelectAll(); onClose(); }} disabled={!n}>Sélectionner les {n} contacts</button>
+      <button type="button" className="crm-menu-item" onClick={() => ok(gestion.deplacer(col.statut, -1))} disabled={i <= 0}>Déplacer à gauche</button>
+      <button type="button" className="crm-menu-item" onClick={() => ok(gestion.deplacer(col.statut, 1))} disabled={i >= cols.length - 1}>Déplacer à droite</button>
+      {col.statut !== 'a_appeler' && <button type="button" className="crm-menu-item" onClick={() => { ok(gestion.masquer(col.statut, true), `« ${col.nom} » masquée. Pour la réafficher : bouton Colonnes.`); onClose(); }}>Masquer la colonne</button>}
+      {col.perso && (n ? <p className="crm-menu-note">Pour supprimer cette colonne, déplacez d’abord ses {n} contacts.</p>
+        : confirmer ? <button type="button" className="crm-menu-item is-danger" onClick={() => { ok(gestion.supprimer(col.statut), `Colonne « ${col.nom} » supprimée.`); onClose(); }}>Confirmer la suppression</button>
+          : <button type="button" className="crm-menu-item is-danger" onClick={() => setConfirmer(true)}>Supprimer la colonne</button>)}
+    </div>
+  );
+}
+
+function NouvelleColonne({ gestion, onToast, onClose }) {
+  const [nom, setNom] = useState('');
+  const [type, setType] = useState('en_cours');
+  return (
+    <form className="crm-col crm-col-new" onSubmit={async (e) => { e.preventDefault(); if (!nom.trim()) return; const r = await gestion.ajouter(nom.trim(), type); if (!r) onToast('La colonne n’a pas pu être créée. Réessayez.'); onClose(); }}>
+      <label className="crm-menu-field"><span>Nom de la colonne</span><input value={nom} maxLength={40} onChange={(e) => setNom(e.target.value)} placeholder="Ex. Visite technique" autoFocus /></label>
+      <label className="crm-menu-field"><span>Type</span><select value={type} onChange={(e) => setType(e.target.value)}>{Object.entries(TYPES).map(([k, t]) => <option key={k} value={k}>{t}</option>)}</select></label>
+      <p className="crm-menu-note">{{ relance: 'Les contacts restent dans Ma journée : relances et délai légal s’appliquent.', en_cours: 'Contact joint, affaire en cours (comme RDV pris ou Devis envoyé).', gagne: 'Les contacts sont comptés comme signés.', perdu: 'Les contacts sont comptés comme perdus.' }[type]}</p>
+      <div className="crm-col-new-act"><button type="button" className="ec-btn-ghost" onClick={onClose}>Annuler</button><button type="submit" className="ec-btn" disabled={!nom.trim()}>Créer</button></div>
+    </form>
+  );
+}
+
+function PanneauColonnes({ gestion, onToast, onClose }) {
+  const ref = useRef(null);
+  useEffect(() => { const c = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); }; window.addEventListener('mousedown', c); return () => window.removeEventListener('mousedown', c); }, [onClose]);
+  return (
+    <div className="crm-menu crm-menu-cols" ref={ref}>
+      <p className="crm-menu-label">Colonnes affichées</p>
+      {gestion.liste.map((c) => (
+        <label key={c.statut} className="crm-menu-check">
+          <input type="checkbox" checked={!c.masquee} disabled={c.statut === 'a_appeler'} onChange={(e) => gestion.masquer(c.statut, !e.target.checked).then((r) => { if (!r) onToast('L’enregistrement n’a pas abouti.'); })} />
+          <i style={{ background: c.couleur }} />{c.nom}<small>{TYPES[c.type]}</small>
+        </label>
+      ))}
+    </div>
+  );
+}
+
+function Pipeline({ rows, cols, gestion, suiviPar, enLitige, majSuivi, onOpen, sel, setSel, onToast, boardRef }) {
+  const [drag, setDrag] = useState(null);
+  const [over, setOver] = useState(null);
+  const [menu, setMenu] = useState(null);
+  const [nouvelle, setNouvelle] = useState(false);
+  const [tris, setTris] = useState({});
+  const visibles = cols.filter((c) => !c.masquee);
+  const parCol = useMemo(() => {
+    const m = Object.fromEntries(cols.map((c) => [c.statut, []]));
+    for (const l of rows) { const s = suiviPar.get(l.id)?.statut || 'a_appeler'; (m[s] || m.a_appeler).push(l); }
+    return m;
+  }, [rows, cols, suiviPar]);
+  function deposer(id, statut) {
+    setOver(null); setDrag(null);
+    if (!id) return;
+    // Glisser une carte sélectionnée déplace toute la sélection.
+    const ids = sel.has(id) ? [...sel] : [id];
+    for (const x of ids) if ((suiviPar.get(x)?.statut || 'a_appeler') !== statut) majSuivi(x, { statut });
+    if (ids.length > 1) { onToast(`${ids.length} contacts déplacés.`); setSel(new Set()); }
+    else if (typeDe(statut, cols) === 'perdu') onOpen(id);
+  }
+  const basculer = (id) => setSel((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  return (
+    <div className="crm-board" ref={boardRef}>
+      {visibles.map((c) => {
+        const liste = trier(parCol[c.statut] || [], tris[c.statut], suiviPar);
+        const total = liste.reduce((t, l) => t + (Number(suiviPar.get(l.id)?.montant) || 0), 0);
+        return (
+          <section key={c.statut} data-etape={c.statut} className={`crm-col${over === c.statut ? ' is-over' : ''}`} style={{ '--c': c.couleur }}
+            onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (over !== c.statut) setOver(c.statut); }}
+            onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setOver(null); }}
+            onDrop={(e) => { e.preventDefault(); deposer(e.dataTransfer.getData('text/plain') || drag, c.statut); }}>
+            <header className="crm-col-head">
+              <h2><i />{c.nom}<b>{liste.length}</b></h2>
+              {total > 0 && <span className="crm-col-total" title="Total des devis de la colonne (HT)">{euroRond(total)}</span>}
+              <button type="button" className="crm-col-more" aria-label={`Options de la colonne ${c.nom}`} onClick={() => setMenu(menu === c.statut ? null : c.statut)}>
+                <Ico d={<><circle cx="5" cy="12" r="1.3" /><circle cx="12" cy="12" r="1.3" /><circle cx="19" cy="12" r="1.3" /></>} size={16} />
+              </button>
+              {menu === c.statut && <MenuColonne col={c} cols={cols} n={liste.length} tri={tris[c.statut] || 'recent'} onTri={(t) => setTris((x) => ({ ...x, [c.statut]: t }))}
+                onSelectAll={() => setSel((s) => new Set([...s, ...liste.map((l) => l.id)]))} onClose={() => setMenu(null)} gestion={gestion} onToast={onToast} />}
+            </header>
+            <div className="crm-col-body">
+              {liste.slice(0, 80).map((l) => <Carte key={l.id} lead={l} sv={suiviPar.get(l.id)} litige={enLitige.get(l.id)} onOpen={onOpen} onDrag={setDrag} dragging={drag === l.id}
+                selected={sel.has(l.id)} selecting={sel.size > 0} onSelect={() => basculer(l.id)} />)}
+              {liste.length > 80 && <p className="crm-more">+ {liste.length - 80} autres : utilisez la recherche ou la liste</p>}
+              {liste.length === 0 && <p className="crm-empty">{c.statut === 'a_appeler' ? 'Les nouveaux contacts arrivent ici.' : 'Glissez une carte ici'}</p>}
+            </div>
+          </section>
+        );
+      })}
+      {nouvelle ? <NouvelleColonne gestion={gestion} onToast={onToast} onClose={() => setNouvelle(false)} />
+        : <button type="button" className="crm-col-add" onClick={() => setNouvelle(true)}>+ Ajouter une colonne</button>}
+    </div>
+  );
+}
+
+// Barre d'actions de la sélection multiple.
+function BarreSelection({ sel, setSel, cols, majSuivi, exportRows, onToast }) {
+  const [cible, setCible] = useState('');
+  if (!sel.size) return null;
+  const ids = [...sel];
+  const deplacer = (statut, patch = {}) => { for (const id of ids) majSuivi(id, { statut, ...patch }); onToast(`${ids.length} contact${ids.length > 1 ? 's' : ''} déplacé${ids.length > 1 ? 's' : ''} vers « ${nomDe(statut, cols)} ».`); setSel(new Set()); setCible(''); };
+  const exporter = () => {
+    const cs = COLS.map(([k, t]) => [k === 'livre_le' ? (r) => dateHeure(r.livre_le) : k, t]);
+    downloadCsv(`kairn-selection-${new Date().toISOString().slice(0, 10)}.csv`, cs, exportRows.filter((r) => sel.has(r.id)));
+  };
+  return (
+    <div className="crm-bulk" role="toolbar" aria-label="Actions sur la sélection">
+      <b>{ids.length} sélectionné{ids.length > 1 ? 's' : ''}</b>
+      <select value={cible} onChange={(e) => { if (e.target.value) deplacer(e.target.value); }} aria-label="Déplacer vers">
+        <option value="">Déplacer vers…</option>{cols.map((c) => <option key={c.statut} value={c.statut}>{c.nom}</option>)}
+      </select>
+      <button type="button" onClick={() => deplacer('perdu', { motif_perte: 'injoignable', rappel_le: null })}>Classer perdu</button>
+      <button type="button" onClick={exporter}>Exporter</button>
+      <button type="button" className="is-ghost" onClick={() => setSel(new Set())}>Annuler</button>
+    </div>
+  );
+}
+
 // ─ Mes contacts ─
 export default function Contacts({ apercu, client, session }) {
   const { leads, litiges, suiviPar, journalPar, majSuivi, reload, prefs } = useData();
+  const gestion = useColonnes(apercu);
+  const cols = gestion.liste;
   const [params, setParams] = useSearchParams();
   const vue = params.get('vue') || 'journee';
   const [now, setNow] = useState(() => new Date());
@@ -594,42 +769,40 @@ export default function Contacts({ apercu, client, session }) {
   const [ouvert, setOuvert] = useState(null);
   const [litigeFor, setLitigeFor] = useState(null);
   const [relance, setRelance] = useState(false);
-  const [drag, setDrag] = useState(null);
-  const [over, setOver] = useState(null);
+  const [panneau, setPanneau] = useState(false);
+  const [sel, setSel] = useState(() => new Set());
   const board = useRef(null);
   const enLitige = useMemo(() => new Map((litiges || []).map((g) => [g.lead_id, g])), [litiges]);
   const actifs = useMemo(() => (leads || []).filter((l) => !l.annule).sort((a, b) => String(b.livre_le).localeCompare(String(a.livre_le))), [leads]);
   const f = useFilters(actifs, 'livre_le');
-  const st = (l) => (suiviPar.get(l.id) || {}).statut || 'a_appeler';
-  const parEtape = useMemo(() => { const m = Object.fromEntries(ETAPES_CRM.map((k) => [k, []])); for (const l of f.rows) (m[st(l)] || m.a_appeler).push(l); return m; }, [f.rows, suiviPar]);
+  const statutDe = (l) => (suiviPar.get(l.id) || {}).statut || 'a_appeler';
+  const st = (l) => etapeBase(statutDe(l), cols);
   const maintenant = Date.now();
   const finJour = new Date(); finJour.setHours(23, 59, 59, 999);
   const rappels = f.rows.filter((l) => suiviPar.get(l.id)?.rappel_le && !['signe', 'perdu'].includes(st(l))).sort((a, b) => suiviPar.get(a.id).rappel_le.localeCompare(suiviPar.get(b.id).rappel_le));
   const rdvs = f.rows.filter((l) => suiviPar.get(l.id)?.rdv_le && new Date(suiviPar.get(l.id).rdv_le) > maintenant - 86400000).sort((a, b) => suiviPar.get(a.id).rdv_le.localeCompare(suiviPar.get(b.id).rdv_le));
   const rappelsDus = rappels.filter((l) => new Date(suiviPar.get(l.id).rappel_le) <= finJour).length;
   const lead = ouvert && (leads || []).find((l) => l.id === ouvert);
-  const journee = useMemo(() => planJournee(f.rows, suiviPar, prefs, now), [f.rows, suiviPar, prefs, now]);
+  const journee = useMemo(() => planJournee(f.rows, suiviPar, prefs, now, cols), [f.rows, suiviPar, prefs, now, cols]);
+  const nouveaux = f.rows.filter((l) => statutDe(l) === 'a_appeler').length;
+  const signes = f.rows.filter((l) => st(l) === 'signe');
+  const caSigne = signes.reduce((t, l) => t + (Number(suiviPar.get(l.id)?.montant) || 0), 0);
   const exportRows = f.rows.map((l) => {
     const s = suiviPar.get(l.id) || {}; const j = (journalPar.get(l.id) || []).filter((x) => x.type === 'note').sort((a, b) => String(b.cree_le).localeCompare(String(a.cree_le)))[0];
-    return { ...l, _etape: SUIVI[st(l)], _rdv: s.rdv_le ? dateHeure(s.rdv_le) : '', _rappel: s.rappel_le ? dateHeure(s.rappel_le) : '', _motif: s.motif_perte ? MOTIFS_PERTE[s.motif_perte] || s.motif_perte : '', _note: j?.texte || '' };
+    return { ...l, _etape: nomDe(statutDe(l), cols), _montant: s.montant ?? '', _rdv: s.rdv_le ? dateHeure(s.rdv_le) : '', _rappel: s.rappel_le ? dateHeure(s.rappel_le) : '', _motif: s.motif_perte ? MOTIFS_PERTE[s.motif_perte] || s.motif_perte : '', _note: j?.texte || '' };
   });
   async function marquer() {
     const ids = f.rows.filter((r) => !r.exporte_le).map((r) => r.id);
     if (ids.length && !apercu) { await db.rpc('leads_marquer_exportes', { p_ids: ids }); reload(); }
   }
-  function deposer(id, etape) {
-    setOver(null); setDrag(null);
-    if (!id || st({ id }) === etape) return;
-    majSuivi(id, { statut: etape });
-    if (etape === 'perdu') setOuvert(id);
-  }
   const allerA = (k) => board.current?.querySelector(`[data-etape="${k}"]`)?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+  const pill = (l) => <span className="crm-pill" style={{ '--c': couleurDe(statutDe(l), cols) }}>{nomDe(statutDe(l), cols)}</span>;
 
   const ligne = (l, extra) => (
     <li key={l.id}><button type="button" onClick={() => setOuvert(l.id)}>
       <span className="crm-av">{initiales(l)}</span>
       <span className="crm-line-who"><b>{nomComplet(l)}</b><small>{[THEMES[l.thematique], l.code_postal].filter(Boolean).join(' · ')}</small></span>
-      <span className="crm-pill" style={{ '--c': TON[st(l)] }}>{SUIVI[st(l)]}</span>
+      {pill(l)}
       {extra}
     </button></li>
   );
@@ -638,6 +811,8 @@ export default function Contacts({ apercu, client, session }) {
     for (const l of rows) { const d = jour(suiviPar.get(l.id)[key]); if (!g.has(d)) g.set(d, []); g.get(d).push(l); }
     return [...g.entries()];
   };
+  const basculer = (id) => setSel((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const listeRows = f.rows.slice(0, 500);
 
   return (
     <div className="crm">
@@ -646,60 +821,55 @@ export default function Contacts({ apercu, client, session }) {
           <div className="crm-title"><h1>Mes contacts</h1><button type="button" className="ec-btn crm-relancer" onClick={() => setRelance(true)}><Ico d={<path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5" />} />Relancer une campagne</button></div>
           <div className="crm-stats">
             <span className={journee.maintenant.length ? 'is-hot' : ''}><b>{journee.maintenant.length}</b>à appeler maintenant</span>
-            <span><b>{parEtape.a_appeler.length}</b>nouveaux</span>
+            <span><b>{nouveaux}</b>nouveaux</span>
             <span className={rappelsDus ? 'is-warn' : ''}><b>{rappelsDus}</b>rappels aujourd’hui</span>
             <span><b>{rdvs.filter((l) => new Date(suiviPar.get(l.id).rdv_le) >= maintenant).length}</b>RDV à venir</span>
-            <span className="is-ok"><b>{parEtape.signe.length}</b>signés</span>
+            <span className="is-ok"><b>{signes.length}</b>signés{caSigne > 0 ? ` · ${euroRond(caSigne)}` : ''}</span>
           </div>
         </div>
         <div className="crm-toolbar">
           <input className="crm-search" value={f.q} onChange={(e) => f.setQ(e.target.value)} placeholder="Nom, téléphone, code postal…" aria-label="Rechercher un contact" />
           <select className="crm-select" value={f.them} onChange={(e) => f.setThem(e.target.value)} aria-label="Thématique"><option value="">Toutes les thématiques</option>{Object.entries(THEMES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
+          <input className="crm-search crm-dep" value={f.dep} onChange={(e) => f.setDep(e.target.value)} placeholder="Département" maxLength={3} aria-label="Filtrer par département" inputMode="numeric" />
           <div className="crm-views" role="tablist" aria-label="Affichage">
             {[['journee', `Ma journée${journee.maintenant.length ? ` (${journee.maintenant.length})` : ''}`], ['pipeline', 'Pipeline'], ['liste', 'Liste'], ['rappels', `Rappels${rappelsDus ? ` (${rappelsDus})` : ''}`], ['agenda', 'Agenda']].map(([k, t]) => <button type="button" role="tab" aria-selected={vue === k} key={k} className={vue === k ? 'is-on' : ''} onClick={() => setVue(k)}>{t}</button>)}
           </div>
+          {vue === 'pipeline' && (
+            <div className="crm-cols-btn">
+              <button type="button" className="ec-btn-ghost" onClick={() => setPanneau((x) => !x)}>Colonnes{cols.some((c) => c.masquee) ? ` (${cols.filter((c) => c.masquee).length} masquée${cols.filter((c) => c.masquee).length > 1 ? 's' : ''})` : ''}</button>
+              {panneau && <PanneauColonnes gestion={gestion} onToast={setToast} onClose={() => setPanneau(false)} />}
+            </div>
+          )}
           <ExportMenu rows={exportRows} onExported={marquer} />
         </div>
         {vue === 'pipeline' && (
           <select className="crm-jump" onChange={(e) => allerA(e.target.value)} aria-label="Aller à l’étape">
-            {ETAPES_CRM.map((k) => <option key={k} value={k}>{SUIVI[k]} ({parEtape[k].length})</option>)}
+            {cols.filter((c) => !c.masquee).map((c) => <option key={c.statut} value={c.statut}>{c.nom}</option>)}
           </select>
         )}
       </header>
 
       {leads && actifs.length === 0 && <div className="ec-card ec-empty"><p><b>Aucun contact pour l’instant.</b></p><p>Ils arrivent ici dès qu’ils vous sont livrés.</p></div>}
 
-      {vue === 'journee' && actifs.length > 0 && <Journee rows={f.rows} onOpen={setOuvert} onToast={setToast} now={now} />}
+      {vue === 'journee' && actifs.length > 0 && <Journee rows={f.rows} onOpen={setOuvert} onToast={setToast} now={now} cols={cols} />}
 
-      {vue === 'pipeline' && actifs.length > 0 && (
-        <div className="crm-board" ref={board}>
-          {ETAPES_CRM.map((k) => (
-            <section key={k} data-etape={k} className={`crm-col${over === k ? ' is-over' : ''}`} style={{ '--c': TON[k] }}
-              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (over !== k) setOver(k); }}
-              onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setOver(null); }}
-              onDrop={(e) => { e.preventDefault(); deposer(e.dataTransfer.getData('text/plain') || drag, k); }}>
-              <h2><i />{SUIVI[k]}<b>{parEtape[k].length}</b></h2>
-              <div className="crm-col-body">
-                {parEtape[k].slice(0, 80).map((l) => <Carte key={l.id} lead={l} sv={suiviPar.get(l.id)} litige={enLitige.get(l.id)} onOpen={setOuvert} onDrag={setDrag} dragging={drag === l.id} />)}
-                {parEtape[k].length > 80 && <p className="crm-more">+ {parEtape[k].length - 80} autres : utilisez la recherche ou la liste</p>}
-                {parEtape[k].length === 0 && <p className="crm-empty">{k === 'a_appeler' ? 'Les nouveaux contacts arrivent ici.' : 'Glissez une carte ici'}</p>}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
+      {vue === 'pipeline' && actifs.length > 0 && <Pipeline rows={f.rows} cols={cols} gestion={gestion} suiviPar={suiviPar} enLitige={enLitige} majSuivi={majSuivi} onOpen={setOuvert} sel={sel} setSel={setSel} onToast={setToast} boardRef={board} />}
 
       {vue === 'liste' && actifs.length > 0 && (
         <>
           {f.bar(false, 'Reçu')}
           <div className="ec-card ec-table-wrap">
             <table className="ec-table ec-table-click">
-              <thead><tr><th>Reçu</th><th>Contact</th><th>Téléphone</th><th>Projet</th><th>Code postal</th><th>Étape</th><th>Prochaine action</th></tr></thead>
-              <tbody>{f.rows.slice(0, 500).map((l) => { const s = suiviPar.get(l.id) || {}; return (
-                <tr key={l.id} onClick={() => setOuvert(l.id)}>
+              <thead><tr>
+                <th className="crm-th-check"><input type="checkbox" aria-label="Tout sélectionner" checked={listeRows.length > 0 && listeRows.every((l) => sel.has(l.id))} onChange={(e) => setSel(e.target.checked ? new Set(listeRows.map((l) => l.id)) : new Set())} /></th>
+                <th>Reçu</th><th>Contact</th><th>Téléphone</th><th>Projet</th><th>Code postal</th><th>Étape</th><th>Montant</th><th>Prochaine action</th></tr></thead>
+              <tbody>{listeRows.map((l) => { const s = suiviPar.get(l.id) || {}; return (
+                <tr key={l.id} onClick={() => setOuvert(l.id)} className={sel.has(l.id) ? 'is-sel' : ''}>
+                  <td className="crm-th-check" onClick={(e) => e.stopPropagation()}><input type="checkbox" aria-label={`Sélectionner ${nomComplet(l)}`} checked={sel.has(l.id)} onChange={() => basculer(l.id)} /></td>
                   <td>{dateHeure(l.livre_le)}</td><td><b>{nomComplet(l)}</b></td><td><a href={`tel:${tel(l)}`} onClick={(e) => e.stopPropagation()}>{l.telephone || '·'}</a></td>
                   <td>{THEMES[l.thematique] || l.thematique}</td><td>{l.code_postal || '·'}</td>
-                  <td><span className="crm-pill" style={{ '--c': TON[st(l)] }}>{SUIVI[st(l)]}</span></td>
+                  <td>{pill(l)}</td>
+                  <td className="ec-num">{s.montant ? euroRond(s.montant) : '·'}</td>
                   <td>{s.rdv_le ? `RDV ${quand(s.rdv_le)}` : s.rappel_le ? `Rappel ${quand(s.rappel_le)}` : '·'}</td>
                 </tr>); })}</tbody>
             </table>
@@ -725,6 +895,7 @@ export default function Contacts({ apercu, client, session }) {
         </div>
       ))}
 
+      {['pipeline', 'liste'].includes(vue) && <BarreSelection sel={sel} setSel={setSel} cols={cols} majSuivi={majSuivi} exportRows={exportRows} onToast={setToast} />}
       {lead && <Fiche lead={lead} client={client} litige={enLitige.get(lead.id)} apercu={apercu} onClose={() => setOuvert(null)} onSignal={setLitigeFor} onToast={setToast} />}
       {toast && <p className="crm-toast" role="status" onClick={() => setToast('')}>{toast}</p>}
       {relance && <Relance session={session} client={client} apercu={apercu} onClose={() => setRelance(false)} />}
