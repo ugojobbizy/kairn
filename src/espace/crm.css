@@ -249,3 +249,9 @@
 .v2 .ec-modeles-list em { display: block; margin-top: 4px; font-style: normal; font-size: 13px; font-weight: 600; color: var(--ink-2); }
 .v2 .ec-modeles-list p { white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .v2 .ec-apercu { white-space: pre-line; max-height: 140px; overflow-y: auto; }
+
+/* Bande grise à droite (Ugo, 13/11/2026) : le pipeline s'arrêtait 40 px avant le bord (marge de la page), on voyait une
+   bande vide entre les colonnes coupées et la barre de défilement. Sur ordinateur, le pipeline file jusqu'au bord. */
+@media (min-width: 861px) {
+  .v2 .crm-board { margin-right: calc(-18px - clamp(18px, 3vw, 40px)); padding-right: clamp(18px, 3vw, 40px); }
+}
