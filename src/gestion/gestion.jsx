@@ -6,7 +6,7 @@ import { db, THEMES, MOTIFS, LITIGE_STATUTS, TVA, euro, dateFr, dateHeure, errMs
 import { apercuData } from '../espace/apercu.js';
 import { Campagnes, TicketsAdmin, ShopAdmin, Bientot } from './gestion-plus.jsx';
 import { Clients, FicheClient } from './clients.jsx';
-import { Apporteurs, FicheApporteur } from './apporteurs.jsx';
+import { Apporteurs, FicheApporteur, Parametres } from './apporteurs.jsx';
 
 // Kairn Monitor (suivi des campagnes Meta), ouvert depuis le menu (Ugo, 29/10/2026).
 const MONITOR_URL = 'https://kairn-monitor.vercel.app';
@@ -367,6 +367,7 @@ function Shell({ session, apercu }) {
     { to: '/gestion/apporteurs', t: 'Apporteurs', n: nCandidatures, ico: <><circle cx="8" cy="8" r="3.5" /><circle cx="17" cy="9" r="3" /><path d="M2 20v-1a6 6 0 0 1 12 0v1M14 15.5a5 5 0 0 1 8 3.5v1" /></> },
     { to: '/gestion/contrats', t: 'Contrats', ico: <><path d="M6 2h9l5 5v15H6z" /><path d="M14 2v6h6M9 13h6M9 17h6" /></> },
     { to: '/gestion/factures', t: 'Factures', ico: <><rect x="4" y="2" width="16" height="20" rx="2" /><path d="M8 7h8M8 11h8M8 15h5" /></> },
+    { to: '/gestion/parametres', t: 'Paramètres', ico: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></> },
     { to: '/gestion/appareils', t: 'Appareils', ico: <><rect x="2" y="4" width="20" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></> },
   ];
   return (
@@ -411,6 +412,7 @@ function Shell({ session, apercu }) {
           <Route path="apporteurs" element={<Apporteurs data={data} apercu={apercu} />} />
           <Route path="apporteurs/:id" element={<FicheApporteur data={data} apercu={apercu} />} />
           <Route path="appareils" element={<Appareils apercu={apercu} />} />
+          <Route path="parametres" element={<Parametres apercu={apercu} />} />
           <Route path="*" element={<Dashboard data={data} tickets={nTickets} />} />
         </Routes>
       </main>

@@ -149,11 +149,11 @@ export function send(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
-export async function readJson(req) {
+export async function readJson(req, max = 5000) {
   if (req.body && typeof req.body === 'object') return req.body;
   const chunks = [];
   for await (const c of req) chunks.push(c);
   const raw = Buffer.concat(chunks).toString('utf8');
-  if (raw.length > 5000) throw new Error('payload_too_large');
+  if (raw.length > max) throw new Error('payload_too_large');
   return raw ? JSON.parse(raw) : {};
 }

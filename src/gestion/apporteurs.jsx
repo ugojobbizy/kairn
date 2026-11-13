@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { db, THEMES, euro, dateFr, dateHeure, errMsg, appareilHeaders } from '../espace/db.js';
 import { STATUTS_COMMISSION, CLASSE_COMMISSION } from '../apporteur/statuts.js';
+import { libelleForme, ibanLisible, manquesKairn, siretValide } from '../apporteur/contrat.js';
 
 // Apporteurs d'affaires dans Kairn Admin (Ugo, 13/11/2026). Candidatures (/devenir-apporteur) à valider : Valider crée le
 // compte et envoie l'e-mail d'accès (api/apporteur.js, action ouvrir). Fiche apporteur : clients tagués et lignes de commission,
@@ -219,6 +220,16 @@ export function FicheApporteur({ data, apercu }) {
     const { error } = await db.from('apporteurs').update({ statut: s }).eq('id', id);
     if (error) setErr(errMsg(error)); else a.reload();
   }
+  async function pdfContrat() {
+    setErr('');
+    const { data: sd } = await db.auth.getSession();
+    const r = await fetch('/api/apporteur', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sd.session?.access_token}`, ...appareilHeaders() }, body: JSON.stringify({ action: 'pdf', id }) }).catch(() => null);
+    if (!r || !r.ok) { setErr('Téléchargement du contrat impossible.'); return; }
+    const url = URL.createObjectURL(await r.blob());
+    const a2 = document.createElement('a');
+    a2.href = url; a2.download = `contrat-apporteur-${(x.raison_sociale || x.nom).replace(/[^\w-]+/g, '-').toLowerCase()}.pdf`; a2.click();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
   async function renvoyer() {
     setMsg(''); setErr(''); setLien('');
     const r = await ouvrir({ id });
@@ -247,6 +258,11 @@ export function FicheApporteur({ data, apercu }) {
             <div><dt>Téléphone</dt><dd>{x.telephone ? <a href={`tel:${x.telephone}`}>{x.telephone}</a> : '·'}</dd></div>
             <div><dt>E-mail</dt><dd><a href={`mailto:${x.email}`}>{x.email}</a></dd></div>
             <div><dt>SIRET</dt><dd>{x.siret || '·'}</dd></div>
+            <div><dt>Entreprise</dt><dd>{x.raison_sociale ? `${x.raison_sociale} · ${libelleForme(x.forme, x.forme_autre)}` : '·'}</dd></div>
+            <div><dt>Adresse</dt><dd>{x.adresse ? `${x.adresse}, ${x.code_postal} ${x.ville}` : '·'}</dd></div>
+            <div><dt>TVA</dt><dd>{x.tva_regime === 'franchise' ? 'Franchise (293 B)' : x.tva_numero || '·'}</dd></div>
+            <div><dt>IBAN</dt><dd>{x.iban ? `${ibanLisible(x.iban)} (${x.titulaire_iban || '·'})` : '·'}</dd></div>
+            <div><dt>Contrat</dt><dd>{x.contrat_signe_le ? <>Signé le {dateHeure(x.contrat_signe_le)} <button type="button" className="ec-link-btn" onClick={pdfContrat}>PDF</button></> : x.statut === 'actif' ? 'Onboarding en cours, pas encore signé' : '·'}</dd></div>
             <div><dt>Clients</dt><dd>{clients.length ? clients.map((c) => <Link key={c.user_id} to={`/gestion/clients/${c.user_id}`} className="ec-block">{c.societe} · {euro(c.commission_ht)} / lead</Link>) : 'Aucun : taguez un client depuis sa fiche.'}</dd></div>
           </dl>
         </section>
@@ -331,5 +347,75 @@ export function TagApporteur({ client, reload, apercu }) {
           : 'Aucun apporteur.'}</p>
       )}
     </section>
+  );
+}
+
+// ─ Paramètres : identité de Kairn au contrat d'apporteur, et signature d'Ugo ─
+// Tant qu'elle est incomplète, les apporteurs remplissent leurs infos mais voient « contrat en préparation ».
+const CHAMPS_KAIRN = [
+  ['nom_legal', 'Nom légal', 'Ex. Kairn, ou vos prénom et nom si vous êtes entrepreneur individuel'],
+  ['forme', 'Forme juridique', 'Ex. « SASU au capital de 1 000 € » ou « entrepreneur individuel »'],
+  ['siret', 'SIRET', '14 chiffres'],
+  ['adresse', 'Adresse du siège', 'Rue, code postal, ville'],
+  ['signataire', 'Signataire', 'Vos prénom et nom'],
+  ['qualite', 'Qualité du signataire', 'Ex. Président, Gérant, entrepreneur'],
+  ['ville_tribunal', 'Ville du tribunal compétent', 'En général celle du siège'],
+];
+
+function PadAdmin({ valeur, onChange }) {
+  const ref = React.useRef(null);
+  const actif = React.useRef(false);
+  useEffect(() => {
+    const c = ref.current; const r = window.devicePixelRatio || 1;
+    c.width = c.offsetWidth * r; c.height = c.offsetHeight * r;
+    const ctx = c.getContext('2d'); ctx.scale(r, r); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0B0918';
+  }, []);
+  const pos = (e) => { const b = ref.current.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+  return (
+    <div>
+      {valeur && <img src={valeur} alt="Signature enregistrée" style={{ maxHeight: 70, display: 'block', marginBottom: 8 }} />}
+      <canvas ref={ref} style={{ width: '100%', height: 140, border: '1px dashed #B8C2D6', borderRadius: 12, touchAction: 'none', background: '#fff' }}
+        onPointerDown={(e) => { ref.current.setPointerCapture(e.pointerId); actif.current = true; const ctx = ref.current.getContext('2d'); ctx.beginPath(); ctx.moveTo(...pos(e)); }}
+        onPointerMove={(e) => { if (!actif.current) return; const ctx = ref.current.getContext('2d'); ctx.lineTo(...pos(e)); ctx.stroke(); }}
+        onPointerUp={() => { if (actif.current) { actif.current = false; onChange(ref.current.toDataURL('image/png')); } }} />
+      <button type="button" className="ec-link-btn" onClick={() => { const c = ref.current; c.getContext('2d').clearRect(0, 0, c.width, c.height); onChange(''); }}>Effacer</button>
+    </div>
+  );
+}
+
+export function Parametres({ apercu }) {
+  const [k, setK] = useState(null);
+  const [msg, setMsg] = useState('');
+  const [err, setErr] = useState('');
+  useEffect(() => {
+    if (apercu) { setK({}); return; }
+    db.from('kairn_parametres').select('*').eq('id', 1).maybeSingle().then(({ data, error }) => { if (error) setErr('Paramètres illisibles (migration non appliquée ?).'); setK(data || {}); });
+  }, [apercu]);
+  if (!k) return <div className="ec-loading" aria-busy="true" />;
+  const manques = manquesKairn(k);
+  async function save(e) {
+    e.preventDefault();
+    setMsg(''); setErr('');
+    if (k.siret && !siretValide(k.siret)) { setErr('SIRET invalide.'); return; }
+    if (apercu) { setMsg('Aperçu : rien n’est écrit.'); return; }
+    const ligne = { id: 1, maj_le: new Date().toISOString(), signature_png: k.signature_png || null };
+    for (const [c] of CHAMPS_KAIRN) ligne[c] = c === 'siret' ? String(k.siret || '').replace(/\s/g, '') || null : String(k[c] || '').trim() || null;
+    const { error } = await db.from('kairn_parametres').upsert(ligne);
+    setMsg(error ? '' : 'Enregistré.'); if (error) setErr(errMsg(error));
+  }
+  return (
+    <>
+      <Head title="Paramètres" sub="Votre identité au contrat d’apporteur d’affaires. Elle figure en tête de chaque contrat et sur les factures que les apporteurs vous adressent." />
+      <p className={manques.length ? 'ec-err' : 'ec-ok'}>{manques.length ? `Contrats bloqués : il manque ${manques.join(', ')}. Les apporteurs voient « contrat en préparation ».` : 'Complet : les apporteurs peuvent signer.'}</p>
+      <form className="ec-card ec-form" onSubmit={save} style={{ display: 'grid', gap: 14 }}>
+        {CHAMPS_KAIRN.map(([c, t, aide]) => (
+          <label key={c} className="ec-field"><span>{t}</span><input value={k[c] || ''} onChange={(e) => setK((x) => ({ ...x, [c]: e.target.value }))} placeholder={aide} /></label>
+        ))}
+        <div className="ec-field"><span>Votre signature (facultatif, apposée sur chaque contrat)</span><PadAdmin valeur={k.signature_png} onChange={(v) => setK((x) => ({ ...x, signature_png: v || null }))} /></div>
+        <div><button type="submit" className="ec-btn">Enregistrer</button></div>
+        {err && <p className="ec-err">{err}</p>}{msg && <p className="ec-ok">{msg}</p>}
+      </form>
+      <p className="ec-note">Un changement ne touche pas les contrats déjà signés : leur texte est figé. Le modèle de contrat est rédigé par Claude, à faire relire par un avocat.</p>
+    </>
   );
 }

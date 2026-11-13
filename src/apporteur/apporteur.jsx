@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import { KairnLogo, useV2Favicon } from '../v2/layout.jsx';
 import { CONTACT_EMAIL } from '../config.js';
-import { db, THEMES, euro, dateFr } from '../espace/db.js';
+import { db, THEMES, euro, dateFr, appareilHeaders } from '../espace/db.js';
 import { STATUTS_COMMISSION, CLASSE_COMMISSION } from './statuts.js';
+import { libelleForme, ibanLisible } from './contrat.js';
+import Onboarding from './onboarding.jsx';
 import '../v2/v2.css';
 import '../v3/v3.css';
 import '../espace/espace.css';
@@ -171,19 +173,46 @@ function Commissions({ data }) {
   );
 }
 
-function Compte({ session, fiche }) {
+// Téléchargement du contrat signé (PDF regénéré à l'identique par api/apporteur.js, action pdf).
+export async function telechargerContrat(id) {
+  const { data } = await db.auth.getSession();
+  const r = await fetch('/api/apporteur', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session?.access_token}`, ...appareilHeaders() }, body: JSON.stringify({ action: 'pdf', ...(id ? { id } : {}) }) }).catch(() => null);
+  if (!r || !r.ok) return false;
+  const url = URL.createObjectURL(await r.blob());
+  const a = document.createElement('a');
+  a.href = url; a.download = 'contrat-apporteur-kairn.pdf'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  return true;
+}
+
+function Compte({ session, fiche, apercu }) {
+  const [msg, setMsg] = useState('');
+  async function pdf() {
+    setMsg('');
+    if (apercu) { setMsg('Aperçu : pas de contrat réel.'); return; }
+    if (!(await telechargerContrat())) setMsg('Téléchargement impossible pour le moment. Réessayez.');
+  }
   return (
     <>
       <Head title="Mon compte" />
       <div className="ec-card">
         <dl className="ec-dl">
-          <div><dt>Nom</dt><dd>{[fiche?.prenom, fiche?.nom].filter(Boolean).join(' ') || '·'}</dd></div>
-          <div><dt>Société</dt><dd>{fiche?.societe || '·'}</dd></div>
+          <div><dt>Signataire</dt><dd>{[fiche?.prenom, fiche?.nom].filter(Boolean).join(' ') || '·'}{fiche?.representant_qualite ? `, ${fiche.representant_qualite}` : ''}</dd></div>
+          <div><dt>Entreprise</dt><dd>{fiche?.raison_sociale || fiche?.societe || '·'}{fiche?.forme ? ` · ${libelleForme(fiche.forme, fiche.forme_autre)}` : ''}</dd></div>
+          <div><dt>SIRET</dt><dd>{fiche?.siret || '·'}</dd></div>
+          <div><dt>Adresse</dt><dd>{fiche?.adresse ? `${fiche.adresse}, ${fiche.code_postal} ${fiche.ville}` : '·'}</dd></div>
           <div><dt>E-mail de connexion</dt><dd>{session.user.email}</dd></div>
           <div><dt>Téléphone</dt><dd>{fiche?.telephone || '·'}</dd></div>
-          <div><dt>SIRET</dt><dd>{fiche?.siret || '·'}</dd></div>
+          <div><dt>TVA</dt><dd>{fiche?.tva_regime === 'franchise' ? 'Non applicable (art. 293 B du CGI)' : fiche?.tva_numero || '·'}</dd></div>
+          <div><dt>Compte des commissions</dt><dd>{fiche?.iban ? `${ibanLisible(fiche.iban).slice(0, 9)} ••• ${fiche.iban.slice(-4)}` : '·'}</dd></div>
         </dl>
         <p className="ec-small">Une information à changer ? Écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+      </div>
+      <div className="ec-card" style={{ marginTop: 16 }}>
+        <h2 style={{ margin: '0 0 6px', fontSize: 17, fontWeight: 600 }}>Mon contrat</h2>
+        <p className="ec-muted">{fiche?.contrat_signe_le ? `Contrat d’apporteur d’affaires signé le ${dateFr(fiche.contrat_signe_le)}.` : 'Pas encore signé.'}</p>
+        {fiche?.contrat_signe_le && <button type="button" className="ec-btn" style={{ marginTop: 10 }} onClick={pdf}>Télécharger le contrat (PDF)</button>}
+        {msg && <p className="ec-err">{msg}</p>}
       </div>
     </>
   );
@@ -223,7 +252,7 @@ function Shell({ session, fiche, apercu }) {
           <Route index element={<Home data={data} fiche={fiche} />} />
           <Route path="clients" element={<Clients data={data} />} />
           <Route path="commissions" element={<Commissions data={data} />} />
-          <Route path="compte" element={<Compte session={session} fiche={fiche} />} />
+          <Route path="compte" element={<Compte session={session} fiche={fiche} apercu={apercu} />} />
           <Route path="*" element={<Home data={data} fiche={fiche} />} />
         </Routes>
       </main>
@@ -276,6 +305,7 @@ export default function Apporteur() {
   const [session, setSession] = useState(undefined);
   const [fiche, setFiche] = useState(undefined);
   const [client, setClient] = useState(false);
+  const [relire, setRelire] = useState(0);
   useEffect(() => {
     db.auth.getSession().then(({ data }) => setSession(data.session));
     const { data } = db.auth.onAuthStateChange((_e, s) => setSession(s));
@@ -284,14 +314,16 @@ export default function Apporteur() {
   useEffect(() => {
     if (!session) { setFiche(undefined); return; }
     Promise.all([
-      db.from('apporteurs').select('prenom, nom, societe, email, telephone, siret, statut').eq('user_id', session.user.id).maybeSingle(),
+      db.from('apporteurs').select('*').eq('user_id', session.user.id).maybeSingle(),
       db.from('clients').select('user_id').eq('user_id', session.user.id).maybeSingle(),
     ]).then(([a, c]) => { setClient(Boolean(c.data)); setFiche(a.data || null); });
-  }, [session]);
+  }, [session, relire]);
   const apercu = useMemo(() => (import.meta.env.DEV && new URLSearchParams(window.location.search).has('apercu') ? apercuApporteur() : null), []);
 
   let body;
-  if (apercu) body = <Shell session={{ user: { id: 'apercu', email: apercu.fiche.email } }} fiche={apercu.fiche} apercu={apercu} />;
+  // Aperçu de l'onboarding en développement : /apporteur?apercu=onboarding (rien n'est écrit).
+  if (apercu && new URLSearchParams(window.location.search).get('apercu') === 'onboarding') body = <Onboarding fiche={{ statut: 'actif' }} session={{ user: { id: 'apercu', email: 'jules@exemple.fr' } }} onSigne={() => {}} apercu />;
+  else if (apercu) body = <Shell session={{ user: { id: 'apercu', email: apercu.fiche.email } }} fiche={apercu.fiche} apercu={apercu} />;
   else if (session === undefined || (session && fiche === undefined)) body = <div className="ec-loading" aria-busy="true" />;
   else if (!session) body = <Login />;
   else if (!fiche && client) body = <Navigate to="/espace" replace />;
@@ -304,6 +336,9 @@ export default function Apporteur() {
         <button type="button" className="ec-btn" onClick={() => db.auth.signOut()}>Se déconnecter</button>
       </div></div>
     );
+  } else if (fiche.statut === 'actif' && !fiche.contrat_signe_le) {
+    // Première connexion : onboarding et contrat avant l'accès à l'espace (Ugo, 13/11/2026).
+    body = <Onboarding fiche={fiche} session={session} onSigne={() => setRelire((n) => n + 1)} />;
   } else body = <Shell session={session} fiche={fiche} />;
   return <div className="v2 v3 ec-root">{body}</div>;
 }

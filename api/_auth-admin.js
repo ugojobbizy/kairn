@@ -38,11 +38,12 @@ export async function lienAcces(email, type) {
 }
 
 // E-mail envoyé par Zoho (variables ZOHO_SMTP_USER, ZOHO_SMTP_PASS), en texte et en HTML si fourni. Rend false si Zoho n'est pas configuré.
-export async function envoyerEmail(to, subject, texte, html) {
+// pieces : pièces jointes supplémentaires au format nodemailer ({ filename, content, contentType }).
+export async function envoyerEmail(to, subject, texte, html, pieces = []) {
   const user = process.env.ZOHO_SMTP_USER;
   const pass = process.env.ZOHO_SMTP_PASS;
   if (!user || !pass) return false;
   const transport = nodemailer.createTransport({ host: process.env.ZOHO_SMTP_HOST || 'smtp.zoho.eu', port: 465, secure: true, auth: { user, pass } });
-  await transport.sendMail({ from: `Kairn <${user}>`, to, subject, text: Array.isArray(texte) ? texte.join('\n') : texte, ...(html ? { html, attachments: [{ filename: 'kairn.png', content: Buffer.from(LOGO_EMAIL_PNG, 'base64'), contentType: 'image/png', cid: 'logo-kairn' }] } : {}) });
+  await transport.sendMail({ from: `Kairn <${user}>`, to, subject, text: Array.isArray(texte) ? texte.join('\n') : texte, ...(html ? { html } : {}), attachments: [...(html ? [{ filename: 'kairn.png', content: Buffer.from(LOGO_EMAIL_PNG, 'base64'), contentType: 'image/png', cid: 'logo-kairn' }] : []), ...pieces] });
   return true;
 }
