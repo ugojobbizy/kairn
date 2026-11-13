@@ -146,13 +146,13 @@ export function duree(ms) {
 }
 
 // ─ Modèles de SMS (« Générer un SMS », Ugo, 12/11/2026 : l'installateur copie le texte et l'envoie lui-même) ─
-// Variables remplacées : {prenom} {nom} {projet} {ville} {entreprise} {signataire} {rdv}.
-export const VARIABLES = [['{prenom}', 'Prénom du contact'], ['{projet}', 'Projet demandé'], ['{ville}', 'Ville'], ['{entreprise}', 'Votre société'], ['{signataire}', 'Votre prénom'], ['{rdv}', 'Date du rendez-vous']];
+// Variables remplacées : {prenom} {nom} {projet} {ville} {entreprise} {signataire} {telephone} {rdv}.
+export const VARIABLES = [['{prenom}', 'Prénom du contact'], ['{projet}', 'Projet demandé'], ['{ville}', 'Ville'], ['{entreprise}', 'Votre société'], ['{signataire}', 'Votre prénom'], ['{telephone}', 'Votre téléphone'], ['{rdv}', 'Date du rendez-vous']];
 export function remplir(texte, v) {
-  const elide = v.entreprise && /^[aeiouyhâàéèêëîïôûAEIOUYHÂÀÉÈÊËÎÏÔÛ]/.test(v.entreprise);
-  return String(texte || '').replace(/\b([Dd])e \{entreprise\}/g, (_, d) => (elide ? `${d}’{entreprise}` : `${d}e {entreprise}`))
-    .replace(/\{(prenom|nom|projet|ville|entreprise|signataire|rdv)\}/g, (_, k) => v[k] || '')
-    .replace(/[ \t]+([,.])/g, '$1').replace(/[ \t]{2,}/g, ' ').replace(/ +\n/g, '\n').trim();
+  const voyelle = (x) => Boolean(x) && /^[aeiouyhâàéèêëîïôûAEIOUYHÂÀÉÈÊËÎÏÔÛ]/.test(x);
+  return String(texte || '').replace(/\b([Dd])e \{(entreprise|projet)\}/g, (_, d, k) => (voyelle(v[k]) ? `${d}’{${k}}` : `${d}e {${k}}`))
+    .replace(/\{(prenom|nom|projet|ville|entreprise|signataire|telephone|rdv)\}/g, (_, k) => v[k] || '')
+    .replace(/[ \t]+([,.])/g, '$1').replace(/[ \t]{2,}/g, ' ').replace(/ +\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 // Numéro au format international pour WhatsApp (wa.me) : 06 12 34 56 78 → 33612345678.
 export function numeroIntl(tel) {

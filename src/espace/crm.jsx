@@ -3,7 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { db, THEMES, MOTIFS, LITIGE_STATUTS, SUIVI, MOTIFS_PERTE, TVA, euro, dateFr, dateHeure, errMsg, downloadCsv, notifier } from './db.js';
 import { PRODUITS } from '../v3/produits.js';
 import { useData } from './data.js';
-import { MAX_APPELS, planDe, prochaineTentative, etatDelai, dansCreneau, finCreneau, prochainCreneau, duree, remplir, numeroIntl } from './relance.js';
+import { MAX_APPELS, planDe, prochaineTentative, etatDelai, dansCreneau, finCreneau, prochainCreneau, duree, remplir, numeroIntl, VARIABLES } from './relance.js';
+import { useModeles, variables, conseille } from './modeles.js';
 
 // CRM de l'espace client « Mes contacts » (Ugo, 30/10/2026 : « prends la même base que le CRM que j'ai fait pour ETXE Énergie
 // et pour Isolation d'Aquitaine »). Même logique que ~/combles-crm (AdminShell, LeadDrawer) : pipeline en colonnes avec
@@ -28,7 +29,7 @@ const toLocal = (d) => { if (!d) return ''; const x = new Date(d); x.setMinutes(
 const fromLocal = (v) => (v ? new Date(v).toISOString() : null);
 const tel = (l) => (l.telephone || '').replace(/\s/g, '');
 const jour = (d) => new Date(d).toDateString();
-const quand = (d) => new Date(d).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+const quand = (d) => new Date(d).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).replace(',', '').replace(/(\d{2}):(\d{2})$/, (_, h, m) => `à ${Number(h)} h${m === '00' ? '' : ` ${m}`}`);
 // ─ relance : délai légal et plan d'appels (src/espace/relance.js) ─
 export const demandeDe = (l) => l.recu_le || l.livre_le;
 const RELANCABLES = ['a_appeler', 'nrp', 'a_rappeler'];
@@ -45,66 +46,85 @@ export function Delai({ lead: l, sv, now }) {
   const e = etatDelai(demandeDe(l), now);
   if (!e.fin) return null;
   if (e.depasse) return <span className="crm-delai is-out" title="Le délai légal de rappel est passé : ne plus appeler ce contact.">Délai dépassé</span>;
-  return <span className={`crm-delai${e.urgent ? ' is-urgent' : ''}`} title={`Dernier appel possible : ${jourHeure(e.fin)} (5 jours ouvrables après la demande)`}>Délai : {duree(e.reste)}</span>;
+  return <span className={`crm-delai${e.urgent ? ' is-urgent' : ''}`} title={`Dernier appel possible : ${jourHeure(e.fin)} (5 jours ouvrables après la demande)`}>{e.urgent ? `Dernier jour · ${duree(e.reste)}` : `${duree(e.reste)} pour rappeler`}</span>;
 }
 
-// ─ modèles de SMS (« Générer un SMS », Ugo, 12/11/2026 : l'installateur copie le texte et l'envoie lui-même) ─
-// Textes : Claude, 12/11/2026, d'après ~/kairn-copy/references-cache-brain/2026-11-12-sms-rappel-leads.md ; chaque SMS ne
-// parle que du projet demandé (rappel limité à l'objet de la demande, fiche DGCCRF du 27/07/2026). Modifiables dans Mon compte.
-export const MODELES_DEFAUT = [
-  { id: 'defaut-1', titre: 'Injoignable (1er appel)', texte: 'Bonjour {prenom}, ici {signataire} de {entreprise}. Vous avez demandé à être rappelé pour votre projet de {projet}. Je viens d’essayer de vous joindre. Quand puis-je vous rappeler ? Répondez simplement avec un créneau.' },
-  { id: 'defaut-2', titre: 'Injoignable (relance)', texte: 'Bonjour {prenom}, c’est {signataire} de {entreprise}, au sujet de votre demande pour votre projet de {projet}. Je n’arrive pas à vous joindre. Si le projet est toujours d’actualité, répondez OUI et je vous rappelle quand ça vous arrange.' },
-  { id: 'defaut-3', titre: 'Confirmation de rendez-vous', texte: 'Bonjour {prenom}, je vous confirme notre rendez-vous du {rdv} pour votre projet de {projet}. Merci de répondre OK pour le confirmer. {signataire}, {entreprise}' },
-  { id: 'defaut-4', titre: 'Rappel la veille du rendez-vous', texte: 'Bonjour {prenom}, petit rappel : nous avons rendez-vous demain, {rdv}, pour votre projet de {projet}. En cas d’empêchement, prévenez-moi ici. {signataire}, {entreprise}' },
-  { id: 'defaut-5', titre: 'Relance du devis', texte: 'Bonjour {prenom}, avez-vous pu regarder le devis pour votre projet de {projet} ? Je reste disponible pour répondre à vos questions ou l’ajuster. {signataire}, {entreprise}' },
-];
-const PROJET = { PAC: 'pompe à chaleur', ITE: 'isolation extérieure', PPV: 'panneaux solaires' };
-const dateRdv = (d) => (d ? new Date(d).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).replace(':', ' h ') : '');
-export function variablesSms(l, client, sv) {
-  return { prenom: l.prenom || '', nom: l.nom || '', projet: PROJET[l.thematique] || (THEMES[l.thematique] || '').toLowerCase(), ville: l.ville || '',
-    entreprise: client?.societe || '', signataire: client?.prenom || '', rdv: dateRdv(sv?.rdv_le) };
-}
-// Modèle proposé d'office selon l'étape du contact.
-function modeleConseille(sv) {
-  if (sv?.statut === 'rdv') return new Date(sv.rdv_le || 0) - Date.now() < 36 * 3600000 ? 'defaut-4' : 'defaut-3';
-  if (sv?.statut === 'devis') return 'defaut-5';
-  return (sv?.tentatives || 0) >= 2 ? 'defaut-2' : 'defaut-1';
-}
-function SmsModal({ lead: l, client, sv, onClose }) {
-  const { modeles } = useData();
-  const liste = modeles?.length ? modeles : MODELES_DEFAUT;
-  const conseil = modeles?.length ? liste[0].id : modeleConseille(sv);
-  const [choix, setChoix] = useState(conseil);
+// ─ « Générer un SMS » et « E-mail » : modèles remplis pour ce contact, copiés et envoyés par l'installateur ─
+// (Ugo, 12/11 et 13/11/2026). Un onglet « + Créer un modèle » enregistre un modèle à soi sans quitter la fiche.
+function MessageModal({ canal, lead: l, client, sv, apercu, onClose }) {
+  const { liste, enregistrer } = useModeles(canal, apercu);
+  const email = canal === 'email';
+  const vars = variables(l, client, sv);
+  const [choix, setChoix] = useState(() => { const c = conseille(canal, sv); return liste.some((m) => m.id === c) ? c : liste[0]?.id; });
+  const [creer, setCreer] = useState(null); // { titre, objet, texte } pendant la création
+  const [erreur, setErreur] = useState('');
   const m = liste.find((x) => x.id === choix) || liste[0];
-  const [texte, setTexte] = useState(() => remplir(m.texte, variablesSms(l, client, sv)));
-  const [copie, setCopie] = useState(false);
-  useEffect(() => { setTexte(remplir(m.texte, variablesSms(l, client, sv))); setCopie(false); }, [choix]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [objet, setObjet] = useState('');
+  const [texte, setTexte] = useState('');
+  const [copie, setCopie] = useState('');
+  useEffect(() => { if (m) { setObjet(remplir(m.objet || '', vars)); setTexte(remplir(m.texte, vars)); } setCopie(''); }, [choix, m?.texte, m?.objet]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { const k = (e) => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose]);
-  const manque = /\{\w+\}/.test(m.texte) && (!client?.societe || !client?.prenom);
-  async function copier() {
-    try { await navigator.clipboard.writeText(texte); setCopie(true); setTimeout(() => setCopie(false), 2500); } catch { /* presse-papiers refusé : le texte reste sélectionnable */ }
+  const manque = !client?.societe || !client?.prenom;
+  async function copier(quoi, val) {
+    try { await navigator.clipboard.writeText(val); setCopie(quoi); setTimeout(() => setCopie(''), 2500); } catch { /* presse-papiers refusé : le texte reste sélectionnable */ }
   }
+  async function sauver(e) {
+    e.preventDefault(); setErreur('');
+    if (!creer.titre.trim() || !creer.texte.trim()) { setErreur('Donnez un nom et un texte au modèle.'); return; }
+    const row = await enregistrer({ titre: creer.titre.trim(), objet: creer.objet?.trim(), texte: creer.texte.trim() });
+    if (!row) { setErreur('L’enregistrement n’a pas abouti. Réessayez.'); return; }
+    setCreer(null); setChoix(row.id);
+  }
+  const inserer = (v) => setCreer((x) => ({ ...x, texte: `${x.texte}${x.texte && !/\s$/.test(x.texte) ? ' ' : ''}${v}` }));
+  const dest = email ? l.email : l.telephone;
   return (
-    <div className="ec-modal" role="dialog" aria-modal="true" aria-label="Générer un SMS" onClick={onClose}>
-      <div className="ec-modal-card crm-sms" onClick={(e) => e.stopPropagation()}>
-        <h2>Générer un SMS</h2>
-        <p className="ec-modal-lead">Pour {nomComplet(l)} · {l.telephone || 'pas de numéro'}</p>
-        <div className="crm-sms-modeles" role="radiogroup" aria-label="Modèle">
-          {liste.map((x) => <button type="button" role="radio" aria-checked={choix === x.id} key={x.id} className={choix === x.id ? 'is-on' : ''} onClick={() => setChoix(x.id)}>{x.titre}</button>)}
+    <div className="ec-modal" role="dialog" aria-modal="true" aria-label={email ? 'Écrire un e-mail' : 'Générer un SMS'} onClick={onClose}>
+      <div className={`ec-modal-card crm-sms${email ? ' is-email' : ''}`} onClick={(e) => e.stopPropagation()}>
+        <h2>{email ? 'Écrire un e-mail' : 'Générer un SMS'}</h2>
+        <p className="ec-modal-lead">Pour {nomComplet(l)} · {dest || (email ? 'pas d’adresse e-mail' : 'pas de numéro')}</p>
+        <div className="crm-sms-modeles" role="tablist" aria-label="Modèles">
+          {liste.map((x) => <button type="button" role="tab" aria-selected={!creer && choix === x.id} key={x.id} className={!creer && choix === x.id ? 'is-on' : ''} onClick={() => { setCreer(null); setChoix(x.id); }}>{x.titre}</button>)}
+          <button type="button" role="tab" aria-selected={Boolean(creer)} className={`is-add${creer ? ' is-on' : ''}`} onClick={() => setCreer({ titre: '', objet: '', texte: '' })}>+ Créer un modèle</button>
         </div>
-        <label className="ec-field"><span>Message (modifiable)</span><textarea rows={6} value={texte} onChange={(e) => setTexte(e.target.value)} maxLength={640} /></label>
-        <p className="crm-sms-compte">{texte.length} caractères{texte.length > 160 ? ` · ${Math.ceil(texte.length / 153)} SMS` : ''}</p>
-        {manque && <p className="ec-note">Le nom de votre société ou votre prénom manque : écrivez-nous pour compléter votre fiche.</p>}
-        <div className="crm-sms-actions">
-          <button type="button" className="ec-btn" onClick={copier}>{copie ? 'Copié' : 'Copier le texte'}</button>
-          <a className="ec-btn-ghost" href={`sms:${tel(l)}?&body=${encodeURIComponent(texte)}`}>Ouvrir dans Messages</a>
-          <a className="ec-btn-ghost" href={`https://wa.me/${numeroIntl(l.telephone)}?text=${encodeURIComponent(texte)}`} target="_blank" rel="noopener noreferrer">Ouvrir dans WhatsApp</a>
-        </div>
-        <p className="ec-small">Le message part de votre téléphone : rien n’est envoyé par Kairn. <Link to="/espace/compte#modeles" onClick={onClose}>Gérer mes modèles</Link></p>
+        {creer ? (
+          <form onSubmit={sauver}>
+            <label className="ec-field"><span>Nom du modèle</span><input value={creer.titre} maxLength={60} onChange={(e) => setCreer((x) => ({ ...x, titre: e.target.value }))} placeholder={email ? 'Ex. Après la visite technique' : 'Ex. Je suis en route'} autoFocus /></label>
+            {email && <label className="ec-field"><span>Objet</span><input value={creer.objet} maxLength={150} onChange={(e) => setCreer((x) => ({ ...x, objet: e.target.value }))} placeholder="Ex. Suite à notre visite" /></label>}
+            <label className="ec-field"><span>Texte</span><textarea rows={email ? 9 : 5} maxLength={email ? 3000 : 640} value={creer.texte} onChange={(e) => setCreer((x) => ({ ...x, texte: e.target.value }))} placeholder={'Bonjour {prenom}, …'} /></label>
+            <div className="crm-sms-modeles crm-vars">{VARIABLES.map(([v, t]) => <button type="button" key={v} onClick={() => inserer(v)} title={`Insère ${v}`}>+ {t}</button>)}</div>
+            <p className="ec-note">Parlez seulement du projet que le particulier a demandé : la loi limite le rappel à l’objet de sa demande.</p>
+            {erreur && <p className="ec-err" role="alert">{erreur}</p>}
+            <div className="ec-modal-actions"><button type="button" className="ec-btn-ghost" onClick={() => setCreer(null)}>Annuler</button><button type="submit" className="ec-btn">Enregistrer le modèle</button></div>
+          </form>
+        ) : (
+          <>
+            {email && (
+              <label className="ec-field"><span>Objet</span>
+                <span className="crm-copy-row"><input value={objet} onChange={(e) => setObjet(e.target.value)} maxLength={150} /><button type="button" className="ec-btn-ghost" onClick={() => copier('objet', objet)}>{copie === 'objet' ? 'Copié' : 'Copier'}</button></span>
+              </label>
+            )}
+            <label className="ec-field"><span>Message (modifiable)</span><textarea rows={email ? 12 : 6} value={texte} onChange={(e) => setTexte(e.target.value)} maxLength={email ? 3000 : 640} /></label>
+            {!email && <p className="crm-sms-compte">{texte.length} caractères{texte.length > 160 ? ` · ${Math.ceil(texte.length / 153)} SMS` : ''}</p>}
+            {manque && <p className="ec-note">Le nom de votre société ou votre prénom manque dans votre fiche : écrivez-nous pour la compléter.</p>}
+            <div className="crm-sms-actions">
+              <button type="button" className="ec-btn" onClick={() => copier('texte', texte)}>{copie === 'texte' ? 'Copié' : email ? 'Copier le message' : 'Copier le texte'}</button>
+              {email ? (
+                <a className="ec-btn-ghost" href={`mailto:${l.email || ''}?subject=${encodeURIComponent(objet)}&body=${encodeURIComponent(texte)}`}>Ouvrir dans ma messagerie</a>
+              ) : (
+                <>
+                  <a className="ec-btn-ghost" href={`sms:${tel(l)}?&body=${encodeURIComponent(texte)}`}>Ouvrir dans Messages</a>
+                  <a className="ec-btn-ghost" href={`https://wa.me/${numeroIntl(l.telephone)}?text=${encodeURIComponent(texte)}`} target="_blank" rel="noopener noreferrer">Ouvrir dans WhatsApp</a>
+                </>
+              )}
+            </div>
+            <p className="ec-small">Le message part de {email ? 'votre messagerie' : 'votre téléphone'} : rien n’est envoyé par Kairn. <Link to="/espace/compte#modeles" onClick={onClose}>Gérer mes modèles</Link></p>
+          </>
+        )}
       </div>
     </div>
   );
 }
+
 function gcalUrl(l, rdv, client) {
   if (!rdv) return null;
   const f = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
@@ -223,35 +243,32 @@ export function LitigeModal({ lead, apercu, onClose, onDone }) {
 }
 
 // ─ carte du pipeline ─
+// Lisible en un coup d'œil (Ugo, 13/11/2026 : « c'est pas assez clair ») : qui, quoi et où, puis UNE prochaine action
+// (rendez-vous, rappel, motif de perte), puis l'état des appels et le délai légal. Plus d'initiales ni d'étiquettes
+// de logement sur la carte : elles sont dans la fiche.
 function Carte({ lead: l, sv, litige, onOpen, onDrag, dragging }) {
   const rdv = sv?.rdv_le && new Date(sv.rdv_le) > new Date(Date.now() - 3600000);
   const rappel = sv?.rappel_le;
   const enRetard = rappel && new Date(rappel) < new Date();
+  const relancable = !sv || RELANCABLES.includes(sv.statut);
+  const action = rdv ? <p className="crm-next is-rdv"><Ico d={I.cal} size={13} />RDV {quand(sv.rdv_le)}</p>
+    : rappel && relancable ? <p className={`crm-next ${enRetard ? 'is-late' : 'is-rappel'}`}><Ico d={I.bell} size={13} />{enRetard ? 'En retard · ' : 'Rappel '}{quand(rappel)}</p>
+      : sv?.motif_perte ? <p className="crm-next">{MOTIFS_PERTE[sv.motif_perte] || sv.motif_perte}</p> : null;
   return (
     <div role="button" tabIndex={0} draggable className={`crm-card${dragging ? ' is-drag' : ''}${!sv && Date.now() - new Date(l.livre_le).getTime() < 3600000 ? ' is-fresh' : ''}`}
       onClick={() => onOpen(l.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(l.id); } }}
       onDragStart={(e) => { e.dataTransfer.setData('text/plain', l.id); e.dataTransfer.effectAllowed = 'move'; onDrag(l.id); }} onDragEnd={() => onDrag(null)}>
       <div className="crm-card-top">
-        <span className="crm-av">{initiales(l)}</span>
-        <div className="crm-card-who"><b>{nomComplet(l)}</b><span>{[l.code_postal, l.ville].filter(Boolean).join(' ')}</span></div>
-        <span className="crm-age">{age(l.livre_le)}</span>
+        <b className="crm-card-name">{nomComplet(l)}</b>
+        <span className="crm-age" title={`Demande du ${dateHeure(demandeDe(l))}`}>{age(demandeDe(l))}</span>
       </div>
-      <p className="crm-card-them">{THEMES[l.thematique] || l.thematique}</p>
-      {(!sv || RELANCABLES.includes(sv.statut)) && (
-        <div className="crm-card-relance">
-          <span className="crm-appels">{sv?.tentatives ? `Appel ${Math.min(sv.tentatives, MAX_APPELS)}/${MAX_APPELS}` : 'Jamais appelé'}</span>
+      <p className="crm-card-sub">{[THEMES[l.thematique] || l.thematique, [l.code_postal, l.ville].filter(Boolean).join(' ')].filter(Boolean).join(' · ')}</p>
+      {action}
+      {litige && <p className="crm-next is-lit">Litige {LITIGE_STATUTS[litige.statut].toLowerCase()}</p>}
+      {relancable && (
+        <div className="crm-card-foot">
+          <span>{sv?.tentatives ? `Appel ${Math.min(sv.tentatives, MAX_APPELS)}/${MAX_APPELS}` : 'Pas encore appelé'}</span>
           <Delai lead={l} sv={sv} />
-        </div>
-      )}
-      <div className="crm-tags">
-        {[l.statut_occupation, l.type_logement, l.chauffage].filter(Boolean).map((t) => <span key={t}>{t}</span>)}
-      </div>
-      {(rdv || rappel || litige || sv?.motif_perte) && (
-        <div className="crm-badges">
-          {rdv && <span className="is-rdv"><Ico d={I.cal} size={12} />{quand(sv.rdv_le)}</span>}
-          {rappel && <span className={enRetard ? 'is-late' : 'is-rappel'}><Ico d={I.bell} size={12} />{quand(rappel)}</span>}
-          {sv?.motif_perte && <span>{MOTIFS_PERTE[sv.motif_perte] || sv.motif_perte}</span>}
-          {litige && <span className="is-lit">Litige {LITIGE_STATUTS[litige.statut].toLowerCase()}</span>}
         </div>
       )}
     </div>
@@ -279,7 +296,7 @@ export function useAppel(onToast) {
 function Fiche({ lead: l, client, litige, apercu, onClose, onSignal, onToast }) {
   const { suiviPar, journalPar, majSuivi, noter, prefs } = useData();
   const sv = suiviPar.get(l.id) || { statut: 'a_appeler', rappel_le: null, rdv_le: null, motif_perte: null, tentatives: 0 };
-  const [sms, setSms] = useState(false);
+  const [msg, setMsg] = useState(null); // 'sms' | 'email'
   const appel = useAppel(onToast);
   const relancable = RELANCABLES.includes(sv.statut);
   const delai = etatDelai(demandeDe(l));
@@ -314,8 +331,8 @@ function Fiche({ lead: l, client, litige, apercu, onClose, onSignal, onToast }) 
         <div className="crm-drawer-body">
           <div className="crm-actions">
             <a className="crm-call" href={`tel:${tel(l)}`}><Ico d={I.tel} size={18} />Appeler</a>
-            <button type="button" className="crm-act" onClick={() => setSms(true)}><Ico d={I.sms} size={18} />Générer un SMS</button>
-            {l.email && <a className="crm-act" href={`mailto:${l.email}`}><Ico d={I.mail} size={18} />E-mail</a>}
+            <button type="button" className="crm-act" onClick={() => setMsg('sms')}><Ico d={I.sms} size={18} />SMS</button>
+            <button type="button" className="crm-act" onClick={() => setMsg('email')}><Ico d={I.mail} size={18} />E-mail</button>
           </div>
 
           <section className="crm-appel">
@@ -399,7 +416,7 @@ function Fiche({ lead: l, client, litige, apercu, onClose, onSignal, onToast }) 
           </footer>
         </div>
       </aside>
-      {sms && <SmsModal lead={l} client={client} sv={sv} onClose={() => setSms(false)} />}
+      {msg && <MessageModal canal={msg} lead={l} client={client} sv={sv} apercu={apercu} onClose={() => setMsg(null)} />}
     </div>
   );
 }

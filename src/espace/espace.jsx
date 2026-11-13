@@ -8,7 +8,7 @@ import Tickets from './tickets.jsx';
 import Aide from './aide.jsx';
 import { Data, useData } from './data.js';
 import Contacts, { useFilters, ETAPES_CRM, age } from './crm.jsx';
-import { PlanRelance, ModelesSms } from './reglages.jsx';
+import { PlanRelance, ModelesMessages } from './reglages.jsx';
 import { apercuData } from './apercu.js';
 import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from '../v3/zone-picker.jsx';
 import '../v2/v2.css';
@@ -766,7 +766,8 @@ function Account({ session, client, apercu }) {
       <PageHead title="Mon compte" />
       <Alertes session={session} apercu={apercu} />
       <PlanRelance session={session} apercu={apercu} />
-      <ModelesSms session={session} client={client} apercu={apercu} />
+      <ModelesMessages canal="sms" client={client} apercu={apercu} />
+      <ModelesMessages canal="email" client={client} apercu={apercu} />
       <div className="ec-card">
         <dl className="ec-dl">
           <div><dt>Société</dt><dd>{client?.societe || '·'}</dd></div>

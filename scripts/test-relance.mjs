@@ -65,6 +65,8 @@ t('modèles et numéros', () => {
   assert.equal(remplir('Bonjour {prenom}, ici {signataire} de {entreprise}.', { prenom: 'Marie', signataire: 'Julien', entreprise: 'Exemple Chauffage' }), 'Bonjour Marie, ici Julien d’Exemple Chauffage.');
   assert.equal(remplir('Bonjour {prenom}, merci.', {}), 'Bonjour, merci.');
   assert.equal(remplir('Ici {signataire} de {entreprise}. Quand puis-je vous rappeler ?', { signataire: 'Léa', entreprise: 'Thermo Sud' }), 'Ici Léa de Thermo Sud. Quand puis-je vous rappeler ?');
+  assert.equal(remplir('Votre projet de {projet}.', { projet: 'isolation extérieure' }), 'Votre projet d’isolation extérieure.');
+  assert.equal(remplir('Votre projet de {projet}.', { projet: 'pompe à chaleur' }), 'Votre projet de pompe à chaleur.');
   assert.equal(numeroIntl('06 12 34 56 78'), '33612345678');
   assert.equal(numeroIntl('+33 6 12 34 56 78'), '33612345678');
 });

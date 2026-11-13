@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from './db.js';
 import { useData } from './data.js';
-import { MODELES_DEFAUT, variablesSms } from './crm.jsx';
+import { useModeles, variables, LIBELLES } from './modeles.js';
 import { MAX_APPELS, PLAN_DEFAUT, planDe, planValide, remplir, VARIABLES } from './relance.js';
 
 // Réglages du bloc 1 « vitesse et relance » (12/11/2026), dans Mon compte : plan de relance des NRP et modèles de SMS.
@@ -55,86 +55,52 @@ export function PlanRelance({ session, apercu }) {
   );
 }
 
-export function ModelesSms({ session, client, apercu }) {
-  const { modeles, setModeles } = useData();
-  const perso = (modeles || []).length > 0;
-  const liste = perso ? modeles : MODELES_DEFAUT;
-  const [edit, setEdit] = useState(null); // { id?, titre, texte }
+// Modèles de SMS et d'e-mail (canal), même liste que dans la fenêtre d'un contact.
+export function ModelesMessages({ canal, client, apercu }) {
+  const { liste, perso, enregistrer, supprimer, retablir } = useModeles(canal, apercu);
+  const email = canal === 'email';
+  const [edit, setEdit] = useState(null); // { id?, titre, objet, texte }
   const [err, setErr] = useState('');
-  const exemple = variablesSms({ prenom: 'Marie', thematique: 'PAC', ville: 'Mérignac' }, client, { rdv_le: new Date(Date.now() + 86400000).setHours(14, 30, 0, 0) });
-
-  // Premier changement : les modèles Kairn sont copiés dans le compte, puis modifiés comme les autres.
-  async function copierDefauts() {
-    if (apercu) { const c = MODELES_DEFAUT.map((m, i) => ({ ...m, id: `apercu-m-${i}`, ordre: i })); setModeles(c); return c; }
-    const { data, error } = await db.from('sms_modeles').insert(MODELES_DEFAUT.map((m, i) => ({ user_id: session.user.id, titre: m.titre, texte: m.texte, ordre: i }))).select('*');
-    if (error) { setErr('L’enregistrement n’a pas abouti. Réessayez.'); return null; }
-    setModeles(data); return data;
-  }
-  async function enregistrer(e) {
+  const exemple = variables({ prenom: 'Marie', thematique: 'PAC', ville: 'Mérignac' }, client, { rdv_le: new Date(Date.now() + 86400000).setHours(14, 30, 0, 0) });
+  async function sauver(e) {
     e.preventDefault(); setErr('');
     const titre = edit.titre.trim(); const texte = edit.texte.trim();
     if (!titre || !texte) { setErr('Donnez un nom et un texte au modèle.'); return; }
-    let base = perso ? modeles : await copierDefauts();
-    if (!base) return;
-    let id = edit.id;
-    if (id && id.startsWith('defaut-')) { const i = MODELES_DEFAUT.findIndex((m) => m.id === id); id = base[i]?.id; }
-    if (apercu) {
-      setModeles(id ? base.map((m) => (m.id === id ? { ...m, titre, texte } : m)) : [...base, { id: `apercu-m-${Date.now()}`, titre, texte, ordre: base.length }]);
-      setEdit(null); return;
-    }
-    const q = id ? db.from('sms_modeles').update({ titre, texte }).eq('id', id).select('*').single()
-      : db.from('sms_modeles').insert({ user_id: session.user.id, titre, texte, ordre: base.length }).select('*').single();
-    const { data, error } = await q;
-    if (error) { setErr('L’enregistrement n’a pas abouti. Réessayez.'); return; }
-    base = id ? base.map((m) => (m.id === id ? data : m)) : [...base, data];
-    setModeles(base); setEdit(null);
+    if (await enregistrer({ id: edit.id, titre, objet: edit.objet?.trim(), texte })) setEdit(null);
+    else setErr('L’enregistrement n’a pas abouti. Réessayez.');
   }
-  async function supprimer(m) {
-    setErr('');
-    let base = perso ? modeles : await copierDefauts();
-    if (!base) return;
-    const id = m.id.startsWith('defaut-') ? base[MODELES_DEFAUT.findIndex((x) => x.id === m.id)]?.id : m.id;
-    if (!apercu) { const { error } = await db.from('sms_modeles').delete().eq('id', id); if (error) { setErr('La suppression n’a pas abouti.'); return; } }
-    base = base.filter((x) => x.id !== id);
-    setModeles(base);
-  }
-  async function retablir() {
-    setErr('');
-    if (!apercu) { const { error } = await db.from('sms_modeles').delete().eq('user_id', session.user.id); if (error) { setErr('L’opération n’a pas abouti.'); return; } }
-    setModeles([]);
-  }
-  const inserer = (v) => setEdit((x) => ({ ...x, texte: `${x.texte}${x.texte && !x.texte.endsWith(' ') ? ' ' : ''}${v}` }));
-
+  const inserer = (v) => setEdit((x) => ({ ...x, texte: `${x.texte}${x.texte && !/\s$/.test(x.texte) ? ' ' : ''}${v}` }));
   return (
-    <div className="ec-card ec-modeles" id="modeles">
-      <h2>Mes modèles de SMS</h2>
-      <p className="ec-muted">Dans la fiche d’un contact, « Générer un SMS » remplit le modèle avec son prénom et son projet. Vous le copiez et l’envoyez depuis votre téléphone : rien ne part de Kairn.</p>
+    <div className="ec-card ec-modeles" id={email ? 'modeles-email' : 'modeles'}>
+      <h2>{LIBELLES[canal].titre}</h2>
+      <p className="ec-muted">Dans la fiche d’un contact, le bouton « {email ? 'E-mail' : 'SMS'} » remplit le modèle avec son prénom et son projet. Vous le copiez et l’envoyez {email ? 'depuis votre messagerie' : 'depuis votre téléphone'} : rien ne part de Kairn.</p>
       <ul className="ec-modeles-list">
         {liste.map((m) => (
           <li key={m.id}>
-            <div><b>{m.titre}</b><p>{remplir(m.texte, exemple)}</p></div>
+            <div><b>{m.titre}</b>{email && m.objet && <em>Objet : {remplir(m.objet, exemple)}</em>}<p>{remplir(m.texte, exemple)}</p></div>
             <span>
-              <button type="button" className="ec-link-btn" onClick={() => setEdit({ id: m.id, titre: m.titre, texte: m.texte })}>Modifier</button>
-              {liste.length > 1 && <button type="button" className="ec-link-btn" onClick={() => supprimer(m)}>Supprimer</button>}
+              <button type="button" className="ec-link-btn" onClick={() => setEdit({ id: m.id, titre: m.titre, objet: m.objet || '', texte: m.texte })}>Modifier</button>
+              {liste.length > 1 && <button type="button" className="ec-link-btn" onClick={async () => { if (!(await supprimer(m))) setErr('La suppression n’a pas abouti.'); }}>Supprimer</button>}
             </span>
           </li>
         ))}
       </ul>
-      {err && <p className="ec-err" role="alert">{err}</p>}
+      {err && !edit && <p className="ec-err" role="alert">{err}</p>}
       <div className="ec-alertes-actions">
-        <button type="button" className="ec-btn-ghost" onClick={() => setEdit({ titre: '', texte: '' })} disabled={liste.length >= 20}>+ Nouveau modèle</button>
-        {perso && <button type="button" className="ec-btn-ghost" onClick={retablir}>Revenir aux modèles Kairn</button>}
+        <button type="button" className="ec-btn-ghost" onClick={() => setEdit({ titre: '', objet: '', texte: '' })} disabled={liste.length >= 20}>+ Nouveau modèle</button>
+        {perso && <button type="button" className="ec-btn-ghost" onClick={async () => { if (!(await retablir())) setErr('L’opération n’a pas abouti.'); }}>Revenir aux modèles Kairn</button>}
       </div>
       {edit && (
-        <div className="ec-modal" role="dialog" aria-modal="true" aria-label="Modèle de SMS" onClick={() => setEdit(null)}>
-          <form className="ec-modal-card" onClick={(e) => e.stopPropagation()} onSubmit={enregistrer}>
+        <div className="ec-modal" role="dialog" aria-modal="true" aria-label={`Modèle ${LIBELLES[canal].un}`} onClick={() => setEdit(null)}>
+          <form className="ec-modal-card crm-sms" onClick={(e) => e.stopPropagation()} onSubmit={sauver}>
             <h2>{edit.id ? 'Modifier le modèle' : 'Nouveau modèle'}</h2>
             <label className="ec-field"><span>Nom du modèle</span><input value={edit.titre} maxLength={60} onChange={(e) => setEdit((x) => ({ ...x, titre: e.target.value }))} placeholder="Ex. Après la visite technique" /></label>
-            <label className="ec-field"><span>Texte</span><textarea rows={5} maxLength={640} value={edit.texte} onChange={(e) => setEdit((x) => ({ ...x, texte: e.target.value }))} /></label>
-            <p className="ec-sub">Insérer</p>
-            <div className="crm-sms-modeles">{VARIABLES.map(([v, t]) => <button type="button" key={v} onClick={() => inserer(v)} title={v}>{t}</button>)}</div>
-            <p className="ec-small">Aperçu : {remplir(edit.texte, exemple) || '·'}</p>
+            {email && <label className="ec-field"><span>Objet</span><input value={edit.objet} maxLength={150} onChange={(e) => setEdit((x) => ({ ...x, objet: e.target.value }))} /></label>}
+            <label className="ec-field"><span>Texte</span><textarea rows={email ? 10 : 5} maxLength={email ? 3000 : 640} value={edit.texte} onChange={(e) => setEdit((x) => ({ ...x, texte: e.target.value }))} /></label>
+            <div className="crm-sms-modeles crm-vars">{VARIABLES.map(([v, t]) => <button type="button" key={v} onClick={() => inserer(v)} title={`Insère ${v}`}>+ {t}</button>)}</div>
+            <p className="ec-small ec-apercu">Aperçu : {remplir(edit.texte, exemple) || '·'}</p>
             <p className="ec-note">Parlez seulement du projet que le particulier a demandé : la loi limite le rappel à l’objet de sa demande.</p>
+            {err && <p className="ec-err" role="alert">{err}</p>}
             <div className="ec-modal-actions"><button type="button" className="ec-btn-ghost" onClick={() => setEdit(null)}>Annuler</button><button type="submit" className="ec-btn">Enregistrer</button></div>
           </form>
         </div>

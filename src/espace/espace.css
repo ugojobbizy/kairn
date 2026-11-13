@@ -53,7 +53,10 @@
 .v2 .ec-help b { display: block; color: #fff; margin-top: 2px; }
 .v2 .ec-logout { min-height: 40px; border: 1px solid rgba(255,255,255,.14); border-radius: 10px; background: transparent; color: rgba(255,255,255,.75); font: 500 14px var(--font); cursor: pointer; }
 .v2 .ec-logout:hover { color: #fff; border-color: rgba(255,255,255,.3); }
-.v2 .ec-main { padding: 32px clamp(18px, 3vw, 40px) 90px; min-width: 0; max-width: 1320px; }
+.v2 .ec-main { padding: 32px clamp(18px, 3vw, 40px) 90px; min-width: 0; }
+/* Grand écran (Ugo, 13/11/2026 : « il y a que la moitié de l'écran qui est affiché ») : le CRM prend toute la largeur,
+   les autres pages restent lisibles (1320 px au plus) et centrées dans la zone de contenu. */
+.v2 .ec-main > :not(.crm) { max-width: 1320px; margin-left: auto; margin-right: auto; }
 .v2 .ec-burger { display: none; }
 
 /* ─ en-têtes, libellés ─ */

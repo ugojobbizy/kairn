@@ -17,13 +17,13 @@
 
 /* Pipeline */
 .v2 .crm-board { display: flex; gap: 12px; margin-top: 18px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x proximity; }
-.v2 .crm-col { flex: 0 0 272px; display: flex; flex-direction: column; max-height: calc(100vh - 250px); border-radius: 16px; border: 1px solid var(--line-2); background: #EEF1F7; scroll-snap-align: start; transition: background .15s, border-color .15s; }
+.v2 .crm-col { flex: 1 0 260px; max-width: 340px; display: flex; flex-direction: column; max-height: calc(100vh - 250px); border-radius: 16px; border: 1px solid var(--line-2); background: #EEF1F7; scroll-snap-align: start; transition: background .15s, border-color .15s; }
 .v2 .crm-col.is-over { border-color: var(--c); background: color-mix(in srgb, var(--c) 8%, #EEF1F7); }
 .v2 .crm-col h2 { display: flex; align-items: center; gap: 8px; padding: 12px 14px 10px; font-size: 13px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: var(--ink-2); }
 .v2 .crm-col h2 i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
 .v2 .crm-col h2 b { margin-left: auto; padding: 1px 8px; border-radius: 999px; background: #fff; font-size: 12px; color: var(--muted); }
 .v2 .crm-col-body { flex: 1; overflow-y: auto; display: grid; align-content: start; gap: 8px; padding: 0 8px 10px; }
-.v2 .crm-card { padding: 12px; border-radius: 12px; border: 1px solid var(--line-2); background: #fff; cursor: grab; user-select: none; box-shadow: 0 1px 2px rgba(15,23,42,.04); transition: box-shadow .15s, border-color .15s, opacity .15s; }
+.v2 .crm-card { padding: 14px; border-radius: 12px; border: 1px solid var(--line-2); background: #fff; cursor: grab; user-select: none; transition: box-shadow .15s, border-color .15s, opacity .15s; }
 .v2 .crm-card:hover, .v2 .crm-card:focus-visible { border-color: rgba(47,91,234,.4); box-shadow: 0 6px 18px -10px rgba(30,60,160,.4); outline: none; }
 .v2 .crm-card.is-drag { opacity: .4; cursor: grabbing; }
 .v2 .crm-card.is-fresh { border-color: rgba(16,185,129,.55); box-shadow: 0 0 0 3px rgba(16,185,129,.08); }
@@ -34,7 +34,13 @@
 .v2 .crm-card-who b { display: block; font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .v2 .crm-card-who span { display: block; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .v2 .crm-age { flex: none; font-size: 11.5px; color: var(--faint); }
-.v2 .crm-card-them { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+/* Carte (refaite le 13/11/2026) */
+.v2 .crm-card-top { align-items: baseline; justify-content: space-between; }
+.v2 .crm-card-name { min-width: 0; font-size: 15px; font-weight: 600; line-height: 1.3; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2 .crm-card-sub { margin-top: 3px; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2 .crm-next { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.v2 .crm-next.is-rdv { color: #0369A1; } .v2 .crm-next.is-rappel { color: #92400E; } .v2 .crm-next.is-late { color: #B91C1C; } .v2 .crm-next.is-lit { color: #9D174D; font-weight: 500; }
+.v2 .crm-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
 .v2 .crm-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .v2 .crm-tags span { padding: 2px 7px; border-radius: 6px; background: #F1F4FA; font-size: 11.5px; color: var(--ink-2); }
 .v2 .crm-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
@@ -170,7 +176,7 @@
 /* ─ Bloc 1 « vitesse et relance » (12/11/2026) : Ma journée, délai légal, appels, SMS ─ */
 .v2 button.crm-act { cursor: pointer; }
 .v2 .crm-stats .is-hot { border-color: rgba(47,91,234,.45); background: #F3F6FF; } .v2 .crm-stats .is-hot b { color: var(--violet); }
-.v2 .crm-delai { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; background: #EEF6FF; color: #1D4ED8; font: 600 11.5px var(--font); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.v2 .crm-delai { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; background: #F1F4FA; color: var(--ink-2); font: 600 11.5px var(--font); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .v2 .crm-delai.is-urgent { background: #FFF4E5; color: #B45309; }
 .v2 .crm-delai.is-out { background: #FDECEC; color: #B91C1C; }
 .v2 .crm-appels { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
@@ -228,3 +234,18 @@
   .v2 .crm-jl-act > :only-child, .v2 .crm-jl-act .crm-jl-call { grid-column: 1 / -1; }
   .v2 .crm-toast { bottom: 84px; }
 }
+
+/* Modèles d'e-mail et création de modèle dans la fenêtre (13/11/2026) */
+.v2 .crm-sms { max-height: calc(100vh - 32px); overflow-y: auto; }
+.v2 .crm-sms.is-email { max-width: 680px; }
+.v2 .crm-sms input { width: 100%; min-height: 42px; padding: 0 12px; border-radius: 12px; border: 1px solid #DDE2EC; font: 15px var(--font); }
+.v2 .ec-field .crm-copy-row { display: flex; gap: 8px; margin: 0; }
+.v2 .crm-copy-row input { flex: 1; }
+.v2 .crm-copy-row .ec-btn-ghost { flex: none; }
+.v2 .crm-sms-modeles .is-add { border-style: dashed; color: var(--violet); }
+.v2 .crm-sms-modeles .is-add.is-on { background: var(--violet); border-color: var(--violet); border-style: solid; color: #fff; }
+.v2 .crm-vars { margin-top: 8px; }
+.v2 .crm-vars button { min-height: 30px; font-size: 12.5px; }
+.v2 .ec-modeles-list em { display: block; margin-top: 4px; font-style: normal; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.v2 .ec-modeles-list p { white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.v2 .ec-apercu { white-space: pre-line; max-height: 140px; overflow-y: auto; }
