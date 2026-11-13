@@ -33,7 +33,7 @@ function CandidatureForm() {
     setError('');
     if (!f.prenom.trim() || !f.nom.trim()) { setError('Indiquez votre prénom et votre nom.'); return; }
     setState('sending');
-    const r = await fetch('/api/apporteur-candidature', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(f) }).catch(() => null);
+    const r = await fetch('/api/apporteur', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...f, action: 'candidature' }) }).catch(() => null);
     const data = r ? await r.json().catch(() => ({})) : {};
     if (!r || !r.ok) {
       setState('idle');

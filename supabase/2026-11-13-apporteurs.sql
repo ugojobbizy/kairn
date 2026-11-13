@@ -146,7 +146,7 @@ end $$;
 revoke all on function public.admin_verser_commission(uuid, text) from public, anon;
 grant execute on function public.admin_verser_commission(uuid, text) to authenticated;
 
--- ─ Candidature publique (/devenir-apporteur, par api/apporteur-candidature.js) ─
+-- ─ Candidature publique (/devenir-apporteur, par api/apporteur.js) ─
 -- Une adresse déjà connue ne crée pas de deuxième fiche : la fonction rend la fiche existante.
 create or replace function public.site_candidature_apporteur(
   p_prenom text, p_nom text, p_societe text, p_email text, p_telephone text, p_siret text, p_message text

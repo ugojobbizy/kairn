@@ -1,10 +1,15 @@
-// POST /api/apporteur-ouvrir avec l'en-tête Authorization: Bearer <jeton admin>
-//   { id }                                         : valide une candidature (ou renvoie l'accès d'un apporteur actif)
-//   { email, nom, prenom?, societe?, telephone?, siret? } : crée directement un apporteur, sans candidature
-// Kairn Admin, écran Apporteurs (Ugo, 13/11/2026). Même schéma que api/client-ouvrir.js : crée le compte de connexion
-// s'il n'existe pas, relie la fiche apporteurs (user_id, statut actif) et envoie l'e-mail où il choisit son mot de passe.
-// Rend aussi le lien, à copier si l'e-mail ne part pas.
+// POST /api/apporteur : apporteurs d'affaires (Ugo, 13/11/2026). Une seule fonction pour deux actions
+// (le forfait Vercel limite le nombre de fonctions serveur) :
+//   { action: 'candidature', prenom, nom, societe?, email, telephone, siret?, message?, website }
+//     page publique /devenir-apporteur : enregistrée par la fonction SQL site_candidature_apporteur
+//     (table illisible avec la clé publique), puis alerte Telegram à Ugo, qui valide dans Kairn Admin.
+//   { action: 'ouvrir', id } ou { action: 'ouvrir', email, nom, prenom?, societe?, telephone?, siret? }
+//     Kairn Admin, avec l'en-tête Authorization: Bearer <jeton admin> : valide une candidature (ou renvoie l'accès),
+//     ou crée directement un apporteur. Même schéma que api/client-ouvrir.js : crée le compte de connexion s'il
+//     n'existe pas, relie la fiche apporteurs (user_id, statut actif) et envoie l'e-mail où il choisit son mot de passe.
+//     Rend aussi le lien, à copier si l'e-mail ne part pas.
 import { send, readJson } from './_calendar.js';
+import { telegram } from './_telegram.js';
 import { SUPABASE_URL, SUPABASE_KEY, serviceKey, adminFetch, lienAcces, envoyerEmail } from './_auth-admin.js';
 import { emailAcces } from './_email-kairn.js';
 
@@ -14,12 +19,57 @@ const clean = (v, max) => { const s = String(v ?? '').trim(); return s ? s.slice
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error: 'method_not_allowed' });
+  let body;
+  try { body = await readJson(req); } catch { return send(res, 400, { error: 'bad_body' }); }
+  if (body.action === 'candidature') return candidature(req, res, body);
+  if (body.action === 'ouvrir') return ouvrir(req, res, body);
+  return send(res, 400, { error: 'bad_action' });
+}
+
+async function candidature(req, res, body) {
+  // Champ piège invisible : un humain le laisse vide.
+  if (body.website) return send(res, 200, { ok: true });
+
+  const nom = clean(body.nom, 120);
+  const prenom = clean(body.prenom, 100);
+  if (!nom || !prenom) return send(res, 400, { error: 'missing_fields' });
+  const email = clean(body.email, 200)?.toLowerCase();
+  if (!email || !EMAIL.test(email)) return send(res, 400, { error: 'bad_email' });
+  const telephone = String(body.telephone || '').replace(/[^\d+]/g, '');
+  if (telephone.replace(/\D/g, '').length < 8 || telephone.length > 20) return send(res, 400, { error: 'bad_phone' });
+  const siret = clean(String(body.siret || '').replace(/\s/g, ''), 20);
+  if (siret && !/^\d{14}$/.test(siret)) return send(res, 400, { error: 'bad_siret' });
+  const societe = clean(body.societe, 120);
+  const message = clean(body.message, 1000);
+
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/site_candidature_apporteur`, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_prenom: prenom, p_nom: nom, p_societe: societe, p_email: email, p_telephone: telephone, p_siret: siret, p_message: message }),
+    });
+    if (!r.ok) { console.error('[apporteur-candidature]', r.status, (await r.text()).slice(0, 200)); return send(res, 502, { error: 'save_failed' }); }
+  } catch (err) {
+    console.error('[apporteur-candidature]', err.message);
+    return send(res, 502, { error: 'save_failed' });
+  }
+
+  try {
+    await telegram([
+      '🤝 Candidature apporteur d’affaires',
+      `${prenom} ${nom}${societe ? ` · ${societe}` : ''}`,
+      `${telephone} · ${email}`,
+      message ? `« ${message.slice(0, 300)} »` : null,
+      'À valider : kairnagency.com/gestion/apporteurs',
+    ].filter(Boolean).join('\n'));
+  } catch (err) { console.error('[apporteur-candidature] telegram :', err.message); }
+  return send(res, 200, { ok: true });
+}
+
+async function ouvrir(req, res, body) {
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
   if (!token) return send(res, 401, { error: 'no_token' });
   if (!serviceKey()) return send(res, 503, { error: 'service_non_configure' });
-  let body;
-  try { body = await readJson(req); } catch { return send(res, 400, { error: 'bad_body' }); }
-
   try {
     const a = await fetch(`${SUPABASE_URL}/rest/v1/rpc/is_admin`, { method: 'POST', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'x-kairn-appareil': String(req.headers['x-kairn-appareil'] || '') }, body: '{}' });
     if (!a.ok || (await a.json()) !== true) return send(res, 403, { error: 'forbidden' });

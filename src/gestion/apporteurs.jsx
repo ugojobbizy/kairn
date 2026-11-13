@@ -4,7 +4,7 @@ import { db, THEMES, euro, dateFr, dateHeure, errMsg, appareilHeaders } from '..
 import { STATUTS_COMMISSION, CLASSE_COMMISSION } from '../apporteur/statuts.js';
 
 // Apporteurs d'affaires dans Kairn Admin (Ugo, 13/11/2026). Candidatures (/devenir-apporteur) à valider : Valider crée le
-// compte et envoie l'e-mail d'accès (api/apporteur-ouvrir.js). Fiche apporteur : clients tagués et lignes de commission,
+// compte et envoie l'e-mail d'accès (api/apporteur.js, action ouvrir). Fiche apporteur : clients tagués et lignes de commission,
 // une par bon de commande (fonction admin_commissions). « Marquer versée » fige montant, leads et taux
 // (admin_verser_commission), seulement sur une ligne « À payer » : commande terminée, réglée, sans litige en attente.
 // Le tag d'un client (apporteur, commission par lead, date de début) se pose sur la fiche client (TagApporteur ci-dessous).
@@ -38,7 +38,7 @@ function totaux(lignes) {
 
 async function ouvrir(payload) {
   const { data: sd } = await db.auth.getSession();
-  const r = await fetch('/api/apporteur-ouvrir', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sd.session?.access_token}`, ...appareilHeaders() }, body: JSON.stringify(payload) })
+  const r = await fetch('/api/apporteur', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sd.session?.access_token}`, ...appareilHeaders() }, body: JSON.stringify({ ...payload, action: 'ouvrir' }) })
     .then(async (x) => ({ status: x.status, body: await x.json().catch(() => ({})) })).catch(() => null);
   if (!r || r.status !== 200) {
     const code = r?.body?.error;
