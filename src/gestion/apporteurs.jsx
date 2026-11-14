@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { db, THEMES, euro, dateFr, dateHeure, errMsg, appareilHeaders } from '../espace/db.js';
 import { STATUTS_COMMISSION, CLASSE_COMMISSION } from '../apporteur/statuts.js';
-import { libelleForme, ibanLisible, manquesKairn, siretValide } from '../apporteur/contrat.js';
+import { libelleForme, ibanLisible, manquesKairn, siretValide, VERSION_CONTRAT } from '../apporteur/contrat.js';
+import { telechargerReleve } from '../apporteur/telecharger.js';
 
 // Apporteurs d'affaires dans Kairn Admin (Ugo, 13/11/2026). Candidatures (/devenir-apporteur) à valider : Valider crée le
 // compte et envoie l'e-mail d'accès (api/apporteur.js, action ouvrir). Fiche apporteur : clients tagués et lignes de commission,
@@ -17,15 +18,30 @@ function Head({ title, sub, children }) {
   return <header className="ec-head ec-head-row"><div><h1>{title}</h1>{sub && <p>{sub}</p>}</div>{children}</header>;
 }
 
+// Aperçu de développement (/gestion/apporteurs?apercu) : fausses données, rien n'est lu en base.
+function apercuApporteurs() {
+  const j = (n) => new Date(Date.now() - n * 864e5).toISOString();
+  const id = 'apercu-jules';
+  return {
+    apporteurs: [{ id, user_id: 'u', statut: 'actif', prenom: 'Jules', nom: 'Martin', societe: 'JM Conseil', raison_sociale: 'JM Conseil', forme: 'sasu', siret: '55203253400703', adresse: '12 rue des Lilas', code_postal: '33000', ville: 'Bordeaux', email: 'jules@exemple.fr', tva_regime: 'assujetti', tva_numero: 'FR40552032534', contrat_signe_le: j(30), contrat_version: 'v0', created_at: j(40) }],
+    lignes: [
+      { commande_id: '1', apporteur_id: id, client_id: 'c1', societe: 'ED Habitat', bdc_numero: 'BDC-2026-00012', approuve_le: j(5), leads: 50, taux: 60, montant: 3000, statut: 'en_cours', raison: 'En attente du règlement du client' },
+      { commande_id: '2', apporteur_id: id, client_id: 'c1', societe: 'ED Habitat', bdc_numero: 'BDC-2026-00009', approuve_le: j(20), leads: 50, taux: 60, montant: 3000, statut: 'versee', verse_le: j(10) },
+    ],
+    prospects: [{ id: 'p1', apporteur_id: id, societe: 'Exemple Isolation', ville: 'Bordeaux', contact: 'Paul D., gérant', telephone: '06 00 00 00 00', note: 'Fait de l’ITE, 3 équipes', declare_le: j(1), statut: 'declare' }],
+  };
+}
+
 export function useApporteurs(apercu) {
-  const [d, setD] = useState({ apporteurs: null, lignes: null, error: '' });
+  const [d, setD] = useState({ apporteurs: null, lignes: null, prospects: null, error: '' });
   const load = useCallback(async () => {
-    if (apercu) { setD({ apporteurs: [], lignes: [], error: '' }); return; }
-    const [a, l] = await Promise.all([
+    if (apercu) { setD({ ...apercuApporteurs(), error: '' }); return; }
+    const [a, l, p] = await Promise.all([
       db.from('apporteurs').select('*').order('created_at', { ascending: false }),
       db.rpc('admin_commissions'),
+      db.from('apporteur_prospects').select('*').order('declare_le', { ascending: true }),
     ]);
-    setD({ apporteurs: a.data || [], lignes: l.data || [], error: a.error || l.error ? 'Apporteurs illisibles (migration du 13/11 non appliquée ?).' : '' });
+    setD({ apporteurs: a.data || [], lignes: l.data || [], prospects: p.data || [], error: a.error || l.error || p.error ? 'Apporteurs illisibles (migration non appliquée ?).' : '' });
   }, [apercu]);
   useEffect(() => { load(); }, [load]);
   return { ...d, reload: load };
@@ -35,6 +51,112 @@ function totaux(lignes) {
   const t = { en_cours: 0, a_payer: 0, versee: 0, leads: 0 };
   for (const l of lignes) { t[l.statut] += Number(l.montant || 0); t.leads += l.leads || 0; }
   return t;
+}
+
+const nomAp = (x) => (x ? [x.prenom, x.nom].filter(Boolean).join(' ') : '·');
+const annee = (d) => (d ? new Date(d).getFullYear() : null);
+
+// Contrat, art. 2 : attestation de vigilance URSSAF dès 5 000 € HT sur l'année, renouvelée tous les six mois.
+export const SEUIL_URSSAF = 5000;
+function urssafAFaire(x, lignes) {
+  const an = new Date().getFullYear();
+  const total = lignes.filter((l) => l.apporteur_id === x.id && annee(l.approuve_le) === an).reduce((s, l) => s + Number(l.montant || 0), 0);
+  const recue = x.urssaf_attestation_le ? new Date(x.urssaf_attestation_le) : null;
+  const perimee = !recue || Date.now() - recue.getTime() > 182 * 864e5;
+  return total >= SEUIL_URSSAF && perimee ? total : 0;
+}
+
+// DAS2 : commissions versées dans l'année à un même bénéficiaire au-delà de 1 200 € (seuil et règles à confirmer avec
+// le comptable avant la déclaration). Export CSV (séparateur point-virgule, lisible par Excel).
+const SEUIL_DAS2 = 1200;
+function exportDas2(apporteurs, lignes, an) {
+  const lignesCsv = [['Bénéficiaire', 'Forme', 'SIRET', 'Adresse', 'Code postal', 'Ville', 'Régime TVA', 'Commissions versées HT', 'TVA (20 %)', 'Commissions versées TTC', 'Au-delà de 1 200 €']];
+  for (const x of apporteurs) {
+    const ht = Math.round(lignes.filter((l) => l.apporteur_id === x.id && l.statut === 'versee' && annee(l.verse_le) === an).reduce((s, l) => s + Number(l.montant || 0), 0) * 100) / 100;
+    if (!ht) continue;
+    const tva = x.tva_regime === 'assujetti' ? Math.round(ht * 20) / 100 : 0;
+    lignesCsv.push([x.raison_sociale || nomAp(x), libelleForme(x.forme, x.forme_autre), x.siret || '', x.adresse || '', x.code_postal || '', x.ville || '',
+      x.tva_regime === 'assujetti' ? `Assujetti ${x.tva_numero || ''}` : 'Franchise 293 B', ht, tva, Math.round((ht + tva) * 100) / 100, ht + tva > SEUIL_DAS2 ? 'oui' : 'non']);
+  }
+  const csv = lignesCsv.map((r) => r.map((v) => (typeof v === 'number' ? String(v).replace('.', ',') : `"${String(v).replace(/"/g, '""')}"`)).join(';')).join('\r\n');
+  const url = URL.createObjectURL(new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = `das2-commissions-apporteurs-${an}.csv`; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  return lignesCsv.length - 1;
+}
+
+async function appelAdmin(action, extra = {}) {
+  const { data: sd } = await db.auth.getSession();
+  return fetch('/api/apporteur', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sd.session?.access_token}`, ...appareilHeaders() }, body: JSON.stringify({ ...extra, action }) })
+    .then(async (x) => ({ status: x.status, body: await x.json().catch(() => ({})) })).catch(() => null);
+}
+
+// Prospects déclarés par les apporteurs : accepter (le client se rattache ensuite depuis sa fiche) ou refuser avec un motif.
+function ProspectsATraiter({ prospects, apporteurs, reload, setMsg, setErr }) {
+  if (!prospects.length) return null;
+  const parSiret = (p) => prospects.filter((q) => q.id !== p.id && ((p.siret && q.siret === p.siret) || q.societe.trim().toLowerCase() === p.societe.trim().toLowerCase()));
+  async function traiter(p, statut) {
+    setMsg(''); setErr('');
+    let motif = null;
+    if (statut === 'refuse') {
+      motif = window.prompt(`Ne pas retenir ${p.societe} ? Motif visible par l’apporteur :`, 'Entreprise déjà en contact avec Kairn');
+      if (motif === null) return;
+    } else if (!window.confirm(`Accepter ${p.societe} comme prospect de ${nomAp(apporteurs.find((a) => a.id === p.apporteur_id))} ? Quand elle devient cliente, reliez-la à l’apporteur depuis sa fiche client.`)) return;
+    const { error } = await db.from('apporteur_prospects').update({ statut, motif: motif?.trim() || null, traite_le: new Date().toISOString() }).eq('id', p.id);
+    if (error) setErr(errMsg(error)); else { setMsg(statut === 'accepte' ? `${p.societe} acceptée.` : `${p.societe} non retenue.`); reload(); }
+  }
+  return (
+    <>
+      <h2 style={{ margin: '26px 0 12px', fontSize: 18, fontWeight: 600 }}>Prospects déclarés à traiter</h2>
+      <div className="ec-card ec-table-wrap">
+        <table className="ec-table">
+          <thead><tr><th>Déclaré le</th><th>Apporteur</th><th>Entreprise</th><th>Contact</th><th /></tr></thead>
+          <tbody>{prospects.map((p) => {
+            const doublons = parSiret(p);
+            return (
+              <tr key={p.id}>
+                <td>{dateHeure(p.declare_le)}</td>
+                <td>{nomAp(apporteurs.find((a) => a.id === p.apporteur_id))}</td>
+                <td className="ec-wrap"><b>{p.societe}</b><small className="ec-block">{[p.ville, p.siret].filter(Boolean).join(' · ') || '·'}</small>{p.note && <small className="ec-block">{p.note}</small>}
+                  {doublons.length > 0 && <small className="ec-block ec-err" style={{ margin: 0 }}>Aussi déclarée : {doublons.map((q) => `${nomAp(apporteurs.find((a) => a.id === q.apporteur_id))} le ${dateHeure(q.declare_le)}`).join(', ')}</small>}</td>
+                <td>{p.contact || '·'}{p.telephone && <small className="ec-block"><a href={`tel:${p.telephone}`}>{p.telephone}</a></small>}</td>
+                <td style={{ whiteSpace: 'nowrap' }}><button type="button" className="ec-btn" onClick={() => traiter(p, 'accepte')}>Accepter</button> <button type="button" className="ec-btn-ghost" onClick={() => traiter(p, 'refuse')}>Refuser</button></td>
+              </tr>
+            );
+          })}</tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
+// Ce qui bloque l'argent ou la conformité : commandes livrées sans date de règlement, attestations URSSAF, contrats à signer.
+function ATraiter({ apporteurs, lignes, reload, setMsg, setErr }) {
+  const [busy, setBusy] = useState(false);
+  const bloquees = lignes.filter((l) => l.statut === 'en_cours' && l.raison === 'En attente du règlement du client');
+  const urssaf = apporteurs.filter((x) => x.statut === 'actif' && urssafAFaire(x, lignes));
+  const aSigner = apporteurs.filter((x) => x.statut === 'actif' && x.user_id && x.contrat_version !== VERSION_CONTRAT);
+  async function relancer() {
+    setMsg(''); setErr('');
+    if (!window.confirm(`Envoyer un e-mail aux ${aSigner.length} apporteur(s) qui doivent signer le contrat (${VERSION_CONTRAT}) ?`)) return;
+    setBusy(true);
+    const r = await appelAdmin('relancer');
+    setBusy(false);
+    if (r?.status === 200) { setMsg(`${r.body.envoyes} e-mail(s) envoyé(s) sur ${r.body.cibles}.`); reload(); }
+    else setErr(r?.body?.error === 'kairn_incomplet' ? 'Complétez d’abord votre identité dans Paramètres.' : 'L’envoi n’a pas abouti.');
+  }
+  if (!bloquees.length && !urssaf.length && !aSigner.length) return null;
+  return (
+    <div className="ec-card" style={{ marginTop: 16 }}>
+      <h2 style={{ margin: '0 0 10px', fontSize: 17, fontWeight: 600 }}>À faire</h2>
+      <ul style={{ margin: 0, paddingLeft: 18, display: 'grid', gap: 8, fontSize: 14, lineHeight: 1.5 }}>
+        {bloquees.length > 0 && <li><b>{bloquees.length} commande(s) livrée(s) sans date de règlement</b> bloquent {euro(bloquees.reduce((s, l) => s + Number(l.montant || 0), 0))} de commissions. Marquez-les réglées quand le client a payé : {bloquees.map((l, i) => <React.Fragment key={l.commande_id}>{i ? ', ' : ''}<Link to={`/gestion/clients/${l.client_id}`}>{l.societe} ({l.bdc_numero})</Link></React.Fragment>)}.</li>}
+        {urssaf.map((x) => <li key={x.id}><b>Attestation URSSAF à demander</b> à <Link to={`/gestion/apporteurs/${x.id}`}>{nomAp(x)}</Link> : {euro(urssafAFaire(x, lignes))} HT de commissions cette année (seuil {euro(SEUIL_URSSAF)}), {x.urssaf_attestation_le ? `dernière reçue le ${dateFr(x.urssaf_attestation_le)}` : 'aucune reçue'}.</li>)}
+        {aSigner.length > 0 && <li><b>{aSigner.length} apporteur(s) n’ont pas signé le contrat {VERSION_CONTRAT}</b> : {aSigner.map(nomAp).join(', ')}. <button type="button" className="ec-link-btn" disabled={busy} onClick={relancer}>{busy ? 'Envoi…' : 'Les prévenir par e-mail'}</button></li>}
+      </ul>
+    </div>
+  );
 }
 
 async function ouvrir(payload) {
@@ -142,6 +264,8 @@ export function Apporteurs({ data, apercu }) {
         <div className="ec-kpi"><b>Versé</b><span>Depuis le début</span><strong>{euro(tot.versee)}</strong></div>
         <div className="ec-kpi"><b>Candidatures</b><span>À valider ou refuser</span><strong>{candidatures.length}</strong></div>
       </div>
+      {a.apporteurs && <ATraiter apporteurs={a.apporteurs} lignes={a.lignes || []} reload={a.reload} setMsg={setMsg} setErr={setErr} />}
+      {a.prospects && <ProspectsATraiter prospects={a.prospects.filter((p) => p.statut === 'declare')} apporteurs={a.apporteurs || []} reload={a.reload} setMsg={setMsg} setErr={setErr} />}
 
       {candidatures.length > 0 && (
         <>
@@ -186,7 +310,24 @@ export function Apporteurs({ data, apercu }) {
         </div>
       )}
       <p className="ec-note">Pour relier un client à un apporteur : fiche du client, bloc « Apporteur d’affaires ».</p>
+      <Das2 apporteurs={a.apporteurs || []} lignes={a.lignes || []} />
     </>
+  );
+}
+
+function Das2({ apporteurs, lignes }) {
+  const an = new Date().getFullYear();
+  const [msg, setMsg] = useState('');
+  const verses = (y) => lignes.some((l) => l.statut === 'versee' && annee(l.verse_le) === y);
+  const annees = [an - 1, an].filter(verses);
+  if (!annees.length) return null;
+  return (
+    <div className="ec-card" style={{ marginTop: 16 }}>
+      <h2 style={{ margin: '0 0 6px', fontSize: 17, fontWeight: 600 }}>Déclaration DAS2</h2>
+      <p className="ec-muted">Commissions versées par apporteur et par année civile, avec leur SIRET et leur adresse, pour la déclaration annuelle des honoraires et commissions (au-delà de 1 200 € par bénéficiaire). À faire valider par votre comptable.</p>
+      <div style={{ display: 'flex', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>{annees.map((y) => <button key={y} type="button" className="ec-btn-ghost" onClick={() => setMsg(`${exportDas2(apporteurs, lignes, y)} apporteur(s) dans l’export ${y}.`)}>Exporter {y} (CSV)</button>)}</div>
+      {msg && <p className="ec-ok">{msg}</p>}
+    </div>
   );
 }
 
@@ -197,6 +338,7 @@ export function FicheApporteur({ data, apercu }) {
   const x = (a.apporteurs || []).find((y) => y.id === id);
   const lignes = useMemo(() => (a.lignes || []).filter((l) => l.apporteur_id === id), [a.lignes, id]);
   const clients = (data.clients || []).filter((c) => c.apporteur_id === id);
+  const prospects = (a.prospects || []).filter((p) => p.apporteur_id === id).reverse();
   const [f, setF] = useState('tout');
   const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
@@ -230,6 +372,19 @@ export function FicheApporteur({ data, apercu }) {
     a2.href = url; a2.download = `contrat-apporteur-${(x.raison_sociale || x.nom).replace(/[^\w-]+/g, '-').toLowerCase()}.pdf`; a2.click();
     setTimeout(() => URL.revokeObjectURL(url), 10000);
   }
+  async function releve() {
+    setErr('');
+    const e = await telechargerReleve(id);
+    if (e) setErr(e === 'rien_a_facturer' ? 'Aucune commission « À payer ».' : e === 'kairn_incomplet' ? 'Complétez votre identité dans Paramètres.' : 'Relevé impossible.');
+  }
+  async function attestation() {
+    setMsg(''); setErr('');
+    const d = window.prompt('Date de l’attestation de vigilance URSSAF reçue (AAAA-MM-JJ) :', new Date().toISOString().slice(0, 10));
+    if (d === null) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d.trim())) { setErr('Date au format AAAA-MM-JJ.'); return; }
+    const { error } = await db.from('apporteurs').update({ urssaf_attestation_le: d.trim() }).eq('id', id);
+    if (error) setErr(errMsg(error)); else { setMsg('Attestation enregistrée.'); a.reload(); }
+  }
   async function renvoyer() {
     setMsg(''); setErr(''); setLien('');
     const r = await ouvrir({ id });
@@ -243,6 +398,7 @@ export function FicheApporteur({ data, apercu }) {
       <Link to="/gestion/apporteurs" className="ec-back">← Tous les apporteurs</Link>
       <Head title={[x.prenom, x.nom].filter(Boolean).join(' ')} sub={`${STATUTS[x.statut]}${x.valide_le ? ` depuis le ${dateFr(x.valide_le)}` : ''}`}>
         <div className="ec-head-tools">
+          {t.a_payer > 0 && <button type="button" className="ec-btn-ghost" onClick={releve}>Relevé à facturer</button>}
           {x.statut === 'actif' && <button type="button" className="ec-btn-ghost" onClick={renvoyer}>Renvoyer l’accès</button>}
           {x.statut === 'actif' && <button type="button" className="ec-btn-ghost" onClick={() => statut('suspendu')}>Suspendre</button>}
           {x.statut === 'suspendu' && <button type="button" className="ec-btn-ghost" onClick={() => statut('actif')}>Réactiver</button>}
@@ -262,7 +418,8 @@ export function FicheApporteur({ data, apercu }) {
             <div><dt>Adresse</dt><dd>{x.adresse ? `${x.adresse}, ${x.code_postal} ${x.ville}` : '·'}</dd></div>
             <div><dt>TVA</dt><dd>{x.tva_regime === 'franchise' ? 'Franchise (293 B)' : x.tva_numero || '·'}</dd></div>
             <div><dt>IBAN</dt><dd>{x.iban ? `${ibanLisible(x.iban)} (${x.titulaire_iban || '·'})` : '·'}</dd></div>
-            <div><dt>Contrat</dt><dd>{x.contrat_signe_le ? <>Signé le {dateHeure(x.contrat_signe_le)} <button type="button" className="ec-link-btn" onClick={pdfContrat}>PDF</button></> : x.statut === 'actif' ? 'Onboarding en cours, pas encore signé' : '·'}</dd></div>
+            <div><dt>Contrat</dt><dd>{x.contrat_signe_le ? <>Signé le {dateHeure(x.contrat_signe_le)} ({x.contrat_version || 'version inconnue'}) <button type="button" className="ec-link-btn" onClick={pdfContrat}>PDF</button>{x.contrat_version !== VERSION_CONTRAT && <small className="ec-block">À re-signer : version en vigueur {VERSION_CONTRAT}</small>}</> : x.statut === 'actif' ? 'Onboarding en cours, pas encore signé' : '·'}</dd></div>
+            <div><dt>URSSAF</dt><dd>{x.urssaf_attestation_le ? `Attestation du ${dateFr(x.urssaf_attestation_le)}` : 'Aucune attestation'}{urssafAFaire(x, a.lignes || []) > 0 && <small className="ec-block ec-err" style={{ margin: 0 }}>À demander : plus de {euro(SEUIL_URSSAF)} HT cette année</small>} <button type="button" className="ec-link-btn" onClick={attestation}>Enregistrer</button></dd></div>
             <div><dt>Clients</dt><dd>{clients.length ? clients.map((c) => <Link key={c.user_id} to={`/gestion/clients/${c.user_id}`} className="ec-block">{c.societe} · {euro(c.commission_ht)} / lead</Link>) : 'Aucun : taguez un client depuis sa fiche.'}</dd></div>
           </dl>
         </section>
@@ -294,6 +451,24 @@ export function FicheApporteur({ data, apercu }) {
             ))}</tbody>
           </table>
         </div>
+      )}
+      {prospects.length > 0 && (
+        <>
+          <h2 style={{ margin: '26px 0 12px', fontSize: 18, fontWeight: 600 }}>Prospects déclarés</h2>
+          <div className="ec-card ec-table-wrap">
+            <table className="ec-table">
+              <thead><tr><th>Déclaré le</th><th>Entreprise</th><th>Contact</th><th>Statut</th></tr></thead>
+              <tbody>{prospects.map((p) => (
+                <tr key={p.id}>
+                  <td>{dateHeure(p.declare_le)}</td>
+                  <td className="ec-wrap"><b>{p.societe}</b><small className="ec-block">{[p.ville, p.siret].filter(Boolean).join(' · ') || '·'}</small>{p.note && <small className="ec-block">{p.note}</small>}</td>
+                  <td>{p.contact || '·'}{p.telephone && <small className="ec-block">{p.telephone}</small>}</td>
+                  <td>{p.statut === 'declare' ? 'À traiter (page Apporteurs)' : p.statut === 'accepte' ? 'Accepté' : 'Non retenu'}{p.motif && <small className="ec-block">{p.motif}</small>}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+        </>
       )}
       <p className="ec-note">Une ligne par bon de commande approuvé depuis la date de tag du client. « À payer » : commande terminée, réglée, sans litige en attente. Les montants versés sont figés : changer la commission d’un client ne touche que les lignes non versées.</p>
     </>
@@ -401,7 +576,7 @@ export function Parametres({ apercu }) {
     const ligne = { id: 1, maj_le: new Date().toISOString(), signature_png: k.signature_png || null };
     for (const [c] of CHAMPS_KAIRN) ligne[c] = c === 'siret' ? String(k.siret || '').replace(/\s/g, '') || null : String(k[c] || '').trim() || null;
     const { error } = await db.from('kairn_parametres').upsert(ligne);
-    setMsg(error ? '' : 'Enregistré.'); if (error) setErr(errMsg(error));
+    setMsg(error ? '' : manquesKairn(ligne).length ? 'Enregistré.' : 'Enregistré. Les apporteurs qui attendent leur contrat peuvent le signer : prévenez-les depuis la page Apporteurs (bloc « À faire »).'); if (error) setErr(errMsg(error));
   }
   return (
     <>

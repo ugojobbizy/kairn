@@ -45,3 +45,8 @@
   .v2 .ap-steps li span { font-size: 11.5px; }
   .v2 .ap-row { grid-template-columns: 1fr; }
 }
+
+/* Relevé à facturer (Mes commissions) */
+.v2 .ap-facturer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
+.v2 .ap-facturer b { display: block; font-size: 16px; }
+.v2 .ap-facturer span { font-size: 13.5px; color: var(--muted); }

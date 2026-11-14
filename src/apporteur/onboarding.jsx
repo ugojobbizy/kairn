@@ -67,7 +67,7 @@ function PadSignature({ onChange }) {
   );
 }
 
-export default function Onboarding({ fiche, session, onSigne, apercu = false }) {
+export default function Onboarding({ fiche, session, onSigne, apercu = false, resignature = false }) {
   const [f, setF] = useState(() => Object.fromEntries(CHAMPS.map((k) => [k, fiche[k] ?? ''])));
   const [etape, setEtape] = useState(() => {
     if (manquesApporteur({ ...fiche }).length === 0) return 3;
@@ -135,9 +135,9 @@ export default function Onboarding({ fiche, session, onSigne, apercu = false }) 
       </header>
       <div className="ap-onb-card">
         <p className="ap-onb-eyebrow">Espace apporteur · 3 minutes</p>
-        <h1>{etape < 3 ? 'Vos informations' : 'Votre contrat'}</h1>
-        <p className="ec-muted">Elles servent à établir votre contrat d’apporteur d’affaires et à vous payer vos commissions. Vous signez en ligne à la fin.</p>
-        <ol className="ap-steps">{ETAPES.map((t, i) => <li key={t} className={i === etape ? 'is-on' : i < etape ? 'is-done' : ''}><span>{i < etape ? '✓' : i + 1}</span>{t}</li>)}</ol>
+        <h1>{resignature ? 'Nouvelle version de votre contrat' : etape < 3 ? 'Vos informations' : 'Votre contrat'}</h1>
+        <p className="ec-muted">{resignature ? 'Kairn a mis à jour son contrat d’apporteur d’affaires. Relisez-le et signez-le pour retrouver votre espace : vos commissions passées ne changent pas.' : 'Elles servent à établir votre contrat d’apporteur d’affaires et à vous payer vos commissions. Vous signez en ligne à la fin.'}</p>
+        {!resignature && <ol className="ap-steps">{ETAPES.map((t, i) => <li key={t} className={i === etape ? 'is-on' : i < etape ? 'is-done' : ''}><span>{i < etape ? '✓' : i + 1}</span>{t}</li>)}</ol>}
 
         {etape === 0 && (
           <div className="ec-form">
@@ -192,7 +192,7 @@ export default function Onboarding({ fiche, session, onSigne, apercu = false }) 
           </div>
         )}
 
-        {etape === 3 && <Signature session={session} onSigne={onSigne} onRetour={() => setEtape(0)} apercu={apercu ? f : null} />}
+        {etape === 3 && <Signature session={session} onSigne={onSigne} onRetour={resignature ? null : () => setEtape(0)} apercu={apercu ? f : null} />}
 
         {err && <p className="ec-err" role="alert">{err}</p>}
         {etape < 3 && (
@@ -262,7 +262,8 @@ function Signature({ session, onSigne, onRetour, apercu }) {
     <div className="ap-contrat">
       <div className="ap-contrat-resume">
         <p><b>L’essentiel :</b> vous présentez des entreprises à Kairn ; pour chaque lead livré à une entreprise que vous avez apportée, vous touchez la commission fixée pour elle, pendant {DUREE_COMMISSION_MOIS} mois après sa première commande. Une commission est payable quand la commande est livrée, réglée par le client et sans litige. Vous facturez Kairn, payé sous 30 jours. Pas d’exclusivité, fin possible à tout moment avec un mois de préavis.</p>
-        <button type="button" className="ec-link-btn" onClick={onRetour}>Corriger mes informations</button>
+        {onRetour ? <button type="button" className="ec-link-btn" onClick={onRetour}>Corriger mes informations</button>
+          : <span className="ec-small">Une information à corriger ? Écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</span>}
       </div>
       <div className="ap-contrat-texte" ref={boite} tabIndex={0} aria-label="Texte du contrat">
         <h2>{s.titre}</h2>

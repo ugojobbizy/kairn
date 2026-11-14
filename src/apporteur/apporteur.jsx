@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import { KairnLogo, useV2Favicon } from '../v2/layout.jsx';
 import { CONTACT_EMAIL } from '../config.js';
-import { db, THEMES, euro, dateFr, appareilHeaders } from '../espace/db.js';
+import { db, THEMES, euro, dateFr } from '../espace/db.js';
 import { STATUTS_COMMISSION, CLASSE_COMMISSION } from './statuts.js';
-import { libelleForme, ibanLisible } from './contrat.js';
+import { libelleForme, ibanLisible, siretValide, VERSION_CONTRAT } from './contrat.js';
 import Onboarding from './onboarding.jsx';
+import { telecharger, telechargerReleve } from './telecharger.js';
 import '../v2/v2.css';
 import '../v3/v3.css';
 import '../espace/espace.css';
@@ -20,6 +21,7 @@ import '../espace/espace.css';
 const MENU = [
   { to: '/apporteur', end: true, t: 'Tableau de bord', ico: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
   { to: '/apporteur/clients', t: 'Mes clients', ico: <><path d="M3 21V7l9-4 9 4v14" /><path d="M9 21v-6h6v6" /></> },
+  { to: '/apporteur/prospects', t: 'Mes prospects', ico: <><path d="M12 5v14M5 12h14" /><circle cx="12" cy="12" r="9" /></> },
   { to: '/apporteur/commissions', t: 'Mes commissions', ico: <><rect x="4" y="2" width="16" height="20" rx="2" /><path d="M8 6h8M8 10h2M14 10h2M8 14h2M14 14h2M8 18h2M14 18h2" /></> },
   { to: '/apporteur/compte', t: 'Mon compte', ico: <><circle cx="12" cy="8" r="4" /><path d="M4 21v-1a8 8 0 0 1 16 0v1" /></> },
 ];
@@ -154,19 +156,35 @@ function Clients({ data }) {
   );
 }
 
-function Commissions({ data }) {
+
+function Commissions({ data, apercu }) {
   const [f, setF] = useState('tout');
+  const [msg, setMsg] = useState('');
   const lignes = data.lignes || [];
   const vues = f === 'tout' ? lignes : lignes.filter((l) => l.statut === f);
+  const aPayer = totaux(lignes).a_payer;
+  async function releve() {
+    setMsg('');
+    if (apercu) { setMsg('Aperçu : pas de relevé réel.'); return; }
+    const e = await telechargerReleve();
+    if (e) setMsg(e === 'rien_a_facturer' ? 'Rien à facturer pour le moment.' : e === 'kairn_incomplet' ? 'Relevé indisponible pour le moment : Kairn complète ses informations.' : 'Téléchargement impossible pour le moment. Réessayez.');
+  }
   return (
     <>
       <Head title="Mes commissions" sub="Une ligne par commande de vos clients." />
       {data.lignes === null ? <div className="ec-loading" aria-busy="true" /> : (
         <>
           <Kpis lignes={lignes} />
+          {aPayer > 0 && (
+            <div className="ec-card ap-facturer">
+              <div><b>{euro(aPayer)} HT à facturer</b><span>Le relevé liste les commandes « À payer » et tout ce que votre facture doit contenir.</span></div>
+              <button type="button" className="ec-btn" onClick={releve}>Télécharger le relevé à facturer</button>
+            </div>
+          )}
+          {msg && <p className="ec-err">{msg}</p>}
           <div className="ec-tabs">{[['tout', 'Toutes'], ['a_payer', 'À payer'], ['en_cours', 'En cours'], ['versee', 'Versées']].map(([k, t]) => <button type="button" key={k} className={f === k ? 'is-on' : ''} onClick={() => setF(k)}>{t}</button>)}</div>
           <div style={{ marginTop: 14 }}><TableLignes lignes={vues} /></div>
-          <p className="ec-note">{REGLE} Pour être payé, envoyez votre facture à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> du montant « À payer ».</p>
+          <p className="ec-note">{REGLE} Pour être payé : téléchargez le relevé, établissez votre facture du montant « À payer » et envoyez-la à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Paiement par virement sous 30 jours.</p>
         </>
       )}
     </>
@@ -175,14 +193,70 @@ function Commissions({ data }) {
 
 // Téléchargement du contrat signé (PDF regénéré à l'identique par api/apporteur.js, action pdf).
 export async function telechargerContrat(id) {
-  const { data } = await db.auth.getSession();
-  const r = await fetch('/api/apporteur', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session?.access_token}`, ...appareilHeaders() }, body: JSON.stringify({ action: 'pdf', ...(id ? { id } : {}) }) }).catch(() => null);
-  if (!r || !r.ok) return false;
-  const url = URL.createObjectURL(await r.blob());
-  const a = document.createElement('a');
-  a.href = url; a.download = 'contrat-apporteur-kairn.pdf'; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
-  return true;
+  return !(await telecharger('pdf', 'contrat-apporteur-kairn.pdf', id));
+}
+
+// ─ Mes prospects (14/11/2026) : l'apporteur déclare une entreprise avant de la présenter ; la date posée par la base fait
+// foi pour la règle « premier présenté » du contrat (art. 3). Kairn accepte (rattachement) ou refuse (déjà connue, etc.).
+const STATUTS_PROSPECT = { declare: 'Déclaré', accepte: 'Accepté', refuse: 'Non retenu' };
+const CLASSE_PROSPECT = { declare: 'is-en_attente', accepte: 'is-ouverte', refuse: 'is-refusee' };
+function Prospects({ apercu }) {
+  const vide = { societe: '', siret: '', ville: '', contact: '', telephone: '', note: '' };
+  const [liste, setListe] = useState(null);
+  const [f, setF] = useState(vide);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [err, setErr] = useState('');
+  const charger = useCallback(async () => {
+    if (apercu) { setListe([{ id: '1', societe: 'Exemple Isolation', ville: 'Bordeaux', declare_le: new Date().toISOString(), statut: 'declare' }]); return; }
+    const { data } = await db.from('apporteur_prospects').select('*').order('declare_le', { ascending: false });
+    setListe(data || []);
+  }, [apercu]);
+  useEffect(() => { charger(); }, [charger]);
+  const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
+  async function declarer(e) {
+    e.preventDefault();
+    setMsg(''); setErr('');
+    if (!f.societe.trim()) { setErr('Indiquez le nom de l’entreprise.'); return; }
+    if (f.siret.trim() && !siretValide(f.siret)) { setErr('SIRET invalide (14 chiffres) : corrigez-le ou laissez-le vide.'); return; }
+    if (apercu) { setMsg('Aperçu : rien n’est enregistré.'); return; }
+    setBusy(true);
+    const { error } = await db.rpc('apporteur_declarer_prospect', { p: f });
+    setBusy(false);
+    if (error) { setErr(/trop_de/.test(error.message) ? 'Trop de déclarations aujourd’hui : écrivez-nous.' : /siret/.test(error.message) ? 'SIRET invalide.' : 'La déclaration n’a pas abouti. Réessayez.'); return; }
+    setMsg(`${f.societe.trim()} est déclarée, datée d’aujourd’hui. Kairn vous répond ici.`);
+    setF(vide); charger();
+  }
+  return (
+    <>
+      <Head title="Mes prospects" sub="Déclarez une entreprise avant de nous la présenter : la date de déclaration fait foi si un autre apporteur la présente aussi." />
+      <form className="ec-card ec-form ec-form-grid" onSubmit={declarer}>
+        <label className="ec-field"><span>Entreprise *</span><input value={f.societe} onChange={set('societe')} maxLength={160} /></label>
+        <label className="ec-field"><span>SIRET (si vous l’avez)</span><input value={f.siret} onChange={set('siret')} inputMode="numeric" /></label>
+        <label className="ec-field"><span>Ville</span><input value={f.ville} onChange={set('ville')} /></label>
+        <label className="ec-field"><span>Votre contact chez eux</span><input value={f.contact} onChange={set('contact')} placeholder="Prénom, nom, fonction" /></label>
+        <label className="ec-field"><span>Son téléphone</span><input value={f.telephone} onChange={set('telephone')} inputMode="tel" /></label>
+        <label className="ec-field"><span>Note</span><input value={f.note} onChange={set('note')} placeholder="Activité, besoin, quand le présenter" /></label>
+        <div className="ec-field"><button type="submit" className="ec-btn" disabled={busy}>{busy ? 'Envoi…' : 'Déclarer ce prospect'}</button></div>
+        {err && <p className="ec-err">{err}</p>}{msg && <p className="ec-ok">{msg}</p>}
+      </form>
+      <p className="ec-note">Ne transmettez les coordonnées d’une personne qu’avec son accord. Une entreprise déjà cliente de Kairn, ou en discussion avec nous dans les six derniers mois, n’est pas retenue (contrat, article 3).</p>
+      {liste === null ? <div className="ec-loading" aria-busy="true" /> : liste.length > 0 && (
+        <div className="ec-card ec-table-wrap" style={{ marginTop: 16 }}>
+          <table className="ec-table">
+            <thead><tr><th>Déclaré le</th><th>Entreprise</th><th>Statut</th></tr></thead>
+            <tbody>{liste.map((p) => (
+              <tr key={p.id}>
+                <td>{dateFr(p.declare_le)}</td>
+                <td><b>{p.societe}</b>{(p.ville || p.siret) && <small className="ec-block">{[p.ville, p.siret].filter(Boolean).join(' · ')}</small>}</td>
+                <td><span className={`ec-status ${CLASSE_PROSPECT[p.statut]}`}>{STATUTS_PROSPECT[p.statut]}</span>{p.motif && <small className="ec-block">{p.motif}</small>}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+      )}
+    </>
+  );
 }
 
 function Compte({ session, fiche, apercu }) {
@@ -251,7 +325,8 @@ function Shell({ session, fiche, apercu }) {
         <Routes>
           <Route index element={<Home data={data} fiche={fiche} />} />
           <Route path="clients" element={<Clients data={data} />} />
-          <Route path="commissions" element={<Commissions data={data} />} />
+          <Route path="prospects" element={<Prospects apercu={apercu} />} />
+          <Route path="commissions" element={<Commissions data={data} apercu={apercu} />} />
           <Route path="compte" element={<Compte session={session} fiche={fiche} apercu={apercu} />} />
           <Route path="*" element={<Home data={data} fiche={fiche} />} />
         </Routes>
@@ -339,6 +414,9 @@ export default function Apporteur() {
   } else if (fiche.statut === 'actif' && !fiche.contrat_signe_le) {
     // Première connexion : onboarding et contrat avant l'accès à l'espace (Ugo, 13/11/2026).
     body = <Onboarding fiche={fiche} session={session} onSigne={() => setRelire((n) => n + 1)} />;
+  } else if (fiche.statut === 'actif' && fiche.contrat_version !== VERSION_CONTRAT) {
+    // Nouveau modèle de contrat (14/11/2026) : l'espace se rouvre après signature de la version en vigueur.
+    body = <Onboarding fiche={fiche} session={session} onSigne={() => setRelire((n) => n + 1)} resignature />;
   } else body = <Shell session={session} fiche={fiche} />;
   return <div className="v2 v3 ec-root">{body}</div>;
 }

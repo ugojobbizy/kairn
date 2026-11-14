@@ -1,4 +1,5 @@
-// POST /api/apporteur : apporteurs d'affaires (Ugo, 13/11/2026). Une seule fonction pour deux actions
+// POST /api/apporteur : apporteurs d'affaires (Ugo, 13/11/2026). Une seule fonction pour toutes les actions
+// (candidature, ouvrir, signer, pdf, releve, relancer ; les quatre dernières sont décrites plus bas)
 // (le forfait Vercel limite le nombre de fonctions serveur) :
 //   { action: 'candidature', prenom, nom, societe?, email, telephone, siret?, message?, website }
 //     page publique /devenir-apporteur : enregistrée par la fonction SQL site_candidature_apporteur
@@ -13,6 +14,7 @@ import { telegram } from './_telegram.js';
 import { SUPABASE_URL, SUPABASE_KEY, serviceKey, adminFetch, lienAcces, envoyerEmail } from './_auth-admin.js';
 import { emailAcces } from './_email-kairn.js';
 import { pdfContrat, dateParis } from './_contrat-pdf.js';
+import { pdfReleve } from './_releve-pdf.js';
 import { texteContrat, manquesApporteur, manquesKairn, VERSION_CONTRAT } from '../src/apporteur/contrat.js';
 import { createHash } from 'node:crypto';
 
@@ -29,6 +31,8 @@ export default async function handler(req, res) {
   if (body.action === 'ouvrir') return ouvrir(req, res, body);
   if (body.action === 'signer') return signer(req, res, body);
   if (body.action === 'pdf') return pdf(req, res, body);
+  if (body.action === 'releve') return releve(req, res, body);
+  if (body.action === 'relancer') return relancer(req, res);
   return send(res, 400, { error: 'bad_action' });
 }
 
@@ -156,7 +160,8 @@ async function signer(req, res, body) {
     const f = await adminFetch(`/rest/v1/apporteurs?select=*&user_id=eq.${u.id}`);
     const a = Array.isArray(f.body) ? f.body[0] : null;
     if (!a || a.statut !== 'actif') return send(res, 403, { error: 'forbidden' });
-    if (a.contrat_signe_le) return send(res, 409, { error: 'deja_signe' });
+    // Déjà signé dans la version en vigueur. Une version plus ancienne se re-signe (modèle changé, 14/11/2026).
+    if (a.contrat_signe_le && a.contrat_version === VERSION_CONTRAT) return send(res, 409, { error: 'deja_signe' });
     const kf = await adminFetch('/rest/v1/kairn_parametres?select=*&id=eq.1');
     const k = Array.isArray(kf.body) ? kf.body[0] : null;
     if (manquesKairn(k).length) return send(res, 409, { error: 'kairn_incomplet' });
@@ -175,13 +180,14 @@ async function signer(req, res, body) {
       kairn_signataire: `${k.signataire}, ${k.qualite}, pour ${k.nom_legal}`,
       kairn_signature_png: k.signature_png || null,
     };
-    // Verrou : la date de signature n'est posée que si elle était vide (deux clics simultanés ne signent qu'une fois).
-    const v = await adminFetch(`/rest/v1/apporteurs?id=eq.${a.id}&contrat_signe_le=is.null`, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ contrat_signe_le: ligne.signe_le }) });
+    // Verrou : la date n'est posée que si l'apporteur n'a pas déjà signé cette version (deux clics simultanés ne signent qu'une fois).
+    const pasCetteVersion = encodeURIComponent(`(contrat_signe_le.is.null,contrat_version.is.null,contrat_version.neq."${VERSION_CONTRAT}")`);
+    const v = await adminFetch(`/rest/v1/apporteurs?id=eq.${a.id}&or=${pasCetteVersion}`, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ contrat_signe_le: ligne.signe_le, contrat_version: VERSION_CONTRAT }) });
     if (!v.ok || !Array.isArray(v.body) || !v.body.length) return send(res, 409, { error: 'deja_signe' });
     const c = await adminFetch('/rest/v1/apporteur_contrats', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify(ligne) });
     if (!c.ok) {
       console.error('[apporteur] contrat :', c.status, JSON.stringify(c.body).slice(0, 200));
-      await adminFetch(`/rest/v1/apporteurs?id=eq.${a.id}`, { method: 'PATCH', body: JSON.stringify({ contrat_signe_le: null }) });
+      await adminFetch(`/rest/v1/apporteurs?id=eq.${a.id}`, { method: 'PATCH', body: JSON.stringify({ contrat_signe_le: a.contrat_signe_le || null, contrat_version: a.contrat_version || null }) });
       return send(res, 502, { error: 'signature_impossible' });
     }
 
@@ -212,8 +218,7 @@ async function pdf(req, res, body) {
     let filtre;
     if (body.id) {
       if (!UUID.test(String(body.id))) return send(res, 400, { error: 'bad_params' });
-      const a = await fetch(`${SUPABASE_URL}/rest/v1/rpc/is_admin`, { method: 'POST', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${u.token}`, 'Content-Type': 'application/json', 'x-kairn-appareil': String(req.headers['x-kairn-appareil'] || '') }, body: '{}' });
-      if (!a.ok || (await a.json()) !== true) return send(res, 403, { error: 'forbidden' });
+      if (!(await estAdmin(req, u.token))) return send(res, 403, { error: 'forbidden' });
       filtre = `apporteur_id=eq.${body.id}`;
     } else {
       const f = await adminFetch(`/rest/v1/apporteurs?select=id&user_id=eq.${u.id}`);
@@ -233,5 +238,80 @@ async function pdf(req, res, body) {
   } catch (err) {
     console.error('[apporteur] pdf :', err.message);
     return send(res, 502, { error: 'pdf_impossible' });
+  }
+}
+
+async function estAdmin(req, token) {
+  const a = await fetch(`${SUPABASE_URL}/rest/v1/rpc/is_admin`, { method: 'POST', headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', 'x-kairn-appareil': String(req.headers['x-kairn-appareil'] || '') }, body: '{}' });
+  return a.ok && (await a.json().catch(() => false)) === true;
+}
+
+// ─ Relevé des commissions à facturer (14/11/2026) ─
+// { action: 'releve' } : l'apporteur, ses lignes « À payer » ; { action: 'releve', id } : Kairn Admin, celles d'un apporteur.
+async function releve(req, res, body) {
+  if (!serviceKey()) return send(res, 503, { error: 'service_non_configure' });
+  const u = await utilisateur(req);
+  if (!u) return send(res, 401, { error: 'no_token' });
+  try {
+    let filtre;
+    if (body.id) {
+      if (!UUID.test(String(body.id))) return send(res, 400, { error: 'bad_params' });
+      if (!(await estAdmin(req, u.token))) return send(res, 403, { error: 'forbidden' });
+      filtre = `id=eq.${body.id}`;
+    } else filtre = `user_id=eq.${u.id}`;
+    const f = await adminFetch(`/rest/v1/apporteurs?select=*&${filtre}`);
+    const a = Array.isArray(f.body) ? f.body[0] : null;
+    if (!a || !['actif', 'suspendu'].includes(a.statut)) return send(res, 403, { error: 'forbidden' });
+    if (!a.contrat_signe_le) return send(res, 409, { error: 'contrat_non_signe' });
+    const kf = await adminFetch('/rest/v1/kairn_parametres?select=*&id=eq.1');
+    const k = Array.isArray(kf.body) ? kf.body[0] : null;
+    if (manquesKairn(k).length) return send(res, 409, { error: 'kairn_incomplet' });
+    const l = await adminFetch('/rest/v1/rpc/commission_lignes', { method: 'POST', body: '{}' });
+    if (!l.ok || !Array.isArray(l.body)) { console.error('[apporteur] releve :', l.status, JSON.stringify(l.body).slice(0, 200)); return send(res, 502, { error: 'releve_impossible' }); }
+    const lignes = l.body.filter((x) => x.apporteur_id === a.id && x.statut === 'a_payer').sort((x, y) => String(x.approuve_le).localeCompare(String(y.approuve_le)));
+    if (!lignes.length) return send(res, 404, { error: 'rien_a_facturer' });
+    const fichier = await pdfReleve({ a, k, lignes, contratLe: a.contrat_signe_le, contact: 'contact@kairnagency.com' });
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="releve-commissions-kairn.pdf"');
+    res.setHeader('Cache-Control', 'no-store');
+    return res.end(fichier);
+  } catch (err) {
+    console.error('[apporteur] releve :', err.message);
+    return send(res, 502, { error: 'releve_impossible' });
+  }
+}
+
+// ─ Prévenir les apporteurs qui doivent signer (14/11/2026) ─
+// { action: 'relancer' }, Kairn Admin : e-mail à chaque apporteur actif qui n'a pas signé la version en vigueur du contrat
+// (identité de Kairn enfin saisie, ou nouveau modèle après relecture). Refusé tant que l'identité de Kairn est incomplète.
+async function relancer(req, res) {
+  if (!serviceKey()) return send(res, 503, { error: 'service_non_configure' });
+  const u = await utilisateur(req);
+  if (!u) return send(res, 401, { error: 'no_token' });
+  if (!(await estAdmin(req, u.token))) return send(res, 403, { error: 'forbidden' });
+  try {
+    const kf = await adminFetch('/rest/v1/kairn_parametres?select=*&id=eq.1');
+    if (manquesKairn(Array.isArray(kf.body) ? kf.body[0] : null).length) return send(res, 409, { error: 'kairn_incomplet' });
+    const f = await adminFetch('/rest/v1/apporteurs?select=*&statut=eq.actif&user_id=not.is.null');
+    const cibles = (Array.isArray(f.body) ? f.body : []).filter((a) => a.contrat_version !== VERSION_CONTRAT);
+    let envoyes = 0;
+    for (const a of cibles) {
+      const nouveau = Boolean(a.contrat_signe_le);
+      const texte = [
+        `Bonjour ${a.prenom || ''},`, '',
+        nouveau
+          ? 'Kairn a mis à jour son contrat d’apporteur d’affaires. Pour continuer à accéder à votre espace et à vos commissions, relisez et signez la nouvelle version (2 minutes) :'
+          : 'Votre contrat d’apporteur d’affaires Kairn est prêt. Relisez-le et signez-le en ligne (2 minutes) pour ouvrir votre espace :',
+        'https://www.kairnagency.com/apporteur', '',
+        'Kairn · kairnagency.com',
+      ];
+      try { if (await envoyerEmail(a.email, nouveau ? 'Nouvelle version de votre contrat d’apporteur Kairn' : 'Votre contrat d’apporteur Kairn est prêt à signer', texte, null)) envoyes += 1; }
+      catch (err) { console.error('[apporteur] relancer :', a.id, err.message); }
+    }
+    return send(res, 200, { ok: true, cibles: cibles.length, envoyes });
+  } catch (err) {
+    console.error('[apporteur] relancer :', err.message);
+    return send(res, 502, { error: 'relance_impossible' });
   }
 }
