@@ -392,10 +392,12 @@
 .v2 .ccm-res-s { margin-top: 10px; font-size: 15px; color: rgba(255,255,255,.72); }
 .v2 .ccm-btn { margin-top: auto; min-height: 50px; justify-content: center; }
 .v2 .ccm-res-s + .ccm-btn { margin-top: 26px; }
-.v2 .ccm-net { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 22px 0 24px; padding: 16px 18px; border-radius: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(169,193,255,.18); }
-.v2 .ccm-net span { font-size: 14.5px; color: rgba(255,255,255,.75); }
-.v2 .ccm-net b { font-size: clamp(22px, 2.2vw, 28px); font-weight: 600; letter-spacing: -0.02em; color: #86EFAC; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.v2 .ccm-net b.is-neg { color: #FCA5A5; }
+.v2 .ccm-res-s b { color: #fff; font-weight: 600; }
+.v2 .ccm-bars { display: grid; gap: 14px; margin: 24px 0 26px; }
+.v2 .ccm-bar { display: grid; grid-template-columns: 1fr auto; row-gap: 7px; font-size: 14px; color: rgba(255,255,255,.72); }
+.v2 .ccm-bar b { font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; }
+.v2 .ccm-bar i { grid-column: 1 / -1; display: block; height: 10px; border-radius: 99px; background: linear-gradient(90deg, #67E8F9, #A5B4FC); box-shadow: 0 0 18px rgba(103,232,249,.35); transition: width .35s ease; }
+.v2 .ccm-bar i.is-cost { background: #FCA5A5; box-shadow: none; min-width: 6px; }
 .v2 .ccm-note { margin-top: 12px; font-size: 13px; color: var(--faint); }
 @media (max-width: 860px) { .v2 .ccm-box { grid-template-columns: 1fr; } .v2 .ccm-inputs, .v2 .ccm-res { padding: 22px; border-radius: 22px; } }
 
