@@ -61,8 +61,9 @@ function GoogleRating() {
 
 // Barre de progression façon VSL (Ugo, 31/10/2026) : elle avance vite au début et lentement à la fin, sans afficher les secondes.
 const vslProgress = (t) => 1 - (1 - t) * (1 - t);
-const VSL_MUET = '/vsl-kairn-v4b-muet.mp4';
-const VSL_FULL = '/vsl-kairn-v4b.mp4';
+const VSL_MUET = '/vsl-kairn-v5-muet.mp4';
+const VSL_FULL = '/vsl-kairn-v5.mp4';
+const VSL_POSTER = '/vsl-kairn-v5-poster.jpg';
 
 function HeroVsl() {
   const ref = useRef(null);
@@ -88,7 +89,7 @@ function HeroVsl() {
   const unmute = () => {
     const v = ref.current;
     if (!v) return;
-    // Boucle muette en version légère (3,4 Mo, 720p, sans son) ; la version complète (1080p, son) ne se charge qu'au clic.
+    // Boucle muette en version légère (3 Mo, 720p, sans son) ; la version complète (1080p, son, 11 Mo) ne se charge qu'au clic.
     v.src = VSL_FULL;
     v.muted = false;
     v.loop = false;
@@ -116,10 +117,11 @@ function HeroVsl() {
   };
 
   return (
+    <div className="vsl-stage">
     <div className={`hero-vsl${sound ? ' is-sound' : ''}${sound && !playing ? ' is-paused' : ''}`} ref={box}>
-      <video ref={ref} src={VSL_MUET} poster="/vsl-kairn-v4-poster.jpg" autoPlay muted loop playsInline preload="metadata"
+      <video ref={ref} src={VSL_MUET} poster={VSL_POSTER} autoPlay muted loop playsInline preload="metadata"
         onPlay={() => { setPlaying(true); setEnded(false); }} onPause={() => setPlaying(false)} onEnded={() => setEnded(true)}
-        onClick={sound ? toggle : undefined} aria-label="Vidéo de présentation de Kairn (1 minute)" />
+        onClick={sound ? toggle : undefined} aria-label="Démo de l'espace client Kairn (1 min 20)" />
       {!sound && (
         <button type="button" className="hero-vsl-cover" onClick={unmute} aria-label="Activer le son de la vidéo">
           <span className="hero-vsl-sound"><span aria-hidden="true">🔊</span> Activer le son</span>
@@ -152,6 +154,7 @@ function HeroVsl() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

@@ -394,3 +394,23 @@
 .v2 .ccm-res-s + .ccm-btn { margin-top: 26px; }
 .v2 .ccm-note { margin-top: 12px; font-size: 13px; color: var(--faint); }
 @media (max-width: 860px) { .v2 .ccm-box { grid-template-columns: 1fr; } .v2 .ccm-inputs, .v2 .ccm-res { padding: 22px; border-radius: 22px; } }
+
+/* Cadre de la VSL (Ugo, 16/11 : « pas fan du petit contour noir […] un truc plus design ») :
+   écrin de verre clair, liseré dégradé de la marque et halo diffus derrière, sans bord sombre */
+.v2 .vsl-stage { position: relative; max-width: 960px; margin: clamp(28px, 3.5vw, 40px) auto 0; padding: 10px; border-radius: 30px; isolation: isolate;
+  background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(244,246,255,.7)); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 2px 6px rgba(47,91,234,.06), 0 24px 48px -24px rgba(47,91,234,.28), 0 60px 120px -50px rgba(79,70,229,.45); }
+.v2 .vsl-stage::before { content: ""; position: absolute; inset: -40px -30px -60px; z-index: -1; border-radius: 60px; pointer-events: none; filter: blur(46px); opacity: .55;
+  background: radial-gradient(40% 55% at 18% 30%, rgba(14,165,233,.45), transparent 70%), radial-gradient(45% 60% at 82% 70%, rgba(79,70,229,.42), transparent 70%), radial-gradient(50% 50% at 50% 100%, rgba(47,91,234,.3), transparent 70%); }
+.v2 .vsl-stage::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(135deg, rgba(103,232,249,.9), rgba(47,91,234,.35) 35%, rgba(255,255,255,.6) 60%, rgba(79,70,229,.75));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.v2 .hero.is-light .vsl-stage .hero-vsl, .v2 .vsl-stage .hero-vsl { max-width: none; margin: 0; border: 0; border-radius: 21px; background: #F4F6FF; box-shadow: 0 0 0 1px rgba(47,91,234,.08); }
+.v2 .vsl-stage .hero-vsl-cover { background: rgba(11,9,24,.06); }
+.v2 .vsl-stage .hero-vsl-sound { background: linear-gradient(180deg, #fff, #EEF2FF); color: #0B0918; box-shadow: 0 0 0 1px rgba(47,91,234,.14), 0 12px 30px -8px rgba(47,91,234,.45); }
+.v2 .vsl-stage .hero-vsl:fullscreen { border-radius: 0; background: #000; }
+@media (max-width: 720px) {
+  .v2 .vsl-stage, .v2.font-tight .hero.is-light .vsl-stage { width: 100%; margin-top: 22px; padding: 6px; border-radius: 22px; }
+  .v2 .vsl-stage .hero-vsl { border-radius: 16px; }
+  .v2 .vsl-stage::before { inset: -20px -10px -30px; filter: blur(30px); }
+}
