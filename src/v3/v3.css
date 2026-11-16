@@ -397,7 +397,7 @@
 .v2 .ccm-bar { display: grid; grid-template-columns: 1fr auto; row-gap: 7px; font-size: 14px; color: rgba(255,255,255,.72); }
 .v2 .ccm-bar b { font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; }
 .v2 .ccm-bar i { grid-column: 1 / -1; display: block; height: 10px; border-radius: 99px; background: linear-gradient(90deg, #67E8F9, #A5B4FC); box-shadow: 0 0 18px rgba(103,232,249,.35); transition: width .35s ease; }
-.v2 .ccm-bar-row { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; }
+.v2 .ccm-bar-row { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: -4px; }
 .v2 .ccm-bar-row i { flex: none; max-width: calc(100% - 190px); }
 .v2 .ccm-bar-row small { font-size: 13.5px; font-weight: 600; color: #FCA5A5; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .v2 .ccm-bar i.is-cost { background: #FCA5A5; box-shadow: none; min-width: 6px; }
