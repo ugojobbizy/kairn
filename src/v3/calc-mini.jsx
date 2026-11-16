@@ -28,6 +28,7 @@ export default function CalcMini() {
   const cout = leads * prix;
   const chantiers = leads * (taux / 100);
   const ca = chantiers * panier;
+  const pct = ca ? (cout / ca) * 100 : 0;
   const part = ca ? Math.max(1.2, (cout / ca) * 100) : 100;   // largeur mini pour que la barre reste visible
   const fois = cout ? ca / cout : 0;
   const nb = (n) => n.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
@@ -50,7 +51,7 @@ export default function CalcMini() {
           <p className="ccm-res-v">{eur(ca)}</p>
           <p className="ccm-res-s">{nb(chantiers)} chantier{chantiers >= 2 ? 's' : ''} signé{chantiers >= 2 ? 's' : ''}, soit <b>{nb(fois)} fois</b> le prix de vos leads</p>
           <div className="ccm-bars" aria-hidden="true">
-            <div className="ccm-bar"><span>Vos leads</span><b>{eur(cout)} HT</b><i className="is-cost" style={{ width: `${part}%` }} /></div>
+            <div className="ccm-bar"><span>Vos leads</span><b>{eur(cout)} HT</b><div className="ccm-bar-row"><i className="is-cost" style={{ width: `${part}%` }} /><small>{pct.toLocaleString('fr-FR', { maximumFractionDigits: pct < 10 ? 1 : 0 })} % du chiffre d’affaires</small></div></div>
             <div className="ccm-bar"><span>Chiffre d’affaires</span><b>{eur(ca)}</b><i style={{ width: '100%' }} /></div>
           </div>
           <Link to="/calculateur-cout-par-chantier" className="btn btn-order ccm-btn">Faire le calcul complet</Link>
