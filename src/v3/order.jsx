@@ -9,6 +9,7 @@ import { THEMATIQUES_DEVIS } from './leads/codes.js';
 import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from './zone-picker.jsx';
 import '../v2/v2.css';
 import './v3.css';
+import { getSource } from '../lib/source.js';
 
 // Page « Commander », d'après la page contact d'AKA Médias (capture d'Ugo, 28/10/2026), sur fond blanc.
 // Une seule demande : acheter des leads (Kairn Leads) ou être accompagné (Kairn Pilotage).
@@ -55,7 +56,7 @@ export function OrderForm({ initial = {}, onDone, compact = false, send }) {
       const r = await fetch('/api/commande', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...demande, page: window.location.pathname }),
+        body: JSON.stringify({ ...demande, page: window.location.pathname, source: getSource() }),
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) {

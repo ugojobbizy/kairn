@@ -52,7 +52,7 @@ export default async function handler(req, res) {
   const siret = clean(String(body.siret || '').replace(/\s/g, ''), 20);
   if (siret && !/^\d{14}$/.test(siret)) return send(res, 400, { error: 'bad_siret' });
 
-  const row = { souhait, societe, nom, email, telephone, thematique, volume, zone: clean(body.zone, 200), siret, page: clean(body.page, 200) };
+  const row = { souhait, societe, nom, email, telephone, thematique, volume, zone: clean(body.zone, 200), siret, page: clean(body.page, 200), source: clean(body.source, 300) };
 
   try {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/site_commande_insert`, {
@@ -79,13 +79,14 @@ export default async function handler(req, res) {
       volume && `Volume par semaine : ${volume}`,
       row.zone && `Zone : ${row.zone}`,
       siret && `SIRET : ${siret}`,
+      row.source && `Arrivé par : ${row.source}`,
     ]);
   } catch (err) {
     console.error('[commande] e-mail en échec :', err.message);
   }
   // Alerte Telegram (29/10/2026), en plus de l'e-mail.
   try {
-    await telegram(`📝 Demande depuis le site (/commander)\n${SOUHAITS[souhait]}${thematique ? ` · ${thematique}` : ''}${volume ? ` · ${volume} leads` : ''}\n${societe} · ${nom} · ${telephone}\n${email}${row.zone ? `\nZone : ${row.zone}` : ''}`);
+    await telegram(`📝 Demande depuis le site (/commander)\n${SOUHAITS[souhait]}${thematique ? ` · ${thematique}` : ''}${volume ? ` · ${volume} leads` : ''}\n${societe} · ${nom} · ${telephone}\n${email}${row.zone ? `\nZone : ${row.zone}` : ''}${row.source ? `\nArrivé par : ${row.source}` : ''}`);
   } catch (err) {
     console.error('[commande] Telegram en échec :', err.message);
   }

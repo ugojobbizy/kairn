@@ -65,6 +65,7 @@ export default async function handler(req, res) {
     utm_campaign: clean(body.utm_campaign, 120),
     utm_content: clean(body.utm_content, 120),
     page: clean(body.page, 200),
+    source: clean(body.source, 300),
   };
 
   try {
@@ -90,6 +91,7 @@ export default async function handler(req, res) {
           row.email && `E-mail : ${row.email}`,
           row.utm_source && `Source : ${[row.utm_source, row.utm_campaign, row.utm_content].filter(Boolean).join(' / ')}`,
           row.page && `Page : ${row.page}`,
+          row.source && `Arrivé par : ${row.source}`,
         ],
       );
     } catch (err) {

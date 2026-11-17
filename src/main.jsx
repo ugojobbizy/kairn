@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
+import { captureSource } from './lib/source.js';
+
+captureSource();
 
 const root = document.getElementById('root');
 

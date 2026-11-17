@@ -201,6 +201,7 @@ export function Confidentialite() {
       <ul>
         <li>Adresse IP, type de navigateur, système d'exploitation</li>
         <li>Pages visitées, durée de session, source du trafic</li>
+        <li>Origine de votre première visite (site d'où vous venez, page d'arrivée, date), gardée 90&nbsp;jours dans votre navigateur et transmise seulement avec un formulaire que vous envoyez</li>
         <li>Identifiants UTM (utm_source, utm_campaign, utm_content) lorsque vous arrivez via une campagne</li>
         <li>Identifiants Meta Pixel (fbp, fbc) lorsque vous interagissez avec une publicité Meta</li>
       </ul>

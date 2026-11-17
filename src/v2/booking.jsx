@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BOOKING_URL, CONTACT_EMAIL } from '../config.js';
+import { getSource } from '../lib/source.js';
 
 // Réservation en trois temps, à la manière d'iClosed :
 // 1. le numéro seul, enregistré tout de suite (/api/lead) : on peut rappeler même sans réservation ;
@@ -115,7 +116,7 @@ export default function Booking({ idp = 'bk', title = 'Audit découverte Kairn',
       const r = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: leadId, phone: fullPhone, website: form.website, page: window.location.pathname, ...getUtm(), ...extra }),
+        body: JSON.stringify({ id: leadId, phone: fullPhone, website: form.website, page: window.location.pathname, source: getSource(), ...getUtm(), ...extra }),
       });
       if (!r.ok) throw new Error(String(r.status));
       return true;
