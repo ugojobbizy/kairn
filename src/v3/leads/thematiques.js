@@ -55,7 +55,7 @@ export const THEMATIQUES = [
     "label": "Leads ITE",
     "resume": "Des propriétaires de maison qui veulent isoler leurs murs par l’extérieur.",
     "maj": "2026-11-09",
-    "title": "Leads ITE, leads isolation thermique par l’extérieur · Kairn",
+    "title": "Leads isolation et ITE exclusifs à 27 € HT · Kairn",
     "description": "Leads ITE exclusifs : des propriétaires de maison qui ont demandé à être rappelés pour isoler leur façade par l’extérieur. 27 € HT, sans engagement."
   },
   {

@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { MotionConfig } from 'framer-motion';
 import { Nav, Footer, useV2Favicon } from '../v2/layout.jsx';
 import { Reveal } from '../v2/blocks.jsx';
-import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
+import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl, CONTACT_PHONE, CONTACT_PHONE_TEL } from '../config.js';
 import { PRODUITS, prixHT } from './produits.js';
 import { THEMATIQUES_DEVIS } from './leads/codes.js';
 import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from './zone-picker.jsx';
@@ -156,6 +156,7 @@ export default function OrderPage() {
                   {PRODUITS.map((p) => <li key={p.code}><b>{p.nom}</b><span>{prixHT(p.prix)} le contact</span></li>)}
                 </ul>
                 <ul className="od-contact">
+                  <li><a href={CONTACT_PHONE_TEL}>Appeler le {CONTACT_PHONE}</a></li>
                   <li><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
                   {WHATSAPP_NUMBER && <li><a href={whatsappUrl('Bonjour, je souhaite commander des leads.')} target="_blank" rel="noopener noreferrer">Écrire sur WhatsApp</a></li>}
                 </ul>

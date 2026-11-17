@@ -1366,3 +1366,9 @@
 .v2 .brand-word { background: linear-gradient(90deg, #67E8F9, #818CF8); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .v2 .sec-head p a, .v2 .of-note a { color: var(--violet); text-decoration: underline; text-underline-offset: 3px; }
 .v2 .footer-sub { margin-top: 22px; }
+
+/* Téléphone dans l'en-tête et le pied de page (17/11/2026) */
+.v2 .nav-links a.nav-tel { gap: 7px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.v2 .mnav-links a.nav-tel { display: inline-flex; align-items: center; gap: 8px; }
+.v2 .footer-contact a { white-space: nowrap; }
+@media (max-width: 1180px) { .v2 .nav-links a.nav-tel { display: none; } }

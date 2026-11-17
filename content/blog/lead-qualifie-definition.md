@@ -1,6 +1,6 @@
 ---
 title: "Lead qualifié : définition, critères et questions de qualification par secteur"
-seoTitle: "Lead qualifié : définition, critères, MQL et SQL"
+seoTitle: "Leads qualifiés : définition, critères et qualification d'un lead"
 description: "Lead qualifié : définition, MQL et SQL, critères et questions de qualification pour PAC, ITE, crédit, mutuelle, audition, déménagement."
 category: acquisition
 datePublished: "2026-11-09"
@@ -32,6 +32,8 @@ faq:
 Un lead qualifié est une personne qui a demandé à être recontactée et qui remplit les critères minimaux pour devenir votre client : elle a **un besoin qui correspond à ce que vous vendez**, elle est **dans votre zone et votre cible**, son **projet est daté**, et elle a **accepté d'être rappelée par votre entreprise**. Un contact qui ne coche pas ces quatre cases n'est pas un lead qualifié, quel que soit son prix.
 
 La qualification se fait en deux temps. D'abord par les réponses au formulaire, avant que le contact vous arrive : c'est ce que le marketing appelle un MQL. Puis par votre premier échange, qui confirme le besoin et le délai : le contact devient alors un SQL, prêt pour un rendez-vous ou un devis.
+
+Quand un fournisseur vous vend des « leads qualifiés », c'est cette grille qu'il faut lui demander, critère par critère.
 
 Cet article donne une définition utilisable, les critères à vérifier, la différence entre MQL et SQL, puis des exemples concrets de questions de qualification pour six secteurs : pompe à chaleur, isolation par l'extérieur, crédit, mutuelle santé, audition et déménagement.
 

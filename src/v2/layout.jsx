@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Icon } from './blocks.jsx';
-import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
+import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl, CONTACT_PHONE, CONTACT_PHONE_TEL } from '../config.js';
 import { PRETES } from '../v3/leads/thematiques.js';
 import { PRODUITS, prixHT } from '../v3/produits.js';
 
@@ -35,6 +35,14 @@ export function useV2Favicon() {
     link.setAttribute('href', '/favicon.svg?v=4');
     return () => link.setAttribute('href', prev);
   }, []);
+}
+
+export function PhoneIcon({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
 }
 
 export function ArrowUpRight({ size = 16 }) {
@@ -172,6 +180,7 @@ function MobileMenu({ open, onClose, shop }) {
         {(shop ? LINKS.map((x) => (x.to === '/#methode' ? { to: '/plateforme', t: 'Plateforme' } : x)) : LINKS).map((x) => <li key={x.to}><Link to={x.to} onClick={onClose}>{x.t}</Link></li>)}
         <li><Link to="/agence-bordeaux" onClick={onClose}>Agence à Bordeaux</Link></li>
         {shop && <li><Link to="/espace" onClick={onClose}><LockIcon /> Connexion à l’espace client</Link></li>}
+        <li><a href={CONTACT_PHONE_TEL} className="nav-tel" onClick={onClose}><PhoneIcon size={17} /> Appeler le {CONTACT_PHONE}</a></li>
         {WHATSAPP_NUMBER && (
           <li><a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="nav-wa" onClick={onClose}><WhatsAppIcon size={17} /> Contact WhatsApp</a></li>
         )}
@@ -208,6 +217,7 @@ export function Nav({ light = false, shop = false }) {
             <ServicesMenu label="Leads" id="nav-leads" items={LEADS} foot={{ to: '/leads', text: <>Exclusifs, <b>sans engagement</b></>, more: 'Toutes les thématiques' }} />
             <ServicesMenu />
             {links.map((x) => <Link key={x.to} to={x.to} className={pathname === x.to ? 'is-active' : undefined}>{x.t}</Link>)}
+            <a href={CONTACT_PHONE_TEL} className="nav-tel" aria-label={`Appeler Kairn au ${CONTACT_PHONE}`}><PhoneIcon />{CONTACT_PHONE}</a>
             {WHATSAPP_NUMBER && (
               <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="nav-wa" aria-label="Contact sur WhatsApp (nouvel onglet)">
                 <WhatsAppIcon />
@@ -297,7 +307,7 @@ export function Footer() {
         </div>
         <div className="footer-base">
           <span>© {new Date().getFullYear()} Kairn</span>
-          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+          <span className="footer-contact"><a href={CONTACT_PHONE_TEL}>{CONTACT_PHONE}</a> · <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
         </div>
       </div>
     </footer>

@@ -1,6 +1,6 @@
 ---
 title: "Démarchage téléphonique et rénovation énergétique : ce que change le 11 août 2026 pour les installateurs"
-seoTitle: "Démarchage téléphonique rénovation énergétique : les règles 2026"
+seoTitle: "Démarchage rénovation énergétique : interdit depuis août 2026, que faire ?"
 description: "Rénovation énergétique : démarchage interdit depuis le 11 août 2026, même avec consentement. Ce qui reste permis : rappeler une demande sous 5 jours ouvrables."
 category: metiers
 datePublished: "2026-11-09"

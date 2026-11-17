@@ -418,3 +418,12 @@ html.is-embed, html.is-embed body { background: transparent; }
 .v2 .calc-code pre { margin: 0; max-height: 220px; overflow: auto; white-space: pre-wrap; word-break: break-all; font: 12.5px/1.6 var(--mono); color: #C7D2FE; }
 .v2 .calc-code .btn { justify-self: start; min-height: 46px; }
 @media (max-width: 960px) { .v2 .calc-int { grid-template-columns: 1fr; } }
+
+/* Téléphone (17/11/2026) */
+.v2 .ld-tel { margin-top: 14px; font-size: 14.5px; color: var(--muted, #5b6170); }
+.v2 .ld-tel a { color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+@media (max-width: 760px) {
+  .v2 .mob-cta { gap: 8px; }
+  .v2 .mob-cta .btn.mob-call { width: auto; flex: 0 0 auto; background: #fff; color: #0b0d12; box-shadow: 0 10px 30px -14px rgba(10,10,20,.45); border: 1px solid rgba(10,10,20,.12); justify-content: center; padding-inline: 18px; }
+  .v2 .mob-cta .btn-order { flex: 1 1 auto; }
+}
