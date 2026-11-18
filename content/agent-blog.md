@@ -46,7 +46,8 @@ Regarde le jour (`date +%u`, fuseau Europe/Paris) :
 
 1. Ouvre `content/plan-blog.md` et prends le premier sujet « à faire » de la plus haute priorité.
 2. Vérifie qu'aucun article existant (`content/blog/*.md`) ne traite déjà la même intention de recherche. Si oui, marque le sujet « doublon » et prends le suivant.
-3. Fais une recherche web sur la requête visée : lis les 3 à 5 premiers résultats pour savoir ce qu'ils disent et ce qui leur manque. Ton article doit être plus utile, plus concret et plus à jour qu'eux, avec des chiffres sourcés, des tableaux et des exemples chiffrés (présentés comme exemples).
+3. Fais une recherche web sur la requête visée : ouvre (WebFetch) et lis les 5 premiers résultats, et note pour chacun ce qu'il couvre et ce qui lui manque. Ton article doit être plus utile, plus concret et plus à jour que le meilleur d'entre eux, avec des chiffres sourcés, des tableaux et des exemples chiffrés (présentés comme exemples).
+5. Rassemble au moins **3 sources sérieuses lues** avant d'écrire (pages officielles, fédérations professionnelles comme la FFB, la CAPEB ou la FNAIM, études publiées, chiffres d'organismes publics). Une page commerciale d'un concurrent ne compte pas comme source de chiffre. Si une page officielle redirige (service-public.fr vers entreprendre.service-public.gouv.fr), suis la redirection.
 4. Si la liste n'a plus de sujet « à faire », ajoute-en 10 nouveaux selon les règles de la section 1 (requêtes d'acheteurs : « leads {métier} », « trouver des clients {métier} », « prix d'un lead {métier} », « {fournisseur} avis / alternative », « comment rappeler / convertir un lead {métier} »), puis prends le premier.
 
 ## 6. Écrire pour convertir
@@ -54,9 +55,9 @@ Regarde le jour (`date +%u`, fuseau Europe/Paris) :
 Structure obligatoire :
 1. **Première phrase = la réponse** à la question du titre, chiffrée si possible (Google et les IA la reprennent).
 2. Un paragraphe : pour qui est l'article, ce qu'il va apprendre.
-3. 4 à 7 sections `##`, chacune utile seule : tableaux, listes, exemples chiffrés, étapes. Entre 1 500 et 2 500 mots.
+3. 5 à 8 sections `##`, chacune utile seule : tableaux, listes, exemples chiffrés, étapes. Entre 1 800 et 2 800 mots, **par la matière, jamais par le remplissage** : si tu manques de matière, retourne chercher des sources, n'allonge pas les phrases. Prends le temps : un article bâclé en quelques minutes fait plus de mal que pas d'article.
 4. Kairn arrive **comme la suite logique** du problème traité, dans une section dédiée vers la fin (« Ce que fait Kairn », « Si vous voulez des contacts sans démarcher ») et une ou deux fois dans le texte, jamais en publicité plaquée. Toujours avec un lien vers la page leads de la thématique et vers `/commander` ou le calculateur.
-5. Au moins 4 liens internes : la page `/leads-{thématique}` concernée, 2 articles du blog, le calculateur ou `/commander`.
+5. Au moins 4 liens internes : la page `/leads-{thématique}` concernée, 2 articles du blog, le calculateur ou `/commander`. Ne lie que des articles publiés : un fichier avec `draft: true` n'est pas en ligne (vérifie avec `grep -l "draft: true" content/blog/*.md`).
 6. Une FAQ de 5 questions (champ `faq`), réponses complètes en 2 à 4 phrases, qui reprennent les mots des recherches.
 
 Style (règles d'Ugo) :
@@ -99,7 +100,7 @@ faq:
 1. `git pull --rebase origin main`.
 2. Écris l'article. Mets à jour `content/plan-blog.md` (sujet « fait » avec le slug et la date) et ajoute une ligne à `content/journal-blog.md` : date, type (actualité ou trafic), slug, requête visée, sources officielles lues.
 3. `npm ci` (si `node_modules` manque), puis `npm run build`. Il doit passer sans erreur. Corrige chaque erreur (tiret, champ manquant, lien cassé) et relance. Si tu n'arrives pas à le faire passer, ne publie rien : écris la raison dans le journal, commite le journal seul et arrête.
-4. Relis l'article une dernière fois en entier : chaque chiffre a sa source ou le mot « exemple » ; aucun prix Kairn ne diffère de `PRODUITS` ; aucune promesse de résultat.
+4. Relis l'article une dernière fois en entier, comme un installateur pressé qui hésite à acheter des leads : chaque chiffre a sa source ou le mot « exemple » ; aucun prix Kairn ne diffère de `PRODUITS` ; aucune promesse de résultat ; chaque section apprend quelque chose de concret ; le lecteur sait à la fin quoi faire et pourquoi Kairn. Si une section est creuse, réécris-la avant de publier.
 5. Un seul commit : `Blog : {titre} ({actualité|trafic}, agent du {date})`, puis `git push origin HEAD:main`. Vercel met le site en ligne tout seul.
 6. Si le push vers `main` est refusé : pousse sur une branche `blog/{slug}` et écris dans le journal que la publication attend une fusion.
 7. Attends 4 minutes, vérifie que `https://www.kairnagency.com/blog/{slug}` répond 200 (`curl -s -o /dev/null -w "%{http_code}"`), puis lance `node scripts/indexnow.mjs`. Si la page ne répond pas, note-le dans le journal (pas de nouvel essai de publication).
