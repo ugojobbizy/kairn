@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, MotionConfig } from 'framer-motion';
 import { Nav, Footer, useV2Favicon } from '../v2/layout.jsx';
+import { PhoneReveal } from '../lib/phone.jsx';
 import Booking from '../v2/booking.jsx';
 import { ClientLogos, AuditHeader } from '../v2/trust.jsx';
 import Method from '../v2/method.jsx';
@@ -226,6 +227,8 @@ export default function KairnHomeV3({ police }) {
                 <Link to="/commander" className="btn btn-order">{police ? 'Commander des contacts' : 'Commander des leads'}</Link>
                 <a href="#reserver" className="btn btn-light">Lancer ma campagne</a>
               </Reveal>
+              {/* Téléphone derrière un clic (Ugo, 18/11/2026). */}
+              <Reveal delay={0.62} y={12}><p className="hero-tel">Une question ? Parlez directement à Ugo : <PhoneReveal /></p></Reveal>
               {/* Bande de clients retirée de l'accueil (Ugo, 29/10/2026 : « enlève ça finalement ») ; gardée sur /accueil-v1. */}
               {!police && <Reveal delay={0.65} y={16}><ClientLogos /></Reveal>}
             </div>

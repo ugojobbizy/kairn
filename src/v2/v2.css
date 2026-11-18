@@ -1372,3 +1372,12 @@
 .v2 .mnav-links a.nav-tel { display: inline-flex; align-items: center; gap: 8px; }
 .v2 .footer-contact a { white-space: nowrap; }
 @media (max-width: 1180px) { .v2 .nav-links a.nav-tel { display: none; } }
+
+/* Téléphone derrière un clic (18/11/2026) */
+.v2 button.phone-reveal, .v2 button.footer-tel { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.v2 a.phone-reveal.is-shown, .v2 a.footer-tel.is-shown { font-weight: 600; white-space: nowrap; color: inherit; }
+.v2 .nav-links .nav-tel { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 16px; border-radius: 999px; font: inherit; font-size: 14.5px; font-weight: 500; color: var(--muted); background: none; border: 0; cursor: pointer; white-space: nowrap; }
+.v2 .nav-links .nav-tel:hover { color: var(--ink); background: var(--tint); }
+.v2 .mnav-links .nav-tel { display: inline-flex; align-items: center; gap: 8px; font: inherit; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; }
+@media (max-width: 1180px) { .v2 .nav-links .nav-tel { display: none; } }
+.v2 .hero-tel { margin-top: 18px; text-align: center; font-size: 15px; color: var(--muted); }

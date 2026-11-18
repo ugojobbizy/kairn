@@ -5,7 +5,8 @@ import { Nav, Footer, useV2Favicon } from '../../v2/layout.jsx';
 import Booking from '../../v2/booking.jsx';
 import { AuditHeader } from '../../v2/trust.jsx';
 import { Reveal, FaqList } from '../../v2/blocks.jsx';
-import { CONTACT_EMAIL, CONTACT_PHONE, CONTACT_PHONE_TEL } from '../../config.js';
+import { CONTACT_EMAIL } from '../../config.js';
+import { PhoneReveal, CallButton } from '../../lib/phone.jsx';
 import { GARANTIES, prixHT } from '../produits.js';
 import { prixDe, commandeHref, parSlug, MINIMUM } from './thematiques.js';
 import { CONTENUS } from './contenus.js';
@@ -116,7 +117,7 @@ export default function LeadPage({ slug }) {
                   <Link to={href} className="btn btn-order">Commander des leads {t.motCommande}</Link>
                   <a href="#reserver" className="btn btn-light">Réserver un appel</a>
                 </div>
-                <p className="ld-tel">Une question avant de commander ? Appelez Ugo au <a href={CONTACT_PHONE_TEL}>{CONTACT_PHONE}</a>.</p>
+                <p className="ld-tel">Une question avant de commander ? Appelez Ugo : <PhoneReveal />.</p>
               </div>
               <div ref={heroRef} className={`ld-hero-vis${heroPlay ? ' is-play' : ''}`} aria-hidden="true">
                 <div className="ld-hero-price">
@@ -391,7 +392,7 @@ export default function LeadPage({ slug }) {
               <Reveal className="faq-aside">
                 <p className="eyebrow">Questions</p>
                 <h2 className="h2">Leads {t.motTitre} : <span className="serif grad-text">vos questions.</span></h2>
-                <p>Une autre question ? Appelez le <a href={CONTACT_PHONE_TEL}>{CONTACT_PHONE}</a>, écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, ou réservez un appel juste en dessous.</p>
+                <p>Une autre question ? Appelez Ugo (<PhoneReveal />), écrivez à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, ou réservez un appel juste en dessous.</p>
               </Reveal>
               <FaqList items={t.faq} />
             </div>
@@ -437,7 +438,7 @@ export default function LeadPage({ slug }) {
         </main>
 
         <Footer />
-        <div className="mob-cta"><a href={CONTACT_PHONE_TEL} className="btn mob-call" aria-label={`Appeler le ${CONTACT_PHONE}`}>Appeler</a><Link to={href} className="btn btn-order">Commander des leads</Link></div>
+        <div className="mob-cta"><CallButton className="btn mob-call" /><Link to={href} className="btn btn-order">Commander des leads</Link></div>
       </div>
     </MotionConfig>
   );

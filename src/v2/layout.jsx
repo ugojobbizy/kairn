@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Icon } from './blocks.jsx';
-import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl, CONTACT_PHONE, CONTACT_PHONE_TEL } from '../config.js';
+import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
+import { PhoneReveal } from '../lib/phone.jsx';
 import { PRETES } from '../v3/leads/thematiques.js';
 import { PRODUITS, prixHT } from '../v3/produits.js';
 
@@ -180,7 +181,7 @@ function MobileMenu({ open, onClose, shop }) {
         {(shop ? LINKS.map((x) => (x.to === '/#methode' ? { to: '/plateforme', t: 'Plateforme' } : x)) : LINKS).map((x) => <li key={x.to}><Link to={x.to} onClick={onClose}>{x.t}</Link></li>)}
         <li><Link to="/agence-bordeaux" onClick={onClose}>Agence à Bordeaux</Link></li>
         {shop && <li><Link to="/espace" onClick={onClose}><LockIcon /> Connexion à l’espace client</Link></li>}
-        <li><a href={CONTACT_PHONE_TEL} className="nav-tel" onClick={onClose}><PhoneIcon size={17} /> Appeler le {CONTACT_PHONE}</a></li>
+        <li><PhoneReveal className="nav-tel" label="Afficher le téléphone" icon={<PhoneIcon size={17} />} /></li>
         {WHATSAPP_NUMBER && (
           <li><a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="nav-wa" onClick={onClose}><WhatsAppIcon size={17} /> Contact WhatsApp</a></li>
         )}
@@ -217,7 +218,7 @@ export function Nav({ light = false, shop = false }) {
             <ServicesMenu label="Leads" id="nav-leads" items={LEADS} foot={{ to: '/leads', text: <>Exclusifs, <b>sans engagement</b></>, more: 'Toutes les thématiques' }} />
             <ServicesMenu />
             {links.map((x) => <Link key={x.to} to={x.to} className={pathname === x.to ? 'is-active' : undefined}>{x.t}</Link>)}
-            <a href={CONTACT_PHONE_TEL} className="nav-tel" aria-label={`Appeler Kairn au ${CONTACT_PHONE}`}><PhoneIcon />{CONTACT_PHONE}</a>
+            <PhoneReveal className="nav-tel" label="Téléphone" icon={<PhoneIcon />} />
             {WHATSAPP_NUMBER && (
               <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="nav-wa" aria-label="Contact sur WhatsApp (nouvel onglet)">
                 <WhatsAppIcon />
@@ -307,7 +308,7 @@ export function Footer() {
         </div>
         <div className="footer-base">
           <span>© {new Date().getFullYear()} Kairn</span>
-          <span className="footer-contact"><a href={CONTACT_PHONE_TEL}>{CONTACT_PHONE}</a> · <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
+          <span className="footer-contact"><PhoneReveal className="footer-tel" label="Afficher le téléphone" /> · <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></span>
         </div>
       </div>
     </footer>
