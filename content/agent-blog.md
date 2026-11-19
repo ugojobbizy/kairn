@@ -27,8 +27,8 @@ Un sujet qui ramène surtout des particuliers (« quelle aide pour ma pompe à c
 
 Regarde le jour (`date +%u`, fuseau Europe/Paris) :
 - **lundi (1)** : article d'**actualité** (section 4). S'il n'y a aucune nouveauté sérieuse depuis le dernier article d'actualité, écris un article de trafic à la place et note-le dans le journal.
-- **mercredi (3) et vendredi (5)** : article de **trafic** (section 5).
-- autre jour (lancement à la main) : actualité s'il n'y en a pas eu depuis 7 jours dans `content/journal-blog.md`, sinon trafic.
+- **du mardi au dimanche (2 à 7)** : article de **trafic** (section 5). Décision d'Ugo du 19/11/2026 : un article par jour, 6 de trafic par semaine.
+- lancement à la main un lundi après l'article d'actualité du jour : trafic.
 
 ## 4. Article d'actualité : la veille
 
@@ -45,10 +45,10 @@ Regarde le jour (`date +%u`, fuseau Europe/Paris) :
 ## 5. Article de trafic : le sujet
 
 1. Ouvre `content/plan-blog.md` et prends le premier sujet « à faire » de la plus haute priorité.
-2. Vérifie qu'aucun article existant (`content/blog/*.md`) ne traite déjà la même intention de recherche. Si oui, marque le sujet « doublon » et prends le suivant.
+2. Vérifie qu'aucun article existant (`content/blog/*.md`) ne traite déjà la même intention de recherche ou une intention voisine (deux pages sur la même requête se font concurrence sur Google). Si oui, marque le sujet « doublon » et prends le suivant.
 3. Fais une recherche web sur la requête visée : ouvre (WebFetch) et lis les 5 premiers résultats, et note pour chacun ce qu'il couvre et ce qui lui manque. Ton article doit être plus utile, plus concret et plus à jour que le meilleur d'entre eux, avec des chiffres sourcés, des tableaux et des exemples chiffrés (présentés comme exemples).
-5. Rassemble au moins **3 sources sérieuses lues** avant d'écrire (pages officielles, fédérations professionnelles comme la FFB, la CAPEB ou la FNAIM, études publiées, chiffres d'organismes publics). Une page commerciale d'un concurrent ne compte pas comme source de chiffre. Si une page officielle redirige (service-public.fr vers entreprendre.service-public.gouv.fr), suis la redirection.
-4. Si la liste n'a plus de sujet « à faire », ajoute-en 10 nouveaux selon les règles de la section 1 (requêtes d'acheteurs : « leads {métier} », « trouver des clients {métier} », « prix d'un lead {métier} », « {fournisseur} avis / alternative », « comment rappeler / convertir un lead {métier} »), puis prends le premier.
+4. Rassemble au moins **3 sources sérieuses lues** avant d'écrire (pages officielles, fédérations professionnelles comme la FFB, la CAPEB ou la FNAIM, études publiées, chiffres d'organismes publics). Une page commerciale d'un concurrent ne compte pas comme source de chiffre. Si une page officielle redirige (service-public.fr vers entreprendre.service-public.gouv.fr), suis la redirection.
+5. Si la liste n'a plus de sujet « à faire », ajoute-en 10 nouveaux selon les règles de la section 1 (requêtes d'acheteurs : « leads {métier} », « trouver des clients {métier} », « prix d'un lead {métier} », « {fournisseur} avis / alternative », « comment rappeler / convertir un lead {métier} »), puis prends le premier.
 
 ## 6. Écrire pour convertir
 
