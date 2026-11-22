@@ -4,3 +4,4 @@ Méthode : `content/agent-trafic.md`, sections 4 et 5. Une ligne par retouche ou
 
 | Date | Page | Changement (avant → après) | Raison chiffrée (28 jours) | Bilan à 28 jours |
 |---|---|---|---|---|
+| 2026-11-22 | /blog/demarchage-telephonique-renovation-energetique-2026 | seoTitle « Démarchage rénovation énergétique : interdit depuis août 2026, que faire ? » (74 car., coupé par Google) → « Démarchage rénovation énergétique interdit : ce qui reste permis » (64 car.) | 28 jours au 21/11 : 69 impressions, 0 clic, position 6,2 ; sous le seuil de 200 impressions, retouche faite par la session d'Ugo du 22/11 (titre trop long signalé par le build) | à faire le 2026-12-20 |

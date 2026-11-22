@@ -8,20 +8,33 @@ Priorité 1 : requête d'acheteur direct ou signal de la Search Console (lu le 1
 | 1 | leads couvreur / trouver des chantiers toiture | Couvreur : où trouver des chantiers de toiture en 2026, prix et pièges (signal Search Console : « leads couvreur » en position 4) | /leads-toiture | fait (leads-couvreur-chantiers-toiture, 2026-11-20) |
 | 1 | trouver des clients pompe à chaleur | Installateur PAC : les 6 façons de remplir son agenda en 2026, coût par chantier de chacune | /leads-pompe-a-chaleur | fait (trouver-des-clients-pompe-a-chaleur, 2026-11-21) |
 | 1 | leads isolation | Isolation (combles, ITE) : acheter des leads ou générer les siens, chiffres et comparaison | /leads-isolation-thermique-exterieur | fait (leads-isolation-ite-combles, 2026-11-22) |
+| 1 | habitatpresto avis pro | Habitatpresto côté artisan : modèle de prix, contacts partagés, avis publics des pros, alternatives (signal suggestions Google du 22/11/2026 : « habitatpresto avis pro », « habitat presto avis artisan ») | /leads | fait (habitatpresto-avis-pro, 2026-11-22) |
+| 1 | travaux.com avis professionnel | travaux.com, Quotatis, 123devis côté pro : comparatif honnête et quand préférer un lead exclusif (signal suggestions Google du 22/11/2026) | /leads | fait (travaux-com-avis-pro, 2026-11-22) |
+| 1 | certification rge prix | RGE QualiPAC et QualiPV en 2026 : étapes, coûts publics, délais, ce que ça ouvre (signal suggestions Google du 22/11/2026 : « certification rge prix », « label rge qualipac », « qualipv rge ») | /leads-pompe-a-chaleur | fait (certification-rge-qualipac-qualipv-prix, 2026-11-22) |
+| 1 | mandataire maprimerenov | Installateur mandataire MaPrimeRénov' en 2026 : administratif ou financier, démarches, risques, effet sur la signature (signal suggestions Google du 22/11/2026) | /leads-pompe-a-chaleur | fait (mandataire-maprimerenov-installateur, 2026-11-22) |
+| 1 | effy pro avis | Effy Pro côté installateur : fonctionnement, conditions publiques, avis des pros, alternatives (signal suggestions Google du 22/11/2026 : « effy pro avis ») | /leads | à faire |
+| 1 | ootravaux pro avis | Ootravaux pour les pros : comment ça marche, ce que ça coûte, avis publics, alternatives (signal suggestions Google du 22/11/2026 : « ootravaux pro », « ootravaux avis ») | /leads | à faire |
+| 1 | trouver des chantiers en sous-traitance | Rénovation énergétique : trouver des chantiers en sous-traitance (plateformes, grands comptes, risques de paiement) ou en direct chez le particulier (signal suggestions Google du 22/11/2026) | /leads | à faire |
 | 1 | leads panneaux solaires | Leads photovoltaïque : comment les juger avant d'acheter (questions de qualification, exclusivité, prix) | /leads-panneaux-solaires | à faire |
-| 1 | leads mutuelle santé | Courtier en mutuelle : acheter des leads santé seniors, ce qui est permis et ce qui convertit | /leads-mutuelle-sante | à faire |
+| 1 | leads mutuelle santé / leads mutuelle senior | Courtier en mutuelle : acheter des leads santé seniors (suggestion Google « leads mutuelle senior » du 22/11/2026), ce qui est permis et ce qui convertit | /leads-mutuelle-sante | à faire |
 | 1 | leads assurance emprunteur | Courtier : leads assurance emprunteur après la loi Lemoine, comment les convertir | /leads-assurance-emprunteur | à faire |
 | 2 | trouver des clients menuiserie fenêtres | Menuisier : trouver des chantiers de fenêtres et de portes chez les particuliers | /leads-fenetres-menuiserie | à faire |
 | 2 | trouver des chantiers isolation des combles | Isolation des combles après la fin du 1 € : où sont les chantiers en 2026 | /leads-isolation-combles | à faire |
 | 2 | prospection contrat obsèques | Courtier ou assureur : prospecter en contrat obsèques sans démarchage interdit | /leads-contrat-obseques | à faire |
 | 2 | taux de transformation lead rénovation | Taux de transformation d'un lead en rénovation : quoi mesurer, ordres de grandeur sourcés, comment l'améliorer | /leads | à faire |
 | 2 | script appel lead pompe à chaleur | Script de rappel d'un lead PAC : les 5 premières minutes de l'appel | /leads-pompe-a-chaleur | à faire |
-| 2 | plateformes mise en relation artisans | Plateformes de mise en relation pour artisans : comparatif honnête (prix, partage, engagement) | /leads | à faire |
+| 2 | plateformes mise en relation artisans | Plateformes de mise en relation pour artisans : comparatif honnête (prix, partage, engagement) | /leads | doublon (couvert par travaux-com-avis-pro et habitatpresto-avis-pro, 2026-11-22) |
 | 2 | leads regroupement de crédits | Courtier IOBSP : leads regroupement de crédits, ce qu'un bon contact doit contenir | /leads-regroupement-de-credits | à faire |
 | 2 | trouver des clients audioprothésiste 100 % santé | Audioprothésiste : remplir son agenda avec le 100 % Santé, sans questions de santé interdites | /leads-appareils-auditifs | à faire |
+| 2 | devenir installateur pompe à chaleur | Devenir installateur PAC en 2026 : formation, RGE, assurance décennale, matériel, premiers clients (signal suggestions Google du 22/11/2026) | /leads-pompe-a-chaleur | à faire |
+| 2 | devenir installateur photovoltaique | Devenir installateur photovoltaïque en 2026 : QualiPV, statut, raccordement, premiers clients (signal suggestions Google du 22/11/2026) | /leads-panneaux-solaires | à faire |
+| 2 | délai paiement maprimerenov | Délai de paiement MaPrimeRénov' pour l'installateur mandataire : chiffres officiels, comment protéger sa trésorerie (signal suggestions Google du 22/11/2026) | /leads-pompe-a-chaleur | à faire |
+| 2 | fraude maprimerenov contrôle | Contrôles et fraude MaPrimeRénov' : ce que vérifie l'Anah chez l'installateur et comment rester hors de cause (signal suggestions Google du 22/11/2026) | /leads-pompe-a-chaleur | à faire |
+| 2 | google ads pour artisans | Google Ads pour artisan en 2026 : budget, mots-clés, coût par chantier, comparé aux leads achetés (signal suggestions Google du 22/11/2026 : « google ads pour artisans ») | /leads | à faire |
+| 2 | acheter des leads b2c | Acheter des leads B2C en France en 2026 : ce qui est légal depuis le 11/08/2026, prix par secteur, pièges (signal suggestions Google du 22/11/2026 : « acheter des leads b2c », « acheter des leads qualifiés ») | /leads | à faire |
 | 3 | relancer un devis rénovation | Relancer un devis de rénovation : quand, combien de fois, quoi dire | /leads | à faire |
 | 3 | publicité facebook artisan | Pub Facebook pour artisan : budget, ciblage et formulaire qui marchent en 2026 | /generation-de-leads | à faire |
-| 3 | google ads ou leads achetés | Google Ads ou leads achetés pour un installateur : le calcul qui tranche | /leads | à faire |
+| 3 | google ads ou leads achetés | Google Ads ou leads achetés pour un installateur : le calcul qui tranche | /leads | doublon (fusionné avec « google ads pour artisans », 2026-11-22) |
 | 3 | CRM artisan rénovation | Suivre ses leads quand on est artisan : tableur, CRM ou espace fournisseur | /leads | à faire |
 | 3 | délai de rappel lead | Pourquoi un lead rappelé en 5 minutes signe plus : ce que disent les études, et comment s'organiser | /leads | à faire |
 | 3 | certification RGE comment l'obtenir | RGE en 2026 : coût, délai, et pourquoi c'est un argument de vente | /leads-pompe-a-chaleur | à faire |
