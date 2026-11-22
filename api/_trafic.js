@@ -46,7 +46,7 @@ export async function importerGsc() {
   return { debut, fin, pages, requetes };
 }
 
-const chemin = (url) => url.replace(/^https?:\/\/[^/]+/, '') || '/';
+const chemin = (url) => url.replace(/^https?:\/\/[^/]+/, '').replace(/[?#].*$/, '') || '/';
 
 async function importer(token, debut, fin, dimensions, table, conflit, cles) {
   let startRow = 0;
@@ -59,8 +59,17 @@ async function importer(token, debut, fin, dimensions, table, conflit, cles) {
     });
     const j = await r.json();
     if (!r.ok) throw new Error(`gsc_${r.status}: ${JSON.stringify(j).slice(0, 200)}`);
-    const rows = (j.rows || []).map((x) => ({ ...cles(x), clics: x.clicks, impressions: x.impressions, position: Math.round(x.position * 100) / 100 }));
-    if (!rows.length) break;
+    // Plusieurs adresses (www ou non, paramètres, ancre) donnent le même chemin : on les additionne avant l'enregistrement.
+    const m = new Map();
+    for (const x of j.rows || []) {
+      const k = cles(x);
+      const id = JSON.stringify(k);
+      const a = m.get(id) || { ...k, clics: 0, impressions: 0, posImp: 0 };
+      a.clics += x.clicks; a.impressions += x.impressions; a.posImp += x.position * x.impressions;
+      m.set(id, a);
+    }
+    const rows = [...m.values()].map(({ posImp, ...r }) => ({ ...r, position: r.impressions ? Math.round((posImp / r.impressions) * 100) / 100 : null }));
+    if (!(j.rows || []).length) break;
     const w = await adminFetch(`/rest/v1/${table}?on_conflict=${conflit}`, {
       method: 'POST',
       headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
@@ -68,7 +77,7 @@ async function importer(token, debut, fin, dimensions, table, conflit, cles) {
     });
     if (!w.ok) throw new Error(`${table}_upsert_${w.status}: ${JSON.stringify(w.body).slice(0, 200)}`);
     total += rows.length;
-    if (rows.length < 25000) break;
+    if ((j.rows || []).length < 25000) break;
     startRow += 25000;
   }
   return total;
