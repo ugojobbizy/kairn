@@ -7,7 +7,7 @@ Priorité 1 : requête d'acheteur direct ou signal de la Search Console (lu le 1
 |---|---|---|---|---|
 | 1 | leads couvreur / trouver des chantiers toiture | Couvreur : où trouver des chantiers de toiture en 2026, prix et pièges (signal Search Console : « leads couvreur » en position 4) | /leads-toiture | fait (leads-couvreur-chantiers-toiture, 2026-11-20) |
 | 1 | trouver des clients pompe à chaleur | Installateur PAC : les 6 façons de remplir son agenda en 2026, coût par chantier de chacune | /leads-pompe-a-chaleur | fait (trouver-des-clients-pompe-a-chaleur, 2026-11-21) |
-| 1 | leads isolation | Isolation (combles, ITE) : acheter des leads ou générer les siens, chiffres et comparaison | /leads-isolation-thermique-exterieur | à faire |
+| 1 | leads isolation | Isolation (combles, ITE) : acheter des leads ou générer les siens, chiffres et comparaison | /leads-isolation-thermique-exterieur | fait (leads-isolation-ite-combles, 2026-11-22) |
 | 1 | leads panneaux solaires | Leads photovoltaïque : comment les juger avant d'acheter (questions de qualification, exclusivité, prix) | /leads-panneaux-solaires | à faire |
 | 1 | leads mutuelle santé | Courtier en mutuelle : acheter des leads santé seniors, ce qui est permis et ce qui convertit | /leads-mutuelle-sante | à faire |
 | 1 | leads assurance emprunteur | Courtier : leads assurance emprunteur après la loi Lemoine, comment les convertir | /leads-assurance-emprunteur | à faire |
