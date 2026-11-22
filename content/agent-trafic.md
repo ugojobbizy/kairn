@@ -23,7 +23,7 @@ curl -s -X POST https://www.kairnagency.com/api/notif \
 Le rapport donne, pour les 28 derniers jours complets (`periode`) et les 28 d'avant (`periode_precedente`) :
 - `visites` : compteur du site (sans cookie, robots exclus), en service depuis `compteur_visites_depuis` : visites par source (Google, ChatGPT, Bing, accès direct…), pages d'arrivée, source × page d'arrivée, pages vues ;
 - `demandes` : chaque demande du site (réservation d'appel ou formulaire Commander) avec sa page et son origine (« Google → /blog/... »). C'est **le chiffre qui compte** : une page qui amène des demandes vaut plus qu'une page qui amène des visites ;
-- `search_console` : clics, impressions, CTR et position moyenne par page, par requête, et par couple requête × page. `search_console_dernier_jour` = null tant que la Search Console n'est pas branchée.
+- `search_console` : clics, impressions, CTR et position moyenne par page, par requête, et par couple requête × page (branchée le 22/11/2026, historique depuis le 24/08/2026). `total` et `par_page` sont les chiffres exacts : sers-t'en pour les seuils par page. `par_requete` et `requete_page` omettent les requêtes rares que Google masque : leur somme est plus petite que le total, c'est normal.
 
 Une page vue n'est pas une demande. Un mail direct à contact@kairnagency.com n'apparaît nulle part : ne conclus jamais qu'une page « ne ramène rien » sur les seules demandes du site.
 

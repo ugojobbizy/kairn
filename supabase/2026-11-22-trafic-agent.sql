@@ -49,3 +49,14 @@ commit;
 create table if not exists public.reglages_serveur (cle text primary key, valeur text not null, maj_le timestamptz not null default now());
 alter table public.reglages_serveur enable row level security;
 revoke all on public.reglages_serveur from anon, authenticated;
+
+-- gsc_pages (migration gsc_pages, 22/11/2026) : totaux exacts jour × page ; la table gsc (détail par requête) ne contient pas
+-- les requêtes rares que Google masque. trafic_periode réécrite dans la même migration pour lire les totaux dans gsc_pages.
+create table if not exists public.gsc_pages (
+  jour date not null, page text not null,
+  clics integer not null default 0, impressions integer not null default 0, position numeric(6,2),
+  primary key (jour, page)
+);
+alter table public.gsc_pages enable row level security;
+create policy gsc_pages_admin on public.gsc_pages for select to authenticated using (is_admin());
+-- Retour arrière : drop table public.gsc_pages; drop table public.reglages_serveur;
