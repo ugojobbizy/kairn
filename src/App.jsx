@@ -1,5 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { compterVisite } from './lib/source.js';
 import './styles.js';
 // Accueil gardé dans le fichier principal : chargé à la demande, il s'affichait plus tard (mesuré le 09/11/2026 :
 // LCP mobile 2,3 s → 3,0 s), et c'est la page la plus visitée.
@@ -98,6 +99,12 @@ const CGV = lazyPage(() => import('./legal.jsx').then((m) => ({ default: m.CGV }
 const AdminLoginPage = lazyPage(() => import('./admin/admin-pages.jsx').then((m) => ({ default: m.AdminLoginPage })));
 const AdminCRMPage = lazyPage(() => import('./admin/admin-pages.jsx').then((m) => ({ default: m.AdminCRMPage })));
 
+function CompteurVisites() {
+  const { pathname } = useLocation();
+  useEffect(() => { compterVisite(pathname); }, [pathname]);
+  return null;
+}
+
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
@@ -131,6 +138,7 @@ export function Shell() {
   return (
     <>
       <ScrollToTop />
+      <CompteurVisites />
       <SeoManager />
       <Suspense fallback={<Chargement />}>
       <Routes>

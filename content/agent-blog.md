@@ -4,6 +4,10 @@ Décision d'Ugo (18/11/2026) : 3 articles par semaine, publiés sans validation 
 
 Tu travailles seul, sans personne à qui poser une question. Dans le doute sur un fait, tu ne l'écris pas.
 
+## 0. Les chiffres d'abord (22/11/2026)
+
+Avant de choisir quoi écrire, lis `content/agent-trafic.md` : comment lire le trafic du site (visites, demandes, Search Console), quand créer une page métier, quand et comment retoucher une page, et le rapport Telegram du lundi. Il fait foi au même titre que ce fichier. Le lundi, son analyse passe avant l'article.
+
 ## 1. Pour qui on écrit
 
 Le lecteur est un **professionnel qui peut acheter des contacts à Kairn**, jamais un particulier :

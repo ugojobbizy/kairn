@@ -6,6 +6,8 @@
 import { send, readJson } from './_calendar.js';
 import { telegram } from './_telegram.js';
 import { serviceKey, adminFetch } from './_auth-admin.js';
+import crypto from 'node:crypto';
+import { rapportTrafic, reglage } from './_trafic.js';
 
 const CATEGORIES = { bug: '🐞 Bug', erreur: '⚠️ Erreur', suggestion: '💡 Suggestion', question: '💬 Question' };
 
@@ -20,8 +22,40 @@ async function rest(path, token) {
   return r.json();
 }
 
+// Agent de contenu (22/11/2026) : en-tête x-agent-jeton, dont l'empreinte sha256 est rangée dans reglages_serveur
+// (agent_jeton_sha256 ; la variable Vercel n'a pas pu être créée le 22/11).
+// { action: 'rapport', jours } renvoie les chiffres agrégés du trafic ; { action: 'telegram', texte } prévient Ugo.
+// Logé ici car le forfait Vercel bloque à 12 fonctions (constat du 13/11).
+async function agentOk(req) {
+  const recu = String(req.headers['x-agent-jeton'] || '');
+  if (recu.length < 32) return false;
+  const attendu = await reglage('agent_jeton_sha256');
+  if (!attendu) return false;
+  const h = crypto.createHash('sha256').update(recu).digest('hex');
+  return h.length === attendu.length && crypto.timingSafeEqual(Buffer.from(h), Buffer.from(attendu));
+}
+
+async function agent(req, res) {
+  if (!(await agentOk(req))) return send(res, 401, { error: 'bad_agent_token' });
+  let body;
+  try { body = await readJson(req); } catch { return send(res, 400, { error: 'bad_body' }); }
+  try {
+    if (body.action === 'rapport') return send(res, 200, await rapportTrafic(body.jours));
+    if (body.action === 'telegram') {
+      const texte = String(body.texte || '').trim().slice(0, 3900);
+      if (!texte) return send(res, 400, { error: 'empty' });
+      return send(res, 200, { ok: true, sent: Boolean(await telegram(`🤖 Agent contenu\n${texte}`)) });
+    }
+    return send(res, 400, { error: 'bad_action' });
+  } catch (err) {
+    console.error('[notif/agent]', err.message);
+    return send(res, 502, { error: 'agent_failed', detail: err.message.slice(0, 200) });
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error: 'method_not_allowed' });
+  if (req.headers['x-agent-jeton']) return agent(req, res);
   const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
   if (!token) return send(res, 401, { error: 'no_token' });
   let body;

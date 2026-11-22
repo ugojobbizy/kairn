@@ -65,3 +65,39 @@ export function getSource() {
   const d = new Date(v.t).toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' });
   return `${v.o} → ${v.l} (${d})`;
 }
+
+// Compteur de visites (22/11/2026) : une ligne par page vue dans la table visites (base kairn), sans cookie ni adresse IP :
+// chemin, source de l'arrivée (Google, ChatGPT…), identifiant tiré au hasard et gardé dans l'onglet seulement.
+// Sert à l'agent de contenu à voir quelles pages et quels canaux amènent du monde. Les espaces privés ne sont pas comptés.
+const PRIVE = /^\/(gestion|espace|admin|apporteur|embed)(\/|$)/;
+const VISITE = 'kairn-visite';
+
+export function compterVisite(chemin) {
+  if (typeof window === 'undefined' || import.meta.env.DEV || PRIVE.test(chemin) || navigator.webdriver) return;
+  let id = null;
+  let arrivee = false;
+  try { id = sessionStorage.getItem(VISITE); } catch { /* stockage indisponible */ }
+  if (!id) {
+    arrivee = true;
+    id = crypto.randomUUID ? crypto.randomUUID() : null;
+    try { if (id) sessionStorage.setItem(VISITE, id); } catch { /* idem */ }
+  }
+  let source = null;
+  if (arrivee) {
+    let host = '';
+    try {
+      const r = document.referrer ? new URL(document.referrer) : null;
+      if (r && r.hostname !== window.location.hostname) host = r.hostname;
+    } catch { /* référent illisible */ }
+    const u = new URLSearchParams(window.location.search).get('utm_source');
+    source = u ? `utm:${u}` : nommer(host);
+  }
+  try {
+    fetch('https://bmqvlwdbwfnafuovzzhi.supabase.co/rest/v1/rpc/site_visite', {
+      method: 'POST',
+      keepalive: true,
+      headers: { apikey: 'sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV', Authorization: 'Bearer sb_publishable_xyIez0a8masZaN3RM_GQIw_e4KyILCV', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_chemin: chemin, p_source: source, p_visite: id, p_arrivee: arrivee }),
+    }).catch(() => {});
+  } catch { /* hors ligne */ }
+}
