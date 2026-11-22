@@ -7,6 +7,7 @@ import { apercuData } from '../espace/apercu.js';
 import { Campagnes, TicketsAdmin, ShopAdmin, Bientot } from './gestion-plus.jsx';
 import { Clients, FicheClient } from './clients.jsx';
 import { Apporteurs, FicheApporteur, Parametres } from './apporteurs.jsx';
+import { Demandes, nbDemandesSite } from './demandes.jsx';
 
 // Kairn Monitor (suivi des campagnes Meta), ouvert depuis le menu (Ugo, 29/10/2026).
 const MONITOR_URL = 'https://kairn-monitor.vercel.app';
@@ -27,23 +28,27 @@ function Ico({ children, size = 19 }) {
 }
 
 function useAdminData(apercu) {
-  const [d, setD] = useState({ leads: null, commandes: null, litiges: null, clients: null });
+  const [d, setD] = useState({ leads: null, commandes: null, litiges: null, clients: null, leadsSite: null });
   const [error, setError] = useState('');
   const load = useCallback(async () => {
     if (apercu) {
       const a = apercuData();
       const leads = [...a.leads, ...a.stock.map((s) => ({ ...s, prenom: 'Prospect', nom: 'Stock', telephone: '06 00 00 00 00' }))];
-      setD({ leads, commandes: a.commandes.map((c) => ({ ...c, user_id: 'apercu' })), litiges: a.litiges, clients: [{ user_id: 'apercu', societe: 'Exemple Chauffage', prenom: 'Julien', telephone: '06 00 00 00 01', created_at: new Date().toISOString() }] });
+      const now = new Date().toISOString();
+      const site = { id: 'apercu-site', created_at: now, souhait: 'accompagnement', societe: 'Exemple Isolation', nom: 'Martin', telephone: '+33600000002', email: 'contact@exemple.fr', thematique: 'ITE', volume: '50', zone: 'Départements : 33, 40', statut: 'nouvelle', source: 'Google → /blog/exemple (22/11/2026)' };
+      setD({ leads, commandes: [...a.commandes.map((c) => ({ ...c, user_id: 'apercu' })), site], litiges: a.litiges, clients: [{ user_id: 'apercu', societe: 'Exemple Chauffage', prenom: 'Julien', telephone: '06 00 00 00 01', created_at: new Date().toISOString() }], leadsSite: [{ id: 'apercu-num', created_at: now, phone: '+33600000003', page: '/leads', source: 'chatgpt.com → /leads (20/11/2026)' }] });
       return;
     }
-    const [l, c, g, k] = await Promise.all([
+    const [l, c, g, k, s] = await Promise.all([
       db.from('leads').select('*').order('recu_le', { ascending: false }).limit(5000),
       db.from('commandes').select('*').order('created_at', { ascending: false }),
       db.from('litiges').select('*').order('created_at', { ascending: false }),
       db.from('clients').select('*').order('created_at', { ascending: false }),
+      // Numéros laissés à la réservation d'appel du site (22/11/2026).
+      db.from('leads_site').select('*').order('created_at', { ascending: false }).limit(500),
     ]);
-    setError(l.error || c.error || g.error || k.error ? 'Une partie des données n’a pas pu être chargée.' : '');
-    setD({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], clients: k.data || [] });
+    setError(l.error || c.error || g.error || k.error || s.error ? 'Une partie des données n’a pas pu être chargée.' : '');
+    setD({ leads: l.data || [], commandes: c.data || [], litiges: g.data || [], clients: k.data || [], leadsSite: s.data || [] });
   }, [apercu]);
   useEffect(() => { load(); }, [load]);
   // Les litiges arrivent sans prévenir : relecture toutes les minutes tant que l'onglet est ouvert.
@@ -67,13 +72,15 @@ function Dashboard({ data, tickets }) {
   const aValider = (commandes || []).filter((c) => c.user_id && !c.bdc_numero && ['nouvelle', 'en_cours'].includes(c.statut)).length;
   const stock = (leads || []).filter((l) => !l.client_id && !l.annule);
   const du = (commandes || []).filter((c) => c.approuve_le && !c.regle_le).reduce((s, c) => s + Number(c.montant_ht || 0), 0);
+  const demandes = nbDemandesSite(data);
   return (
     <>
       <Head title="Kairn Admin" sub="Ce qui attend une décision de votre part." />
-      <div className="ec-kpis">
+      <div className="ec-kpis ec-kpis-4">
         <Link to="/gestion/campagnes" className={`ec-kpi${aLancer ? ' is-alert' : ''}`}><b>Campagnes à lancer</b><span>Demandes reçues ou en préparation</span><strong>{aLancer}</strong></Link>
         <Link to="/gestion/tickets" className={`ec-kpi${tickets ? ' is-alert' : ''}`}><b>Messages clients</b><span>Tickets non lus</span><strong>{tickets}</strong></Link>
         <Link to="/gestion/litiges" className={`ec-kpi${attente ? ' is-alert' : ''}`}><b>Litiges en attente</b><span>À arbitrer</span><strong>{attente}</strong></Link>
+        <Link to="/gestion/demandes" className={`ec-kpi${demandes ? ' is-alert' : ''}`}><b>Demandes du site</b><span>Formulaire et numéros à rappeler</span><strong>{demandes}</strong></Link>
       </div>
       <div className="ec-kpis">
         <Link to="/gestion/commandes" className={`ec-kpi${aValider ? ' is-alert' : ''}`}><b>Bons de commande à émettre</b><span>Pré-commandes sans BDC</span><strong>{aValider}</strong></Link>
@@ -353,10 +360,12 @@ function Shell({ session, apercu }) {
     return () => clearInterval(i);
   }, [apercu]);
   const aLancer = (data.commandes || []).filter((c) => c.user_id && c.type !== 'shop' && c.statut !== 'refusee' && ['recue', 'preparation'].includes(c.etape)).length;
-  const alertes = attente + nTickets + aLancer + nCandidatures;
+  const nDemandes = nbDemandesSite(data);
+  const alertes = attente + nTickets + aLancer + nCandidatures + nDemandes;
   useEffect(() => { document.title = alertes ? `(${alertes}) Kairn Admin` : 'Kairn Admin'; }, [alertes]);
   const MENU = [
     { to: '/gestion', end: true, t: 'Tableau de bord', ico: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></> },
+    { to: '/gestion/demandes', t: 'Demandes du site', n: nDemandes, ico: <><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></> },
     { to: '/gestion/campagnes', t: 'Campagnes', n: aLancer, ico: <><path d="M3 11l18-8-8 18-2-8z" /></> },
     { to: '/gestion/tickets', t: 'Tickets', n: nTickets, ico: <><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></> },
     { to: '/gestion/litiges', t: 'Litiges', n: attente, ico: <><path d="M12 3v18M5 21h14M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0zM5 8h14" /></> },
@@ -400,6 +409,7 @@ function Shell({ session, apercu }) {
         <Routes>
           <Route path="tickets" element={<TicketsAdmin data={data} apercu={apercu} onCount={setNTickets} />} />
           <Route index element={<Dashboard data={data} tickets={nTickets} />} />
+          <Route path="demandes" element={<Demandes data={data} apercu={apercu} />} />
           <Route path="campagnes" element={<Campagnes data={data} apercu={apercu} />} />
           <Route path="shop" element={<ShopAdmin data={data} apercu={apercu} />} />
           <Route path="contrats" element={<Bientot titre="Contrats" texte="Signature en ligne de chaque nouveau client, à venir. Le format (une fois par client ou à chaque campagne) est à valider avec votre avocat." />} />
