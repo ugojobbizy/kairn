@@ -146,7 +146,7 @@ Ajoutez le coût des visites. Avec cinq pros sur la même demande, vous ferez de
 
 Comparez ce chiffre à votre marge brute moyenne par chantier. Si le coût par chantier mange plus d'un tiers de votre marge, la source ne travaille pas pour vous.
 
-Pour faire ce calcul sur vos propres chiffres, et comparer deux sources côte à côte (abonnement contre paiement au contact), utilisez le [calculateur du coût par chantier signé](/calculateur-cout-par-chantier). Le détail de la méthode est dans notre article sur le [coût par lead et le prix maximum que vous pouvez payer](/blog/cout-par-lead-calcul).
+Pour faire ce calcul sur vos propres chiffres, et comparer deux sources côte à côte (abonnement contre paiement au contact), utilisez le [calculateur du coût par chantier signé](/calculateur-cout-par-chantier). Le détail de la méthode est dans notre article sur le [coût par lead et le prix maximum que vous pouvez payer](/blog/cout-par-lead-calcul). Pour savoir à quel prix se vend un contact exclusif dans votre métier, voyez les [prix d'un lead en pompe à chaleur, isolation et photovoltaïque](/blog/prix-lead-pompe-a-chaleur-isolation-photovoltaique-2026).
 
 ## Les alternatives à Habitatpresto pour trouver des chantiers
 

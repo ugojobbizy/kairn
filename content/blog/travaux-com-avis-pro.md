@@ -162,7 +162,7 @@ Comparer un contact à 39 € partagé à trois, un contact à prix variable par
 
 Ici, le taux de signature et les visites décident, pas le prix du contact. L'inverse est possible : si vous signez bien sur une plateforme, elle peut battre un contact exclusif. Seuls vos chiffres tranchent. Nous avons détaillé l'effet du partage dans [lead exclusif ou lead mutualisé](/blog/lead-exclusif-ou-mutualise), et la méthode de calcul dans [coût par lead : le prix maximum que vous pouvez payer](/blog/cout-par-lead-calcul).
 
-Pour faire le calcul sur vos propres chiffres, et comparer deux sources côte à côte, utilisez le [calculateur du coût par chantier signé](/calculateur-cout-par-chantier). Trois règles pour que la comparaison tienne :
+Pour faire le calcul sur vos propres chiffres, et comparer deux sources côte à côte, utilisez le [calculateur du coût par chantier signé](/calculateur-cout-par-chantier) (les prix d'un contact exclusif en 2026 sont dans notre article sur le [prix d'un lead pompe à chaleur, isolation et photovoltaïque](/blog/prix-lead-pompe-a-chaleur-isolation-photovoltaique-2026)). Trois règles pour que la comparaison tienne :
 
 1. **Une source à la fois, sur au moins 50 contacts.** Notez pour chacun : joint ou non, visite, devis, signé.
 2. **Comptez les contacts sans suite.** Sur une plateforme où chaque contact est dû, ce sont eux qui font le prix réel.
