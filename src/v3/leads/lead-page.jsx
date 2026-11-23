@@ -146,15 +146,15 @@ export default function LeadPage({ slug }) {
               </Reveal>
               {/* Un seul bloc (Ugo, 09/11/2026 : « il y a trop de blocs ») : le prix en panneau nuit, les autres faits en liste. */}
               <Reveal>
-                <div ref={brefRef} className={`bk${brefPlay ? ' is-play' : ''}`}>
-                  <div className="bk-side">
-                    <p className="bk-label">Prix</p>
-                    <p className="bk-price">{prix ? prixHT(prix) : 'Sur devis'}</p>
-                    <p className="bk-price-l">{prix ? 'le contact, payé sur bon de commande, par virement.' : 'Le prix dépend de la zone, du volume et des critères. Il vous est donné avant toute commande.'}</p>
-                    <div className="bk-toasts"><VisToasts play={brefPlay} items={toasts.slice(3).concat(toasts.slice(0, 3))} /></div>
-                    <Link to={href} className="btn btn-order bk-btn">{prix ? `Commander des leads ${t.motCommande}` : 'Demander un prix'}</Link>
+                <div ref={brefRef} className={`bref${brefPlay ? ' is-play' : ''}`}>
+                  <div className="bref-side">
+                    <p className="bref-label">Prix</p>
+                    <p className="bref-price">{prix ? prixHT(prix) : 'Sur devis'}</p>
+                    <p className="bref-price-l">{prix ? 'le contact, payé sur bon de commande, par virement.' : 'Le prix dépend de la zone, du volume et des critères. Il vous est donné avant toute commande.'}</p>
+                    <div className="bref-toasts"><VisToasts play={brefPlay} items={toasts.slice(3).concat(toasts.slice(0, 3))} /></div>
+                    <Link to={href} className="btn btn-order bref-btn">{prix ? `Commander des leads ${t.motCommande}` : 'Demander un prix'}</Link>
                   </div>
-                  <dl className="bk-list">
+                  <dl className="bref-list">
                     {[
                       ['home', 'Ce que vous achetez', t.definition],
                       ['user', 'Exclusivité', 'Chaque contact est envoyé à un seul professionnel, jamais revendu.'],
@@ -165,7 +165,7 @@ export default function LeadPage({ slug }) {
                       ...(t.bref ? [['phone', t.bref[0], t.bref[1]]] : []),
                     ].map(([ico, k, v], i) => (
                       <div key={k} className={i === 0 ? 'is-wide' : undefined}>
-                        <span className="bk-ico"><Ico name={ico} size={18} /></span>
+                        <span className="bref-ico"><Ico name={ico} size={18} /></span>
                         <dt>{k}</dt>
                         <dd>{v}</dd>
                       </div>
