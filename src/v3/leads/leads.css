@@ -293,7 +293,9 @@
 .v2 .bk-list dt { font-size: 15.5px; font-weight: 600; color: var(--ink); }
 .v2 .bk-list dd { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
 .v2 .bk-list > div.is-wide dd { font-size: 16.5px; color: var(--ink-2); }
-.v2 .bk:not(.is-play) * { animation-play-state: paused !important; }
+/* Le bloc « En bref » (.bk) partage sa classe avec le formulaire de réservation : ne pas figer
+   l'apparition des champs de l'étape 2 (.bk-more), sinon ils restent invisibles (bug du 09/11 au 23/11). */
+.v2 .bk:not(.is-play) *:not(.bk-more) { animation-play-state: paused !important; }
 @media (max-width: 960px) { .v2 .bk { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
   .v2 .bk { border-radius: 24px; }
