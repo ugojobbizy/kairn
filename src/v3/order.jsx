@@ -5,7 +5,7 @@ import { Nav, Footer, useV2Favicon } from '../v2/layout.jsx';
 import { Reveal } from '../v2/blocks.jsx';
 import { CONTACT_EMAIL, WHATSAPP_NUMBER, whatsappUrl } from '../config.js';
 import { PhoneReveal } from '../lib/phone.jsx';
-import { PRODUITS, prixHT } from './produits.js';
+import { PRODUITS, CONTENU_CONTACT, prixHT } from './produits.js';
 import { THEMATIQUES_DEVIS } from './leads/codes.js';
 import ZonePicker, { zoneDepuisTexte, MIN_DEPARTEMENTS } from './zone-picker.jsx';
 import '../v2/v2.css';
@@ -23,11 +23,24 @@ const THEMATIQUES = [
 ];
 const VOLUMES = ['50', '100', '200', '+ de 200'];
 
-const STEPS = [
-  ['Votre demande est lue', 'Pas de tri automatique : votre demande est lue par celui qui règle les campagnes.'],
-  ['On vous rappelle', 'Pour comprendre votre métier, votre zone et le rythme qu’il vous faut, et vous dire franchement s’il vaut mieux qu’on vous fournisse des leads ou qu’on pilote votre campagne.'],
-  ['Le flux s’ouvre', 'Accès à votre espace client, puis vos premiers contacts. Sur une thématique déjà ouverte, ça peut aller vite.'],
+// Promesses déjà validées par Ugo (produits.js GARANTIES, chapôs des pages leads) : rien de neuf ici.
+const GARANTIES_OD = [
+  ['Exclusif', 'Chaque contact part chez un seul installateur : vous.'],
+  ['Remplacé', 'Un doublon ou un contact hors de votre zone est remplacé.'],
+  ['Sans engagement', 'À partir de 50 contacts. Vous arrêtez quand vous voulez.'],
+  ['Rien à payer en ligne', 'Bon de commande, puis virement.'],
 ];
+
+const STEPS = [
+  ['Une personne lit votre demande', 'Celle qui règle les campagnes, pas un robot.'],
+  ['On vous rappelle', 'Zone, volume, prix, date de démarrage : tout est calé avant le bon de commande.'],
+  ['Vos contacts arrivent', 'Dans votre espace client, avec le détail de chaque demande.'],
+];
+
+function Check() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>;
+}
+
 
 // send : envoi personnalisé (espace client) ; par défaut, POST /api/commande.
 export function OrderForm({ initial = {}, onDone, compact = false, send }) {
@@ -150,20 +163,41 @@ export default function OrderPage() {
             </Reveal>
             <div className="od-cols">
               <Reveal className="od-aside">
-                <h2>Vos premiers contacts peuvent <span className="serif grad-text">arriver vite.</span></h2>
-                <p>Dites-nous la thématique, la zone et le volume qu’il vous faut : nous lisons votre demande et vous rappelons. Pas d’accusé de réception automatique.</p>
-                <p>Les autres secteurs sont sur devis : le prix vous est donné avant toute commande. Vous préférez vos propres campagnes ? Choisissez « Être accompagné » : c’est Kairn Pilotage, sur votre propre budget.</p>
-                <ul className="od-prices">
-                  {PRODUITS.map((p) => <li key={p.code}><b>{p.nom}</b><span>{prixHT(p.prix)} le contact</span></li>)}
+                <h2>Des particuliers qui attendent un appel, <span className="serif grad-text">dans vos départements.</span></h2>
+                <p className="od-lead">Dites-nous le métier, la zone et le volume. On vous rappelle avec un prix et une date de démarrage.</p>
+
+                <ul className="od-prices" aria-label="Prix par contact">
+                  {PRODUITS.map((p) => (
+                    <li key={p.code}>
+                      <span className="od-p-name">{p.nom}</span>
+                      <span className="od-p-price">{p.prix} €<small>HT / contact</small></span>
+                    </li>
+                  ))}
                 </ul>
-                <ul className="od-contact">
-                  <li>Par téléphone : <PhoneReveal /></li>
-                  <li><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
-                  {WHATSAPP_NUMBER && <li><a href={whatsappUrl('Bonjour, je souhaite commander des leads.')} target="_blank" rel="noopener noreferrer">Écrire sur WhatsApp</a></li>}
-                </ul>
+                <p className="od-note">Autres métiers (combles, toiture, fenêtres, assurance…) : sur devis, prix donné avant toute commande.</p>
+
+                <div className="od-box">
+                  <p className="od-box-t">Dans chaque contact</p>
+                  <p className="od-box-d">{CONTENU_CONTACT.join(' · ')}</p>
+                  <ul className="od-guar">
+                    {GARANTIES_OD.map(([t, d]) => <li key={t}><span className="od-ck"><Check /></span><div><b>{t}</b><p>{d}</p></div></li>)}
+                  </ul>
+                </div>
+
+                <p className="od-sub">Après votre demande</p>
                 <ol className="od-steps">
                   {STEPS.map(([h, d], i) => <li key={h}><span>{i + 1}</span><div><b>{h}</b><p>{d}</p></div></li>)}
                 </ol>
+
+                <div className="od-help">
+                  <p>Une question avant de commander ?</p>
+                  <div className="od-help-links">
+                    <PhoneReveal className="od-pill" label="Afficher le téléphone" />
+                    {WHATSAPP_NUMBER && <a className="od-pill" href={whatsappUrl('Bonjour, je souhaite commander des leads.')} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
+                    <a className="od-pill" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+                  </div>
+                  <p className="od-pilot">Vous préférez vos propres campagnes, sur votre budget ? Choisissez « Être accompagné » dans le formulaire : c’est Kairn Pilotage.</p>
+                </div>
               </Reveal>
               <Reveal delay={0.1} className="od-card"><OrderForm initial={initial} /></Reveal>
             </div>
