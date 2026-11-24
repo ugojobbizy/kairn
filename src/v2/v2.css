@@ -1169,17 +1169,28 @@
 .v2 .nav:not(.is-scrolled) .nav-burger { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
 .v2 .nav:not(.is-scrolled) .nav-burger span { background: #fff; }
 
+.v2 .mnav-main { list-style: none; margin: 0; padding: 0; }
+.v2 .mnav-row { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 58px; padding: 0 4px; border: 0; border-bottom: 1px solid var(--line); background: none; font: 500 19px var(--font); letter-spacing: -0.01em; color: var(--ink); text-align: left; text-decoration: none; cursor: pointer; }
+.v2 .mnav-row .nav-chev { width: 16px; height: 16px; color: var(--faint); transition: transform .2s var(--ease); }
+.v2 .mnav-sec.is-open > .mnav-row { border-bottom-color: transparent; }
+.v2 .mnav-sec.is-open > .mnav-row .nav-chev { transform: rotate(180deg); color: var(--violet); }
+.v2 .mnav-sub { padding: 0 0 12px; border-bottom: 1px solid var(--line); animation: v2-drop-in .2s var(--ease); }
+.v2 .mnav-list { list-style: none; margin: 0; padding: 4px; border-radius: 16px; background: #fff; border: 1px solid var(--line); }
+.v2 .mnav-list a { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 46px; padding: 0 12px; border-radius: 12px; font-size: 15.5px; color: var(--ink); text-decoration: none; }
+.v2 .mnav-list a + a, .v2 .mnav-list li + li a { border-top: 1px solid var(--line); border-radius: 0; }
+.v2 .mnav-list small { flex: none; font: 500 12px var(--mono); color: var(--violet); }
+.v2 .mnav-list a.is-svc { flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 10px 12px; }
+.v2 .mnav-list a.is-svc small { flex: initial; font: 13.5px var(--font); color: var(--muted); }
+.v2 .mnav-list a.is-current { color: var(--violet); font-weight: 600; }
+.v2 .mnav-list a.mnav-all { justify-content: flex-start; gap: 6px; font-weight: 600; color: var(--violet); }
+.v2 .mnav-list a.mnav-all svg { width: 14px; height: 14px; }
+.v2 .mnav-actions { display: grid; gap: 10px; margin-top: 28px; }
+.v2 .mnav-cta { width: 100%; min-height: 54px; justify-content: center; font-size: 16.5px; }
+.v2 .mnav-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 50px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2); background: #fff; font: 500 15.5px var(--font); color: var(--ink); text-decoration: none; cursor: pointer; }
+.v2 .mnav-btn.is-wa svg { color: #25D366; }
+.v2 .mnav-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .v2 .mnav { position: fixed; left: 0; right: 0; top: 0; bottom: 0; z-index: 0; overflow-y: auto; padding: 96px var(--gutter) calc(32px + env(safe-area-inset-bottom)); background: var(--canvas); animation: v2-drop-in .22s var(--ease); }
-.v2 .mnav-label { margin: 8px 4px 8px; font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
-.v2 .mnav-services { list-style: none; margin: 0; padding: 6px; display: grid; gap: 2px; border-radius: 22px; background: #fff; border: 1px solid var(--line); }
 /* Liste « Leads » du panneau mobile (09/11/2026) : liens simples, deux colonnes. */
-.v2 .mnav-leads { list-style: none; margin: 0 0 14px; padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; border-radius: 22px; background: #fff; border: 1px solid var(--line); }
-.v2 .mnav-leads a { display: block; padding: 9px 10px; border-radius: 12px; font-size: 14.5px; color: var(--ink); }
-.v2 .mnav-leads a.is-current, .v2 .mnav-leads a:hover { background: var(--tint); color: var(--violet); }
-.v2 .mnav-links { list-style: none; margin: 16px 0 0; padding: 0; }
-.v2 .mnav-links a { display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 0 8px; border-bottom: 1px solid var(--line); font-size: 18px; font-weight: 500; color: var(--ink); text-decoration: none; }
-.v2 .mnav-links a.nav-wa svg { color: #25D366; }
-.v2 .mnav-cta { width: 100%; justify-content: space-between; margin-top: 24px; }
 .v2 .nav.is-menu ~ .mob-cta { display: none; }
 
 @media (max-width: 1080px) {
@@ -1369,7 +1380,6 @@
 
 /* Téléphone dans l'en-tête et le pied de page (17/11/2026) */
 .v2 .nav-links a.nav-tel { gap: 7px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.v2 .mnav-links a.nav-tel { display: inline-flex; align-items: center; gap: 8px; }
 .v2 .footer-contact a { white-space: nowrap; }
 @media (max-width: 1180px) { .v2 .nav-links a.nav-tel { display: none; } }
 
@@ -1378,6 +1388,5 @@
 .v2 a.phone-reveal.is-shown, .v2 a.footer-tel.is-shown { font-weight: 600; white-space: nowrap; color: inherit; }
 .v2 .nav-links .nav-tel { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 16px; border-radius: 999px; font: inherit; font-size: 14.5px; font-weight: 500; color: var(--muted); background: none; border: 0; cursor: pointer; white-space: nowrap; }
 .v2 .nav-links .nav-tel:hover { color: var(--ink); background: var(--tint); }
-.v2 .mnav-links .nav-tel { display: inline-flex; align-items: center; gap: 8px; font: inherit; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; }
 @media (max-width: 1180px) { .v2 .nav-links .nav-tel { display: none; } }
 .v2 .hero-tel { margin-top: 18px; text-align: center; font-size: 15px; color: var(--muted); }

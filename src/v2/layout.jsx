@@ -150,46 +150,66 @@ function ServicesMenu({ label = 'Services', id = 'nav-services', items = SERVICE
 // Panneau plein écran pour téléphone et tablette.
 function MobileMenu({ open, onClose, shop }) {
   const { pathname } = useLocation();
+  // Accordéons fermés à l'ouverture, sauf la section de la page en cours (Ugo, 24/11/2026 : « sur téléphone le menu est horrible »).
+  const [sec, setSec] = useState(null);
   useEffect(() => {
     if (!open) return undefined;
+    setSec(LEADS.some((x) => x.to === pathname) || pathname === '/leads' ? 'leads' : SERVICES.some((x) => x.to === pathname) ? 'services' : null);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
     return () => { document.body.style.overflow = prev; document.removeEventListener('keydown', onKey); };
-  }, [open, onClose]);
+  }, [open, onClose, pathname]);
   if (!open) return null;
+  const links = shop ? LINKS.map((x) => (x.to === '/#methode' ? { to: '/plateforme', t: 'Plateforme' } : x)) : LINKS;
+  const court = (t) => { const r = t.replace(/^Leads\s+/i, ''); return r.charAt(0).toUpperCase() + r.slice(1); };
+  const Section = ({ k, label, children }) => (
+    <li className={`mnav-sec${sec === k ? ' is-open' : ''}`}>
+      <button type="button" className="mnav-row" aria-expanded={sec === k} aria-controls={`mnav-${k}`} onClick={() => setSec((v) => (v === k ? null : k))}>
+        {label}<Chevron />
+      </button>
+      <div className="mnav-sub" id={`mnav-${k}`} hidden={sec !== k}>{children}</div>
+    </li>
+  );
   return (
     <div className="mnav" id="mnav" role="dialog" aria-modal="true" aria-label="Menu">
-      <p className="mnav-label">Leads</p>
-      <ul className="mnav-leads">
-        {LEADS.map((x) => <li key={x.to}><Link to={x.to} className={pathname === x.to ? 'is-current' : undefined} onClick={onClose}>{x.t}</Link></li>)}
-        <li><Link to="/leads" onClick={onClose}>Toutes les thématiques</Link></li>
+      <ul className="mnav-main">
+        <Section k="leads" label="Leads">
+          <ul className="mnav-list">
+            {LEADS.map((x) => (
+              <li key={x.to}><Link to={x.to} className={pathname === x.to ? 'is-current' : undefined} onClick={onClose}><span>{court(x.t)}</span><small>{x.d.replace(' le contact', '')}</small></Link></li>
+            ))}
+            <li><Link to="/leads" className="mnav-all" onClick={onClose}>Toutes les thématiques <ArrowUpRight /></Link></li>
+          </ul>
+        </Section>
+        <Section k="services" label="Services">
+          <ul className="mnav-list">
+            {SERVICES.map((x) => (
+              <li key={x.to}><Link to={x.to} className={`is-svc${pathname === x.to ? ' is-current' : ''}`} onClick={onClose}><span>{x.t}</span><small>{x.d}</small></Link></li>
+            ))}
+          </ul>
+        </Section>
+        {links.map((x) => <li key={x.to}><Link to={x.to} className="mnav-row" onClick={onClose}>{x.t}</Link></li>)}
+        <li><Link to="/agence-bordeaux" className="mnav-row" onClick={onClose}>Agence à Bordeaux</Link></li>
       </ul>
-      <p className="mnav-label">Services</p>
-      <ul className="mnav-services">
-        {SERVICES.map((x) => (
-          <li key={x.to}>
-            <Link to={x.to} className={`nav-item${pathname === x.to ? ' is-current' : ''}`} onClick={onClose}>
-              <span className="nav-item-ico"><Icon name={x.icon} size={18} /></span>
-              <span><b>{x.t}</b><small>{x.d}</small></span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <ul className="mnav-links">
-        {(shop ? LINKS.map((x) => (x.to === '/#methode' ? { to: '/plateforme', t: 'Plateforme' } : x)) : LINKS).map((x) => <li key={x.to}><Link to={x.to} onClick={onClose}>{x.t}</Link></li>)}
-        <li><Link to="/agence-bordeaux" onClick={onClose}>Agence à Bordeaux</Link></li>
-        {shop && <li><Link to="/espace" onClick={onClose}><LockIcon /> Connexion à l’espace client</Link></li>}
-        <li><PhoneReveal className="nav-tel" label="Afficher le téléphone" icon={<PhoneIcon size={17} />} /></li>
-        {WHATSAPP_NUMBER && (
-          <li><a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="nav-wa" onClick={onClose}><WhatsAppIcon size={17} /> Contact WhatsApp</a></li>
+      <div className="mnav-actions">
+        {shop ? (
+          <>
+            <Link to="/commander" className="btn nav-order mnav-cta" onClick={onClose}>Commander des leads</Link>
+            <Link to="/espace" className="mnav-btn" onClick={onClose}><LockIcon /> Connexion à l’espace client</Link>
+          </>
+        ) : (
+          <a className="btn btn-dark mnav-cta" href="#reserver" onClick={onClose}>
+            Réserver un appel de 30 min
+            <span className="btn-ico"><ArrowUpRight /></span>
+          </a>
         )}
-      </ul>
-      <a className="btn btn-dark mnav-cta" href="#reserver" onClick={onClose}>
-        Réserver un appel de 30 min
-        <span className="btn-ico"><ArrowUpRight /></span>
-      </a>
+        <div className="mnav-duo">
+          <PhoneReveal className="mnav-btn" label="Téléphone" icon={<PhoneIcon size={16} />} />
+          {WHATSAPP_NUMBER && <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="mnav-btn is-wa" onClick={onClose}><WhatsAppIcon size={16} /> WhatsApp</a>}
+        </div>
+      </div>
     </div>
   );
 }
