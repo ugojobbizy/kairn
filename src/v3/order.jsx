@@ -78,7 +78,7 @@ export function OrderForm({ initial = {}, onDone, compact = false, send }) {
           bad_phone: 'Ce numéro de téléphone ne semble pas valide.',
           bad_email: 'Cette adresse e-mail ne semble pas valide.',
           bad_siret: 'Le SIRET compte 14 chiffres.',
-          missing_fields: 'Indiquez votre société et votre nom.',
+          missing_fields: 'Indiquez votre société, votre nom et votre prénom.',
         }[data.error];
         throw new Error(msg || 'L’envoi n’a pas abouti.');
       }
@@ -113,7 +113,7 @@ export function OrderForm({ initial = {}, onDone, compact = false, send }) {
       </fieldset>
       <div className="od-grid">
         <label className="od-field"><span>Société</span><input required value={f.societe} onChange={set('societe')} autoComplete="organization" /></label>
-        <label className="od-field"><span>Nom</span><input required value={f.nom} onChange={set('nom')} autoComplete="name" /></label>
+        <label className="od-field"><span>Nom et prénom</span><input required value={f.nom} onChange={set('nom')} autoComplete="name" /></label>
         <label className="od-field"><span>E-mail professionnel</span><input required type="email" value={f.email} onChange={set('email')} autoComplete="email" /></label>
         <label className="od-field"><span>Téléphone</span><input required type="tel" value={f.telephone} onChange={set('telephone')} autoComplete="tel" /></label>
       </div>
