@@ -448,7 +448,7 @@ function Shop({ apercu }) {
   }
   return (
     <>
-      <PageHead title="Leads Shop" sub="Des contacts signalés hors zone ou en doublon par un autre installateur, remis en vente 4 € moins chers. Les coordonnées sont visibles dès l’achat." />
+      <PageHead title="Leads Shop" sub="Des contacts signalés hors de sa zone par un autre installateur, remis en vente 5 € moins chers. Les coordonnées sont visibles dès l’achat." />
       {f.bar(false, 'Reçu')}
       <div className="ec-filters ec-filters-2">
         <label><span>Prix min (€)</span><input inputMode="decimal" value={pmin} onChange={(e) => setPmin(e.target.value)} placeholder="Min" /></label>
@@ -467,7 +467,7 @@ function Shop({ apercu }) {
               {shown.map((r) => (
                 <tr key={r.id} className={sel.has(r.id) ? 'is-sel' : ''} onClick={() => toggle(r.id)}>
                   <td className="ec-cb"><input type="checkbox" aria-label="Sélectionner ce lead" checked={sel.has(r.id)} onChange={() => toggle(r.id)} onClick={(e) => e.stopPropagation()} /></td>
-                  <td>{dateFr(r.consentement_jusqu)}</td><td>{dateHeure(r.recu_le)}</td><td>{THEMES[r.thematique]}</td><td className="ec-num">{/* Réduction affichée sur chaque ligne (Ugo, 30/10/2026) ; plus d’étiquette « déjà transmis ». */}<s className="ec-prix-avant">{euro(r.prix_origine ?? Number(r.prix_ht) + 4)}</s><b>{euro(r.prix_ht)}</b><small className="ec-remise">−{euro((r.prix_origine ?? Number(r.prix_ht) + 4) - r.prix_ht)}</small></td>
+                  <td>{dateFr(r.consentement_jusqu)}</td><td>{dateHeure(r.recu_le)}</td><td>{THEMES[r.thematique]}</td><td className="ec-num">{/* Réduction affichée sur chaque ligne (Ugo, 30/10/2026) ; plus d’étiquette « déjà transmis ». */}<s className="ec-prix-avant">{euro(r.prix_origine ?? Number(r.prix_ht) + 5)}</s><b>{euro(r.prix_ht)}</b><small className="ec-remise">−{euro((r.prix_origine ?? Number(r.prix_ht) + 5) - r.prix_ht)}</small></td>
                   <td>{r.code_postal || '·'}</td><td>{r.statut_occupation || '·'}</td><td>{r.type_logement || '·'}</td><td>{r.chauffage || '·'}</td><td>{r.surface || '·'}</td>
                 </tr>
               ))}

@@ -185,7 +185,7 @@ export function ShopAdmin({ data, apercu }) {
   const [msg, setMsg] = useState('');
   const clientOf = (uid) => (clients || []).find((c) => c.user_id === uid)?.societe || '·';
   const shopCmd = new Set((commandes || []).filter((c) => c.type === 'shop').map((c) => c.id));
-  // Shop : seulement les copies remises en vente après un litige accepté (hors zone ou doublon, 4 € de moins ; Ugo, 30/10/2026).
+  // Shop : seulement les copies remises en vente après un litige accepté (hors zone seulement, 5 € de moins ; Ugo, 29/10/2026, confirmé le 25/11/2026).
   const enStock = (leads || []).filter((l) => !l.client_id && !l.annule && l.deja_transmis);
   const rows = tab === 'vente' ? enStock.filter((l) => l.en_vente) : tab === 'retires' ? enStock.filter((l) => !l.en_vente) : (leads || []).filter((l) => shopCmd.has(l.commande_id));
   async function maj(l, patch, ok) {
@@ -198,7 +198,7 @@ export function ShopAdmin({ data, apercu }) {
   const ventes = (leads || []).filter((l) => shopCmd.has(l.commande_id));
   return (
     <>
-      <header className="ec-head ec-head-row"><div><h1>Leads Shop</h1><p>Les leads hors zone ou en doublon acceptés en litige y reviennent seuls, 4 € moins chers, jamais proposés au client qui les a signalés. Vous pouvez changer un prix ou retirer un lead.</p></div></header>
+      <header className="ec-head ec-head-row"><div><h1>Leads Shop</h1><p>Les leads hors zone acceptés en litige y reviennent seuls, 5 € moins chers (les doublons sont remplacés, jamais revendus), jamais proposés au client qui les a signalés. Vous pouvez changer un prix ou retirer un lead.</p></div></header>
       <div className="ec-kpis">
         <div className="ec-kpi"><b>En vente</b><span>Visibles par les clients</span><strong>{enStock.filter((l) => l.en_vente).length}</strong></div>
         <div className="ec-kpi"><b>Retirés</b><span>Masqués aux clients</span><strong>{enStock.filter((l) => !l.en_vente).length}</strong></div>

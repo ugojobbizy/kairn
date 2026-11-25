@@ -23,9 +23,9 @@ export const ETAPES = [
     points: ['Montant dû et déjà réglé', 'Bons de commande numérotés', 'Paiement par carte bientôt'],
   },
   {
-    // Ugo, 30/10/2026 : le Leads Shop ne contient que les hors zone et les doublons, tous 4 € moins chers, réduction affichée.
-    img: 'shop', tag: 'Leads Shop', h: 'Des contacts disponibles,', i: '4 € moins chers.',
-    p: 'Un espace à part, en plus de vos commandes : les contacts qu’un autre installateur a signalés hors de sa zone ou en doublon, remis en vente 4 € moins chers. Filtrés par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
-    points: ['Coordonnées visibles seulement après l’achat', 'Hors zone ou doublon d’un autre installateur, 4 € de moins', 'Consentement du particulier encore valable'],
+    // Ugo, 29/10/2026, confirmé le 25/11/2026 : le Leads Shop ne contient que les hors zone, 5 € moins chers, réduction affichée.
+    img: 'shop', tag: 'Leads Shop', h: 'Des contacts disponibles,', i: '5 € moins chers.',
+    p: 'Un espace à part, en plus de vos commandes : les contacts qu’un autre installateur a signalés hors de sa zone, remis en vente 5 € moins chers. Filtrés par secteur, département, code postal ou prix. Vous cochez, vous achetez : les coordonnées apparaissent aussitôt, et le bon de commande se crée tout seul.',
+    points: ['Coordonnées visibles seulement après l’achat', 'Hors zone d’un autre installateur, 5 € de moins', 'Consentement du particulier encore valable'],
   },
 ];

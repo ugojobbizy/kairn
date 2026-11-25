@@ -42,8 +42,8 @@ const ARTICLES = [
     ['p', 'Chaque commande ouverte montre les contacts livrés sur le total commandé. Quand une commande touche à sa fin, le bouton « Reconduire » prépare la suivante, déjà remplie.'],
     ['p', 'Les étapes d’une campagne : demande reçue, en préparation, campagne lancée, terminée.'],
   ] },
-  { id: 'shop', route: '/espace/shop', titre: 'Le Leads Shop', resume: 'Des contacts disponibles tout de suite, 4 € moins chers.', corps: [
-    ['p', 'Le Leads Shop propose des contacts qu’un autre installateur a signalés hors de sa zone ou en doublon. Ils sont remis en vente 4 € moins chers ; la réduction est affichée sur chaque ligne.'],
+  { id: 'shop', route: '/espace/shop', titre: 'Le Leads Shop', resume: 'Des contacts disponibles tout de suite, 5 € moins chers.', corps: [
+    ['p', 'Le Leads Shop propose des contacts qu’un autre installateur a signalés hors de sa zone. Ils sont remis en vente 5 € moins chers ; la réduction est affichée sur chaque ligne.'],
     ['ul', ['Filtrez par date, thématique, département, code postal ou prix.', 'Cochez les contacts voulus, puis « Acheter » : leurs coordonnées apparaissent aussitôt dans « Mes contacts » et un bon de commande est créé.', 'Les coordonnées ne sont visibles qu’après l’achat.']],
   ] },
   { id: 'litiges', route: '/espace/litiges', titre: 'Signaler un doublon ou un hors zone', resume: 'Faire remplacer un contact.', corps: [

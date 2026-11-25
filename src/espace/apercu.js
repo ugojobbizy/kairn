@@ -42,7 +42,7 @@ export function apercuData() {
     ...Array.from({ length: 40 }, (_, i) => lead(300 + i, 'ITE', Math.floor(i / 12))),
     ...Array.from({ length: 22 }, (_, i) => lead(400 + i, 'PAC', Math.floor(i / 8))),
     ...Array.from({ length: 9 }, (_, i) => lead(500 + i, 'PPV', Math.floor(i / 4))),
-  ].map(({ prenom, nom, telephone, email, ville, ...rest }, i) => ({ ...rest, en_vente: true, deja_transmis: true, prix_origine: rest.prix_ht, prix_ht: rest.prix_ht - 4 }));
+  ].map(({ prenom, nom, telephone, email, ville, ...rest }, i) => ({ ...rest, en_vente: true, deja_transmis: true, prix_origine: rest.prix_ht, prix_ht: rest.prix_ht - 5 }));
   // Suivi fictif : contacts traités à différentes étapes, rendez-vous, rappels et notes, pour juger le CRM et le tableau de bord.
   const st = ['nrp', 'a_rappeler', 'rdv', 'devis', 'signe', 'perdu', 'rdv', 'nrp', 'signe', 'a_rappeler', 'devis', 'perdu'];
   const h = (n) => new Date(Date.now() + n * 3600000).toISOString();
